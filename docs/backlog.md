@@ -21,14 +21,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Goal: own the domain before someone else does (~$12/yr; only spend until M4).
   Acceptance: registered, auto-renew on. No DNS setup needed yet.
 
-- [ ] **WI-002 Create the private GitHub repo and first commit**
+- [x] **WI-002 Create the private GitHub repo and first commit**
   Goal: everything so far (docs, .claude, planning files) safely versioned.
   Acceptance: `gh repo create danheinz/BrainHarbor --private`; git init'd; first
   commit contains PLAN.md, docs/, .claude/, PROGRESS.md, .gitignore; pushed;
   `.claude/.env` confirmed untracked.
   Refs: architecture.md §8.
 
-- [ ] **WI-003 Solution scaffold**
+- [x] **WI-003 Solution scaffold**
   Goal: the two-app solution builds clean from a fresh clone.
   Acceptance: `BrainHarbor.sln` with `src/BrainHarbor.Web` (Razor Pages,
   net10.0), `src/BrainHarbor.Pipeline` (console), `tests/BrainHarbor.Tests`

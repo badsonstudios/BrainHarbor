@@ -10,7 +10,7 @@
 | | |
 |---|---|
 | **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-002 |
+| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-004 |
 | **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
 | **Blockers** | none |
 
@@ -25,6 +25,13 @@
 
 ## Log (newest first)
 
+- **2026-07-18** — **WI-003 done** (autopilot): BrainHarbor.sln + Web (Razor
+  Pages, net10.0) + Pipeline (console) + Tests (xUnit); build + test green.
+- **2026-07-18** — **WI-002 done** (autopilot): private repo created + first
+  commit pushed. ⚠️ Note: `gh` resolves to **badsonstudios**, not `danheinz`
+  (`/users/danheinz` 404s — account renamed?). Repo is at
+  `github.com/badsonstudios/BrainHarbor` (private ✓, `.env` untracked ✓).
+  Dan: confirm the account; then docs/references mentioning `danheinz` get updated.
 - **2026-07-18** — **Autopilot M0 started** (unattended run, branch `auto/M0`).
   WI-001 `[user]` (buy brainharbor.org) skipped — Dan's item, does not gate M0.
 - **2026-07-18** — Domain changed to **brainharbor.org** (from .net); all docs
