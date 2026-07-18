@@ -44,7 +44,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   proves connectivity.
   Refs: architecture.md §2a/§8, data-model.md. Depends on: WI-003.
 
-- [ ] **WI-005 Htmx.Net + Dapper wiring, secrets setup**
+- [x] **WI-005 Htmx.Net + Dapper wiring, secrets setup**
   Goal: the web plumbing every later item builds on.
   Acceptance: Htmx.Net + tag helpers installed with one working demo partial
   (deleted later); Dapper connection factory service; `SYNC_API_KEY` +

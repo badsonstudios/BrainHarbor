@@ -1,19 +1,24 @@
 using BrainHarbor.Web.Database;
+using BrainHarbor.Web.Services;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+var connectionStringSetting = builder.Configuration.GetConnectionString("BrainHarbor")
+    ?? throw new InvalidOperationException(
+        "Connection string 'BrainHarbor' not found. Set it via: dotnet user-secrets set \"ConnectionStrings:BrainHarbor\" \"...\" --project src/BrainHarbor.Web (dev) or environment/App Service configuration.");
+builder.Services.AddNpgsqlDataSource(connectionStringSetting);
+builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+
 var app = builder.Build();
 
 // DbUp runs on startup in dev; in prod (M4) migrations become a CI step.
 if (app.Environment.IsDevelopment())
 {
-    var connectionString = app.Configuration.GetConnectionString("BrainHarbor")
-        ?? throw new InvalidOperationException(
-            "Connection string 'BrainHarbor' not found. Set it via: dotnet user-secrets set \"ConnectionStrings:BrainHarbor\" \"...\" --project src/BrainHarbor.Web");
-    MigrationRunner.Run(connectionString);
+    MigrationRunner.Run(connectionStringSetting);
 }
 
 // Configure the HTTP request pipeline.

@@ -10,7 +10,7 @@
 | | |
 |---|---|
 | **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-005 |
+| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-006 |
 | **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
 | **Blockers** | none |
 
@@ -25,6 +25,12 @@
 
 ## Log (newest first)
 
+- **2026-07-18** — **WI-005 done** (autopilot): Htmx.Net + TagHelpers (htmx
+  2.0.10 vendored), demo partial with no-JS fallback (curl-verified both
+  paths); Dapper `IDbConnectionFactory` (NpgsqlDataSource DI); dev
+  SYNC_API_KEY set in both apps' user-secrets. ⚠️ Dan: (1) populate
+  `.claude/.env` from `.env.example` (autopilot may not touch it), (2) get a
+  real NCBI_API_KEY and set it in Pipeline user-secrets + `.env`.
 - **2026-07-18** — **WI-004 done** (autopilot): docker-compose (Postgres 16 @
   5433, named volume, healthcheck), DbUp on dev startup with 0001 baseline,
   connection string in user-secrets, DB smoke test. Verified on a fresh

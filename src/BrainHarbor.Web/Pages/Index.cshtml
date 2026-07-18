@@ -6,3 +6,22 @@
 
 <h1>BrainHarbor</h1>
 <p>Brain tumor research, explained in plain language. This site is under construction.</p>
+
+@* htmx demo (WI-005): progressive enhancement — the form works without JS,
+   htmx upgrades it to a fragment swap. TODO(WI-101): delete with the real shell. *@
+<form method="get">
+    <button type="submit" name="ShowTime" value="true"
+            hx-get
+            hx-page="/Index"
+            hx-page-handler="TimePartial"
+            hx-target="#time-demo"
+            hx-swap="innerHTML">
+        Show server time
+    </button>
+</form>
+<div id="time-demo">
+    @if (Model.ShowTime)
+    {
+        <partial name="_ServerTime" />
+    }
+</div>
