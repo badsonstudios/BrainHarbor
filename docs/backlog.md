@@ -52,7 +52,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   populated from `.env.example`.
   Refs: tech-stack reference, api-keys-config.md. Depends on: WI-003.
 
-- [ ] **WI-006 GitHub Actions CI**
+- [x] **WI-006 GitHub Actions CI**
   Goal: every push builds and tests automatically.
   Acceptance: workflow runs `dotnet build` + `dotnet test` on push/PR to main;
   badge or checks visible on PRs; red CI blocks self-merge by convention.

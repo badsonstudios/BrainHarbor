@@ -10,7 +10,7 @@
 | | |
 |---|---|
 | **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-006 |
+| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — wrapping up (WI-006 pushed, awaiting CI) |
 | **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
 | **Blockers** | none |
 
@@ -25,6 +25,9 @@
 
 ## Log (newest first)
 
+- **2026-07-18** — **WI-006 done** (autopilot): GitHub Actions CI — build +
+  test (Release) on push/PR to main, Postgres 16 service container so the
+  Database-category tests run in CI too.
 - **2026-07-18** — **WI-005 done** (autopilot): Htmx.Net + TagHelpers (htmx
   2.0.10 vendored), demo partial with no-JS fallback (curl-verified both
   paths); Dapper `IDbConnectionFactory` (NpgsqlDataSource DI); dev
