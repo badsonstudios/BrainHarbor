@@ -9,22 +9,34 @@
 
 | | |
 |---|---|
-| **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — wrapping up (WI-006 pushed, awaiting CI) |
-| **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
+| **Phase** | M0 — Skeleton — **COMPLETE** (pending Dan's review/merge of PR #1) |
+| **In progress** | nothing mid-flight |
+| **Next up** | Dan: review + merge PR #1, do the follow-ups below; then M1 (WI-101) — `/pm` if M1 needs re-triage first |
 | **Blockers** | none |
 
 ## Notes for the next session
 
+- **M0 shipped via autopilot on `auto/M0`, draft PR #1 awaiting Dan** —
+  CI green on the PR tip. Squash-merge recommended, then
+  `git checkout main && git pull`.
+- **Dan's follow-ups from the run:**
+  1. WI-001: buy **brainharbor.org**.
+  2. GitHub account: `gh` resolves to **badsonstudios** (not `danheinz`;
+     renamed?). Repo lives at `badsonstudios/BrainHarbor`. Confirm, then
+     update the `danheinz` mentions in CLAUDE.md + references.
+  3. Populate `.claude/.env` from `.env.example` (autopilot may not touch it).
+  4. Get a real **NCBI_API_KEY** (https://account.ncbi.nlm.nih.gov/settings/)
+     into Pipeline user-secrets + `.env` (needed by WI-204, so before M2).
 - Planning and design are **done** — `PLAN.md` + `docs/*.md` are the spec,
   `docs/backlog.md` is the itemized plan (M0–M4; P2a–P3 not yet decomposed).
-- The `.claude/` workflow was adapted from ClaudeMon on 2026-07-18: `/pm` +
-  `/next-item` replace GitHub-issue skills; both approval gates kept; branch +
-  PR per item; `.claude/.env` needs to be created from `.env.example`.
-- Say **"next item"** (or `/next-item`) to start WI-002.
+- Solution note: SDK 10 generated `BrainHarbor.slnx` (new XML solution
+  format) rather than `.sln`; `dotnet build/test` handle it fine.
+- After merge: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
 
+- **2026-07-18** — **Autopilot M0 run COMPLETE**: WI-002..WI-006 shipped on
+  `auto/M0` (PR #1, draft), CI green on the tip. WI-001 `[user]` outstanding.
 - **2026-07-18** — **WI-006 done** (autopilot): GitHub Actions CI — build +
   test (Release) on push/PR to main, Postgres 16 service container so the
   Database-category tests run in CI too.
