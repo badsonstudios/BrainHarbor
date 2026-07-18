@@ -36,7 +36,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   layout matches architecture.md §3.
   Depends on: WI-002.
 
-- [ ] **WI-004 Local Postgres + DbUp**
+- [x] **WI-004 Local Postgres + DbUp**
   Goal: a reproducible local database the Web app migrates on startup.
   Acceptance: `docker-compose.yml` (Postgres 16, port **5433**, named volume);
   DbUp wired into Web startup with a `0001` baseline script; connection string

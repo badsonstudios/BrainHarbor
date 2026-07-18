@@ -10,7 +10,7 @@
 | | |
 |---|---|
 | **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-004 |
+| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-005 |
 | **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
 | **Blockers** | none |
 
@@ -25,6 +25,10 @@
 
 ## Log (newest first)
 
+- **2026-07-18** — **WI-004 done** (autopilot): docker-compose (Postgres 16 @
+  5433, named volume, healthcheck), DbUp on dev startup with 0001 baseline,
+  connection string in user-secrets, DB smoke test. Verified on a fresh
+  container; code review clean (fixes applied).
 - **2026-07-18** — **WI-003 done** (autopilot): BrainHarbor.sln + Web (Razor
   Pages, net10.0) + Pipeline (console) + Tests (xUnit); build + test green.
 - **2026-07-18** — **WI-002 done** (autopilot): private repo created + first

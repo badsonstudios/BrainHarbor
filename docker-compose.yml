@@ -1,0 +1,23 @@
+# Local dev database. Port 5433 on purpose — another project's Postgres owns 5432.
+services:
+  postgres:
+    image: postgres:16
+    container_name: brainharbor-postgres-local
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: brainharbor
+      POSTGRES_USER: brainharbor
+      # Local-dev-only password. Override matches DB_PASSWORD in .claude/.env:
+      #   docker compose --env-file .claude/.env up -d
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-brainharbor_dev}
+    volumes:
+      - brainharbor-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brainharbor -d brainharbor"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  brainharbor-pgdata:
