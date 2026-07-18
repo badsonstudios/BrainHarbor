@@ -1,0 +1,10 @@
+* text=auto
+
+# Shell scripts must stay LF (Git Bash hooks/scripts break on CRLF)
+*.sh text eol=lf
+
+# Never normalize binaries
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary

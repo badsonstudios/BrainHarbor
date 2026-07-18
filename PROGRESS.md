@@ -1,0 +1,58 @@
+# BrainHarbor — Progress
+
+> **The live state of the project.** Read this first in every session (via
+> `/startup`). Updated the moment an item starts, finishes, or hits a blocker —
+> a fresh session must be able to resume from this file alone.
+> The item definitions live in [docs/backlog.md](docs/backlog.md).
+
+## Current state
+
+| | |
+|---|---|
+| **Phase** | M0 — Skeleton |
+| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-002 |
+| **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
+| **Blockers** | none |
+
+## Notes for the next session
+
+- Planning and design are **done** — `PLAN.md` + `docs/*.md` are the spec,
+  `docs/backlog.md` is the itemized plan (M0–M4; P2a–P3 not yet decomposed).
+- The `.claude/` workflow was adapted from ClaudeMon on 2026-07-18: `/pm` +
+  `/next-item` replace GitHub-issue skills; both approval gates kept; branch +
+  PR per item; `.claude/.env` needs to be created from `.env.example`.
+- Say **"next item"** (or `/next-item`) to start WI-002.
+
+## Log (newest first)
+
+- **2026-07-18** — **Autopilot M0 started** (unattended run, branch `auto/M0`).
+  WI-001 `[user]` (buy brainharbor.org) skipped — Dan's item, does not gate M0.
+- **2026-07-18** — Domain changed to **brainharbor.org** (from .net); all docs
+  updated. WI-001 now = buy brainharbor.org.
+- **2026-07-18** — Workflow installed: `.claude/` adapted from ClaudeMon
+  (skills: startup, pm, next-item, check-code, review, commit-push-pr, explain,
+  deep-research; agents: code-reviewer, debugger, deep-research-agent; env
+  hook, scripts, settings). Backlog created: M0–M4 decomposed into 34 work
+  items. This file created.
+- **2026-07-18** — Architecture pivot: pipeline moved local (console app +
+  Task Scheduler + Claude Code CLI, no Anthropic API key); site gets a sync
+  API + admin review queue; every published summary human-approved; Hangfire
+  removed. Docs updated.
+- **2026-07-18** — Decisions: brainharbor.net; weekly digest; local-first dev,
+  Azure deferred to M4; private GitHub repo; toolchain verified (.NET 10 SDK,
+  git, Docker, gh as danheinz).
+- **2026-07-12** — Aggregation-first pivot (feed + plain-language summaries is
+  the v1 product; static hub moved to Phase 2). Stack changed to Razor Pages +
+  htmx on .NET 10 (Htmxor dead). Full design-doc set written: PLAN.md +
+  docs/{architecture, sitemap, content-pipeline, data-model, roadmap}.
+
+<!--
+Maintenance rules (for the assistant):
+- Starting an item  → set "In progress" (item + timestamp + current step).
+- Finishing an item → move to Log with date, one-line outcome, PR link;
+  update "Next up"; check the box in docs/backlog.md.
+- Blocker/stopping mid-item → record exactly where things stand under
+  "In progress" + "Blockers" so a cold session can resume.
+- Keep "Notes for the next session" current; prune stale notes.
+- Never delete Log entries; newest first.
+-->

@@ -1,0 +1,22 @@
+# Secrets — never commit (a PreToolUse hook also blocks staging these)
+.claude/.env
+.claude/.env.local
+.claude/settings.local.json
+
+# Claude working files
+.claude/work_files/*
+!.claude/work_files/.gitkeep
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+artifacts/
+
+# Node (if ever needed)
+node_modules/
+
+# OS
+Thumbs.db
+.DS_Store
