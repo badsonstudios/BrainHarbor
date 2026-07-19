@@ -2,8 +2,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Database\Scripts\*.sql" />
-    <!-- Curated Markdown pages (WI-104) must survive dotnet publish. -->
+    <!-- Curated Markdown pages (WI-104) + glossary terms (WI-105) must
+         survive dotnet publish. -->
     <Content Include="Content\pages\**" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Content\glossary\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>

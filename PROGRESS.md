@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-105 Glossary + inline tooltip extension |
+| **Next up** | WI-106 ContentCheck CI gate |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,13 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-105 done** (autopilot): GlossaryStore (term files per
+  content-pipeline §6, snapshot reloads), GlossaryMarker Markdig extension
+  (first occurrence per page → native-popover button tooltip, WCAG 1.4.13;
+  paragraphs only; %%term%% + !%term% escapes), /glossary A–Z, 3 seed terms.
+  Review caught 2 real bugs pre-commit: terms split across source line wraps
+  never matched (soft-break merge added) and "non-IDH-mutant" got a wrong
+  tooltip (hyphen-aware boundaries) — both pinned with tests. 76/76.
 - **2026-07-19** — **WI-104 done** (autopilot): ContentStore (Markdig with
   DisableHtml + YamlDotNet front matter per content-pipeline §3, mtime-keyed
   cache, slug-regex traversal guard, IO races → 404); catch-all Razor route

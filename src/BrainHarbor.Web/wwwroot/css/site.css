@@ -568,6 +568,35 @@ main {
   color: var(--color-accent-strong);
 }
 
+/* The tooltip panel (WI-105) — a native popover: dismissible via Esc/light
+   dismiss, focusable trigger, no JS. Deliberately uses the UA default
+   position (centered mini-dialog): easier to find than a tiny anchored
+   tooltip for readers with vision or attention problems. */
+.term-definition {
+  max-width: 28rem;
+  padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--color-band);
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: var(--card-shadow);
+}
+
+/* Browsers without popover support show the definition inline after the
+   term — degraded but readable, wrapped in parentheses for flow. */
+@supports not selector(:popover-open) {
+  .term-definition {
+    display: inline;
+    font-size: var(--text-sm);
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .term-definition::before { content: " ("; }
+  .term-definition::after { content: ")"; }
+}
+
 /* The anti-hype block — a calm, honest aside. */
 .means-block {
   background: #eef6f8;

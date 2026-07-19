@@ -20,9 +20,14 @@ public sealed class ContentStoreCacheTests : IDisposable
         Directory.CreateDirectory(_root);
 
         var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?> { ["Content:Root"] = _root })
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Content:Root"] = _root,
+                ["Glossary:Root"] = Path.Combine(_root, "no-glossary"),
+            })
             .Build();
-        _store = new ContentStore(new StubEnvironment(), configuration);
+        var environment = new StubEnvironment();
+        _store = new ContentStore(environment, configuration, new GlossaryStore(environment, configuration));
     }
 
     public void Dispose() => Directory.Delete(_root, recursive: true);

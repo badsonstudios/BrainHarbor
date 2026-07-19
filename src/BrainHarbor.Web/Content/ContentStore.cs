@@ -19,22 +19,27 @@ public sealed record ContentPage(
 /// state serves from memory. URL paths map to files:
 /// /about → {root}/about.md, /benefits/fast-track → {root}/benefits/fast-track.md.
 /// </summary>
-public sealed partial class ContentStore(IWebHostEnvironment environment, IConfiguration configuration)
+public sealed partial class ContentStore(
+    IWebHostEnvironment environment, IConfiguration configuration, GlossaryStore glossary)
 {
     // section/slug segments only — blocks traversal and anything non-slug.
     [GeneratedRegex("^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*)?$")]
     private static partial Regex UrlPathPattern();
 
     // DisableHtml: curated pages are pure Markdown; raw HTML in a source file
-    // renders escaped. Extensions (e.g. WI-105 glossary) still emit markup.
-    private static readonly MarkdownPipeline Pipeline =
-        new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build();
+    // renders escaped. The glossary extension still emits markup — it renders
+    // through its own object renderer, not raw HTML inlines.
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
+        .UseAdvancedExtensions()
+        .DisableHtml()
+        .Use<GlossaryTooltipExtension>()
+        .Build();
 
     private static readonly IDeserializer Yaml = new DeserializerBuilder()
         .IgnoreUnmatchedProperties()
         .Build();
 
-    private readonly ConcurrentDictionary<string, (DateTime WriteTimeUtc, ContentPage Page)> _cache = new();
+    private readonly ConcurrentDictionary<string, (DateTime WriteTimeUtc, string GlossaryVersion, ContentPage Page)> _cache = new();
 
     private string Root =>
         configuration["Content:Root"]
@@ -58,14 +63,17 @@ public sealed partial class ContentStore(IWebHostEnvironment environment, IConfi
                 return null;
             }
 
+            var snapshot = glossary.GetSnapshot();
             var writeTime = File.GetLastWriteTimeUtc(file);
-            if (_cache.TryGetValue(urlPath, out var cached) && cached.WriteTimeUtc == writeTime)
+            if (_cache.TryGetValue(urlPath, out var cached) &&
+                cached.WriteTimeUtc == writeTime &&
+                cached.GlossaryVersion == snapshot.Version)
             {
                 return cached.Page;
             }
 
-            var page = Parse(File.ReadAllText(file), urlPath);
-            _cache[urlPath] = (writeTime, page);
+            var page = Parse(File.ReadAllText(file), urlPath, snapshot.Terms);
+            _cache[urlPath] = (writeTime, snapshot.Version, page);
             return page;
         }
         catch (IOException)
@@ -82,7 +90,10 @@ public sealed partial class ContentStore(IWebHostEnvironment environment, IConfi
     /// Markdown. Throws on malformed input — a bad page is a build/content
     /// error, never something to render half-broken to a patient.
     /// </summary>
-    public static ContentPage Parse(string raw, string urlPath)
+    public static ContentPage Parse(string raw, string urlPath) => Parse(raw, urlPath, []);
+
+    /// <summary>Parse with glossary terms: first occurrences get tooltips (WI-105).</summary>
+    public static ContentPage Parse(string raw, string urlPath, IReadOnlyList<GlossaryTerm> glossaryTerms)
     {
         raw = raw.TrimStart('﻿'); // BOM
         if (!raw.StartsWith("---"))
@@ -115,6 +126,15 @@ public sealed partial class ContentStore(IWebHostEnvironment environment, IConfi
             throw new FormatException($"Content page '{urlPath}' is missing a title.");
         }
 
-        return new ContentPage(frontMatter, Markdig.Markdown.ToHtml(body, Pipeline), body, urlPath);
+        var document = Markdig.Markdown.Parse(body, Pipeline);
+        GlossaryMarker.Mark(document, glossaryTerms);
+
+        using var writer = new StringWriter();
+        var renderer = new Markdig.Renderers.HtmlRenderer(writer);
+        Pipeline.Setup(renderer);
+        renderer.Render(document);
+        writer.Flush();
+
+        return new ContentPage(frontMatter, writer.ToString(), body, urlPath);
     }
 }

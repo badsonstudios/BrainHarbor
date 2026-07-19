@@ -91,7 +91,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   parsing and routing.
   Refs: content-pipeline.md §3, architecture.md §3. Depends on: WI-003.
 
-- [ ] **WI-105 Glossary + inline tooltip extension**
+- [x] **WI-105 Glossary + inline tooltip extension**
   Goal: the inline-definitions differentiator, accessible.
   Acceptance: glossary term file format; Markdig extension marks first
   occurrence per page → `<button>` tooltip meeting WCAG 1.4.13 (focusable,
