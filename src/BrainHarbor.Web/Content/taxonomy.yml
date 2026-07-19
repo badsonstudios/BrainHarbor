@@ -1,0 +1,120 @@
+# WI-201: the one source of truth for tumor-type slugs (data-model.md
+# §"Curated-content taxonomy"). Referenced by classifier output (tumor_tags),
+# feed filters, subscriber prefs, and later curated-page front matter.
+#
+# The classifier may ONLY emit slugs from this file — a closed taxonomy is
+# what stops invented tumor types reaching a patient (content-pipeline.md §9).
+#
+# `label` is what readers see. `also` lists aliases the classifier may be
+# given; they never render. `parent` builds the hierarchy so a reader
+# filtering "glioma" also sees glioblastoma items — tag the specific type and
+# TaxonomyStore.Matches walks up for you.
+#
+# Naming follows WHO CNS5 (2021). Aliases must be true synonyms, never
+# "close enough": tagging an IDH-mutant grade 4 astrocytoma as glioblastoma
+# shows a patient research about a different disease with a different
+# prognosis. When in doubt, add a slug rather than an alias.
+
+tumor_types:
+  # ---- gliomas ----
+  - slug: glioma
+    label: "Glioma"
+    also: [gliomas]
+
+  - slug: low-grade-glioma
+    label: "Low-grade glioma"
+    parent: glioma
+    also: [LGG, "grade 2 glioma", "diffuse low-grade glioma"]
+
+  - slug: high-grade-glioma
+    label: "High-grade glioma"
+    parent: glioma
+    # "grade 4 glioma" lives HERE, not on glioblastoma: under WHO CNS5 grade 4
+    # also covers IDH-mutant astrocytoma and H3 K27-altered midline glioma.
+    also: [HGG, "grade 3 glioma", "grade 4 glioma", "malignant glioma", "anaplastic glioma"]
+
+  - slug: glioblastoma
+    label: "Glioblastoma"
+    parent: high-grade-glioma
+    # GBM is IDH-wildtype by definition in CNS5. "multiforme" is deprecated
+    # but a true synonym, so it stays as an alias only.
+    also: [GBM, "glioblastoma multiforme", "IDH-wildtype glioblastoma"]
+
+  - slug: astrocytoma
+    label: "Astrocytoma"
+    parent: glioma
+    also: ["IDH-mutant astrocytoma", "anaplastic astrocytoma", "pilocytic astrocytoma"]
+
+  - slug: oligodendroglioma
+    label: "Oligodendroglioma"
+    parent: glioma
+    also: ["anaplastic oligodendroglioma", "1p/19q-codeleted oligodendroglioma"]
+
+  - slug: diffuse-midline-glioma
+    label: "Diffuse midline glioma"
+    parent: high-grade-glioma
+    # DIPG is the PONTINE subset. Thalamic and spinal DMG are not DIPG, so
+    # DIPG is an alias here rather than the slug — see dipg below.
+    also: ["DMG", "H3 K27-altered glioma", "diffuse midline glioma H3 K27-altered"]
+
+  - slug: dipg
+    label: "DIPG (pontine)"
+    parent: diffuse-midline-glioma
+    also: ["diffuse intrinsic pontine glioma"]
+
+  - slug: ependymoma
+    label: "Ependymoma"
+    parent: glioma
+
+  # ---- non-glioma primary tumors ----
+  - slug: meningioma
+    label: "Meningioma"
+    also: [meningiomas]
+
+  - slug: medulloblastoma
+    label: "Medulloblastoma"
+
+  - slug: pituitary-tumor
+    label: "Pituitary tumor"
+    also: ["pituitary adenoma", PitNET]
+
+  - slug: acoustic-neuroma
+    label: "Acoustic neuroma"
+    also: ["vestibular schwannoma"]
+
+  - slug: cns-lymphoma
+    label: "CNS lymphoma"
+    also: ["primary CNS lymphoma", PCNSL]
+
+  - slug: craniopharyngioma
+    label: "Craniopharyngioma"
+
+  - slug: cns-germ-cell-tumor
+    label: "CNS germ cell tumor"
+    also: [germinoma, "intracranial germ cell tumor"]
+
+  - slug: atrt
+    label: "ATRT"
+    also: ["atypical teratoid rhabdoid tumor"]
+
+  - slug: hemangioblastoma
+    label: "Hemangioblastoma"
+
+  - slug: chordoma
+    label: "Chordoma"
+
+  # ---- secondary ----
+  - slug: brain-metastases
+    label: "Brain metastases"
+    also: ["secondary brain tumor", "metastatic brain tumor", "brain mets"]
+
+  # ---- cross-cutting axes (age, not histology) ----
+  - slug: pediatric-brain-tumor
+    label: "Pediatric brain tumor"
+    also: ["childhood brain tumor"]
+
+  # Catch-all so a relevant item is never dropped for lacking a specific type.
+  # The classifier emits this alongside a specific slug when an item applies
+  # broadly (e.g. a caregiving or side-effect study).
+  - slug: all-brain-tumors
+    label: "All brain tumors"

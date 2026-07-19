@@ -9,34 +9,12 @@
 
 | | |
 |---|---|
-| **Phase** | M1 — Design system & shell (M0 complete & merged) |
-| **In progress** | nothing mid-flight — **M1 complete** on `auto/M1` (PR #3, draft), awaiting Dan's review + merge |
-| **Next up** | Dan: visual review of PR #3 (see checklist below), then merge; then `/autopilot M2` |
+| **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
+| **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
+| **Next up** | WI-202 Sync API |
 | **Blockers** | none |
 
 ## Notes for the next session
-
-### Dan's visual-review checklist for PR #3 (M1)
-
-Run `dotnet run --project src/BrainHarbor.Web` (Docker Postgres up first),
-then eyeball — this is the part autopilot cannot do:
-
-1. **`/`** — Entry Hub: three doors, spacing, the teal, does it feel calm?
-2. **Larger text** (header toggle) — does anything break or overflow at 22px?
-3. **`/dev/styleguide`** — all 7 stage badges side by side. The dot-meter is
-   the core trust device; does 5/5 vs 1/5 read instantly?
-4. **`/about`** — a curated Markdown page end-to-end (disclaimer box,
-   provenance, sources).
-5. **Glossary tooltip** — on `/dev/styleguide`, click/tab a dotted term.
-   (No shipped shell page happens to use a glossary term yet, so the
-   styleguide is the only place to see it until the feed lands.)
-   Then check the `/glossary` A–Z page itself.
-6. **`/start`** — the emergency red-flag block: is it findable and calm?
-7. **`/get-help-now`** — big tap targets, phone links.
-8. **Print preview `/about`** (Ctrl+P) — chrome gone, ink on white.
-9. **A dead link** (e.g. `/nope`) — friendly 404 with helpline band.
-
-### Standing notes
 
 - **Approved visual design lives at `docs/design/entry-hub-handoff/`** ("Clear
   & Kind" theme + Entry Hub home, from Claude Design 2026-07-19). It is the
@@ -62,6 +40,23 @@ then eyeball — this is the part autopilot cannot do:
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-201 done** (autopilot M2): aggregated_items +
+  source_sync_state migration with CHECK constraints (incl. preprint can
+  never be patient_relevant, enforced in the DB); taxonomy.yml as a **tree**
+  (22 types, parent/child) + TaxonomyStore with alias resolution, Matches()
+  ancestor walk, and a FilterTags gate that reports rejected tags.
+  Review caught two **medically wrong aliases** — "grade 4 glioma" mapped to
+  glioblastoma (WHO CNS5 grade 4 also covers IDH-mutant astrocytoma and H3
+  K27-altered DMG) and DIPG treated as a synonym for diffuse midline glioma
+  rather than its pontine subset. Both would have shown patients research
+  about a different disease. Also fixed the DbUp journal race **in prod**
+  (advisory lock, not just serialized tests) and the NULLS LAST feed index.
+  data-model.md updated to match. 147/147.
+- **2026-07-19** — **M1 MERGED**: Dan ran the site, visual review passed
+  ("everything is looking good"); running it surfaced one real gap — no
+  shipped page used a glossary term, so the tooltip was invisible; fixed with
+  a real-pipeline sample on /dev/styleguide. PR #3 squash-merged to `main`
+  (0f6be65), `auto/M1` deleted. Autopilot M2 starting.
 - **2026-07-19** — **M1 COMPLETE** (autopilot): all 8 items shipped on
   `auto/M1`, 112/112 tests, ContentCheck clean, 0 build warnings. Awaiting
   Dan's visual review + merge of PR #3. Nothing merged to `main` by autopilot.

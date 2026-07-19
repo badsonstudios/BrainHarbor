@@ -8,6 +8,7 @@ namespace BrainHarbor.Tests;
 /// WI-109: /dev/styleguide renders every badge kind through the real partials
 /// in Development, and is a 404 everywhere else.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class StyleGuideTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

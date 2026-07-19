@@ -8,6 +8,7 @@ namespace BrainHarbor.Tests;
 /// /get-help-now carries the crisis numbers. This is the "always one tap to
 /// a human" promise from PLAN.md §3 — treat regressions as serious.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class HelplineTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

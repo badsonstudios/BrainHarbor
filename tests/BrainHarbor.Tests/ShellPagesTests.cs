@@ -9,6 +9,7 @@ namespace BrainHarbor.Tests;
 /// WI-107: the hand-written shell pages exist, render through the real
 /// pipeline, carry their disclaimers, and pass the readability gate.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

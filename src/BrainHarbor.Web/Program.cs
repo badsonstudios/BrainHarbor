@@ -16,6 +16,7 @@ builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddSingleton<GlossaryStore>();
 builder.Services.AddSingleton<ContentStore>();
+builder.Services.AddSingleton<TaxonomyStore>();
 
 var app = builder.Build();
 

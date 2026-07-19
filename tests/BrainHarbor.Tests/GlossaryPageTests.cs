@@ -6,6 +6,7 @@ namespace BrainHarbor.Tests;
 /// WI-105 integration: /glossary A–Z page and the tooltip pipeline through a
 /// real content page, using fixture roots.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class GlossaryPageTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

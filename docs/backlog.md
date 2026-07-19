@@ -150,7 +150,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M2 — Ingestion + sync API + browse
 
-- [ ] **WI-201 Core schema + taxonomy**
+- [x] **WI-201 Core schema + taxonomy**
   Goal: the data foundation for everything aggregated.
   Acceptance: DbUp migration for `aggregated_items` + `source_sync_state`
   exactly per data-model.md; `Content/taxonomy.yml` with initial tumor slugs;

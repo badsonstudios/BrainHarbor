@@ -6,6 +6,7 @@
          survive dotnet publish. -->
     <Content Include="Content\pages\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Content\glossary\**" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Content\taxonomy.yml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
