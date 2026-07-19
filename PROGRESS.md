@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-202 Sync API |
+| **Next up** | WI-203 Pipeline skeleton + sync client |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -40,6 +40,18 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-202 done** (autopilot M2): sync API (state/check/items)
+  with API-key auth (constant-time, fails CLOSED → 503 if unconfigured),
+  key-partitioned rate limiting, per-item validation, and an idempotent
+  upsert. Two real bugs found before commit: (1) API 401s were being
+  re-executed into the HTML status page — machine clients got markup, and a
+  POST re-execute degraded to a bogus 400; (2) **review blocker** — a
+  classify-only rerun could null the plain_summary of an already-*published*
+  item, leaving a live patient page contentless with no human involved.
+  Content is now frozen once a human reviews it (`Frozen` count in the
+  response). Also: cursor no longer advances on all-rejected batches (would
+  skip that window forever), single-source cursor rule, field bounds +
+  source whitelist, null-body 400s, DateOnly Dapper handler. 181/181.
 - **2026-07-19** — **WI-201 done** (autopilot M2): aggregated_items +
   source_sync_state migration with CHECK constraints (incl. preprint can
   never be patient_relevant, enforced in the DB); taxonomy.yml as a **tree**

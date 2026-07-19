@@ -157,7 +157,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   taxonomy loader with tests.
   Refs: data-model.md. Depends on: WI-004.
 
-- [ ] **WI-202 Sync API**
+- [x] **WI-202 Sync API**
   Goal: the only write surface, secure and idempotent.
   Acceptance: `GET /api/sync/state`, `POST /api/sync/check`, `POST
   /api/sync/items` per architecture.md §4; API-key header auth (401 without),

@@ -197,12 +197,12 @@ public sealed class TaxonomyStore
     /// <see cref="TagFilterResult.Rejected"/> so a recurring unknown term
     /// becomes evidence for a new taxonomy entry instead of silent data loss.
     /// </summary>
-    public TagFilterResult FilterTags(IEnumerable<string> tags)
+    public TagFilterResult FilterTags(IEnumerable<string>? tags)
     {
         var known = new List<string>();
         var rejected = new List<string>();
 
-        foreach (var tag in tags)
+        foreach (var tag in tags ?? [])
         {
             var resolved = Resolve(tag);
             if (resolved is null)
