@@ -155,6 +155,20 @@ input[type="submit"] {
   cursor: pointer;
 }
 
+/* Links styled as buttons (e.g. tel: links on /get-help-now) need the
+   flex treatment for the min-height to actually apply. */
+a.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  margin-inline-end: var(--space-3);
+  margin-block-end: var(--space-2);
+}
+
+a.button:hover {
+  text-decoration: underline;
+}
+
 .button:hover,
 button:hover,
 input[type="submit"]:hover {

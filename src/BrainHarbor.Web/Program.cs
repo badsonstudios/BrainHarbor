@@ -22,13 +22,17 @@ if (app.Environment.IsDevelopment())
     MigrationRunner.Run(connectionStringSetting);
 }
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. Exception handler stays outermost.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Friendly 404/error pages (WI-103) — the helpline band must be present even
+// on dead links, in every environment.
+app.UseStatusCodePagesWithReExecute("/status/{0}");
 
 app.UseHttpsRedirection();
 

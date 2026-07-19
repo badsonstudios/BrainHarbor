@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-103 Helpline band + /get-help-now |
+| **Next up** | WI-109 Stage-badge + feed-card partials |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-103 done** (autopilot): helpline band on every page
+  (aside landmark, CareLine tel link, → /get-help-now); /get-help-now with
+  988, Crisis Text Line, CareLine, NCI, CancerCare as one-tap buttons; custom
+  404 + calm Error page via status-code re-execute (direct /status/N hits
+  404; large-text toggle points at the original URL on error pages). Nav +
+  home "dead links" note: /get-help-now is now live.
 - **2026-07-19** — **WI-102 done** (autopilot): large-text mode (22px base)
   via cookie-persisting middleware, plain-link toggle in the header (proven
   with JS disabled in Playwright); axe-core smoke tests on the shell in both

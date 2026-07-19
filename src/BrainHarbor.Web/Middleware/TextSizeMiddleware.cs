@@ -22,8 +22,25 @@ public static class TextSize
     public static string ToggleHref(HttpContext context)
     {
         var target = IsLarge(context) ? Standard : Large;
-        var query = QueryWithoutParam(context.Request.Query).Add(QueryParam, target);
-        return SafeLocalPath(context) + query.ToUriComponent();
+
+        // During a status-code re-execute the request path is /status/{code};
+        // the toggle must point at the URL the user actually typed, or
+        // enlarging text on a dead link strands them on the phantom page.
+        string path;
+        QueryString query;
+        if (context.Features.Get<Microsoft.AspNetCore.Diagnostics.IStatusCodeReExecuteFeature>() is { } reExecute)
+        {
+            path = GuardScheme(new PathString(reExecute.OriginalPathBase)
+                .Add(new PathString(reExecute.OriginalPath)).ToUriComponent());
+            query = QueryWithoutParam(new QueryString(reExecute.OriginalQueryString));
+        }
+        else
+        {
+            path = SafeLocalPath(context);
+            query = QueryWithoutParam(context.Request.Query);
+        }
+
+        return path + query.Add(QueryParam, target).ToUriComponent();
     }
 
     /// <summary>
@@ -31,16 +48,31 @@ public static class TextSize
     /// with "//" would be treated as scheme-relative by browsers — an open
     /// redirect (e.g. /​/evil.com/?textsize=large) — so it collapses to "/".
     /// </summary>
-    internal static string SafeLocalPath(HttpContext context)
-    {
-        var path = context.Request.PathBase.Add(context.Request.Path).ToUriComponent();
-        return path.StartsWith("//") ? "/" : path;
-    }
+    internal static string SafeLocalPath(HttpContext context) =>
+        GuardScheme(context.Request.PathBase.Add(context.Request.Path).ToUriComponent());
+
+    internal static string GuardScheme(string path) =>
+        path.StartsWith("//") ? "/" : path;
 
     internal static QueryString QueryWithoutParam(IQueryCollection query)
     {
         var result = QueryString.Empty;
         foreach (var (key, values) in query)
+        {
+            if (key == QueryParam) continue;
+            foreach (var value in values)
+            {
+                result = result.Add(key, value ?? string.Empty);
+            }
+        }
+        return result;
+    }
+
+    internal static QueryString QueryWithoutParam(QueryString query)
+    {
+        var result = QueryString.Empty;
+        foreach (var (key, values) in
+                 Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(query.Value ?? string.Empty))
         {
             if (key == QueryParam) continue;
             foreach (var value in values)

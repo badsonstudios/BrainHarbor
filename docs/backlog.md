@@ -74,7 +74,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   serious/critical, wired into CI.
   Depends on: WI-101, WI-006, WI-108 (test the final theme, not the interim one).
 
-- [ ] **WI-103 Helpline band + /get-help-now**
+- [x] **WI-103 Helpline band + /get-help-now**
   Goal: the always-visible "talk to a human" affordance.
   Acceptance: persistent helpline band on every page (ABTA CareLine, large tap
   target); /get-help-now page with 988, Crisis Text Line 741741, org helplines;
