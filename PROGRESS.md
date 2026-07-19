@@ -23,9 +23,9 @@
   1. WI-001: buy **brainharbor.org**.
   2. ~~GitHub account~~ **resolved 2026-07-19**: Dan confirmed the account is
      **badsonstudios**; all doc references updated.
-  3. Populate `.claude/.env` from `.env.example` (autopilot may not touch it).
-  4. Get a real **NCBI_API_KEY** (https://account.ncbi.nlm.nih.gov/settings/)
-     into Pipeline user-secrets + `.env` (needed by WI-204, so before M2).
+  3. ~~Populate `.claude/.env`~~ **done 2026-07-19** (all vars set except the
+     intentionally-empty GITHUB_TOKEN).
+  4. ~~NCBI_API_KEY~~ **done 2026-07-19** — in `.env` and Pipeline user-secrets.
 - Planning and design are **done** — `PLAN.md` + `docs/*.md` are the spec,
   `docs/backlog.md` is the itemized plan (M0–M4; P2a–P3 not yet decomposed).
 - Solution note: SDK 10 generated `BrainHarbor.slnx` (new XML solution
