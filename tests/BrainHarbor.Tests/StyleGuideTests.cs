@@ -42,6 +42,10 @@ public class StyleGuideTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains("aria-label=\"Early research (lab cells). Evidence strength 1 of 5.\"", html);
         Assert.Contains("role=\"img\"", html);
 
+        // Glossary tooltip is previewable here (no shipped page uses a term yet).
+        Assert.Contains("popovertarget=\"def-glioma\"", html);
+        Assert.Contains("popovertarget=\"def-idh-gene-change\"", html);
+
         // Meter is visual-only; cards use the fixed anatomy.
         Assert.Contains("class=\"badge__meter\" aria-hidden=\"true\"", html);
         Assert.Contains("class=\"feed-grid\"", html);

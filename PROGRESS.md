@@ -25,9 +25,12 @@ then eyeball — this is the part autopilot cannot do:
 2. **Larger text** (header toggle) — does anything break or overflow at 22px?
 3. **`/dev/styleguide`** — all 7 stage badges side by side. The dot-meter is
    the core trust device; does 5/5 vs 1/5 read instantly?
-4. **`/about`** — a curated Markdown page end-to-end (tooltip on "glioma",
-   disclaimer box, provenance).
-5. **`/glossary`** — click a dotted term on any page, check the popover.
+4. **`/about`** — a curated Markdown page end-to-end (disclaimer box,
+   provenance, sources).
+5. **Glossary tooltip** — on `/dev/styleguide`, click/tab a dotted term.
+   (No shipped shell page happens to use a glossary term yet, so the
+   styleguide is the only place to see it until the feed lands.)
+   Then check the `/glossary` A–Z page itself.
 6. **`/start`** — the emergency red-flag block: is it findable and calm?
 7. **`/get-help-now`** — big tap targets, phone links.
 8. **Print preview `/about`** (Ctrl+P) — chrome gone, ink on white.

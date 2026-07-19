@@ -23,6 +23,17 @@
     }
 </ul>
 
+<h2>Glossary tooltip</h2>
+<p>
+    The sentence below is run through the real ContentStore pipeline, so the
+    first mention of each glossary term becomes a tooltip. Click or tab to
+    one: the panel must be readable, dismissible with Esc, and the trigger
+    must show a focus ring.
+</p>
+<div class="container--read">
+    @Html.Raw(Model.TooltipSampleHtml)
+</div>
+
 <h2>Feed cards</h2>
 <div class="section-head">
     <h3>Latest updates</h3>
