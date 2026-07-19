@@ -1,7 +1,7 @@
 @page "/{**contentPath}"
 @model ContentPageModel
 @{
-    ViewData["Title"] = Model.Page.FrontMatter.Title;
+    ViewData["Title"] = Model.Article.FrontMatter.Title;
 }
 
 @* WI-104: renders any curated Markdown page (content-pipeline.md §3). This
@@ -10,25 +10,25 @@
    front-matter flags get their partials in WI-107. *@
 
 <article class="container--read">
-    <h1>@Model.Page.FrontMatter.Title</h1>
+    <h1>@Model.Article.FrontMatter.Title</h1>
 
-    @if (!string.IsNullOrWhiteSpace(Model.Page.FrontMatter.Description))
+    @if (!string.IsNullOrWhiteSpace(Model.Article.FrontMatter.Description))
     {
-        <p class="text-muted">@Model.Page.FrontMatter.Description</p>
+        <p class="text-muted">@Model.Article.FrontMatter.Description</p>
     }
 
-    @Html.Raw(Model.Page.Html)
+    @Html.Raw(Model.Article.Html)
 
     <div class="provenance">
-        @if (Model.Page.FrontMatter.Reviewed is { } reviewed)
+        @if (Model.Article.FrontMatter.Reviewed is { } reviewed)
         {
             <p>Last reviewed: @reviewed.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
         }
-        @if (Model.Page.FrontMatter.Sources.Count > 0)
+        @if (Model.Article.FrontMatter.Sources.Count > 0)
         {
             <p>Sources:</p>
             <ul>
-                @foreach (var source in Model.Page.FrontMatter.Sources)
+                @foreach (var source in Model.Article.FrontMatter.Sources)
                 {
                     <li><a href="@source.Url">@source.Title</a></li>
                 }

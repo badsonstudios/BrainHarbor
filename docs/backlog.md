@@ -99,7 +99,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   A–Z page; unit tests incl. escape hatches (`%%term%%`, `!%term%`).
   Refs: content-pipeline.md §6. Depends on: WI-104.
 
-- [ ] **WI-106 ContentCheck CI gate**
+- [x] **WI-106 ContentCheck CI gate**
   Goal: the readability promise is machine-enforced.
   Acceptance: `tools/BrainHarbor.ContentCheck` computes Flesch-Kincaid per
   content page (fail > 8.5, warn ≥ 7.5), validates front matter, reports

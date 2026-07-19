@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BrainHarbor.Web\BrainHarbor.Web.csproj" />
     <ProjectReference Include="..\..\src\BrainHarbor.Pipeline\BrainHarbor.Pipeline.csproj" />
+    <ProjectReference Include="..\..\tools\BrainHarbor.ContentCheck\BrainHarbor.ContentCheck.csproj" />
   </ItemGroup>
 
 </Project>

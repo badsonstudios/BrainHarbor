@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-106 ContentCheck CI gate |
+| **Next up** | WI-107 Write the static shell pages |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,13 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-106 done** (autopilot): tools/BrainHarbor.ContentCheck
+  — Flesch-Kincaid gate (fail >8.5, warn ≥7.5) with block-aware sentence
+  extraction (headings/bullets don't inflate the grade — review measured
+  +1.6 grades before the fix), medical-hiatus syllable rule, front-matter
+  validation, overdue review_due + missing-source warnings, 40-word glossary
+  limit, loud warning on missing roots; CI step added (runs on all content —
+  intentionally stronger than changed-only). 22 new tests. 98/98.
 - **2026-07-19** — **WI-105 done** (autopilot): GlossaryStore (term files per
   content-pipeline §6, snapshot reloads), GlossaryMarker Markdig extension
   (first occurrence per page → native-popover button tooltip, WCAG 1.4.13;

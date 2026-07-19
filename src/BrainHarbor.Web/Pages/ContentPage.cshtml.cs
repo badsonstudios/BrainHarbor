@@ -6,7 +6,7 @@ namespace BrainHarbor.Web.Pages;
 
 public class ContentPageModel(ContentStore store) : PageModel
 {
-    public ContentPage Page { get; private set; } = null!;
+    public ContentPage Article { get; private set; } = null!;
 
     public IActionResult OnGet(string? contentPath)
     {
@@ -21,7 +21,7 @@ public class ContentPageModel(ContentStore store) : PageModel
             return NotFound();
         }
 
-        Page = page;
-        return base.Page();
+        Article = page;
+        return Page();
     }
 }

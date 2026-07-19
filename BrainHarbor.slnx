@@ -6,4 +6,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/BrainHarbor.Tests/BrainHarbor.Tests.csproj" />
   </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/BrainHarbor.ContentCheck/BrainHarbor.ContentCheck.csproj" />
+  </Folder>
 </Solution>
