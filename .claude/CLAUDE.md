@@ -74,7 +74,7 @@ PROGRESS.md and know *exactly* where things stand without asking.
 - Utility scripts ship in both `.sh` and `.ps1`; prefer the `.sh` version.
 - **.NET 10 SDK**, Docker Desktop (Postgres 16 dev container on port **5433** —
   a *different* container/port than other projects' Postgres), `gh` CLI
-  (authenticated as `danheinz`).
+  (authenticated as `badsonstudios`).
 
 ## Secrets & the `.env` file
 
@@ -93,9 +93,8 @@ All tokens, API keys, and passwords live in **`.claude/.env`**.
 
 ## Source Control — GitHub
 
-- **Host:** private GitHub repo under `danheinz` (create with `gh repo create`
-  at WI-002 if it doesn't exist yet). No GitHub Issues — the backlog file is
-  the tracker.
+- **Host:** private GitHub repo at `badsonstudios/BrainHarbor` (created at
+  WI-002). No GitHub Issues — the backlog file is the tracker.
 - **Branches:** `main` is always-working; one `feature/wi-<n>-<slug>` branch per
   work item; PR → self-merge. Commit/push only when Dan approves (Gate 2).
 - Details: `skills/startup/references/git-workflow.md`.

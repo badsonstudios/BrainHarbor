@@ -33,7 +33,7 @@ Status: **Planning fleshed out (aggregation-first pivot 2026-07-12) → ready to
 | Summarization | **Claude Code CLI locally** (`claude -p`, JSON output) under the existing subscription — **no Anthropic API key**. Fixed template with mandatory "what this means — and doesn't mean" block, closed-taxonomy classification, numeral post-checks, golden-set regression tests. Items upload as *pending*; **a human approves every item in the site's admin queue before it publishes**. Full contract: [docs/content-pipeline.md](docs/content-pipeline.md) §9–11 |
 | Email | **Weekly** digest via a hosted ESP (Buttondown/Kit) — double opt-in, human-reviewed before send. Daily option reconsidered post-launch if volume warrants |
 | Domain / entity | **brainharbor.org** (changed from .net 2026-07-18; .com unavailable — and .org reads right for a health resource). Personal project — no LLC/nonprofit until money is involved |
-| Repo & dev environment | **Private GitHub repo** (danheinz). **Local-first development**: Docker Postgres + `dotnet run`; Azure provisioned as part of the launch milestone (M4), not M0 — $0 hosting until launch-ready |
+| Repo & dev environment | **Private GitHub repo** (badsonstudios). **Local-first development**: Docker Postgres + `dotnet run`; Azure provisioned as part of the launch milestone (M4), not M0 — $0 hosting until launch-ready |
 | Content authorship (static pages) | **Solo (Dan), AI-assisted drafting** with per-claim source verification; friend (low-grade glioma patient) reviews benefits + glioma pages; clinician review recruited later if possible |
 | Cadence | **Nights & weekends, no deadline** — v1 effort is pipeline engineering + prompt iteration, not prose |
 

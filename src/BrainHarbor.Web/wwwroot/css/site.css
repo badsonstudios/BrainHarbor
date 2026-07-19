@@ -1,0 +1,25 @@
+/* Minimal placeholder — the real design tokens land in WI-101.
+   Base font ≥18px is an accessibility requirement (see PLAN.md §3). */
+
+html {
+  font-size: 18px;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 46rem;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  position: static;
+  display: inline-block;
+  padding: 0.5rem;
+}

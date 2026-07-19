@@ -102,7 +102,7 @@ Security: single long random API key in a header, HTTPS only, rate-limited, endp
 | Concern | Choice |
 |---|---|
 | Local dev | .NET 10 SDK ✓, Docker Postgres 16 on **5433** (compose file, named volume), `dotnet user-secrets` (NCBI key, sync API key), DbUp runs migrations on Web start in dev |
-| Repo | **Private GitHub** (`danheinz`); GitHub Actions: build + tests from commit one; deploy step added at M4 |
+| Repo | **Private GitHub** (`badsonstudios`); GitHub Actions: build + tests from commit one; deploy step added at M4 |
 | CI/CD (from M4) | Actions → App Service; DbUp migration step; content gates (readability, axe smoke) |
 | Monitoring | App Insights + free uptime ping on `/` and `/get-help-now`; admin source-health page driven by `source_sync_state` (shows "PubMed last synced N days ago" — visible staleness) |
 | Analytics | **No Google Analytics** — privacy-first counter (GoatCounter/Plausible). "We don't track you" is a feature for this audience |

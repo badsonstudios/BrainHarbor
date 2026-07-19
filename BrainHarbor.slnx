@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BrainHarbor.Pipeline/BrainHarbor.Pipeline.csproj" />
+    <Project Path="src/BrainHarbor.Web/BrainHarbor.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BrainHarbor.Tests/BrainHarbor.Tests.csproj" />
+  </Folder>
+</Solution>

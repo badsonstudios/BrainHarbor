@@ -21,14 +21,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Goal: own the domain before someone else does (~$12/yr; only spend until M4).
   Acceptance: registered, auto-renew on. No DNS setup needed yet.
 
-- [ ] **WI-002 Create the private GitHub repo and first commit**
+- [x] **WI-002 Create the private GitHub repo and first commit**
   Goal: everything so far (docs, .claude, planning files) safely versioned.
-  Acceptance: `gh repo create danheinz/BrainHarbor --private`; git init'd; first
+  Acceptance: `gh repo create badsonstudios/BrainHarbor --private`; git init'd; first
   commit contains PLAN.md, docs/, .claude/, PROGRESS.md, .gitignore; pushed;
   `.claude/.env` confirmed untracked.
   Refs: architecture.md §8.
 
-- [ ] **WI-003 Solution scaffold**
+- [x] **WI-003 Solution scaffold**
   Goal: the two-app solution builds clean from a fresh clone.
   Acceptance: `BrainHarbor.sln` with `src/BrainHarbor.Web` (Razor Pages,
   net10.0), `src/BrainHarbor.Pipeline` (console), `tests/BrainHarbor.Tests`
@@ -36,7 +36,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   layout matches architecture.md §3.
   Depends on: WI-002.
 
-- [ ] **WI-004 Local Postgres + DbUp**
+- [x] **WI-004 Local Postgres + DbUp**
   Goal: a reproducible local database the Web app migrates on startup.
   Acceptance: `docker-compose.yml` (Postgres 16, port **5433**, named volume);
   DbUp wired into Web startup with a `0001` baseline script; connection string
@@ -44,7 +44,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   proves connectivity.
   Refs: architecture.md §2a/§8, data-model.md. Depends on: WI-003.
 
-- [ ] **WI-005 Htmx.Net + Dapper wiring, secrets setup**
+- [x] **WI-005 Htmx.Net + Dapper wiring, secrets setup**
   Goal: the web plumbing every later item builds on.
   Acceptance: Htmx.Net + tag helpers installed with one working demo partial
   (deleted later); Dapper connection factory service; `SYNC_API_KEY` +
@@ -52,7 +52,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   populated from `.env.example`.
   Refs: tech-stack reference, api-keys-config.md. Depends on: WI-003.
 
-- [ ] **WI-006 GitHub Actions CI**
+- [x] **WI-006 GitHub Actions CI**
   Goal: every push builds and tests automatically.
   Acceptance: workflow runs `dotnet build` + `dotnet test` on push/PR to main;
   badge or checks visible on PRs; red CI blocks self-merge by convention.

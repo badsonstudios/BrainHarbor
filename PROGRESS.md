@@ -9,22 +9,53 @@
 
 | | |
 |---|---|
-| **Phase** | M0 — Skeleton |
-| **In progress** | **Autopilot run: M0** (started 2026-07-18, branch `auto/M0`) — currently: WI-002 |
-| **Next up** | WI-002 → WI-006 via autopilot; WI-001 `[user]` buy-domain skipped (Dan's) |
+| **Phase** | M0 — Skeleton — **COMPLETE** (pending Dan's review/merge of PR #1) |
+| **In progress** | nothing mid-flight |
+| **Next up** | Dan: review + merge PR #1, do the follow-ups below; then M1 (WI-101) — `/pm` if M1 needs re-triage first |
 | **Blockers** | none |
 
 ## Notes for the next session
 
+- **M0 shipped via autopilot on `auto/M0`, draft PR #1 awaiting Dan** —
+  CI green on the PR tip. Squash-merge recommended, then
+  `git checkout main && git pull`.
+- **Dan's follow-ups from the run:**
+  1. WI-001: buy **brainharbor.org**.
+  2. ~~GitHub account~~ **resolved 2026-07-19**: Dan confirmed the account is
+     **badsonstudios**; all doc references updated.
+  3. ~~Populate `.claude/.env`~~ **done 2026-07-19** (all vars set except the
+     intentionally-empty GITHUB_TOKEN).
+  4. ~~NCBI_API_KEY~~ **done 2026-07-19** — in `.env` and Pipeline user-secrets.
 - Planning and design are **done** — `PLAN.md` + `docs/*.md` are the spec,
   `docs/backlog.md` is the itemized plan (M0–M4; P2a–P3 not yet decomposed).
-- The `.claude/` workflow was adapted from ClaudeMon on 2026-07-18: `/pm` +
-  `/next-item` replace GitHub-issue skills; both approval gates kept; branch +
-  PR per item; `.claude/.env` needs to be created from `.env.example`.
-- Say **"next item"** (or `/next-item`) to start WI-002.
+- Solution note: SDK 10 generated `BrainHarbor.slnx` (new XML solution
+  format) rather than `.sln`; `dotnet build/test` handle it fine.
+- After merge: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
 
+- **2026-07-18** — **Autopilot M0 run COMPLETE**: WI-002..WI-006 shipped on
+  `auto/M0` (PR #1, draft), CI green on the tip. WI-001 `[user]` outstanding.
+- **2026-07-18** — **WI-006 done** (autopilot): GitHub Actions CI — build +
+  test (Release) on push/PR to main, Postgres 16 service container so the
+  Database-category tests run in CI too.
+- **2026-07-18** — **WI-005 done** (autopilot): Htmx.Net + TagHelpers (htmx
+  2.0.10 vendored), demo partial with no-JS fallback (curl-verified both
+  paths); Dapper `IDbConnectionFactory` (NpgsqlDataSource DI); dev
+  SYNC_API_KEY set in both apps' user-secrets. ⚠️ Dan: (1) populate
+  `.claude/.env` from `.env.example` (autopilot may not touch it), (2) get a
+  real NCBI_API_KEY and set it in Pipeline user-secrets + `.env`.
+- **2026-07-18** — **WI-004 done** (autopilot): docker-compose (Postgres 16 @
+  5433, named volume, healthcheck), DbUp on dev startup with 0001 baseline,
+  connection string in user-secrets, DB smoke test. Verified on a fresh
+  container; code review clean (fixes applied).
+- **2026-07-18** — **WI-003 done** (autopilot): BrainHarbor.sln + Web (Razor
+  Pages, net10.0) + Pipeline (console) + Tests (xUnit); build + test green.
+- **2026-07-18** — **WI-002 done** (autopilot): private repo created + first
+  commit pushed. ⚠️ Note: `gh` resolves to **badsonstudios**, not `danheinz`
+  (`/users/danheinz` 404s — account renamed?). Repo is at
+  `github.com/badsonstudios/BrainHarbor` (private ✓, `.env` untracked ✓).
+  Dan: confirm the account; then docs/references mentioning `danheinz` get updated.
 - **2026-07-18** — **Autopilot M0 started** (unattended run, branch `auto/M0`).
   WI-001 `[user]` (buy brainharbor.org) skipped — Dan's item, does not gate M0.
 - **2026-07-18** — Domain changed to **brainharbor.org** (from .net); all docs

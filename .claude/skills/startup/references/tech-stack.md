@@ -3,7 +3,7 @@
 | Area | Choice | Notes |
 |---|---|---|
 | Runtime | **.NET 10 LTS** (10.0.3xx SDK installed) | Both apps |
-| Web | **ASP.NET Core Razor Pages** + **htmx** via `Htmx.Net` (+ `Htmx.TagHelpers`) | htmx ~14KB is the entire JS budget; every interaction has a no-JS fallback |
+| Web | **ASP.NET Core Razor Pages** + **htmx** via `Htmx.Net` (+ `Htmx.TagHelpers`) | htmx ~14KB is the entire JS budget; every interaction has a no-JS fallback. Client htmx **2.0.10** vendored at `wwwroot/js/htmx.min.js` (from unpkg; update manually) |
 | Pipeline | .NET console app (`BrainHarbor.Pipeline`) | Stateless; runs on Dan's PC via Task Scheduler |
 | LLM | **Claude Code CLI**, headless: `claude -p --output-format json` | NO Anthropic API key. Prompt templates are versioned artifacts in `Pipeline/Prompts/` |
 | Data access | **Dapper** | Matches work stack; no EF |
