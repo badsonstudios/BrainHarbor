@@ -70,6 +70,22 @@ public sealed class A11ySmokeTests : IClassFixture<KestrelWebApplicationFactory>
         await context.DisposeAsync();
     }
 
+    [Fact]
+    public async Task StyleGuideWithAllBadgeKindsHasNoSeriousOrCriticalAxeViolations()
+    {
+        // Every stage badge + card renders here — this is the a11y gate for
+        // the WI-109 components before real data exists.
+        var page = await _browser!.NewPageAsync();
+        var response = await page.GotoAsync(_factory.ServerAddress + "/dev/styleguide");
+
+        // Guard against a false green: a 404 here would make axe scan the
+        // friendly error page instead of the badge components.
+        Assert.True(response!.Ok, $"Expected 2xx from /dev/styleguide, got {response.Status}");
+        Assert.True(await page.Locator(".badge--result").CountAsync() > 0);
+
+        await AssertNoSeriousViolations(page, "/dev/styleguide");
+    }
+
     private static async Task AssertNoSeriousViolations(IPage page, string label)
     {
         var results = await page.RunAxe();

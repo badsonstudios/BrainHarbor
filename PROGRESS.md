@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-109 Stage-badge + feed-card partials |
+| **Next up** | WI-104 ContentStore: Markdown static pages |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-109 done** (autopilot): ResearchStage enum +
+  StageBadge mapper (single source of truth incl. server-built aria-labels),
+  _StageBadge (dot-meter/glyph per handoff) + _FeedCard partials,
+  /dev/styleguide (dev-only, 404 in prod) rendering all 7 badge kinds + 4
+  sample cards; axe scan of the styleguide added to the E2E gate. DB
+  taxonomy→enum mapping decision recorded on the enum + WI-209.
 - **2026-07-19** — **WI-103 done** (autopilot): helpline band on every page
   (aside landmark, CareLine tel link, → /get-help-now); /get-help-now with
   988, Crisis Text Line, CareLine, NCI, CancerCare as one-tap buttons; custom

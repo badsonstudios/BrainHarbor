@@ -110,6 +110,8 @@ p, ul, ol {
 
 small { font-size: var(--text-sm); }
 
+.text-muted { color: var(--color-ink-muted); }
+
 img {
   max-width: 100%;
   height: auto;
@@ -615,6 +617,22 @@ main {
 .ai-note {
   border-inline-start: 3px solid var(--color-accent);
   padding-inline-start: var(--space-3);
+}
+
+/* ---------- Dev style guide (WI-109; /dev/styleguide, dev-only) ---------- */
+
+.styleguide-badges {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  max-width: none;
+}
+
+.styleguide-badges li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-end: var(--space-3);
 }
 
 /* ---------- Digest signup ---------- */

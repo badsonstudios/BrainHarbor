@@ -133,7 +133,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/design/entry-hub-handoff/README.md (the spec — recreate to match).
   Depends on: WI-101.
 
-- [ ] **WI-109 Stage-badge + feed-card partials**
+- [x] **WI-109 Stage-badge + feed-card partials**
   Goal: the design's core trust device exists as reusable, tested components
   before M2 needs them.
   Acceptance: research-stage enum + mapper (human→result 5/5, review→result
@@ -214,7 +214,9 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Acceptance: published items with filters (date, source, kind) as htmx
   partials degrading to querystring links; "load more" paging; items rendered
   with the WI-109 `_FeedCard`/`_StageBadge` partials in the handoff's
-  `.feed-grid` (minus plain-language fields until M3); response caching 5–15 min.
+  `.feed-grid` (minus plain-language fields until M3); string→ResearchStage
+  mapper per the doc-comment on `ResearchStage` (observational→TestedInPeople,
+  preprint detected from source_kind and always wins); response caching 5–15 min.
   Refs: sitemap.md, architecture.md §5, docs/design/entry-hub-handoff/.
   Depends on: WI-208, WI-109.
 
