@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-204 PubMed fetcher + hard-rule pre-filter |
+| **Next up** | WI-205 RSS fetchers: NCI + ScienceDaily |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -40,6 +40,23 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-204 done** (autopilot M2): PubMed fetcher (paged
+  esearch + efetch XML, self-healing reldate window, NCBI throttling and key)
+  and the hard-rule pre-filter. **The pre-filter decides what patients never
+  see, and it was silently dropping real research** — found across my own
+  tests and review: a trailing `\b` meant prefixes never matched plurals (so
+  "brain metasta" missed "brain metastases" and breast-cancer brain-mets
+  research vanished); multi-word terms assumed a literal space (missed
+  "brain-tumor", "tumor-treating fields"); the notice rule ate ordinary
+  titles starting "Response to"/"Withdrawal"/"Correction of"; the keep list
+  lacked the words the audience uses ("brain mets", "CNS involvement",
+  "leptomeningeal", and *"brain cancer"* itself); and broad neurology rules
+  dropped late-effects research (stroke after cranial irradiation, dementia
+  after whole-brain radiotherapy). All 15 titles are now regression tests.
+  Also: pagination with **cursor held back** when a window is truncated
+  (otherwise the remainder is invisible forever), esearch errors throw rather
+  than burning the window, ArticleDate preferred for ahead-of-print,
+  OtherAbstract excluded, and the NCBI key no longer lands in logs. 269/269.
 - **2026-07-19** — **WI-203 done** (autopilot M2): Pipeline host (user-secrets
   config + validation, structured console logging, distinct exit codes for
   Task Scheduler, retry/backoff), typed sync client (chunking, cursor only on

@@ -173,7 +173,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   against the locally-running Web app.
   Refs: architecture.md §3. Depends on: WI-202.
 
-- [ ] **WI-204 PubMed fetcher + hard-rule pre-filter**
+- [x] **WI-204 PubMed fetcher + hard-rule pre-filter**
   Goal: the primary research source flowing end-to-end.
   Acceptance: E-utilities query set for brain tumors with `reldate` windowing
   driven by sync state (self-healing catch-up); API-key + 10 rps politeness;

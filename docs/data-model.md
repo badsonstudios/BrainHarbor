@@ -13,7 +13,7 @@ CREATE TABLE aggregated_items (
     source_kind   text NOT NULL,        -- research | news | preprint | trial_update
     external_id   text NOT NULL,        -- PMID / DOI / guid / NCT id — the dedupe key
     title         text NOT NULL,        -- original title
-    raw_summary   text,                 -- abstract or feed summary (per-source licensing rules)
+    raw_summary   text,                 -- abstract or feed summary — PIPELINE INPUT ONLY, never rendered publicly
     url           text NOT NULL,
     published_at  date,
     fetched_at    timestamptz NOT NULL DEFAULT now(),
@@ -46,6 +46,13 @@ CREATE TABLE aggregated_items (
 CREATE INDEX ON aggregated_items (status, published_at DESC NULLS LAST);
 CREATE INDEX ON aggregated_items USING gin (tumor_tags);
 ```
+
+**`raw_summary` is never rendered on a public page.** Abstracts can carry
+publisher rights, so the site summarizes and links rather than republishing
+(PLAN.md §5). The column exists solely as input to the M3 summarizer, and to
+show a reviewer the source text beside the generated summary in the admin
+queue. Any change that puts it in front of a reader is a licensing decision,
+not a UI decision.
 
 **CHECK constraints (added in WI-201).** The enum-ish columns are constrained
 to the values documented above, and one medical-safety rule is enforced by the

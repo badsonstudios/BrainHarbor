@@ -29,4 +29,9 @@ public sealed class PipelineOptions
 
     /// <summary>NCBI E-utilities key (WI-204); politeness rate rises with it.</summary>
     public string? NcbiApiKey { get; set; }
+
+    /// <summary>Contact address NCBI asks API consumers to send (PLAN.md §5).</summary>
+    [Required]
+    [EmailAddress]
+    public string ContactEmail { get; set; } = "dheinz100@gmail.com";
 }
