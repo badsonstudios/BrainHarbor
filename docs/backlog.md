@@ -72,14 +72,17 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Acceptance: large-text toggle (cookie-persisted, no-JS fallback via
   querystring); Playwright + axe-core smoke test on the shell passes with 0
   serious/critical, wired into CI.
-  Depends on: WI-101, WI-006.
+  Depends on: WI-101, WI-006, WI-108 (test the final theme, not the interim one).
 
 - [ ] **WI-103 Helpline band + /get-help-now**
   Goal: the always-visible "talk to a human" affordance.
   Acceptance: persistent helpline band on every page (ABTA CareLine, large tap
   target); /get-help-now page with 988, Crisis Text Line 741741, org helplines;
-  present on custom 404/500 pages too.
-  Refs: PLAN.md §3, sitemap.md. Depends on: WI-101.
+  present on custom 404/500 pages too. Band styling per the design handoff
+  (`--color-band` dark band, bold tel link, 44px targets); URL stays
+  /get-help-now (handoff's /get-help does not override sitemap.md).
+  Refs: PLAN.md §3, sitemap.md, docs/design/entry-hub-handoff/README.md.
+  Depends on: WI-101, WI-108.
 
 - [ ] **WI-104 ContentStore: Markdown static pages**
   Goal: static pages authored as Markdown + YAML front matter, per the schema.
@@ -106,11 +109,44 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 - [ ] **WI-107 Write the static shell pages**
   Goal: the ~6 hand-written pages that make the shell honest.
-  Acceptance: home shell, /about, /how-we-write v0, /start (interim), /digest
-  landing (no signup yet), /privacy + /terms + disclaimer partials — all
-  passing the ContentCheck gate; medical + not-legal-advice disclaimers render
-  from front-matter flags.
-  Refs: sitemap.md writing budget, content-pipeline.md §2/§4. Depends on: WI-105, WI-106, WI-103.
+  Acceptance: home shell (Entry Hub copy per the design handoff), /about,
+  /how-we-write v0, /start (interim; handoff's /start-here does not override
+  sitemap.md), /digest landing (no signup yet), /privacy + /terms + disclaimer
+  partials — all passing the ContentCheck gate; medical + not-legal-advice
+  disclaimers render from front-matter flags.
+  Refs: sitemap.md writing budget, content-pipeline.md §2/§4,
+  docs/design/entry-hub-handoff/. Depends on: WI-105, WI-106, WI-103, WI-108.
+
+- [ ] **WI-108 Adopt the "Clear & Kind" theme + Entry Hub shell**
+  Goal: the approved visual design (Claude Design handoff, 2026-07-19) becomes
+  the site's real theme before more UI is built on the interim one.
+  Acceptance: fold `docs/design/entry-hub-handoff/css/brainharbor.css` into
+  `wwwroot/css/site.css` — new `--color-*` values, `--color-band`,
+  `--radius`/`--card-*`/`--badge-*` tokens, 72rem `--container` + 46rem
+  `--measure-read` (type/spacing scales unchanged); restyle `_Layout` to match
+  (nav "Get Help Now" as `.nav-cta` pill, footer link list + `.ai-note`
+  AI-transparency line); rebuild home `Index` as the Entry Hub (surface panel,
+  H1 + lede, three-door grid — Start Here / Browse research / Talk to someone —
+  doors link to sitemap URLs, dead targets allowed as before); handoff `@media
+  print` rules merged into print.css; contrast ratios re-verified (ink 15.6:1,
+  muted 7.6:1, accent 4.9:1 underlined, band text 11:1); render test updated.
+  Refs: docs/design/entry-hub-handoff/README.md (the spec — recreate to match).
+  Depends on: WI-101.
+
+- [ ] **WI-109 Stage-badge + feed-card partials**
+  Goal: the design's core trust device exists as reusable, tested components
+  before M2 needs them.
+  Acceptance: research-stage enum + mapper (human→result 5/5, review→result
+  4/5, animals→2/5, cells→1/5, trial→progress, news→info,
+  preprint→unverified) with unit tests; `_StageBadge` partial emitting the
+  handoff markup (dot-meter/glyph `aria-hidden`, whole badge `role="img"` with
+  server-built aria-label incl. "Evidence strength N of 5"); `_FeedCard`
+  partial (badge → title → hook → tags → date·source, meta pinned to bottom);
+  a dev-environment-only preview page rendering all seven badge kinds + sample
+  cards for visual/a11y checks; consumed later by WI-208/209 (feed) and
+  WI-306 (item page).
+  Refs: docs/design/entry-hub-handoff/README.md §Signature components,
+  content-pipeline.md §stage badges. Depends on: WI-108.
 
 ## Phase M2 — Ingestion + sync API + browse
 
@@ -176,9 +212,11 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 - [ ] **WI-209 /research feed**
   Goal: the public product page, v0.
   Acceptance: published items with filters (date, source, kind) as htmx
-  partials degrading to querystring links; "load more" paging; item rows per
-  sitemap.md anatomy (minus plain-language fields); response caching 5–15 min.
-  Refs: sitemap.md, architecture.md §5. Depends on: WI-208.
+  partials degrading to querystring links; "load more" paging; items rendered
+  with the WI-109 `_FeedCard`/`_StageBadge` partials in the handoff's
+  `.feed-grid` (minus plain-language fields until M3); response caching 5–15 min.
+  Refs: sitemap.md, architecture.md §5, docs/design/entry-hub-handoff/.
+  Depends on: WI-208, WI-109.
 
 - [ ] **WI-210 Source health + scheduled task**
   Goal: the loop runs itself and staleness is visible.
@@ -241,8 +279,11 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Acceptance: `/research/{slug}` renders the 6 template blocks, stage badge,
   provenance box with human-review disclosure, glossary tooltips active in
   summaries, one-tap "report a problem" (→ summary_flagged + admin queue);
-  slugs generated on approval.
-  Refs: sitemap.md, content-pipeline.md §9. Depends on: WI-305, WI-105.
+  slugs generated on approval. Layout per the handoff's `research-item.html`:
+  46rem reading column, `.means-block` for means/doesn't-mean, `.ai-note`
+  provenance styling.
+  Refs: sitemap.md, content-pipeline.md §9,
+  docs/design/entry-hub-handoff/research-item.html. Depends on: WI-305, WI-105.
 
 - [ ] **WI-307 Feed flip to patient-first**
   Goal: the front page now serves the audience.

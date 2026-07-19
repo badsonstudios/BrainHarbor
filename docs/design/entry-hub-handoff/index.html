@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BrainHarbor — brain tumor research in plain language</title>
+<link rel="stylesheet" href="css/brainharbor.css" />
+</head>
+<body>
+
+<!-- Persistent helpline band (every page) -->
+<div class="helpline-band">
+  <div class="container">
+    <span>Need to talk to someone?</span>
+    <a class="tel" href="tel:8008862282">ABTA CareLine: 800-886-2282</a>
+    <a href="#get-help">More help options</a>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a class="site-name" href="/">BrainHarbor</a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/research">Research</a></li>
+        <li><a href="/trials">Trials</a></li>
+        <li><a href="/digest">Digest</a></li>
+        <li><a class="nav-cta" href="/get-help">Get Help Now</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ============ Entry Hub hero ============ -->
+  <section class="hub" aria-labelledby="hub-title">
+    <h1 id="hub-title">Brain tumor research, in plain language.</h1>
+    <p>
+      Every day we read new brain tumor research and news, then explain it in
+      words anyone can understand. A person reviews every summary before it is
+      published, and we always tell you how early a finding is — and what it
+      does <em>not</em> mean.
+    </p>
+    <div class="hub__doors">
+      <a class="door door--primary" href="/start-here">
+        <strong>Just diagnosed? Start here.</strong>
+        <span class="sub">Your diagnosis words, questions to ask, and where to find support.</span>
+        <span class="door__cta">Start here →</span>
+      </a>
+      <a class="door" href="/research">
+        <strong>Browse all research</strong>
+        <span class="sub">Every update, sorted by how well tested it is.</span>
+        <span class="door__cta">Browse →</span>
+      </a>
+      <a class="door" href="/get-help">
+        <strong>Talk to someone now</strong>
+        <span class="sub">The free ABTA CareLine: 800-886-2282.</span>
+        <span class="door__cta">More help →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ Latest updates feed ============ -->
+  <div class="section-head">
+    <h2>Latest updates</h2>
+    <a href="/research">See all →</a>
+  </div>
+  <p style="color:var(--color-ink-muted);">
+    The filled marks show how far along the evidence is — more marks mean it has been tested more.
+  </p>
+
+  <ul class="feed-grid">
+    <li class="card">
+      <span class="badge badge--result" role="img" aria-label="Tested in people. Evidence strength 5 of 5.">
+        <span class="badge__meter" aria-hidden="true">
+          <span class="step step--on"></span><span class="step step--on"></span><span class="step step--on"></span><span class="step step--on"></span><span class="step step--on"></span>
+        </span>
+        <span class="badge__label">Tested in people</span>
+      </span>
+      <h3><a href="/research/vorasidenib-indigo">A pill that targets a common gene change slowed the growth of low-grade gliomas</a></h3>
+      <p class="card__hook">In a large trial, people with grade 2 glioma and an IDH gene change went longer before their tumor grew or needed more treatment.</p>
+      <p class="card__meta">
+        <span class="tag">Low-grade glioma</span><span class="tag">Treatment</span>
+        <span>June 12, 2026 · New England Journal of Medicine</span>
+      </p>
+    </li>
+
+    <li class="card">
+      <span class="badge badge--progress" role="img" aria-label="New or updated trial.">
+        <span class="badge__glyph" aria-hidden="true">→</span>
+        <span class="badge__label">New or updated trial</span>
+      </span>
+      <h3><a href="/research/personal-tumor-vaccine-trial">A new trial is testing a vaccine made from each person's own tumor</a></h3>
+      <p class="card__hook">The trial is now enrolling adults with newly diagnosed glioblastoma at 12 U.S. hospitals.</p>
+      <p class="card__meta">
+        <span class="tag">Glioblastoma</span><span class="tag">Clinical trial</span>
+        <span>June 10, 2026 · ClinicalTrials.gov</span>
+      </p>
+    </li>
+
+    <li class="card">
+      <span class="badge badge--info" role="img" aria-label="News.">
+        <span class="badge__glyph" aria-hidden="true">i</span>
+        <span class="badge__label">News</span>
+      </span>
+      <h3><a href="/research/fluorescent-surgery-dye">FDA clears a new imaging dye that helps surgeons see tumor edges</a></h3>
+      <p class="card__hook">The dye makes tumor tissue glow during surgery, which may help surgeons remove more of it safely.</p>
+      <p class="card__meta">
+        <span class="tag">Surgery</span><span class="tag">All tumor types</span>
+        <span>June 9, 2026 · FDA announcement</span>
+      </p>
+    </li>
+
+    <li class="card">
+      <span class="badge badge--result" role="img" aria-label="Early research (animals). Evidence strength 2 of 5.">
+        <span class="badge__meter" aria-hidden="true">
+          <span class="step step--on"></span><span class="step step--on"></span><span class="step"></span><span class="step"></span><span class="step"></span>
+        </span>
+        <span class="badge__label">Early research (animals)</span>
+      </span>
+      <h3><a href="/research/immune-hidden-glioblastoma-mice">Scientists helped the immune system find hidden glioblastoma cells — in mice</a></h3>
+      <p class="card__hook">This worked in mice, not people. Most findings at this stage never become treatments, but it points at a new idea.</p>
+      <p class="card__meta">
+        <span class="tag">Glioblastoma</span><span class="tag">Immunotherapy</span>
+        <span>June 8, 2026 · Nature Communications</span>
+      </p>
+    </li>
+  </ul>
+
+  <p><a href="/research">See all research updates →</a></p>
+
+  <!-- ============ Digest signup ============ -->
+  <section class="digest-signup" aria-labelledby="digest-title">
+    <h2 id="digest-title">Get the weekly digest</h2>
+    <p>One short email a week with the updates that matter. No spam, no selling your address, unsubscribe anytime.</p>
+    <form method="post" action="/digest/subscribe">
+      <input type="email" name="email" placeholder="Your email address" aria-label="Email address" required />
+      <input type="submit" value="Sign up" />
+    </form>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/how-we-write">How we write</a></li>
+      <li><a href="/glossary">Glossary</a></li>
+      <li><a href="/get-help">Get Help Now</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+    </ul>
+    <p>
+      BrainHarbor shares research news in plain language. It is not medical
+      advice. Talk with your care team before making decisions about your health.
+    </p>
+    <p class="ai-note">
+      Summaries are drafted with AI assistance and reviewed by a person before
+      publishing. <a href="/how-we-write">Read how we write.</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

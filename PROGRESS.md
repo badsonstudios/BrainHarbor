@@ -10,12 +10,20 @@
 | | |
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
-| **In progress** | nothing mid-flight |
-| **Next up** | WI-102 Large-text toggle + a11y smoke test |
+| **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
+| **Next up** | WI-108 Adopt the "Clear & Kind" theme + Entry Hub shell |
 | **Blockers** | none |
 
 ## Notes for the next session
 
+- **Approved visual design lives at `docs/design/entry-hub-handoff/`** ("Clear
+  & Kind" theme + Entry Hub home, from Claude Design 2026-07-19). It is the
+  visual spec for WI-108/WI-109 and restyles later feed/item work (WI-209,
+  WI-306). M1 order changed: **WI-108 before WI-102** so the axe/Playwright
+  smoke test runs against the final theme. Handoff URL names that differ from
+  sitemap.md (/get-help, /start-here) do NOT override the sitemap
+  (/get-help-now, /start). The handoff folder is not yet committed — it goes
+  in with WI-108's branch.
 - **Nav links are intentionally dead** (WI-101): /research, /trials, /digest,
   /get-help-now render bare 404s until their items land (WI-103, M2, M4).
   Custom 404/500 + these targets must exist before anyone outside dev sees
@@ -31,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **Design chosen & planned in**: static mock-up generated
+  (`.claude/work_files/mockup/`), run through Claude Design by Dan; approved
+  handoff ("Clear & Kind" + Entry Hub) moved to `docs/design/entry-hub-handoff/`.
+  Backlog updated via /pm: new WI-108 (adopt theme + Entry Hub shell) and
+  WI-109 (stage-badge dot-meter + feed-card partials); WI-102/103/107/209/306
+  amended to depend on / reference the handoff. Next up is now WI-108.
 - **2026-07-19** — **WI-101 done**: design tokens (18px-base scale, AA/AAA
   palette, spacing), real `_Layout` shell (landmarks, v1 nav, footer
   disclaimer), print.css (print-to-PDF verified), WI-005 htmx demo deleted,
