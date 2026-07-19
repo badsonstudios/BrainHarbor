@@ -195,7 +195,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   badge data present.
   Refs: PLAN.md §5, content-pipeline.md §9. Depends on: WI-203.
 
-- [ ] **WI-207 Admin auth**
+- [x] **WI-207 Admin auth**
   Goal: a locked front door for moderation.
   Acceptance: ASP.NET Identity, single seeded admin, TOTP 2FA enforced, no
   registration endpoint; admin area route group requires auth; anti-forgery on

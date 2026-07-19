@@ -1,0 +1,44 @@
+@page "/admin/two-factor"
+@model BrainHarbor.Web.Pages.Admin.TwoFactorModel
+@{
+    ViewData["Title"] = "Set up two-factor";
+}
+
+<div class="container--read">
+    <h1>Two-factor authentication</h1>
+
+    @if (Model.IsEnabled)
+    {
+        <p><strong>Two-factor is on.</strong> You will be asked for a code each time you sign in.</p>
+        <form method="post" asp-page-handler="Disable">
+            <p><input type="submit" value="Turn off two-factor" /></p>
+        </form>
+    }
+    else
+    {
+        <div class="disclaimer" role="alert">
+            <p>
+                <strong>Two-factor is off.</strong> Review actions publish medical
+                content to patients — turn it on before approving anything.
+            </p>
+        </div>
+
+        <h2>1. Add this key to your authenticator app</h2>
+        <p>Type this key into Google Authenticator, 1Password, or similar:</p>
+        <p><code>@Model.FormattedKey</code></p>
+        <p><small>Or use this setup URL: <code>@Model.AuthenticatorUri</code></small></p>
+
+        <h2>2. Enter a code to confirm</h2>
+        @if (Model.ErrorMessage is not null)
+        {
+            <div class="disclaimer" role="alert"><p>@Model.ErrorMessage</p></div>
+        }
+        <form method="post" asp-page-handler="Enable">
+            <div>
+                <label asp-for="Code">Code from the app</label><br />
+                <input asp-for="Code" inputmode="numeric" autocomplete="one-time-code" required />
+            </div>
+            <p><input type="submit" value="Turn on two-factor" /></p>
+        </form>
+    }
+</div>

@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-207 Admin auth |
+| **Next up** | WI-208 Review queue v0 |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,16 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-19** — **WI-207 done** (autopilot M2): admin auth — ASP.NET
+  Identity (the only EF Core usage; its tables live in an `identity` schema so
+  DbUp and EF never collide), ONE account seeded from config with no
+  registration or password-reset endpoint, TOTP 2FA enrolment (manual key, no
+  JS/QR dependency), hard lockout, anti-forgery on every admin POST, POST-only
+  logout. Folder-level authorization means a new admin page is protected by
+  default rather than by remembering an attribute. 12 boundary tests. Note:
+  the seeder logs loudly and continues if the password is rejected — a weak
+  config value must not silently leave the review queue unreachable. 308/308.
 
 - **2026-07-19** — **WI-205 + WI-206 done** (autopilot M2): NCI + ScienceDaily
   RSS fetchers with per-source licensing enforced in the type system
