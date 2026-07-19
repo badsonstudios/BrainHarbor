@@ -9,10 +9,70 @@
 /* No interactive chrome on paper. */
 .skip-link,
 .site-nav,
+.helpline-band,
+.digest-signup,
 button,
 input[type="submit"],
 form {
   display: none !important;
+}
+
+/* Flatten the Clear & Kind surfaces: no tint, no shadow, ink on white.
+   .door--primary is white-on-accent on screen — must not print white-on-white. */
+.hub,
+.door,
+.door--primary,
+.card,
+.means-block {
+  background: #fff !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+.hub {
+  padding: 0 !important;
+}
+
+.door,
+.card,
+.means-block {
+  border: 1pt solid #000 !important;
+}
+
+.door--primary span.sub,
+.door--primary .door__cta,
+.door span.sub,
+.door__cta,
+.card__meta,
+.card__hook {
+  color: #000 !important;
+}
+
+/* The badge must stay readable on paper: printers strip background colors by
+   default, which would print every dot-meter as empty — "Tested in people,
+   5 of 5" and "lab cells, 1 of 5" would look identical. Force real ink. */
+.badge {
+  background: #fff !important;
+  color: #000 !important;
+  border-color: #000 !important;
+}
+
+.step {
+  border-color: #000 !important;
+}
+
+.step--on {
+  background: #000 !important;
+  print-color-adjust: exact;
+}
+
+.badge__glyph {
+  border-color: #000 !important;
+}
+
+.tag {
+  background: #fff !important;
+  color: #000 !important;
 }
 
 body {

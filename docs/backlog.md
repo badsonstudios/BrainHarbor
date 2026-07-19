@@ -117,7 +117,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: sitemap.md writing budget, content-pipeline.md §2/§4,
   docs/design/entry-hub-handoff/. Depends on: WI-105, WI-106, WI-103, WI-108.
 
-- [ ] **WI-108 Adopt the "Clear & Kind" theme + Entry Hub shell**
+- [x] **WI-108 Adopt the "Clear & Kind" theme + Entry Hub shell**
   Goal: the approved visual design (Claude Design handoff, 2026-07-19) becomes
   the site's real theme before more UI is built on the interim one.
   Acceptance: fold `docs/design/entry-hub-handoff/css/brainharbor.css` into

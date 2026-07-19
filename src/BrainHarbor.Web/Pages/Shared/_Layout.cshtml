@@ -19,7 +19,7 @@
                     <li><a href="/research">Research</a></li>
                     <li><a href="/trials">Trials</a></li>
                     <li><a href="/digest">Digest</a></li>
-                    <li><a href="/get-help-now">Get Help Now</a></li>
+                    <li><a class="nav-cta" href="/get-help-now">Get Help Now</a></li>
                 </ul>
             </nav>
         </div>
@@ -29,12 +29,26 @@
     </main>
     <footer class="site-footer">
         <div class="container">
+            @* Footer links per the handoff; /about, /how-we-write, /glossary,
+               /terms are dead until WI-104/105/107, same policy as the nav. *@
+            <ul>
+                <li><a href="/about">About</a></li>
+                <li><a href="/how-we-write">How we write</a></li>
+                <li><a href="/glossary">Glossary</a></li>
+                <li><a href="/get-help-now">Get Help Now</a></li>
+                <li><a asp-page="/Privacy">Privacy</a></li>
+                <li><a href="/terms">Terms</a></li>
+            </ul>
             <p>
                 BrainHarbor shares research news in plain language. It is not
                 medical advice. Talk with your care team before making decisions
                 about your health.
             </p>
-            <p><a asp-page="/Privacy">Privacy</a></p>
+            <p class="ai-note">
+                Summaries are drafted with AI assistance and reviewed by a
+                person before publishing.
+                <a href="/how-we-write">Read how we write.</a>
+            </p>
         </div>
     </footer>
 

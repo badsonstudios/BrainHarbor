@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-108 Adopt the "Clear & Kind" theme + Entry Hub shell |
+| **Next up** | WI-102 Large-text toggle + a11y smoke test |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-108 done** (autopilot): Clear & Kind theme folded into
+  site.css (new palette, band/card/badge tokens, 72rem container + 46rem read
+  column), nav-cta pill, footer link list + ai-note, home rebuilt as Entry Hub
+  (three doors → /start, /research, /get-help-now), print.css flattens the new
+  surfaces incl. print-safe dot-meter ink (review Should-fix applied). Review:
+  approve, no blockers. Needs Dan's visual eyeball at end of run.
 - **2026-07-19** — **Design chosen & planned in**: static mock-up generated
   (`.claude/work_files/mockup/`), run through Claude Design by Dan; approved
   handoff ("Clear & Kind" + Entry Hub) moved to `docs/design/entry-hub-handoff/`.
