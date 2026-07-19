@@ -10,16 +10,47 @@
 | | |
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
-| **In progress** | nothing mid-flight |
-| **Next up** | WI-102 Large-text toggle + a11y smoke test |
+| **In progress** | nothing mid-flight — **M1 complete** on `auto/M1` (PR #3, draft), awaiting Dan's review + merge |
+| **Next up** | Dan: visual review of PR #3 (see checklist below), then merge; then `/autopilot M2` |
 | **Blockers** | none |
 
 ## Notes for the next session
 
-- **Nav links are intentionally dead** (WI-101): /research, /trials, /digest,
-  /get-help-now render bare 404s until their items land (WI-103, M2, M4).
-  Custom 404/500 + these targets must exist before anyone outside dev sees
-  the site.
+### Dan's visual-review checklist for PR #3 (M1)
+
+Run `dotnet run --project src/BrainHarbor.Web` (Docker Postgres up first),
+then eyeball — this is the part autopilot cannot do:
+
+1. **`/`** — Entry Hub: three doors, spacing, the teal, does it feel calm?
+2. **Larger text** (header toggle) — does anything break or overflow at 22px?
+3. **`/dev/styleguide`** — all 7 stage badges side by side. The dot-meter is
+   the core trust device; does 5/5 vs 1/5 read instantly?
+4. **`/about`** — a curated Markdown page end-to-end (disclaimer box,
+   provenance, sources).
+5. **Glossary tooltip** — on `/dev/styleguide`, click/tab a dotted term.
+   (No shipped shell page happens to use a glossary term yet, so the
+   styleguide is the only place to see it until the feed lands.)
+   Then check the `/glossary` A–Z page itself.
+6. **`/start`** — the emergency red-flag block: is it findable and calm?
+7. **`/get-help-now`** — big tap targets, phone links.
+8. **Print preview `/about`** (Ctrl+P) — chrome gone, ink on white.
+9. **A dead link** (e.g. `/nope`) — friendly 404 with helpline band.
+
+### Standing notes
+
+- **Approved visual design lives at `docs/design/entry-hub-handoff/`** ("Clear
+  & Kind" theme + Entry Hub home, from Claude Design 2026-07-19). It is the
+  visual spec for WI-108/WI-109 and restyles later feed/item work (WI-209,
+  WI-306). M1 order changed: **WI-108 before WI-102** so the axe/Playwright
+  smoke test runs against the final theme. Handoff URL names that differ from
+  sitemap.md (/get-help, /start-here) do NOT override the sitemap
+  (/get-help-now, /start). The handoff folder is not yet committed — it goes
+  in with WI-108's branch.
+- **Remaining dead links after M1**: only `/research` (M2) and `/trials` (M4).
+  `/get-help-now`, `/digest`, `/glossary`, `/about`, `/how-we-write`,
+  `/start`, `/privacy`, `/terms` are all live, and a `ShellPagesTests` link
+  check fails the build if any *other* internal link 404s. Custom 404/500
+  pages exist (WI-103), so the dead nav targets degrade gracefully.
 - **M0 fully closed 2026-07-19**: PR #1 squash-merged to `main` (ce5929d),
   `auto/M0` deleted; brainharbor.org purchased (WI-001); `.env` populated;
   NCBI + SYNC keys in user-secrets. No open follow-ups.
@@ -31,6 +62,69 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **M1 COMPLETE** (autopilot): all 8 items shipped on
+  `auto/M1`, 112/112 tests, ContentCheck clean, 0 build warnings. Awaiting
+  Dan's visual review + merge of PR #3. Nothing merged to `main` by autopilot.
+- **2026-07-19** — **WI-107 done** (autopilot): six curated shell pages
+  (/about, /how-we-write, /start, /digest, /privacy, /terms) at reading
+  grades 2.5–4.8; disclaimer partial rendering from front-matter flags;
+  scaffolded Razor Privacy page deleted so /privacy is curated content.
+  Review caught 3 blockers in the COPY, all fixed: /start had no emergency
+  red flags before its calming copy (now leads with 911 signs), three "what
+  to do next" CTAs pointed at the unbuilt /research, and a typo'd disclaimer
+  flag rendered an empty box instead of the medical disclaimer (now a
+  ContentCheck failure). Privacy/how-we-write claims trimmed to what the
+  code actually does today.
+- **2026-07-19** — **WI-106 done** (autopilot): tools/BrainHarbor.ContentCheck
+  — Flesch-Kincaid gate (fail >8.5, warn ≥7.5) with block-aware sentence
+  extraction (headings/bullets don't inflate the grade — review measured
+  +1.6 grades before the fix), medical-hiatus syllable rule, front-matter
+  validation, overdue review_due + missing-source warnings, 40-word glossary
+  limit, loud warning on missing roots; CI step added (runs on all content —
+  intentionally stronger than changed-only). 22 new tests. 98/98.
+- **2026-07-19** — **WI-105 done** (autopilot): GlossaryStore (term files per
+  content-pipeline §6, snapshot reloads), GlossaryMarker Markdig extension
+  (first occurrence per page → native-popover button tooltip, WCAG 1.4.13;
+  paragraphs only; %%term%% + !%term% escapes), /glossary A–Z, 3 seed terms.
+  Review caught 2 real bugs pre-commit: terms split across source line wraps
+  never matched (soft-break merge added) and "non-IDH-mutant" got a wrong
+  tooltip (hyphen-aware boundaries) — both pinned with tests. 76/76.
+- **2026-07-19** — **WI-104 done** (autopilot): ContentStore (Markdig with
+  DisableHtml + YamlDotNet front matter per content-pipeline §3, mtime-keyed
+  cache, slug-regex traversal guard, IO races → 404); catch-all Razor route
+  renders /{slug} and /{section}/{slug} with provenance block; Content:Root
+  config override for tests; publish glob for Content/pages. 22 new tests
+  (parsing, routing, cache lifecycle, HTML-escape).
+- **2026-07-19** — **WI-109 done** (autopilot): ResearchStage enum +
+  StageBadge mapper (single source of truth incl. server-built aria-labels),
+  _StageBadge (dot-meter/glyph per handoff) + _FeedCard partials,
+  /dev/styleguide (dev-only, 404 in prod) rendering all 7 badge kinds + 4
+  sample cards; axe scan of the styleguide added to the E2E gate. DB
+  taxonomy→enum mapping decision recorded on the enum + WI-209.
+- **2026-07-19** — **WI-103 done** (autopilot): helpline band on every page
+  (aside landmark, CareLine tel link, → /get-help-now); /get-help-now with
+  988, Crisis Text Line, CareLine, NCI, CancerCare as one-tap buttons; custom
+  404 + calm Error page via status-code re-execute (direct /status/N hits
+  404; large-text toggle points at the original URL on error pages). Nav +
+  home "dead links" note: /get-help-now is now live.
+- **2026-07-19** — **WI-102 done** (autopilot): large-text mode (22px base)
+  via cookie-persisting middleware, plain-link toggle in the header (proven
+  with JS disabled in Playwright); axe-core smoke tests on the shell in both
+  text modes, 0 serious/critical; Kestrel dual-host test factory; CI installs
+  Chromium. Review found an open-redirect blocker (protocol-relative path) —
+  fixed + regression-tested; Secure cookie flag + shared URL helper applied.
+- **2026-07-19** — **WI-108 done** (autopilot): Clear & Kind theme folded into
+  site.css (new palette, band/card/badge tokens, 72rem container + 46rem read
+  column), nav-cta pill, footer link list + ai-note, home rebuilt as Entry Hub
+  (three doors → /start, /research, /get-help-now), print.css flattens the new
+  surfaces incl. print-safe dot-meter ink (review Should-fix applied). Review:
+  approve, no blockers. Needs Dan's visual eyeball at end of run.
+- **2026-07-19** — **Design chosen & planned in**: static mock-up generated
+  (`.claude/work_files/mockup/`), run through Claude Design by Dan; approved
+  handoff ("Clear & Kind" + Entry Hub) moved to `docs/design/entry-hub-handoff/`.
+  Backlog updated via /pm: new WI-108 (adopt theme + Entry Hub shell) and
+  WI-109 (stage-badge dot-meter + feed-card partials); WI-102/103/107/209/306
+  amended to depend on / reference the handoff. Next up is now WI-108.
 - **2026-07-19** — **WI-101 done**: design tokens (18px-base scale, AA/AAA
   palette, spacing), real `_Layout` shell (landmarks, v1 nav, footer
   disclaimer), print.css (print-to-PDF verified), WI-005 htmx demo deleted,

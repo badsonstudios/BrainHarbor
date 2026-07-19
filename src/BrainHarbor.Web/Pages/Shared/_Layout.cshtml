@@ -1,5 +1,12 @@
+@using BrainHarbor.Web.Middleware
+@{
+    var isLargeText = TextSize.IsLarge(Context);
+    // Plain-link toggle (no-JS fallback): middleware turns the querystring
+    // into the cookie and redirects back to the clean URL.
+    var toggleHref = TextSize.ToggleHref(Context);
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@(isLargeText ? "text-large" : null)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +16,15 @@
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
+    @* Persistent helpline band (WI-103): on every page, findable in one
+       second by a panicking person. PLAN.md §3 — always one tap to a human. *@
+    <aside class="helpline-band" aria-label="Helpline">
+        <div class="container">
+            <span>Need to talk to someone?</span>
+            <a class="tel" href="tel:8008862282">ABTA CareLine: 800-886-2282</a>
+            <a href="/get-help-now">More help options</a>
+        </div>
+    </aside>
     <header class="site-header">
         <div class="container">
             <a class="site-name" asp-page="/Index">BrainHarbor</a>
@@ -19,9 +35,13 @@
                     <li><a href="/research">Research</a></li>
                     <li><a href="/trials">Trials</a></li>
                     <li><a href="/digest">Digest</a></li>
-                    <li><a href="/get-help-now">Get Help Now</a></li>
+                    <li><a class="nav-cta" href="/get-help-now">Get Help Now</a></li>
                 </ul>
             </nav>
+            <a class="text-toggle" href="@toggleHref">
+                <span aria-hidden="true">Aa</span>
+                @(isLargeText ? "Standard text" : "Larger text")
+            </a>
         </div>
     </header>
     <main id="main-content" class="container">
@@ -29,12 +49,27 @@
     </main>
     <footer class="site-footer">
         <div class="container">
+            @* Footer links per the handoff. All live as of WI-107; /about,
+               /how-we-write, /privacy, /terms are curated Markdown pages
+               served by the ContentPage catch-all. *@
+            <ul>
+                <li><a href="/about">About</a></li>
+                <li><a href="/how-we-write">How we write</a></li>
+                <li><a href="/glossary">Glossary</a></li>
+                <li><a href="/get-help-now">Get Help Now</a></li>
+                <li><a href="/privacy">Privacy</a></li>
+                <li><a href="/terms">Terms</a></li>
+            </ul>
             <p>
                 BrainHarbor shares research news in plain language. It is not
                 medical advice. Talk with your care team before making decisions
                 about your health.
             </p>
-            <p><a asp-page="/Privacy">Privacy</a></p>
+            <p class="ai-note">
+                Summaries are drafted with AI assistance and reviewed by a
+                person before publishing.
+                <a href="/how-we-write">Read how we write.</a>
+            </p>
         </div>
     </footer>
 

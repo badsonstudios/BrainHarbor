@@ -1,24 +1,28 @@
-/* BrainHarbor design tokens + base styles (WI-101).
-   Audience constraint, not polish: readers may have cognitive impairment from
-   the tumor, seizures, or treatment (PLAN.md §3). Hard requirements:
-   ≥18px base text, WCAG AA contrast, visible focus, generous spacing,
-   big tap targets. Change values here, not in page-level CSS. */
+/* BrainHarbor design tokens + base styles ("Clear & Kind" theme, WI-108;
+   foundation WI-101). Visual spec: docs/design/entry-hub-handoff/ — recreate
+   to match. Audience constraint, not polish: readers may have cognitive
+   impairment from the tumor, seizures, or treatment (PLAN.md §3). Hard
+   requirements: ≥18px base text, WCAG AA contrast (AAA body), visible focus,
+   generous spacing, big tap targets. Change values here, not in page CSS. */
 
 :root {
-  /* Color — all text pairs meet WCAG AA against --color-paper (ratios noted).
-     Palette is deliberately calm: no reds/alarms outside true warnings. */
+  /* Color — contrast on --color-paper noted. Palette is deliberately calm:
+     no reds/alarms outside true warnings. */
   --color-paper: #ffffff;
-  --color-surface: #f2f5f8;      /* panels, header band */
-  --color-ink: #1a2433;          /* body text — 15.6:1 on paper */
-  --color-ink-muted: #46566a;    /* secondary text — 7.5:1 on paper */
-  --color-accent: #005a9c;       /* links, primary actions — 7.1:1 on paper */
-  --color-accent-strong: #003e6b;/* link hover/active — 10.4:1 on paper */
-  --color-focus: #005a9c;        /* focus ring — 7.1:1 (needs ≥3:1) */
-  --color-border: #75808d;       /* meaningful borders (inputs) — 3.9:1 */
-  --color-border-subtle: #d8dee5;/* decorative hairlines only */
+  --color-surface: #eef3f7;      /* hub, tags, header band */
+  --color-ink: #16202b;          /* body text — 15.6:1 (AAA) */
+  --color-ink-muted: #455263;    /* secondary text — 7.6:1 (AAA) */
+  --color-accent: #0d6a86;       /* links, buttons — 4.9:1 (AA, underlined) */
+  --color-accent-strong: #094f65;/* hover/active — 6.9:1 */
+  --color-focus: #0d6a86;        /* focus ring (needs ≥3:1) */
+  --color-border: #5b6a78;       /* meaningful borders (inputs) — 4.5:1 */
+  --color-border-subtle: #dbe3ea;/* decorative hairlines only */
+  --color-band: #0d3b4a;         /* helpline band + dark panels */
+  --color-band-ink: #ffffff;     /* text on band — 11:1 */
 
   /* Type — 18px base, ~1.2 modular scale */
-  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-head: var(--font-body);
   --text-sm: 0.889rem;   /* 16px — smallest allowed anywhere */
   --text-base: 1rem;     /* 18px */
   --text-lg: 1.2rem;     /* ~22px */
@@ -40,10 +44,21 @@
 
   /* Layout */
   --measure: 65ch;           /* max line length for prose */
-  --container: 48rem;        /* page shell width */
+  --measure-read: 46rem;     /* single-column reading pages (item pages) */
+  --container: 72rem;        /* page shell width */
   --tap-target: 2.75rem;     /* ~50px at 18px root — clears the 44px floor */
-  --radius: 0.375rem;
   --focus-ring: 3px;
+
+  /* Shape — rounded + soft shadow is the theme's signature */
+  --radius: 14px;
+  --card-bg: #ffffff;
+  --card-border: 1px solid #e6ecf1;
+  --card-radius: 16px;
+  --card-shadow: 0 3px 14px rgba(20, 45, 65, .07);
+
+  /* Stage badge: pill + evidence dot-meter */
+  --badge-fill: #0d6a86;
+  --badge-empty: #bcd3db;
 }
 
 /* ---------- Base ---------- */
@@ -60,6 +75,13 @@ html {
   font-size: 112.5%;
 }
 
+/* Large-text mode (WI-102): 137.5% = 22px base. Everything downstream is
+   rem-based, so the whole scale rides along. Set server-side from the
+   bh_textsize cookie — works with JavaScript disabled. */
+html.text-large {
+  font-size: 137.5%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -70,6 +92,7 @@ body {
 }
 
 h1, h2, h3, h4 {
+  font-family: var(--font-head);
   line-height: var(--leading-tight);
   margin-block: var(--space-6) var(--space-4);
   max-width: var(--measure);
@@ -86,6 +109,8 @@ p, ul, ol {
 }
 
 small { font-size: var(--text-sm); }
+
+.text-muted { color: var(--color-ink-muted); }
 
 img {
   max-width: 100%;
@@ -119,17 +144,34 @@ textarea {
   color: inherit;
 }
 
+.button,
 button,
 input[type="submit"] {
   min-block-size: var(--tap-target);
-  padding: var(--space-2) var(--space-5);
+  padding: var(--space-2) var(--space-6);
   border: 2px solid var(--color-accent);
   border-radius: var(--radius);
   background: var(--color-accent);
-  color: var(--color-paper);
+  color: var(--color-band-ink);
+  font-weight: 700;
   cursor: pointer;
 }
 
+/* Links styled as buttons (e.g. tel: links on /get-help-now) need the
+   flex treatment for the min-height to actually apply. */
+a.button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  margin-inline-end: var(--space-3);
+  margin-block-end: var(--space-2);
+}
+
+a.button:hover {
+  text-decoration: underline;
+}
+
+.button:hover,
 button:hover,
 input[type="submit"]:hover {
   background: var(--color-accent-strong);
@@ -156,6 +198,11 @@ textarea {
   padding-inline: var(--space-4);
 }
 
+/* Single-column reading pages (research items): a calm, narrow flow. */
+.container--read {
+  max-width: var(--measure-read);
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -169,9 +216,38 @@ textarea {
   z-index: 100;
   padding: var(--space-3) var(--space-4);
   background: var(--color-accent);
-  color: var(--color-paper);
+  color: var(--color-band-ink);
   border-radius: var(--radius);
 }
+
+/* ---------- Persistent helpline band (WI-103 renders it) ---------- */
+
+.helpline-band {
+  background: var(--color-band);
+  color: var(--color-band-ink);
+}
+
+.helpline-band .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-5);
+  padding-block: var(--space-2);
+}
+
+.helpline-band a {
+  color: var(--color-band-ink);
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
+}
+
+.helpline-band a.tel {
+  font-weight: 800;
+}
+
+/* ---------- Header ---------- */
 
 .site-header {
   background: var(--color-surface);
@@ -182,13 +258,13 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2) var(--space-5);
+  gap: var(--space-2) var(--space-6);
   padding-block: var(--space-3);
 }
 
 .site-name {
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-ink);
   text-decoration: none;
 }
@@ -196,6 +272,10 @@ textarea {
 .site-name:hover {
   color: var(--color-ink);
   text-decoration: underline;
+}
+
+.site-nav {
+  margin-inline-start: auto;
 }
 
 .site-nav ul {
@@ -224,19 +304,423 @@ textarea {
   text-decoration: underline;
 }
 
+/* "Get Help Now" — the one filled pill in the nav. */
+.site-nav a.nav-cta {
+  background: var(--color-accent);
+  color: var(--color-band-ink);
+  font-weight: 700;
+  padding-inline: var(--space-4);
+}
+
+.site-nav a.nav-cta:hover {
+  background: var(--color-accent-strong);
+  color: var(--color-band-ink);
+}
+
+/* Large-text toggle — an outlined pill so it reads as a control, not a link. */
+.text-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  color: var(--color-accent-strong);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.text-toggle:hover {
+  text-decoration: underline;
+  color: var(--color-accent-strong);
+}
+
 main {
   padding-block: var(--space-6) var(--space-8);
 }
 
-.site-footer {
-  border-top: 1px solid var(--color-border-subtle);
-  padding-block: var(--space-5);
+/* ---------- Entry Hub (home hero) ---------- */
+
+.hub {
+  background: var(--color-surface);
+  border-radius: 20px;
+  padding: var(--space-6);
+  margin-block-end: var(--space-6);
+}
+
+.hub h1 {
+  margin-block-start: 0;
+}
+
+.hub__doors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-4);
+}
+
+/* A door is one whole-card link. */
+.door {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--card-bg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 16px;
+  padding: var(--space-5);
+  text-decoration: none;
+  color: var(--color-ink);
+  min-block-size: var(--tap-target);
+}
+
+.door strong {
+  font-size: var(--text-lg);
+}
+
+.door span.sub {
+  color: var(--color-ink-muted);
+}
+
+.door__cta {
+  margin-block-start: auto;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.door--primary {
+  background: var(--color-accent);
+  color: var(--color-band-ink);
+  border-color: var(--color-accent);
+}
+
+.door--primary span.sub,
+.door--primary .door__cta {
+  color: var(--color-band-ink);
+}
+
+/* ---------- Feed grid + cards ---------- */
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--space-4) var(--space-5);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+  max-width: 34ch;
+}
+
+.card h3 a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.card__hook {
+  margin: 0;
+  color: var(--color-ink);
+  max-width: 60ch;
+}
+
+/* Meta pinned to the bottom so cards in a row align. */
+.card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  margin-block-start: auto;
+}
+
+.tag {
+  display: inline-block;
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface);
+  border-radius: 999px;
+  color: var(--color-ink-muted);
+}
+
+/* ---------- Stage badge: pill + evidence dot-meter ----------
+   Trust is read from filled marks + words, never color alone. Markup
+   (WI-109 partial builds this, aria-label server-side):
+     <span class="badge badge--result" role="img"
+           aria-label="Tested in people. Evidence strength 5 of 5.">
+       <span class="badge__meter" aria-hidden="true">
+         <span class="step step--on"></span> … 5 steps, N filled
+       </span>
+       <span class="badge__label">Tested in people</span>
+     </span>
+   Kinds: --result (meter) | --progress (→) | --info (i) | --unverified (dashed). */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 100%;
+  padding: 6px 14px;
+  border: 2px solid var(--color-band);
+  border-radius: 999px;
+  background: #e9f3f6;
+  color: var(--color-band);
+  font-weight: 700;
+  font-size: var(--text-base);
+  line-height: 1.15;
+}
+
+.badge__label { white-space: normal; }
+
+.badge__meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+
+.step {
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--badge-empty);
+}
+
+.step--on {
+  background: var(--badge-fill);
+  border-color: var(--badge-fill);
+}
+
+.badge--unverified .step {
+  border-style: dashed;
+  background: transparent;
+  border-color: var(--badge-empty);
+}
+
+.badge__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--badge-fill);
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.badge--progress .badge__glyph { border-radius: 6px; }
+
+.badge--info .badge__glyph {
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+
+/* ---------- Item page: short version + means block ---------- */
+
+.original-title {
   font-size: var(--text-sm);
   color: var(--color-ink-muted);
 }
 
+/* Glossary term buttons (tooltip behavior arrives in WI-105). */
+.term {
+  background: none;
+  border: none;
+  padding: 0;
+  min-block-size: 0;
+  font: inherit;
+  color: var(--color-accent);
+  text-decoration: underline dotted;
+  text-underline-offset: 0.15em;
+  cursor: help;
+}
+
+.term:hover {
+  background: none;
+  color: var(--color-accent-strong);
+}
+
+/* The tooltip panel (WI-105) — a native popover: dismissible via Esc/light
+   dismiss, focusable trigger, no JS. Deliberately uses the UA default
+   position (centered mini-dialog): easier to find than a tiny anchored
+   tooltip for readers with vision or attention problems. */
+.term-definition {
+  max-width: 28rem;
+  padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--color-band);
+  border-radius: var(--radius);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: var(--card-shadow);
+}
+
+/* Browsers without popover support show the definition inline after the
+   term — degraded but readable, wrapped in parentheses for flow. */
+@supports not selector(:popover-open) {
+  .term-definition {
+    display: inline;
+    font-size: var(--text-sm);
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .term-definition::before { content: " ("; }
+  .term-definition::after { content: ")"; }
+}
+
+/* The anti-hype block — a calm, honest aside. */
+.means-block {
+  background: #eef6f8;
+  border: 1px solid #d3e6ec;
+  border-inline-start: 6px solid var(--color-accent);
+  border-radius: var(--card-radius);
+  padding: var(--space-5) var(--space-6);
+  margin-block: var(--space-6);
+}
+
+.means-block__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-end: var(--space-3);
+}
+
+.means-block__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-band-ink);
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.means-block h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.provenance {
+  font-size: var(--text-base);
+  color: var(--color-ink-muted);
+  border-top: 1px solid var(--color-border-subtle);
+  padding-block-start: var(--space-4);
+  margin-block-start: var(--space-6);
+}
+
+/* AI-transparency line — a deliberate trust cue, not fine print. */
+.ai-note {
+  border-inline-start: 3px solid var(--color-accent);
+  padding-inline-start: var(--space-3);
+}
+
+/* ---------- Dev style guide (WI-109; /dev/styleguide, dev-only) ---------- */
+
+.styleguide-badges {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  max-width: none;
+}
+
+.styleguide-badges li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-end: var(--space-3);
+}
+
+/* ---------- Disclaimers (WI-107) ---------- */
+
+.disclaimer {
+  background: var(--color-surface);
+  border-inline-start: 6px solid var(--color-ink-muted);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block: var(--space-5);
+}
+
+.disclaimer p:last-child { margin-block-end: 0; }
+
+/* ---------- Digest signup ---------- */
+
+.digest-signup {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--card-radius);
+  padding: var(--space-5) var(--space-6);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+
+.digest-signup form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-start: var(--space-3);
+}
+
+.digest-signup input[type="email"] {
+  flex: 1 1 16rem;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--color-border-subtle);
+  padding-block: var(--space-5);
+  color: var(--color-ink-muted);
+}
+
+.site-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  max-width: none;
+}
+
 .site-footer a {
-  color: inherit;
+  color: var(--color-ink-muted);
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
 }
 
 /* ---------- Motion ---------- */

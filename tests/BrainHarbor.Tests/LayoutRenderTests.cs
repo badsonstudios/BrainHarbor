@@ -40,11 +40,18 @@ public class LayoutRenderTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains("<main id=\"main-content\"", html);
         Assert.Contains("<footer class=\"site-footer\">", html);
 
-        // v1 nav per docs/sitemap.md
+        // v1 nav per docs/sitemap.md; Get Help Now is the filled pill (WI-108)
         Assert.Contains("href=\"/research\"", html);
         Assert.Contains("href=\"/trials\"", html);
         Assert.Contains("href=\"/digest\"", html);
-        Assert.Contains("href=\"/get-help-now\"", html);
+        Assert.Contains("class=\"nav-cta\" href=\"/get-help-now\"", html);
+
+        // Clear & Kind shell (WI-108): Entry Hub home + footer trust cues
+        Assert.Contains("class=\"hub\"", html);
+        Assert.Contains("class=\"door door--primary\" href=\"/start\"", html);
+        Assert.Contains("class=\"door\" href=\"/research\"", html);
+        Assert.Contains("class=\"door\" href=\"/get-help-now\"", html);
+        Assert.Contains("class=\"ai-note\"", html);
 
         // Both stylesheets, print.css scoped to print media.
         // MapStaticAssets fingerprints filenames (site.<hash>.css).

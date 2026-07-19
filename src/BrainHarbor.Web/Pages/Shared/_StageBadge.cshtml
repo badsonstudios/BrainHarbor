@@ -1,0 +1,27 @@
+@using BrainHarbor.Web.Models
+@model StageBadge
+
+@* The evidence badge (WI-109) per docs/design/entry-hub-handoff/README.md:
+   trust is read from filled marks + words, never color alone. The visual
+   meter/glyph is aria-hidden; the whole badge is one img with a server-built
+   label so screen readers hear exactly what sighted users see. *@
+<span class="@Model.CssClass" role="img" aria-label="@Model.AriaLabel">
+    @if (Model.Kind is BadgeKind.Result or BadgeKind.Unverified)
+    {
+        <span class="badge__meter" aria-hidden="true">
+            @for (var step = 1; step <= StageBadge.MeterSteps; step++)
+            {
+                <span class="step @(step <= Model.EvidenceStrength ? "step--on" : null)"></span>
+            }
+        </span>
+    }
+    else if (Model.Kind == BadgeKind.Progress)
+    {
+        <span class="badge__glyph" aria-hidden="true">&#8594;</span>
+    }
+    else if (Model.Kind == BadgeKind.Info)
+    {
+        <span class="badge__glyph" aria-hidden="true">i</span>
+    }
+    <span class="badge__label">@Model.Label</span>
+</span>

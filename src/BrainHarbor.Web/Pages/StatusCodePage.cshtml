@@ -1,0 +1,31 @@
+@page "/status/{code:int}"
+@model StatusCodePageModel
+@{
+    ViewData["Title"] = Model.IsNotFound ? "Page not found" : "Something went wrong";
+}
+
+@* WI-103: custom status pages. The helpline band and Get Help Now must be
+   reachable even from a dead link — especially from a dead link. *@
+
+@if (Model.IsNotFound)
+{
+    <h1>We can't find that page</h1>
+    <p>
+        The link may be old, or the address may have a typo. Nothing is wrong
+        on your end.
+    </p>
+}
+else
+{
+    <h1>Something went wrong</h1>
+    <p>
+        The problem is on our side, not yours. Please try again in a few
+        minutes.
+    </p>
+}
+
+<p>Here is where you can go instead:</p>
+<ul>
+    <li><a href="/">Go to the home page</a></li>
+    <li><a href="/get-help-now">Talk to someone now</a></li>
+</ul>

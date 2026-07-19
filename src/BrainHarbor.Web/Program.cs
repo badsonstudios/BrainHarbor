@@ -1,4 +1,6 @@
+using BrainHarbor.Web.Content;
 using BrainHarbor.Web.Database;
+using BrainHarbor.Web.Middleware;
 using BrainHarbor.Web.Services;
 using Npgsql;
 
@@ -12,6 +14,8 @@ var connectionStringSetting = builder.Configuration.GetConnectionString("BrainHa
         "Connection string 'BrainHarbor' not found. Set it via: dotnet user-secrets set \"ConnectionStrings:BrainHarbor\" \"...\" --project src/BrainHarbor.Web (dev) or environment/App Service configuration.");
 builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+builder.Services.AddSingleton<GlossaryStore>();
+builder.Services.AddSingleton<ContentStore>();
 
 var app = builder.Build();
 
@@ -21,7 +25,7 @@ if (app.Environment.IsDevelopment())
     MigrationRunner.Run(connectionStringSetting);
 }
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. Exception handler stays outermost.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -29,7 +33,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Friendly 404/error pages (WI-103) — the helpline band must be present even
+// on dead links, in every environment.
+app.UseStatusCodePagesWithReExecute("/status/{0}");
+
 app.UseHttpsRedirection();
+
+app.UseMiddleware<TextSizeMiddleware>();
 
 app.UseRouting();
 

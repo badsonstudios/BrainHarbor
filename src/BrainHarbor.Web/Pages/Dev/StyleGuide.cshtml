@@ -1,0 +1,51 @@
+@page "/dev/styleguide"
+@using BrainHarbor.Web.Models
+@model BrainHarbor.Web.Pages.Dev.StyleGuideModel
+@{
+    ViewData["Title"] = "Style guide (dev only)";
+}
+
+@* WI-109 preview surface: every badge kind + sample cards, for visual and
+   a11y checks before real data exists. Development environment only —
+   the page model 404s everywhere else. *@
+
+<h1>Style guide</h1>
+<p>Development only. Every stage badge, plus the feed card in the handoff grid.</p>
+
+<h2>Stage badges</h2>
+<ul class="styleguide-badges">
+    @foreach (var stage in Enum.GetValues<ResearchStage>())
+    {
+        <li>
+            <partial name="_StageBadge" model="StageBadge.For(stage)" />
+            <code>@stage</code>
+        </li>
+    }
+</ul>
+
+<h2>Glossary tooltip</h2>
+<p>
+    The sentence below is run through the real ContentStore pipeline, so the
+    first mention of each glossary term becomes a tooltip. Click or tab to
+    one: the panel must be readable, dismissible with Esc, and the trigger
+    must show a focus ring.
+</p>
+<div class="container--read">
+    @Html.Raw(Model.TooltipSampleHtml)
+</div>
+
+<h2>Feed cards</h2>
+<div class="section-head">
+    <h3>Latest updates</h3>
+    <a href="/research">See all →</a>
+</div>
+<p class="text-muted">
+    The filled marks show how far along the evidence is — more marks mean it
+    has been tested more.
+</p>
+<ul class="feed-grid">
+    @foreach (var card in Model.SampleCards)
+    {
+        <partial name="_FeedCard" model="card" />
+    }
+</ul>

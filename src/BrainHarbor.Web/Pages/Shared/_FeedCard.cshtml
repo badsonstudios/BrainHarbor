@@ -1,0 +1,17 @@
+@using BrainHarbor.Web.Models
+@model FeedCard
+
+@* One feed card (WI-109). Anatomy is fixed (sitemap.md): badge → title →
+   hook → tags + date · source, meta pinned to the card bottom via CSS. *@
+<li class="card">
+    <partial name="_StageBadge" model="StageBadge.For(Model.Stage)" />
+    <h3><a href="@Model.Url">@Model.Title</a></h3>
+    <p class="card__hook">@Model.Hook</p>
+    <p class="card__meta">
+        @foreach (var tag in Model.Tags)
+        {
+            <span class="tag">@tag</span>
+        }
+        <span>@Model.DateText · @Model.Source</span>
+    </p>
+</li>
