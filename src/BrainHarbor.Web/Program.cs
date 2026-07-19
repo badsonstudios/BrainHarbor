@@ -1,3 +1,4 @@
+using BrainHarbor.Web.Content;
 using BrainHarbor.Web.Database;
 using BrainHarbor.Web.Middleware;
 using BrainHarbor.Web.Services;
@@ -13,6 +14,7 @@ var connectionStringSetting = builder.Configuration.GetConnectionString("BrainHa
         "Connection string 'BrainHarbor' not found. Set it via: dotnet user-secrets set \"ConnectionStrings:BrainHarbor\" \"...\" --project src/BrainHarbor.Web (dev) or environment/App Service configuration.");
 builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+builder.Services.AddSingleton<ContentStore>();
 
 var app = builder.Build();
 

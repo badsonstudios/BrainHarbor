@@ -2,6 +2,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Database\Scripts\*.sql" />
+    <!-- Curated Markdown pages (WI-104) must survive dotnet publish. -->
+    <Content Include="Content\pages\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -16,8 +18,10 @@
     <PackageReference Include="dbup-postgresql" Version="7.0.1" />
     <PackageReference Include="Htmx" Version="1.12.0" />
     <PackageReference Include="Htmx.TagHelpers" Version="1.12.0" />
+    <PackageReference Include="Markdig" Version="1.3.2" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="Npgsql.DependencyInjection" Version="10.0.3" />
+    <PackageReference Include="YamlDotNet" Version="18.1.0" />
   </ItemGroup>
 
 </Project>

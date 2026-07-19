@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-104 ContentStore: Markdown static pages |
+| **Next up** | WI-105 Glossary + inline tooltip extension |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-104 done** (autopilot): ContentStore (Markdig with
+  DisableHtml + YamlDotNet front matter per content-pipeline §3, mtime-keyed
+  cache, slug-regex traversal guard, IO races → 404); catch-all Razor route
+  renders /{slug} and /{section}/{slug} with provenance block; Content:Root
+  config override for tests; publish glob for Content/pages. 22 new tests
+  (parsing, routing, cache lifecycle, HTML-escape).
 - **2026-07-19** — **WI-109 done** (autopilot): ResearchStage enum +
   StageBadge mapper (single source of truth incl. server-built aria-labels),
   _StageBadge (dot-meter/glyph per handoff) + _FeedCard partials,

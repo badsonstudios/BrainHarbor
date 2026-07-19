@@ -1,0 +1,38 @@
+@page "/{**contentPath}"
+@model ContentPageModel
+@{
+    ViewData["Title"] = Model.Page.FrontMatter.Title;
+}
+
+@* WI-104: renders any curated Markdown page (content-pipeline.md §3). This
+   is a catch-all route — real Razor pages always win; unknown paths fall
+   through to NotFound and the WI-103 status page. Disclaimers from
+   front-matter flags get their partials in WI-107. *@
+
+<article class="container--read">
+    <h1>@Model.Page.FrontMatter.Title</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Page.FrontMatter.Description))
+    {
+        <p class="text-muted">@Model.Page.FrontMatter.Description</p>
+    }
+
+    @Html.Raw(Model.Page.Html)
+
+    <div class="provenance">
+        @if (Model.Page.FrontMatter.Reviewed is { } reviewed)
+        {
+            <p>Last reviewed: @reviewed.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
+        }
+        @if (Model.Page.FrontMatter.Sources.Count > 0)
+        {
+            <p>Sources:</p>
+            <ul>
+                @foreach (var source in Model.Page.FrontMatter.Sources)
+                {
+                    <li><a href="@source.Url">@source.Title</a></li>
+                }
+            </ul>
+        }
+    </div>
+</article>

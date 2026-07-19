@@ -84,7 +84,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: PLAN.md §3, sitemap.md, docs/design/entry-hub-handoff/README.md.
   Depends on: WI-101, WI-108.
 
-- [ ] **WI-104 ContentStore: Markdown static pages**
+- [x] **WI-104 ContentStore: Markdown static pages**
   Goal: static pages authored as Markdown + YAML front matter, per the schema.
   Acceptance: Markdig pipeline + in-memory cache; front-matter parsing
   (content-pipeline.md §3 schema); pages route by section/slug; unit tests for
