@@ -40,3 +40,6 @@ app.MapRazorPages()
    .WithStaticAssets();
 
 app.Run();
+
+// Exposes the implicit Program class to WebApplicationFactory in tests.
+public partial class Program;

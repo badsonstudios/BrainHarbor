@@ -1,0 +1,69 @@
+/* Print styles (WI-101). Print is a first-class output (PLAN.md §3):
+   patients print pages for appointments and caregivers. Goal: calm black-on-
+   white text, no site chrome, and visible URLs for anything worth following up. */
+
+@page {
+  margin: 2cm;
+}
+
+/* No interactive chrome on paper. */
+.skip-link,
+.site-nav,
+button,
+input[type="submit"],
+form {
+  display: none !important;
+}
+
+body {
+  color: #000;
+  background: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12pt;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: none;
+  padding: 0;
+}
+
+.site-header {
+  background: none;
+  border-bottom: 2pt solid #000;
+  margin-bottom: 12pt;
+}
+
+.site-name {
+  color: #000;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+  break-after: avoid;
+  color: #000;
+}
+
+/* Lists must stay breakable — a feed page's <ul> can outgrow a sheet. */
+p, blockquote, li {
+  break-inside: avoid;
+  orphans: 3;
+  widows: 3;
+}
+
+a {
+  color: #000;
+}
+
+/* Show where external links go — a printout can't be tapped. */
+a[href^="http"]::after {
+  content: " (" attr(href) ")";
+  font-size: 10pt;
+  word-break: break-all;
+}
+
+.site-footer {
+  border-top: 1pt solid #000;
+  margin-top: 12pt;
+  color: #000;
+}

@@ -5,23 +5,23 @@
 }
 
 <h1>BrainHarbor</h1>
-<p>Brain tumor research, explained in plain language. This site is under construction.</p>
+<p>
+    Brain tumor research, explained in plain language. We are building this
+    site now. It is not ready to use yet.
+</p>
 
-@* htmx demo (WI-005): progressive enhancement — the form works without JS,
-   htmx upgrades it to a fragment swap. TODO(WI-101): delete with the real shell. *@
-<form method="get">
-    <button type="submit" name="ShowTime" value="true"
-            hx-get
-            hx-page="/Index"
-            hx-page-handler="TimePartial"
-            hx-target="#time-demo"
-            hx-swap="innerHTML">
-        Show server time
-    </button>
-</form>
-<div id="time-demo">
-    @if (Model.ShowTime)
-    {
-        <partial name="_ServerTime" />
-    }
-</div>
+<h2>What this site will do</h2>
+<p>
+    Every day, new brain tumor research comes out. Most of it is hard to read.
+    BrainHarbor will collect it in one place and explain it in words that make
+    sense.
+</p>
+<ul>
+    <li>A daily feed of new research, news, and clinical trials.</li>
+    <li>Plain-language summaries, checked by a person before they go up.</li>
+    <li>Clear labels that say how far along each piece of research is.</li>
+</ul>
+<p>
+    You can read more about brain tumors today at the
+    <a href="https://www.cancer.gov/types/brain">National Cancer Institute</a>.
+</p>
