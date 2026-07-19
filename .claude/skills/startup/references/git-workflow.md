@@ -1,6 +1,6 @@
 # Git Workflow — BrainHarbor
 
-- **Host:** private GitHub repo under `danheinz` (via `gh` CLI, already
+- **Host:** private GitHub repo under `badsonstudios` (via `gh` CLI, already
   authenticated). **No GitHub Issues** — `docs/backlog.md` is the tracker and
   `PROGRESS.md` the live state.
 - **`main`** is always-working (builds green, tests pass).

@@ -21,9 +21,8 @@
   `git checkout main && git pull`.
 - **Dan's follow-ups from the run:**
   1. WI-001: buy **brainharbor.org**.
-  2. GitHub account: `gh` resolves to **badsonstudios** (not `danheinz`;
-     renamed?). Repo lives at `badsonstudios/BrainHarbor`. Confirm, then
-     update the `danheinz` mentions in CLAUDE.md + references.
+  2. ~~GitHub account~~ **resolved 2026-07-19**: Dan confirmed the account is
+     **badsonstudios**; all doc references updated.
   3. Populate `.claude/.env` from `.env.example` (autopilot may not touch it).
   4. Get a real **NCBI_API_KEY** (https://account.ncbi.nlm.nih.gov/settings/)
      into Pipeline user-secrets + `.env` (needed by WI-204, so before M2).

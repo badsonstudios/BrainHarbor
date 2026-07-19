@@ -23,7 +23,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 - [x] **WI-002 Create the private GitHub repo and first commit**
   Goal: everything so far (docs, .claude, planning files) safely versioned.
-  Acceptance: `gh repo create danheinz/BrainHarbor --private`; git init'd; first
+  Acceptance: `gh repo create badsonstudios/BrainHarbor --private`; git init'd; first
   commit contains PLAN.md, docs/, .claude/, PROGRESS.md, .gitignore; pushed;
   `.claude/.env` confirmed untracked.
   Refs: architecture.md §8.

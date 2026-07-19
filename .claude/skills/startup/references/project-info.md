@@ -31,5 +31,5 @@ weekends.
 ## Links
 
 - **Domain:** brainharbor.org (registration is a `[user]` backlog item; changed from .net 2026-07-18).
-- **Repo:** private GitHub under `danheinz` (created at WI-002).
+- **Repo:** private GitHub at `badsonstudios/BrainHarbor` (created at WI-002).
 - **Hosting (from M4):** Azure App Service B1 + PostgreSQL Flexible B1ms.
