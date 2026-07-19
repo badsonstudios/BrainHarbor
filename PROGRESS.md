@@ -35,6 +35,7 @@
   palette, spacing), real `_Layout` shell (landmarks, v1 nav, footer
   disclaimer), print.css (print-to-PDF verified), WI-005 htmx demo deleted,
   WebApplicationFactory render test added. Review clean, fixes applied.
+  PR [#2](https://github.com/badsonstudios/BrainHarbor/pull/2).
 - **2026-07-19** — **M0 closed**: WI-001 done (Dan bought brainharbor.org);
   PR #1 squash-merged to `main` (ce5929d) after Dan's review; `auto/M0`
   deleted. Secrets follow-ups all resolved same day.
