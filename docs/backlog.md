@@ -60,7 +60,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M1 — Design system & shell
 
-- [ ] **WI-101 Design tokens + base layout + print stylesheet**
+- [x] **WI-101 Design tokens + base layout + print stylesheet**
   Goal: the accessible visual foundation (audience constraint, not polish).
   Acceptance: `_Layout` with semantic landmarks + skip link; CSS custom
   properties (type scale ≥18px base, spacing, high-contrast palette); visible

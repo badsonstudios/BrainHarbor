@@ -9,13 +9,17 @@
 
 | | |
 |---|---|
-| **Phase** | M0 — Skeleton — **COMPLETE & MERGED** (all items incl. WI-001) |
+| **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | nothing mid-flight |
-| **Next up** | M1 — WI-101 Design tokens + base layout + print stylesheet (`/next-item` or `/autopilot M1`) |
+| **Next up** | WI-102 Large-text toggle + a11y smoke test |
 | **Blockers** | none |
 
 ## Notes for the next session
 
+- **Nav links are intentionally dead** (WI-101): /research, /trials, /digest,
+  /get-help-now render bare 404s until their items land (WI-103, M2, M4).
+  Custom 404/500 + these targets must exist before anyone outside dev sees
+  the site.
 - **M0 fully closed 2026-07-19**: PR #1 squash-merged to `main` (ce5929d),
   `auto/M0` deleted; brainharbor.org purchased (WI-001); `.env` populated;
   NCBI + SYNC keys in user-secrets. No open follow-ups.
@@ -27,6 +31,10 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-101 done**: design tokens (18px-base scale, AA/AAA
+  palette, spacing), real `_Layout` shell (landmarks, v1 nav, footer
+  disclaimer), print.css (print-to-PDF verified), WI-005 htmx demo deleted,
+  WebApplicationFactory render test added. Review clean, fixes applied.
 - **2026-07-19** — **M0 closed**: WI-001 done (Dan bought brainharbor.org);
   PR #1 squash-merged to `main` (ce5929d) after Dan's review; `auto/M0`
   deleted. Secrets follow-ups all resolved same day.
