@@ -165,7 +165,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   the same batch twice; source_sync_state updated on success.
   Refs: architecture.md §4, security reference. Depends on: WI-201.
 
-- [ ] **WI-203 Pipeline skeleton + sync client**
+- [x] **WI-203 Pipeline skeleton + sync client**
   Goal: the console app frame every fetcher plugs into.
   Acceptance: config binding (base URL, API key via user-secrets), typed
   sync-API client, `--once` run mode, structured console logging, per-source

@@ -33,9 +33,13 @@ public sealed class KestrelWebApplicationFactory : WebApplicationFactory<Program
 
     public void EnsureServer() => _ = CreateClient();
 
+    /// <summary>Key the Pipeline's client uses in WI-203 integration tests.</summary>
+    public const string SyncApiKey = "kestrel-test-sync-key-0123456789";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:BrainHarbor", ConnectionString);
+        builder.UseSetting("SYNC_API_KEY", SyncApiKey);
     }
 
     protected override IHost CreateHost(IHostBuilder builder)

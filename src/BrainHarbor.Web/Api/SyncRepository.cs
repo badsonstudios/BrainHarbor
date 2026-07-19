@@ -218,6 +218,34 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
     }
 
     /// <summary>
+    /// Advances a source's cursor with no items to store. Returns false for an
+    /// unknown source rather than creating a phantom row on the health page.
+    /// </summary>
+    public async Task<bool> AdvanceCursorAsync(
+        string source, string cursor, CancellationToken cancellationToken)
+    {
+        if (!ValidSources.Contains(source))
+        {
+            return false;
+        }
+
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        await connection.ExecuteAsync(new CommandDefinition(
+            """
+            INSERT INTO source_sync_state (source, last_success_at, last_error, cursor)
+            VALUES (@source, now(), NULL, @cursor)
+            ON CONFLICT (source) DO UPDATE SET
+                last_success_at = now(),
+                last_error = NULL,
+                cursor = @cursor
+            """,
+            new { source, cursor },
+            cancellationToken: cancellationToken));
+
+        return true;
+    }
+
+    /// <summary>
     /// Belt-and-braces validation. The database CHECK constraints are the real
     /// guarantee; this turns a would-be 500 into a per-item error message the
     /// pipeline can log and act on.

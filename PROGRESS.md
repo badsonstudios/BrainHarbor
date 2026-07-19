@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-203 Pipeline skeleton + sync client |
+| **Next up** | WI-204 PubMed fetcher + hard-rule pre-filter |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -40,6 +40,20 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-203 done** (autopilot M2): Pipeline host (user-secrets
+  config + validation, structured console logging, distinct exit codes for
+  Task Scheduler, retry/backoff), typed sync client (chunking, cursor only on
+  the last chunk, actionable auth errors, never logs the key), ISourceFetcher
+  abstraction, and a runner with per-source isolation. Review caught a
+  **blocker**: `Enumerable.Chunk` yields no chunks for an empty list, so the
+  "advance the cursor when nothing is new" call made no HTTP request at all —
+  a source's window could never move forward and would refetch a
+  forever-growing range. My unit test had passed because it asserted the
+  *stub's* recorded call, not the real client (mock hiding the bug). Added a
+  real `/api/sync/cursor` endpoint + real-server tests. Also: AlwaysUpload so
+  ClinicalTrials.gov updates aren't dropped by the new-only filter, full
+  contract round-trip test, unknown-arg rejection, args no longer bind config
+  (would put the key in the process list). 203/203.
 - **2026-07-19** — **WI-202 done** (autopilot M2): sync API (state/check/items)
   with API-key auth (constant-time, fails CLOSED → 503 if unconfigured),
   key-partitioned rate limiting, per-item validation, and an idempotent

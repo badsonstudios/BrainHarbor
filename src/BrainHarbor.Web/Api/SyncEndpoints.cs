@@ -48,6 +48,24 @@ public static class SyncEndpoints
                 await repository.FindNewAsync(request.Keys, cancellationToken)));
         });
 
+        // Advance a cursor with nothing to upload (the window held only
+        // already-known items). Separate from /items so an empty upload stays
+        // an error rather than an ambiguous no-op.
+        group.MapPost("/cursor", async (
+            CursorRequest? request, SyncRepository repository, CancellationToken cancellationToken) =>
+        {
+            if (request is null ||
+                string.IsNullOrWhiteSpace(request.Source) ||
+                string.IsNullOrWhiteSpace(request.Cursor))
+            {
+                return Results.BadRequest(new { error = "source and cursor are required" });
+            }
+
+            return await repository.AdvanceCursorAsync(request.Source, request.Cursor, cancellationToken)
+                ? Results.Ok()
+                : Results.BadRequest(new { error = $"unknown source '{request.Source}'" });
+        });
+
         group.MapPost("/items", async (
             UploadRequest? request, SyncRepository repository,
             ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>
