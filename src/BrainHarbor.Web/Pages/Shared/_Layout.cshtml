@@ -1,5 +1,12 @@
+@using BrainHarbor.Web.Middleware
+@{
+    var isLargeText = TextSize.IsLarge(Context);
+    // Plain-link toggle (no-JS fallback): middleware turns the querystring
+    // into the cookie and redirects back to the clean URL.
+    var toggleHref = TextSize.ToggleHref(Context);
+}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="@(isLargeText ? "text-large" : null)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,6 +29,10 @@
                     <li><a class="nav-cta" href="/get-help-now">Get Help Now</a></li>
                 </ul>
             </nav>
+            <a class="text-toggle" href="@toggleHref">
+                <span aria-hidden="true">Aa</span>
+                @(isLargeText ? "Standard text" : "Larger text")
+            </a>
         </div>
     </header>
     <main id="main-content" class="container">

@@ -67,7 +67,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   focus states; print.css produces a clean print of a sample page.
   Refs: PLAN.md §3, sitemap.md nav model. Depends on: WI-005.
 
-- [ ] **WI-102 Large-text toggle + a11y smoke test**
+- [x] **WI-102 Large-text toggle + a11y smoke test**
   Goal: WCAG AA is enforced by tooling from the start.
   Acceptance: large-text toggle (cookie-persisted, no-JS fallback via
   querystring); Playwright + axe-core smoke test on the shell passes with 0

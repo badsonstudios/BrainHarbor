@@ -38,5 +38,9 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
+      # WI-102: the a11y smoke tests drive headless Chromium via Playwright.
+      - name: Install Playwright browsers
+        run: pwsh tests/BrainHarbor.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+
       - name: Test
         run: dotnet test --no-build --configuration Release

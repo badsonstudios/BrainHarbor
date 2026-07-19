@@ -1,4 +1,5 @@
 using BrainHarbor.Web.Database;
+using BrainHarbor.Web.Middleware;
 using BrainHarbor.Web.Services;
 using Npgsql;
 
@@ -30,6 +31,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<TextSizeMiddleware>();
 
 app.UseRouting();
 

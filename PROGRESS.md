@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
 | **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-102 Large-text toggle + a11y smoke test |
+| **Next up** | WI-103 Helpline band + /get-help-now |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,12 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **WI-102 done** (autopilot): large-text mode (22px base)
+  via cookie-persisting middleware, plain-link toggle in the header (proven
+  with JS disabled in Playwright); axe-core smoke tests on the shell in both
+  text modes, 0 serious/critical; Kestrel dual-host test factory; CI installs
+  Chromium. Review found an open-redirect blocker (protocol-relative path) —
+  fixed + regression-tested; Secure cookie flag + shared URL helper applied.
 - **2026-07-19** — **WI-108 done** (autopilot): Clear & Kind theme folded into
   site.css (new palette, band/card/badge tokens, 72rem container + 46rem read
   column), nav-cta pill, footer link list + ai-note, home rebuilt as Entry Hub

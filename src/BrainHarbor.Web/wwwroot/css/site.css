@@ -75,6 +75,13 @@ html {
   font-size: 112.5%;
 }
 
+/* Large-text mode (WI-102): 137.5% = 22px base. Everything downstream is
+   rem-based, so the whole scale rides along. Set server-side from the
+   bh_textsize cookie — works with JavaScript disabled. */
+html.text-large {
+  font-size: 137.5%;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -292,6 +299,25 @@ textarea {
 .site-nav a.nav-cta:hover {
   background: var(--color-accent-strong);
   color: var(--color-band-ink);
+}
+
+/* Large-text toggle — an outlined pill so it reads as a control, not a link. */
+.text-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  color: var(--color-accent-strong);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.text-toggle:hover {
+  text-decoration: underline;
+  color: var(--color-accent-strong);
 }
 
 main {
