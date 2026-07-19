@@ -7,7 +7,7 @@ namespace BrainHarbor.Tests;
 /// a wrongly-dropped study is invisible to patients forever, while a
 /// wrongly-kept one costs a few tokens and gets filtered downstream.
 /// </summary>
-public class PubMedPreFilterTests
+public class BrainTumorPreFilterTests
 {
     [Theory]
     [InlineData("Vorasidenib in IDH-mutant low-grade glioma")]
@@ -20,7 +20,7 @@ public class PubMedPreFilterTests
     [InlineData("Pediatric medulloblastoma survival trends")]
     public void KeepsBrainTumorResearch(string title)
     {
-        Assert.False(PubMedPreFilter.ShouldExclude(title));
+        Assert.False(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     [Theory]
@@ -31,7 +31,7 @@ public class PubMedPreFilterTests
     public void KeepsOtherCancersWhenTheyReachTheBrain(string title)
     {
         // The single most important keep-case: these patients are our audience.
-        Assert.False(PubMedPreFilter.ShouldExclude(title));
+        Assert.False(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     [Theory]
@@ -42,7 +42,7 @@ public class PubMedPreFilterTests
     public void PluralAndSuffixedFormsStillMatchTheKeepList(string title)
     {
         // A trailing \b in the keep-list regex silently failed on every plural.
-        Assert.False(PubMedPreFilter.ShouldExclude(title));
+        Assert.False(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     [Theory]
@@ -51,7 +51,7 @@ public class PubMedPreFilterTests
     [InlineData("Prostate cancer active surveillance outcomes")]
     public void DropsWrongOrganCancers(string title)
     {
-        Assert.True(PubMedPreFilter.ShouldExclude(title));
+        Assert.True(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     [Theory]
@@ -61,7 +61,7 @@ public class PubMedPreFilterTests
     [InlineData("Multiple sclerosis relapse rates on new therapy")]
     public void DropsUnrelatedNeurology(string title)
     {
-        Assert.True(PubMedPreFilter.ShouldExclude(title));
+        Assert.True(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     [Theory]
@@ -74,7 +74,7 @@ public class PubMedPreFilterTests
     [InlineData("Table of contents")]
     public void DropsNoticesAndFrontMatterEvenWhenOnTopic(string title)
     {
-        Assert.True(PubMedPreFilter.ShouldExclude(title));
+        Assert.True(BrainTumorPreFilter.ShouldExclude(title));
     }
 
     // ---------- regressions: titles that were WRONGLY DROPPED ----------
@@ -101,7 +101,7 @@ public class PubMedPreFilterTests
     [InlineData("Dementia and cognitive decline after whole-brain radiotherapy")]
     public void RegressionKeepsResearchThatWasPreviouslyDropped(string title)
     {
-        Assert.False(PubMedPreFilter.ShouldExclude(title),
+        Assert.False(BrainTumorPreFilter.ShouldExclude(title),
             $"'{title}' is relevant to this audience and must not be dropped");
     }
 
@@ -112,29 +112,29 @@ public class PubMedPreFilterTests
         const string abstractText =
             "We tested the approach in patients with recurrent glioblastoma.";
 
-        Assert.True(PubMedPreFilter.ShouldExclude(title, "Patients with metastatic breast cancer were enrolled."));
-        Assert.False(PubMedPreFilter.ShouldExclude(title, abstractText));
+        Assert.True(BrainTumorPreFilter.ShouldExclude(title, "Patients with metastatic breast cancer were enrolled."));
+        Assert.False(BrainTumorPreFilter.ShouldExclude(title, abstractText));
     }
 
     [Fact]
     public void AmbiguousTitlesAreKeptWhenNoRuleFires()
     {
         // Keep-biased: no evidence to drop means keep.
-        Assert.False(PubMedPreFilter.ShouldExclude("A novel therapeutic approach in oncology"));
-        Assert.False(PubMedPreFilter.ShouldExclude("Patient-reported outcomes after radiotherapy"));
+        Assert.False(BrainTumorPreFilter.ShouldExclude("A novel therapeutic approach in oncology"));
+        Assert.False(BrainTumorPreFilter.ShouldExclude("Patient-reported outcomes after radiotherapy"));
     }
 
     [Fact]
     public void EmptyTitleIsDropped()
     {
-        Assert.True(PubMedPreFilter.ShouldExclude(""));
-        Assert.True(PubMedPreFilter.ShouldExclude("   "));
+        Assert.True(BrainTumorPreFilter.ShouldExclude(""));
+        Assert.True(BrainTumorPreFilter.ShouldExclude("   "));
     }
 
     [Fact]
     public void MatchingIsCaseInsensitive()
     {
-        Assert.False(PubMedPreFilter.ShouldExclude("GLIOBLASTOMA outcomes"));
-        Assert.True(PubMedPreFilter.ShouldExclude("ERRATUM: something"));
+        Assert.False(BrainTumorPreFilter.ShouldExclude("GLIOBLASTOMA outcomes"));
+        Assert.True(BrainTumorPreFilter.ShouldExclude("ERRATUM: something"));
     }
 }

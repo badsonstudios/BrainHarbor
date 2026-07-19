@@ -92,7 +92,7 @@ public sealed class PubMedFetcher(
         }
 
         var items = await FetchDetailsAsync(pmids, cancellationToken);
-        var kept = items.Where(i => !PubMedPreFilter.ShouldExclude(i.Title, i.RawSummary)).ToList();
+        var kept = items.Where(i => !BrainTumorPreFilter.ShouldExclude(i.Title, i.RawSummary)).ToList();
 
         if (kept.Count < items.Count)
         {

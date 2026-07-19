@@ -97,6 +97,45 @@ public static class PipelineHost
         .AddStandardResilienceHandler();
         builder.Services.AddTransient<ISourceFetcher>(sp => sp.GetRequiredService<PubMedFetcher>());
 
+        // News feeds (WI-205). Each carries its own licensing policy; see
+        // RssFeedDefinition — NCI is public domain, ScienceDaily is
+        // headline + teaser + link only.
+        builder.Services.AddHttpClient("rss", client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(60);
+            client.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue("BrainHarborPipeline", "1.0"));
+        })
+        .AddStandardResilienceHandler();
+
+        foreach (var feed in new[] { RssFeedDefinition.Nci, RssFeedDefinition.ScienceDaily })
+        {
+            var definition = feed;
+            builder.Services.AddTransient<ISourceFetcher>(sp => new RssFetcher(
+                sp.GetRequiredService<IHttpClientFactory>().CreateClient("rss"),
+                sp.GetRequiredService<ILogger<RssFetcher>>(),
+                definition));
+        }
+
+        // Preprints (WI-206) — metadata only, permanently badged.
+        builder.Services.AddHttpClient("preprint", client =>
+        {
+            client.BaseAddress = new Uri("https://api.biorxiv.org/");
+            client.Timeout = TimeSpan.FromSeconds(60);
+            client.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue("BrainHarborPipeline", "1.0"));
+        })
+        .AddStandardResilienceHandler();
+
+        foreach (var preprintServer in new[] { "medrxiv", "biorxiv" })
+        {
+            var name = preprintServer;
+            builder.Services.AddTransient<ISourceFetcher>(sp => new PreprintFetcher(
+                sp.GetRequiredService<IHttpClientFactory>().CreateClient("preprint"),
+                sp.GetRequiredService<ILogger<PreprintFetcher>>(),
+                name));
+        }
+
         builder.Services.AddTransient<PipelineRunner>();
 
         using var host = builder.Build();

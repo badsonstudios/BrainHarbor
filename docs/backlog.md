@@ -181,14 +181,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   pending with raw titles.
   Refs: PLAN.md §5, roadmap M2. Depends on: WI-203.
 
-- [ ] **WI-205 RSS fetchers: NCI + ScienceDaily**
+- [x] **WI-205 RSS fetchers: NCI + ScienceDaily**
   Goal: the news sources, licensing rules respected.
   Acceptance: NCI RSS (full text OK) and ScienceDaily brain-tumor feed
   (headline+summary+link ONLY) fetchers; per-source licensing enforced in
   code; dedupe against existing items via /check; tests with recorded feeds.
   Refs: PLAN.md §5. Depends on: WI-203.
 
-- [ ] **WI-206 Preprint fetcher: medRxiv/bioRxiv**
+- [x] **WI-206 Preprint fetcher: medRxiv/bioRxiv**
   Goal: preprints in the pipeline, permanently badged.
   Acceptance: metadata-only fetcher; `source_kind='preprint'` forced; items
   can never carry `patient_relevant` (rule + test); "not peer-reviewed"

@@ -21,7 +21,7 @@ namespace BrainHarbor.Pipeline.Sources;
 /// Both mistakes silently dropped real brain-tumor research before they were
 /// caught. Any new rule needs a regression test with a real-looking title.
 /// </summary>
-public static partial class PubMedPreFilter
+public static partial class BrainTumorPreFilter
 {
     /// <summary>
     /// If any of these appear, the item stays. Deliberately broad: it covers

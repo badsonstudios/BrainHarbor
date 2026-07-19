@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-205 RSS fetchers: NCI + ScienceDaily |
+| **Next up** | WI-207 Admin auth |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,22 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-19** — **WI-205 + WI-206 done** (autopilot M2): NCI + ScienceDaily
+  RSS fetchers with per-source licensing enforced in the type system
+  (FeedTextPolicy; ScienceDaily is headline+teaser+link only, and the enum
+  now fails closed), and medRxiv/bioRxiv preprints with source_kind forced to
+  "preprint" at all three layers. Review probed the LIVE APIs and found two
+  silent breakages: the NCI feed URL 404d (would have failed every run
+  forever — corrected to the publishedcontent path, verified 200/10 items),
+  and the preprint API pages at 30 not 100, so the fetcher read 30 of ~745
+  records and then advanced the cursor past the rest. Paging now follows the
+  API's own total and a truncated window advances only to the newest record
+  actually read. Also: relevance is judged on the FULL description before the
+  licence truncates it (the teaser cut was dropping breast-cancer items whose
+  brain-metastases mention fell past the cut), empty feeds warn instead of
+  looking healthy, and PubMedPreFilter is renamed BrainTumorPreFilter now
+  that three sources share it. 296/296.
 
 - **2026-07-19** — **WI-204 done** (autopilot M2): PubMed fetcher (paged
   esearch + efetch XML, self-healing reldate window, NCBI throttling and key)
