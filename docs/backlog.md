@@ -17,7 +17,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M0 — Skeleton ($0 hosting)
 
-- [ ] **WI-001 `[user]` Buy brainharbor.org**
+- [x] **WI-001 `[user]` Buy brainharbor.org**
   Goal: own the domain before someone else does (~$12/yr; only spend until M4).
   Acceptance: registered, auto-renew on. No DNS setup needed yet.
 

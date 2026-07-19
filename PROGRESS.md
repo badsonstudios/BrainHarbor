@@ -9,31 +9,27 @@
 
 | | |
 |---|---|
-| **Phase** | M0 — Skeleton — **COMPLETE** (pending Dan's review/merge of PR #1) |
+| **Phase** | M0 — Skeleton — **COMPLETE & MERGED** (all items incl. WI-001) |
 | **In progress** | nothing mid-flight |
-| **Next up** | Dan: review + merge PR #1, do the follow-ups below; then M1 (WI-101) — `/pm` if M1 needs re-triage first |
+| **Next up** | M1 — WI-101 Design tokens + base layout + print stylesheet (`/next-item` or `/autopilot M1`) |
 | **Blockers** | none |
 
 ## Notes for the next session
 
-- **M0 shipped via autopilot on `auto/M0`, draft PR #1 awaiting Dan** —
-  CI green on the PR tip. Squash-merge recommended, then
-  `git checkout main && git pull`.
-- **Dan's follow-ups from the run:**
-  1. WI-001: buy **brainharbor.org**.
-  2. ~~GitHub account~~ **resolved 2026-07-19**: Dan confirmed the account is
-     **badsonstudios**; all doc references updated.
-  3. ~~Populate `.claude/.env`~~ **done 2026-07-19** (all vars set except the
-     intentionally-empty GITHUB_TOKEN).
-  4. ~~NCBI_API_KEY~~ **done 2026-07-19** — in `.env` and Pipeline user-secrets.
+- **M0 fully closed 2026-07-19**: PR #1 squash-merged to `main` (ce5929d),
+  `auto/M0` deleted; brainharbor.org purchased (WI-001); `.env` populated;
+  NCBI + SYNC keys in user-secrets. No open follow-ups.
 - Planning and design are **done** — `PLAN.md` + `docs/*.md` are the spec,
   `docs/backlog.md` is the itemized plan (M0–M4; P2a–P3 not yet decomposed).
 - Solution note: SDK 10 generated `BrainHarbor.slnx` (new XML solution
   format) rather than `.sln`; `dotnet build/test` handle it fine.
-- After merge: `/next-item` for WI-101, or `/autopilot M1`.
+- Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
 
+- **2026-07-19** — **M0 closed**: WI-001 done (Dan bought brainharbor.org);
+  PR #1 squash-merged to `main` (ce5929d) after Dan's review; `auto/M0`
+  deleted. Secrets follow-ups all resolved same day.
 - **2026-07-18** — **Autopilot M0 run COMPLETE**: WI-002..WI-006 shipped on
   `auto/M0` (PR #1, draft), CI green on the tip. WI-001 `[user]` outstanding.
 - **2026-07-18** — **WI-006 done** (autopilot): GitHub Actions CI — build +
