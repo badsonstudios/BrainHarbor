@@ -19,6 +19,11 @@
 
     @Html.Raw(Model.Article.Html)
 
+    @if (Model.Article.FrontMatter.Disclaimers.Count > 0)
+    {
+        <partial name="_Disclaimers" model="Model.Article.FrontMatter.Disclaimers" />
+    }
+
     <div class="provenance">
         @if (Model.Article.FrontMatter.Reviewed is { } reviewed)
         {

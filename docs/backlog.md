@@ -107,7 +107,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   known-grade sample texts.
   Refs: content-pipeline.md §5. Depends on: WI-104, WI-006.
 
-- [ ] **WI-107 Write the static shell pages**
+- [x] **WI-107 Write the static shell pages**
   Goal: the ~6 hand-written pages that make the shell honest.
   Acceptance: home shell (Entry Hub copy per the design handoff), /about,
   /how-we-write v0, /start (interim; handoff's /start-here does not override

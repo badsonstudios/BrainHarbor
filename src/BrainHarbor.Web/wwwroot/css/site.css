@@ -664,6 +664,18 @@ main {
   margin-block-end: var(--space-3);
 }
 
+/* ---------- Disclaimers (WI-107) ---------- */
+
+.disclaimer {
+  background: var(--color-surface);
+  border-inline-start: 6px solid var(--color-ink-muted);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block: var(--space-5);
+}
+
+.disclaimer p:last-child { margin-block-end: 0; }
+
 /* ---------- Digest signup ---------- */
 
 .digest-signup {

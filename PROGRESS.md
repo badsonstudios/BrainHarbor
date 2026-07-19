@@ -10,11 +10,30 @@
 | | |
 |---|---|
 | **Phase** | M1 — Design system & shell (M0 complete & merged) |
-| **In progress** | **Autopilot M1 run** (started 2026-07-19, branch `auto/M1`) — item order: WI-108 → 102 → 103 → 109 → 104 → 105 → 106 → 107 |
-| **Next up** | WI-107 Write the static shell pages |
+| **In progress** | nothing mid-flight — **M1 complete** on `auto/M1` (PR #3, draft), awaiting Dan's review + merge |
+| **Next up** | Dan: visual review of PR #3 (see checklist below), then merge; then `/autopilot M2` |
 | **Blockers** | none |
 
 ## Notes for the next session
+
+### Dan's visual-review checklist for PR #3 (M1)
+
+Run `dotnet run --project src/BrainHarbor.Web` (Docker Postgres up first),
+then eyeball — this is the part autopilot cannot do:
+
+1. **`/`** — Entry Hub: three doors, spacing, the teal, does it feel calm?
+2. **Larger text** (header toggle) — does anything break or overflow at 22px?
+3. **`/dev/styleguide`** — all 7 stage badges side by side. The dot-meter is
+   the core trust device; does 5/5 vs 1/5 read instantly?
+4. **`/about`** — a curated Markdown page end-to-end (tooltip on "glioma",
+   disclaimer box, provenance).
+5. **`/glossary`** — click a dotted term on any page, check the popover.
+6. **`/start`** — the emergency red-flag block: is it findable and calm?
+7. **`/get-help-now`** — big tap targets, phone links.
+8. **Print preview `/about`** (Ctrl+P) — chrome gone, ink on white.
+9. **A dead link** (e.g. `/nope`) — friendly 404 with helpline band.
+
+### Standing notes
 
 - **Approved visual design lives at `docs/design/entry-hub-handoff/`** ("Clear
   & Kind" theme + Entry Hub home, from Claude Design 2026-07-19). It is the
@@ -24,10 +43,11 @@
   sitemap.md (/get-help, /start-here) do NOT override the sitemap
   (/get-help-now, /start). The handoff folder is not yet committed — it goes
   in with WI-108's branch.
-- **Nav links are intentionally dead** (WI-101): /research, /trials, /digest,
-  /get-help-now render bare 404s until their items land (WI-103, M2, M4).
-  Custom 404/500 + these targets must exist before anyone outside dev sees
-  the site.
+- **Remaining dead links after M1**: only `/research` (M2) and `/trials` (M4).
+  `/get-help-now`, `/digest`, `/glossary`, `/about`, `/how-we-write`,
+  `/start`, `/privacy`, `/terms` are all live, and a `ShellPagesTests` link
+  check fails the build if any *other* internal link 404s. Custom 404/500
+  pages exist (WI-103), so the dead nav targets degrade gracefully.
 - **M0 fully closed 2026-07-19**: PR #1 squash-merged to `main` (ce5929d),
   `auto/M0` deleted; brainharbor.org purchased (WI-001); `.env` populated;
   NCBI + SYNC keys in user-secrets. No open follow-ups.
@@ -39,6 +59,19 @@
 
 ## Log (newest first)
 
+- **2026-07-19** — **M1 COMPLETE** (autopilot): all 8 items shipped on
+  `auto/M1`, 112/112 tests, ContentCheck clean, 0 build warnings. Awaiting
+  Dan's visual review + merge of PR #3. Nothing merged to `main` by autopilot.
+- **2026-07-19** — **WI-107 done** (autopilot): six curated shell pages
+  (/about, /how-we-write, /start, /digest, /privacy, /terms) at reading
+  grades 2.5–4.8; disclaimer partial rendering from front-matter flags;
+  scaffolded Razor Privacy page deleted so /privacy is curated content.
+  Review caught 3 blockers in the COPY, all fixed: /start had no emergency
+  red flags before its calming copy (now leads with 911 signs), three "what
+  to do next" CTAs pointed at the unbuilt /research, and a typo'd disclaimer
+  flag rendered an empty box instead of the medical disclaimer (now a
+  ContentCheck failure). Privacy/how-we-write claims trimmed to what the
+  code actually does today.
 - **2026-07-19** — **WI-106 done** (autopilot): tools/BrainHarbor.ContentCheck
   — Flesch-Kincaid gate (fail >8.5, warn ≥7.5) with block-aware sentence
   extraction (headings/bullets don't inflate the grade — review measured

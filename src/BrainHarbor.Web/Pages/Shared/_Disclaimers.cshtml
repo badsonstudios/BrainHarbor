@@ -1,0 +1,46 @@
+@model IReadOnlyList<string>
+
+@* WI-107: disclaimers render from front-matter flags (content-pipeline §3
+   `disclaimers: [medical, benefits, legal]`). Plain language, calm framing —
+   these are honesty, not legal throat-clearing.
+
+   Each case owns its wrapper: an unknown flag (typo) must render NOTHING
+   rather than an empty box that looks like a disclaimer was shown. The
+   ContentCheck gate fails the build on unknown flags so the typo can never
+   silently delete a required medical disclaimer. *@
+
+@foreach (var disclaimer in Model)
+{
+    switch (disclaimer)
+    {
+        case "medical":
+            <div class="disclaimer">
+                <p>
+                    <strong>This is not medical advice.</strong> It explains
+                    research in plain words. Your care team knows your case.
+                    Talk with them before you make any decision about your
+                    treatment.
+                </p>
+            </div>
+            break;
+
+        case "benefits":
+            <div class="disclaimer">
+                <p>
+                    <strong>This is not legal or benefits advice.</strong>
+                    Rules change and every case is different. Check with the
+                    agency or a benefits counselor before you act.
+                </p>
+            </div>
+            break;
+
+        case "legal":
+            <div class="disclaimer">
+                <p>
+                    <strong>This is not legal advice.</strong> Talk with a
+                    lawyer about your own situation.
+                </p>
+            </div>
+            break;
+    }
+}

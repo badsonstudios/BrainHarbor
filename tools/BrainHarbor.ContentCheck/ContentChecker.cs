@@ -19,6 +19,9 @@ public static class ContentChecker
     public const double FailGrade = 8.5;
     public const double WarnGrade = 7.5;
 
+    /// <summary>Flags _Disclaimers.cshtml knows how to render.</summary>
+    public static readonly string[] KnownDisclaimers = ["medical", "benefits", "legal"];
+
     public static List<Finding> CheckAll(string pagesRoot, string? glossaryRoot, DateOnly today)
     {
         var findings = new List<Finding>();
@@ -105,6 +108,14 @@ public static class ContentChecker
         {
             findings.Add(new(FindingLevel.Warn, relativePath,
                 $"review overdue since {due:yyyy-MM-dd}"));
+        }
+
+        // A typo'd flag renders no disclaimer at all — on a medical page that
+        // is a safety failure, so it fails the build rather than warning.
+        foreach (var flag in page.FrontMatter.Disclaimers.Where(d => !KnownDisclaimers.Contains(d)))
+        {
+            findings.Add(new(FindingLevel.Fail, relativePath,
+                $"unknown disclaimer flag '{flag}' — nothing would render; expected one of {string.Join(", ", KnownDisclaimers)}"));
         }
 
         return findings;
