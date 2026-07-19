@@ -1,6 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <!-- Helpers like slug generation are internal but need direct unit tests. -->
+    <InternalsVisibleTo Include="BrainHarbor.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Database\Scripts\*.sql" />
     <!-- Curated Markdown pages (WI-104) + glossary terms (WI-105) must
          survive dotnet publish. -->

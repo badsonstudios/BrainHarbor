@@ -1,0 +1,72 @@
+@using BrainHarbor.Web.Admin
+@model ReviewItem
+
+@* One queue row (WI-208). The reviewer sees the source text and the badge a
+   reader would see, side by side, so the decision is made on what will
+   actually be published. *@
+
+<li class="card" id="review-item-@Model.Id">
+    <partial name="_StageBadge" model="Model.Badge" />
+
+    @if (Model.SummaryFlagged)
+    {
+        <p class="disclaimer">
+            <strong>Flagged.</strong> A reader reported a problem, or an
+            automatic check failed. Read this one closely.
+        </p>
+    }
+
+    <h3>@(Model.PlainTitle ?? Model.Title)</h3>
+
+    @if (Model.PlainTitle is not null)
+    {
+        <p class="original-title">Original title: @Model.Title</p>
+    }
+
+    @if (Model.PlainSummary is not null)
+    {
+        <p>@Model.PlainSummary</p>
+    }
+    else
+    {
+        <p class="text-muted">
+            No plain-language summary yet — the summarizer lands in M3.
+        </p>
+    }
+
+    @* Source text is licensed as pipeline input only (data-model.md); it is
+       shown to a signed-in reviewer for comparison, never on a public page. *@
+    @if (Model.RawSummary is not null)
+    {
+        <details>
+            <summary>Source text</summary>
+            <p class="text-muted">@Model.RawSummary</p>
+        </details>
+    }
+
+    <p class="card__meta">
+        @foreach (var tag in Model.TumorTags)
+        {
+            <span class="tag">@tag</span>
+        }
+        <span>
+            @(Model.PublishedAt?.ToString("MMMM d, yyyy",
+                System.Globalization.CultureInfo.InvariantCulture) ?? "no date")
+            · @Model.Source
+        </span>
+        <a href="@Model.Url" target="_blank" rel="noopener noreferrer">Open source ↗</a>
+    </p>
+
+    <form method="post" asp-page="/Admin/Queue" asp-page-handler="Decide"
+          hx-post="/admin/queue?handler=Decide"
+          hx-target="#review-item-@Model.Id"
+          hx-swap="outerHTML">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <label for="note-@Model.Id">Correction note (shown publicly if set)</label><br />
+        <input id="note-@Model.Id" type="text" name="note" />
+        <p>
+            <button type="submit" name="action" value="Approved">Approve</button>
+            <button type="submit" name="action" value="Rejected">Reject</button>
+        </p>
+    </form>
+</li>

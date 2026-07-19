@@ -1,0 +1,49 @@
+@page "/admin/queue"
+@model BrainHarbor.Web.Pages.Admin.QueueModel
+@{
+    ViewData["Title"] = "Review queue";
+}
+
+@* WI-208: the human gate. Nothing on this site reaches a reader until
+   someone approves it here. htmx swaps a row out on decision; without
+   JavaScript the same forms post normally and the page re-renders. *@
+
+<h1>Review queue</h1>
+
+@if (!Model.TwoFactorEnabled)
+{
+    <div class="disclaimer" role="alert">
+        <p>
+            <strong>Two-factor is not on for your account.</strong> Approving
+            an item publishes medical content to patients.
+            <a href="/admin/two-factor">Turn on two-factor</a>.
+        </p>
+    </div>
+}
+
+<p>
+    <strong>@Model.PendingCount</strong> item(s) waiting.
+    @if (Model.PendingCount > 0)
+    {
+        <text>Flagged items are listed first.</text>
+    }
+</p>
+
+@if (Model.Items.Count == 0)
+{
+    <p>Nothing to review. The pipeline uploads new items as it finds them.</p>
+}
+
+<ul class="feed-grid" id="review-queue">
+    @foreach (var item in Model.Items)
+    {
+        <partial name="_ReviewRow" model="item" />
+    }
+</ul>
+
+@if (Model.HasMore)
+{
+    <p>
+        <a href="/admin/queue?page=@(Model.Page + 1)">Next page →</a>
+    </p>
+}

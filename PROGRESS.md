@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-208 Review queue v0 |
+| **Next up** | WI-209 /research feed |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -39,6 +39,17 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-19** — **WI-208 done** (autopilot M2): the review queue — the
+  human gate itself. Pending items with the badge a READER would see (same
+  mapper the public feed uses, so the decision is made on what actually
+  publishes), source text behind a details toggle for comparison, htmx
+  approve/reject with a no-JS form fallback. Every transition writes an
+  append-only review_events row (who, what, when, note) because "every
+  published summary is human-reviewed" needs to be auditable, not assumed.
+  Status transitions are guarded, so two open tabs can't double-apply, and
+  slugs are generated from the plain-language title on approval with
+  collision handling. Flagged items sort first. 22 new tests. 330/330.
 
 - **2026-07-19** — **WI-207 done** (autopilot M2): admin auth — ASP.NET
   Identity (the only EF Core usage; its tables live in an `identity` schema so

@@ -202,7 +202,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   POSTs; login/lockout tested.
   Refs: security reference. Depends on: WI-004.
 
-- [ ] **WI-208 Review queue v0**
+- [x] **WI-208 Review queue v0**
   Goal: the human gate exists.
   Acceptance: admin list of pending items (newest first, source/kind badges);
   approve → published, reject → rejected (htmx actions, no-JS fallback);
