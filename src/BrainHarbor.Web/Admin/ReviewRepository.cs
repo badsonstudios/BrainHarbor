@@ -35,29 +35,6 @@ public sealed class ReviewItem
     public StageBadge Badge => StageBadge.For(ResearchStageMapper.From(SourceKind, ResearchStage));
 }
 
-/// <summary>
-/// Maps the database's research_stage vocabulary to the UI's ResearchStage
-/// (the mapping documented on the enum in WI-201). Preprints win over
-/// everything: a preprint is never presented as a settled finding.
-/// </summary>
-public static class ResearchStageMapper
-{
-    public static ResearchStage From(string sourceKind, string? researchStage) =>
-        sourceKind switch
-        {
-            "preprint" => ResearchStage.Preprint,
-            "trial_update" => ResearchStage.NewOrUpdatedTrial,
-            _ => researchStage switch
-            {
-                "human_trial" or "observational" => ResearchStage.TestedInPeople,
-                "review_guideline" => ResearchStage.ReviewOfExistingResearch,
-                "preclinical_animal" => ResearchStage.EarlyResearchAnimals,
-                "preclinical_cell" => ResearchStage.EarlyResearchLabCells,
-                _ => ResearchStage.News,
-            },
-        };
-}
-
 public enum ReviewAction { Approved, Rejected, Pulled, Reopened }
 
 /// <summary>

@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-209 /research feed |
+| **Next up** | WI-210 Source health + scheduled task |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -24,7 +24,8 @@
   sitemap.md (/get-help, /start-here) do NOT override the sitemap
   (/get-help-now, /start). The handoff folder is not yet committed — it goes
   in with WI-108's branch.
-- **Remaining dead links after M1**: only `/research` (M2) and `/trials` (M4).
+- **Remaining dead links**: only `/trials` (M4). `/research` went live in
+  WI-209.
   `/get-help-now`, `/digest`, `/glossary`, `/about`, `/how-we-write`,
   `/start`, `/privacy`, `/terms` are all live, and a `ShellPagesTests` link
   check fails the build if any *other* internal link 404s. Custom 404/500
@@ -39,6 +40,18 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-19** — **WI-209 done** (autopilot M2): the public feed. Two
+  safety rules are enforced in the repository rather than a view — only
+  status='published' is ever visible, and early-stage animal/cell work is
+  hidden unless the reader ticks the box (a mouse-study headline reads as
+  false hope). Tumor filters walk the taxonomy tree, so browsing "glioma"
+  surfaces glioblastoma; filter values are normalized against a fixed set and
+  never concatenated into SQL. Item permalinks render the badge with a
+  plain-language explanation of what it means, and refuse to invent a summary
+  when there isn't one. A pulled item's permalink 404s exactly like one that
+  never existed. Tests pin that raw source text never reaches a public page.
+  /research is now live — only /trials remains dead. 348/348.
 
 - **2026-07-19** — **WI-208 done** (autopilot M2): the review queue — the
   human gate itself. Pending items with the badge a READER would see (same

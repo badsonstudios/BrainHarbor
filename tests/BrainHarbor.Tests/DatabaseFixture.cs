@@ -37,6 +37,10 @@ public sealed class DatabaseFixture
                 $"'{builder.Database}'. Tests only run against a local or *test* database.");
         }
 
+        // Tests that open their own connections need the same Dapper type
+        // handlers the app registers at startup.
+        BrainHarbor.Web.Services.DapperTypeHandlers.Register();
+
         MigrationRunner.Run(ConnectionString);
     }
 }

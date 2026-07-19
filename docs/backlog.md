@@ -209,7 +209,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   status transitions audit who/when; tests for transitions.
   Refs: data-model.md lifecycle. Depends on: WI-207, WI-201.
 
-- [ ] **WI-209 /research feed**
+- [x] **WI-209 /research feed**
   Goal: the public product page, v0.
   Acceptance: published items with filters (date, source, kind) as htmx
   partials degrading to querystring links; "load more" paging; items rendered

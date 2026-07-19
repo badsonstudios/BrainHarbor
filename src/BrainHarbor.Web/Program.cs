@@ -81,6 +81,7 @@ builder.Services.AddAuthorizationBuilder()
 // Sync API (WI-202) — the only write surface.
 builder.Services.AddScoped<SyncRepository>();
 builder.Services.AddScoped<BrainHarbor.Web.Admin.ReviewRepository>();
+builder.Services.AddScoped<BrainHarbor.Web.Feed.FeedRepository>();
 // AddEndpointFilter<T> resolves once from the ROOT provider at endpoint build
 // time, so a scoped registration would be a captive-dependency trap later.
 builder.Services.AddSingleton<SyncApiKeyFilter>();
