@@ -110,6 +110,21 @@ public class RssFetcherTests
         Assert.Empty(items);
     }
 
+    [Theory]
+    [InlineData("Sun, 19 Jul 2026 11:00:58 EDT", 2026, 7, 19)]
+    [InlineData("Sat, 27 Jun 2026 18:38:01 EDT", 2026, 6, 27)]
+    [InlineData("Mon, 08 Jun 2026 09:00:00 GMT", 2026, 6, 8)]
+    [InlineData("2026-06-10T12:00:00Z", 2026, 6, 10)]
+    [InlineData("Tue, 09 Jun 2026 14:30:00 -0400", 2026, 6, 9)]
+    public void ParsesTheDateFormatsTheseFeedsActuallyUse(
+        string text, int year, int month, int day)
+    {
+        // ScienceDaily uses named US timezones, which .NET does not parse —
+        // every one of their items came back undated in the WI-211 shakedown,
+        // pinning them to the bottom of the feed forever.
+        Assert.Equal(new DateOnly(year, month, day), RssFetcher.ParseDate(text));
+    }
+
     [Fact]
     public void UnparseableDatesBecomeNullRatherThanFailing()
     {

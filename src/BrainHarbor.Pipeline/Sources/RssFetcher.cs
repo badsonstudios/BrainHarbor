@@ -224,6 +224,21 @@ public sealed partial class RssFetcher(
         return string.Join(' ', stripped.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
     }
 
+    /// <summary>
+    /// RFC 822 permits named US timezones ("EDT", "PST") and ScienceDaily
+    /// uses them, but .NET only parses numeric offsets plus GMT/UT — so every
+    /// one of their items came back undated, which pinned them to the bottom
+    /// of the feed and stopped the cursor advancing (found in the WI-211
+    /// shakedown). Substituting the offset before parsing fixes it.
+    /// </summary>
+    private static readonly Dictionary<string, string> NamedZoneOffsets = new(StringComparer.Ordinal)
+    {
+        ["EST"] = "-0500", ["EDT"] = "-0400",
+        ["CST"] = "-0600", ["CDT"] = "-0500",
+        ["MST"] = "-0700", ["MDT"] = "-0600",
+        ["PST"] = "-0800", ["PDT"] = "-0700",
+    };
+
     internal static DateOnly? ParseDate(string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -231,8 +246,18 @@ public sealed partial class RssFetcher(
             return null;
         }
 
+        var normalized = text.Trim();
+        foreach (var (zone, offset) in NamedZoneOffsets)
+        {
+            if (normalized.EndsWith(zone, StringComparison.Ordinal))
+            {
+                normalized = string.Concat(normalized.AsSpan(0, normalized.Length - zone.Length), offset);
+                break;
+            }
+        }
+
         // RFC 822 (RSS) and ISO 8601 (Atom) both appear in the wild.
-        if (DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture,
+        if (DateTimeOffset.TryParse(normalized, CultureInfo.InvariantCulture,
                 DateTimeStyles.AllowWhiteSpaces, out var parsed))
         {
             return DateOnly.FromDateTime(parsed.UtcDateTime);

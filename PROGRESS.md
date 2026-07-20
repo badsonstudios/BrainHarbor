@@ -10,8 +10,8 @@
 | | |
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
-| **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-211 M2 end-to-end shakedown |
+| **In progress** | nothing mid-flight — **M2 complete** on `auto/M2` (PR #4, draft), awaiting Dan's review + merge |
+| **Next up** | Dan: review + merge PR #4, then `/autopilot M3` |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -40,6 +40,27 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-20** — **WI-211 done — M2 COMPLETE**: live shakedown against the
+  real PubMed, NCI, ScienceDaily, medRxiv and bioRxiv endpoints, from an
+  empty database. The loop works: 5/5 sources → 1,360 items pending → approve
+  one → exactly 1 visible on /research, 1,359 still behind the gate; a second
+  run ingested **0 duplicates** and left the published item published (the
+  WI-202 human-decision fix proven for real).
+  **Three real bugs only a live run could find, all fixed:**
+  (1) the pre-filter's keep-bias is right for sources that already selected
+  for us, but bioRxiv/medRxiv return every field — it passed **91%** of the
+  firehose (protein folding, chondrogenesis) into the review queue. Added a
+  SourceScope so firehose sources require a POSITIVE brain-tumor match:
+  bioRxiv 2863→77, medRxiv 784→11, total 4871→1360.
+  (2) the feed filtered to relevance='patient_relevant', but nothing is
+  classified until M3 — so approving an item in M2 did nothing visible.
+  Unclassified-but-approved items are now shown; early-stage stays behind the
+  toggle. (3) ScienceDaily stamps dates "EDT", which .NET won't parse — all
+  48 items were undated, sorting to the bottom of the feed forever and never
+  advancing the cursor. Now 0 undated of 48.
+  Also hardened the feed ordering tests to stop assuming an empty table —
+  the suite now passes *with* 1,360 real rows present. 374/374.
 
 - **2026-07-19** — **WI-210 done** (autopilot M2): source health + the
   scheduled task. Added POST /api/sync/failure so a broken source actually

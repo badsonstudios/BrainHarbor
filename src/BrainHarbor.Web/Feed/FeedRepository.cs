@@ -69,14 +69,14 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         // nothing from the querystring is ever concatenated into SQL.
         var where = new List<string> { "status = 'published'" };
 
-        if (!query.IncludeEarlyStage)
-        {
-            where.Add("relevance = 'patient_relevant'");
-        }
-        else
-        {
-            where.Add("relevance IN ('patient_relevant', 'early_stage')");
-        }
+        // 'pending' means "not classified yet" — that is every item until the
+        // M3 classifier lands, and those items have still passed the human
+        // gate. Excluding them would mean a reviewer approves an item in M2
+        // and nothing visibly happens. 'excluded' is never uploaded at all.
+        // Early-stage stays behind the toggle in both cases.
+        where.Add(query.IncludeEarlyStage
+            ? "relevance IN ('patient_relevant', 'pending', 'early_stage')"
+            : "relevance IN ('patient_relevant', 'pending')");
 
         // A tumor filter matches the type OR any of its descendants, so
         // browsing "glioma" includes glioblastoma (data-model.md tree rules).

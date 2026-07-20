@@ -124,6 +124,43 @@ public class BrainTumorPreFilterTests
         Assert.False(BrainTumorPreFilter.ShouldExclude("Patient-reported outcomes after radiotherapy"));
     }
 
+    // ---------- firehose sources need a positive match ----------
+
+    [Theory]
+    [InlineData("Coarse-grained simulations of intrinsically disordered proteins")]
+    [InlineData("Stepwise DNA unwinding gates TnpB genome-editing activity")]
+    [InlineData("X chromosome inactivation as a novel mechanism for chondrogenesis")]
+    [InlineData("Subjective ratings reveal Poisson-like noise underlying perception")]
+    public void FirehoseSourcesDropItemsWithNoBrainTumorMention(string title)
+    {
+        // Real bioRxiv titles from the WI-211 shakedown. Keep-bias passed 91%
+        // of the firehose into the review queue, burying the real items.
+        Assert.True(BrainTumorPreFilter.ShouldExclude(
+            title, null, SourceScope.EverythingFirehose));
+
+        // ...but the same titles survive a source that already selected for
+        // us, because there the absence of evidence is not evidence.
+        Assert.False(BrainTumorPreFilter.ShouldExclude(
+            title, null, SourceScope.AlreadyBrainTumorFocused));
+    }
+
+    [Theory]
+    [InlineData("A glioblastoma vaccine tested in mice")]
+    [InlineData("IDH-mutant astrocytoma organoid models")]
+    [InlineData("Single-cell atlas of brain metastases")]
+    public void FirehoseSourcesKeepGenuineBrainTumorPreprints(string title)
+    {
+        Assert.False(BrainTumorPreFilter.ShouldExclude(
+            title, null, SourceScope.EverythingFirehose));
+    }
+
+    [Fact]
+    public void TheDefaultScopeStaysKeepBiased()
+    {
+        // Existing callers must not silently become strict.
+        Assert.False(BrainTumorPreFilter.ShouldExclude("A novel therapeutic approach"));
+    }
+
     [Fact]
     public void EmptyTitleIsDropped()
     {

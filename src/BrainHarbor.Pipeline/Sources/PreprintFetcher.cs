@@ -86,10 +86,13 @@ public sealed class PreprintFetcher(
             all.AddRange(batch.Select(r => ToFetchedItem(r, server)).Where(i => i is not null)!);
         }
 
-        // Preprints are mostly outside our field, so the pre-filter does real
-        // work here — but it stays keep-biased, same as everywhere else.
+        // These servers publish every field, so an item must POSITIVELY
+        // mention a brain-tumor term to be kept. Keep-bias is right where the
+        // source already selected for us; here it passed 91% of the firehose
+        // into the review queue (measured in the WI-211 shakedown).
         var kept = all
-            .Where(i => !BrainTumorPreFilter.ShouldExclude(i.Title, i.RawSummary))
+            .Where(i => !BrainTumorPreFilter.ShouldExclude(
+                i.Title, i.RawSummary, SourceScope.EverythingFirehose))
             .ToList();
 
         logger.LogInformation("[{Source}] {Kept} of {Fetched} preprint(s) look relevant.",

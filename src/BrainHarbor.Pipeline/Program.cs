@@ -63,6 +63,21 @@ public static class PipelineHost
         builder.Services
             .AddOptions<PipelineOptions>()
             .Bind(builder.Configuration.GetSection(PipelineOptions.SectionName))
+            .PostConfigure(options =>
+            {
+                // api-keys-config.md documents these as flat names, and that
+                // is how they are already stored in user-secrets and .env.
+                // The Pipeline: section wins when both are present.
+                if (string.IsNullOrWhiteSpace(options.SyncApiKey))
+                {
+                    options.SyncApiKey = builder.Configuration["SYNC_API_KEY"] ?? "";
+                }
+
+                if (string.IsNullOrWhiteSpace(options.NcbiApiKey))
+                {
+                    options.NcbiApiKey = builder.Configuration["NCBI_API_KEY"];
+                }
+            })
             .ValidateDataAnnotations();
 
         builder.Services.AddHttpClient<ISyncApiClient, SyncApiClient>((provider, client) =>

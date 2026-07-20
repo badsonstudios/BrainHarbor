@@ -141,6 +141,19 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     }
 
     [Fact]
+    public async Task UnclassifiedItemsAreVisibleOnceApproved()
+    {
+        // Until the M3 classifier lands every item is relevance='pending'.
+        // Hiding those would mean a reviewer approves something in M2 and
+        // nothing visibly happens — caught in the WI-211 shakedown.
+        await InsertAsync("f-unclassified", relevance: "pending", slug: "study-f-unclassified");
+
+        var page = await _feed.GetAsync(new FeedQuery(), CancellationToken.None);
+
+        Assert.Contains(page.Items, i => i.Slug == "study-f-unclassified");
+    }
+
+    [Fact]
     public async Task EarlyStageAppearsOnlyWhenTheReaderAsksForIt()
     {
         await InsertAsync("f-mouse2", relevance: "early_stage", slug: "study-f-mouse2");
@@ -225,10 +238,18 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
             """,
             new { TestSource });
 
+        // Scoped to this test's own rows: the dev database may hold real
+        // fetched items, and asserting on global position 0 would make the
+        // test depend on whatever else is in the table.
         var page = await _feed.GetAsync(new FeedQuery(), CancellationToken.None);
+        var mine = page.Items
+            .Select((item, index) => (item, index))
+            .Where(x => x.item.Slug is "study-f-dated" or "study-f-undated")
+            .ToList();
 
-        Assert.Equal("study-f-dated", page.Items[0].Slug);
-        Assert.Equal("study-f-undated", page.Items[^1].Slug);
+        Assert.Equal(2, mine.Count);
+        Assert.Equal("study-f-dated", mine[0].item.Slug);
+        Assert.Equal("study-f-undated", mine[1].item.Slug);
     }
 
     // ---------- the pages ----------

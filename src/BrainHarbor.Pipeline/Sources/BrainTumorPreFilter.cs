@@ -21,6 +21,30 @@ namespace BrainHarbor.Pipeline.Sources;
 /// Both mistakes silently dropped real brain-tumor research before they were
 /// caught. Any new rule needs a regression test with a real-looking title.
 /// </summary>
+/// <summary>
+/// How a source's items arrive, which decides how the filter treats them.
+/// </summary>
+public enum SourceScope
+{
+    /// <summary>
+    /// The source already selected for us — a PubMed brain-tumor query, a
+    /// brain-tumor RSS feed. Here the filter is KEEP-biased: drop only on
+    /// strong evidence of irrelevance, because a wrongly-dropped study is
+    /// invisible to patients forever.
+    /// </summary>
+    AlreadyBrainTumorFocused,
+
+    /// <summary>
+    /// A firehose across every field — the medRxiv/bioRxiv details endpoint
+    /// returns all preprints, not just ours. Here an item must POSITIVELY
+    /// mention a brain-tumor term to be kept. A live shakedown showed the
+    /// keep-biased rule passing 91% of bioRxiv (protein folding, plant
+    /// genetics, chondrogenesis) straight into the review queue, which would
+    /// bury the items that actually matter.
+    /// </summary>
+    EverythingFirehose,
+}
+
 public static partial class BrainTumorPreFilter
 {
     /// <summary>
@@ -101,7 +125,10 @@ public static partial class BrainTumorPreFilter
     /// True when the item should never reach the classifier. Callers pass the
     /// title and (optionally) the abstract.
     /// </summary>
-    public static bool ShouldExclude(string title, string? rawSummary = null)
+    public static bool ShouldExclude(
+        string title,
+        string? rawSummary = null,
+        SourceScope scope = SourceScope.AlreadyBrainTumorFocused)
     {
         if (string.IsNullOrWhiteSpace(title))
         {
@@ -116,12 +143,20 @@ public static partial class BrainTumorPreFilter
         }
 
         var text = rawSummary is null ? title : $"{title}\n{rawSummary}";
+        var mentionsBrainTumor = BrainTumorTerms().IsMatch(text);
 
         // Any brain-tumor term wins. This escape hatch is what makes the two
         // subject rules below safe to apply at all.
-        if (BrainTumorTerms().IsMatch(text))
+        if (mentionsBrainTumor)
         {
             return false;
+        }
+
+        // A firehose source never selected for us, so silence is not evidence
+        // of relevance — require a positive match.
+        if (scope == SourceScope.EverythingFirehose)
+        {
+            return true;
         }
 
         return WrongOrganCancer().IsMatch(text) || UnrelatedNeurology().IsMatch(text);

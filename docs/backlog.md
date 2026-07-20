@@ -228,7 +228,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   checked into the repo with setup instructions.
   Refs: architecture.md §6/§8. Depends on: WI-204.
 
-- [ ] **WI-211 M2 end-to-end shakedown**
+- [x] **WI-211 M2 end-to-end shakedown**
   Goal: prove the whole loop before building on it.
   Acceptance: from a fresh DB: scheduled run fetches all sources → items
   pending → approve in admin → visible on /research; a second run ingests 0
