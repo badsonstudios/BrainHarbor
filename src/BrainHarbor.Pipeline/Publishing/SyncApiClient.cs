@@ -17,6 +17,9 @@ public interface ISyncApiClient
 
     /// <summary>Marks a window done when it produced nothing to upload.</summary>
     Task AdvanceCursorAsync(string source, string cursor, CancellationToken cancellationToken);
+
+    /// <summary>Reports a source failure so staleness is visible in admin.</summary>
+    Task ReportFailureAsync(string source, string error, CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -72,6 +75,24 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
         await EnsureSuccessAsync(response, "POST /api/sync/cursor", cancellationToken);
 
         logger.LogInformation("[{Source}] cursor advanced to {Cursor} (nothing new).", source, cursor);
+    }
+
+    public async Task ReportFailureAsync(
+        string source, string error, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var response = await httpClient.PostAsJsonAsync(
+                "/api/sync/failure", new FailureRequest(source, error), Json, cancellationToken);
+            await EnsureSuccessAsync(response, "POST /api/sync/failure", cancellationToken);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            // Reporting a failure must never itself break the run — if the
+            // site is unreachable, that is already the bigger problem.
+            logger.LogWarning("Could not report the {Source} failure to the site: {Message}",
+                source, exception.Message);
+        }
     }
 
     public async Task<UploadResponse> UploadAsync(

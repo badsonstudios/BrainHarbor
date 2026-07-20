@@ -66,6 +66,25 @@ public static class SyncEndpoints
                 : Results.BadRequest(new { error = $"unknown source '{request.Source}'" });
         });
 
+        // Report a failure so the admin health page shows it. Without this,
+        // source_sync_state.last_error is never written and a source that has
+        // been broken for a week still shows its last success.
+        group.MapPost("/failure", async (
+            FailureRequest? request, SyncRepository repository, CancellationToken cancellationToken) =>
+        {
+            if (request is null ||
+                string.IsNullOrWhiteSpace(request.Source) ||
+                string.IsNullOrWhiteSpace(request.Error))
+            {
+                return Results.BadRequest(new { error = "source and error are required" });
+            }
+
+            return await repository.RecordFailureAsync(
+                request.Source, request.Error, cancellationToken)
+                ? Results.Ok()
+                : Results.BadRequest(new { error = $"unknown source '{request.Source}'" });
+        });
+
         group.MapPost("/items", async (
             UploadRequest? request, SyncRepository repository,
             ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>

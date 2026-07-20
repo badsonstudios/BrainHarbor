@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
 | **In progress** | **Autopilot M2 run** (started 2026-07-19, branch `auto/M2`) |
-| **Next up** | WI-210 Source health + scheduled task |
+| **Next up** | WI-211 M2 end-to-end shakedown |
 | **Blockers** | none |
 
 ## Notes for the next session
@@ -40,6 +40,17 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-19** — **WI-210 done** (autopilot M2): source health + the
+  scheduled task. Added POST /api/sync/failure so a broken source actually
+  writes last_error — until now nothing ever did, so a source that died a
+  week ago would still show its last success. /admin/health lists every
+  source with plain-language staleness ("5 days ago", "never"), flags
+  failures first, and calls out any expected source that has never reported
+  at all. The pipeline reports its own failures (best-effort — reporting must
+  not break the run) and raises a desktop toast on finish. Task Scheduler
+  registration script uses StartWhenAvailable so a sleeping PC catches up
+  rather than skipping the day. 360/360.
 
 - **2026-07-19** — **WI-209 done** (autopilot M2): the public feed. Two
   safety rules are enforced in the repository rather than a view — only

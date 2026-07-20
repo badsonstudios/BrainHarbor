@@ -220,7 +220,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: sitemap.md, architecture.md §5, docs/design/entry-hub-handoff/.
   Depends on: WI-208, WI-109.
 
-- [ ] **WI-210 Source health + scheduled task**
+- [x] **WI-210 Source health + scheduled task**
   Goal: the loop runs itself and staleness is visible.
   Acceptance: admin source-health page ("PubMed last synced N days ago", last
   error); pipeline ends with a desktop notification ("N items awaiting

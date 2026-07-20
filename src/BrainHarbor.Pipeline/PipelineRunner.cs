@@ -142,9 +142,12 @@ public sealed class PipelineRunner(
         }
         catch (Exception exception)
         {
-            // Isolation: log it, record it, keep going.
+            // Isolation: log it, record it, keep going. Reporting it to the
+            // site is what makes the failure visible on the admin health page
+            // instead of looking like a quiet week.
             logger.LogError(exception, "[{Source}] failed — continuing with other sources.",
                 fetcher.Source);
+            await syncApi.ReportFailureAsync(fetcher.Source, exception.Message, cancellationToken);
             return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, exception.Message);
         }
     }

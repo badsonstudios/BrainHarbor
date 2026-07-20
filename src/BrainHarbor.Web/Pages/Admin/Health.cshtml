@@ -1,0 +1,64 @@
+@page "/admin/health"
+@model BrainHarbor.Web.Pages.Admin.HealthModel
+@{
+    ViewData["Title"] = "Source health";
+}
+
+@* WI-210: staleness must be visible, never silent (architecture.md §6). A
+   source that quietly stopped working looks exactly like a quiet week
+   otherwise. *@
+
+<h1>Source health</h1>
+
+@if (Model.Sources.Count == 0)
+{
+    <p>No source has reported yet. Run the pipeline once.</p>
+}
+
+<table>
+    <caption class="text-muted">Every configured source, newest report first.</caption>
+    <thead>
+        <tr>
+            <th scope="col">Source</th>
+            <th scope="col">Last success</th>
+            <th scope="col">Window</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var source in Model.Sources)
+        {
+            <tr>
+                <th scope="row">@source.Source</th>
+                <td>@source.LastSuccessText</td>
+                <td>@(source.Cursor ?? "—")</td>
+                <td>
+                    @if (source.LastError is not null)
+                    {
+                        <strong>Failing:</strong> @source.LastError
+                    }
+                    else if (source.IsStale)
+                    {
+                        <strong>Stale</strong>
+                    }
+                    else
+                    {
+                        <text>OK</text>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.MissingSources.Count > 0)
+{
+    <div class="disclaimer" role="alert">
+        <p>
+            <strong>Never reported:</strong> @string.Join(", ", Model.MissingSources).
+            A source that has never run may be misconfigured.
+        </p>
+    </div>
+}
+
+<p><a href="/admin/queue">Review queue</a></p>

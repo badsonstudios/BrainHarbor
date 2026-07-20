@@ -66,6 +66,14 @@ public class PipelineRunnerTests
             CursorAdvances.Add((source, cursor));
             return Task.CompletedTask;
         }
+
+        public List<(string Source, string Error)> ReportedFailures { get; } = [];
+
+        public Task ReportFailureAsync(string source, string error, CancellationToken ct)
+        {
+            ReportedFailures.Add((source, error));
+            return Task.CompletedTask;
+        }
     }
 
     private static FetchedItem Item(string source, string externalId) => new()
@@ -110,6 +118,21 @@ public class PipelineRunnerTests
         var failure = Assert.Single(result.Failures);
         Assert.Equal("nci_rss", failure.Source);
         Assert.Contains("feed is down", failure.Error);
+    }
+
+    [Fact]
+    public async Task AFailingSourceIsReportedSoStalenessIsVisibleInAdmin()
+    {
+        // Otherwise a source that broke a week ago still shows its last
+        // success and looks like a quiet week.
+        var api = new StubSyncApi();
+        var broken = new StubFetcher("nci_rss", throws: new HttpRequestException("feed is down"));
+
+        await Runner(api, broken).RunAsync(CancellationToken.None);
+
+        var reported = Assert.Single(api.ReportedFailures);
+        Assert.Equal("nci_rss", reported.Source);
+        Assert.Contains("feed is down", reported.Error);
     }
 
     [Fact]

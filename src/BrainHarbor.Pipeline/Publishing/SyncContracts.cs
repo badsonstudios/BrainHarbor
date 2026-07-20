@@ -49,6 +49,8 @@ public sealed record UploadRequest(IReadOnlyList<SyncItem> Items, string? Cursor
 
 public sealed record CursorRequest(string Source, string Cursor);
 
+public sealed record FailureRequest(string Source, string Error);
+
 public sealed record UploadResponse(
     int Inserted,
     int Updated,

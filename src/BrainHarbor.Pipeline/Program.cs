@@ -137,6 +137,7 @@ public static class PipelineHost
         }
 
         builder.Services.AddTransient<PipelineRunner>();
+        builder.Services.AddSingleton<DesktopNotifier>();
 
         using var host = builder.Build();
         var logger = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Pipeline");
@@ -161,6 +162,11 @@ public static class PipelineHost
 
             var runner = host.Services.GetRequiredService<PipelineRunner>();
             var result = await runner.RunAsync(cancellation.Token);
+
+            // A scheduled task that finishes silently is one nobody notices
+            // has stopped working.
+            host.Services.GetRequiredService<DesktopNotifier>().Notify(result);
+
             return result.Failures.Count == 0 ? 0 : 1;
         }
         catch (OperationCanceledException)

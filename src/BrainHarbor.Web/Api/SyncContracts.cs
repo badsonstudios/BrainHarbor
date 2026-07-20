@@ -67,6 +67,12 @@ public sealed record UploadRequest(IReadOnlyList<SyncItem> Items, string? Cursor
 /// </summary>
 public sealed record CursorRequest(string Source, string Cursor);
 
+/// <summary>
+/// Reports that a source failed, so staleness is visible on the admin health
+/// page rather than silent (architecture.md §6).
+/// </summary>
+public sealed record FailureRequest(string Source, string Error);
+
 public sealed record UploadResponse(
     int Inserted,
     int Updated,

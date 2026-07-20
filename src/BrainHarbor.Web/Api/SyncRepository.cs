@@ -218,6 +218,34 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
     }
 
     /// <summary>
+    /// Records that a source failed. The cursor is deliberately left alone —
+    /// a failed run must retry the same window.
+    /// </summary>
+    public async Task<bool> RecordFailureAsync(
+        string source, string error, CancellationToken cancellationToken)
+    {
+        if (!ValidSources.Contains(source))
+        {
+            return false;
+        }
+
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        await connection.ExecuteAsync(new CommandDefinition(
+            """
+            INSERT INTO source_sync_state (source, last_error)
+            VALUES (@source, @error)
+            ON CONFLICT (source) DO UPDATE SET last_error = @error
+            """,
+            new { source, error = Truncate(error, 2000) },
+            cancellationToken: cancellationToken));
+
+        return true;
+    }
+
+    private static string Truncate(string text, int max) =>
+        text.Length <= max ? text : text[..max];
+
+    /// <summary>
     /// Advances a source's cursor with no items to store. Returns false for an
     /// unknown source rather than creating a phantom row on the health page.
     /// </summary>
