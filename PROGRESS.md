@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **In progress** | **Autopilot M3 run** starting on branch `auto/M3` |
-| **Next up** | WI-301 Golden set |
+| **Next up** | WI-302 Claude Code CLI wrapper |
 | **Blockers** | none — CI billing resolved (repo made public 2026-07-20); PR #4 CI passed, squash-merged to `main` (f966553) |
 
 ## Notes for the next session
@@ -41,6 +41,19 @@
 
 ## Log (newest first)
 
+- **2026-07-20** — **Autopilot M3 started** (branch `auto/M3`, PR #5). Repo
+  made public → scrubbed a personal email (NCBI contact → role address) and
+  added a PII/secrets scan to the commit-push-pr + autopilot skills. Dan's
+  call on the M3 quality gate: **build in Review mode** — full capability, but
+  real AI summaries wait in the queue for Dan to judge before auto-publish;
+  he flips Publishing:Mode=Auto when confident. Golden set ships as a DRAFT
+  for Dan to ratify.
+- **2026-07-20** — **WI-301 done** (autopilot M3): golden set — 20 real PubMed
+  abstracts hand-classified (11 patient_relevant, 5 early_stage, 4 excluded)
+  with ideal 6-block summaries for 10, numbers verbatim from source. Rubric +
+  validation tests (real taxonomy slugs, documented vocab, complete
+  summaries, every case has a rationale). Flagged a taxonomy gap
+  (spinal-cord tumors) for later. DRAFT pending Dan's ratification. 393/393.
 - **2026-07-20** — **WI-212 done — auto-publish mode (Dan's request)**: the
   human review gate is now **optional**. `Publishing:Mode` config, **Auto by
   default**: a summarized item that passes the automated safety checks

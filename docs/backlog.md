@@ -255,7 +255,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M3 — Claude classification + plain-language summaries
 
-- [ ] **WI-301 Golden set**
+- [x] **WI-301 Golden set**
   Goal: the quality yardstick exists before any prompt is written.
   Acceptance: ~30 real fetched items hand-verified (correct tumor tags,
   relevance tier, stage; ideal summary for ~10 of them) as versioned fixtures
