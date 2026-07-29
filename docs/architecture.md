@@ -32,7 +32,7 @@ Why this shape (decided 2026-07-18):
 - **No Anthropic API key needed** — Claude Code's headless mode (`claude -p "<prompt>" --output-format json`) does classification and summarization under the existing subscription. Volume (~10–30 new items/day) is comfortably within normal interactive-scale use.
 - **The local app is stateless.** Dedupe and cursors live in the cloud DB; the app asks the site's API "which of these are new?" before spending any Claude time, and the upload is an **idempotent upsert** on `(source, external_id)` — so a crashed or re-run batch can never create duplicates. A week with the PC off self-heals: the next run just processes a bigger window.
 - **No direct DB connection from the PC** (explicitly preferred): the only credential on the PC is a long random API key, revocable server-side in seconds.
-- **Human review gate:** items land as `pending`; nothing is public until approved in the admin queue. Every published summary is human-reviewed — a stronger safety guarantee than the old auto-publish design.
+- **Publish mode (WI-212):** Auto by default — a summarized item that passes the automated safety checks (numeral traceability, banned-phrase scan, reading level) publishes itself; flagged or unsummarized items wait in the admin review queue. Review mode (`Publishing:Mode=Review`) requires a person for everything. Auto-published items are marked `reviewed_by='auto'` and the item page discloses it. See content-pipeline.md §"Publish mode".
 - **Dev = prod, minus Azure:** until M4 the "cloud" is the site running locally against Docker Postgres, and the pipeline points at `localhost`. The publish path never changes, only the base URL and key.
 
 ## 2. Web stack: Razor Pages + htmx on .NET 10

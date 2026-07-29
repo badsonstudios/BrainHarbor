@@ -291,6 +291,45 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     }
 
     [Fact]
+    public async Task AnAutoPublishedItemPageSaysNoPersonReviewedIt()
+    {
+        // WI-212: when the review gate is off, the item page must say so
+        // rather than claim a person reviewed it.
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 plain_title, plain_summary, reviewed_by)
+            VALUES (@TestSource, 'research', 'f-auto', 'A study', 'https://example.org',
+                    'published', 'patient_relevant', 'study-f-auto',
+                    'A pill slowed tumor growth', 'A clear summary.', 'auto')
+            """,
+            new { TestSource });
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-auto"));
+
+        Assert.Contains("published automatically", html);
+        Assert.Contains("A person did not review it before publishing", html);
+    }
+
+    // Rendered HTML wraps prose across lines; compare on collapsed whitespace.
+    private static string Collapse(string html) =>
+        System.Text.RegularExpressions.Regex.Replace(html, @"\s+", " ");
+
+    [Fact]
+    public async Task AHumanReviewedItemPageSaysAPersonReviewedIt()
+    {
+        await InsertAsync("f-human-rev", slug: "study-f-human-rev");
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET reviewed_by = 'dan@example.org' WHERE source = @TestSource AND external_id = 'f-human-rev'",
+            new { TestSource });
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-human-rev"));
+
+        Assert.Contains("reviewed by a person before publishing", html);
+    }
+
+    [Fact]
     public async Task AnUnknownSlugIsA404()
     {
         var response = await _factory.CreateClient().GetAsync("/research/no-such-item");

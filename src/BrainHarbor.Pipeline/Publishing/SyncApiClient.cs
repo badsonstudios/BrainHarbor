@@ -111,6 +111,7 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
         var inserted = 0;
         var updated = 0;
         var frozen = 0;
+        var autoPublished = 0;
         var rejected = 0;
         var rejectedTags = new List<string>();
         var errors = new List<string>();
@@ -133,6 +134,7 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
             inserted += body.Inserted;
             updated += body.Updated;
             frozen += body.Frozen;
+            autoPublished += body.AutoPublished;
             rejected += body.Rejected;
             rejectedTags.AddRange(body.RejectedTumorTags);
             errors.AddRange(body.Errors);
@@ -153,6 +155,7 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
         return new UploadResponse(inserted, updated, rejected, [.. rejectedTags.Distinct()], errors)
         {
             Frozen = frozen,
+            AutoPublished = autoPublished,
         };
     }
 

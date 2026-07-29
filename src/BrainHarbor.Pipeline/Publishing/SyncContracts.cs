@@ -59,4 +59,5 @@ public sealed record UploadResponse(
     IReadOnlyList<string> Errors)
 {
     public int Frozen { get; init; }
+    public int AutoPublished { get; init; }
 }

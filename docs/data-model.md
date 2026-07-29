@@ -34,7 +34,9 @@ CREATE TABLE aggregated_items (
     summary_generated_at timestamptz,
     summary_flagged   boolean NOT NULL DEFAULT false,  -- reader hit "report a problem"
 
-    -- publication workflow (human review gate — nothing public without approval)
+    -- publication workflow (Auto mode publishes clean summaries; flagged ones
+    -- and, in Review mode, everything waits for a person. reviewed_by='auto'
+    -- marks a machine-published item — see content-pipeline.md §"Publish mode")
     status        text NOT NULL DEFAULT 'pending',
         -- pending | published | rejected | pulled (was live, taken down)
     reviewed_at   timestamptz,
@@ -69,7 +71,7 @@ allows. `tumor_tags` is `NOT NULL` so GIN containment queries never have to
 distinguish NULL from `'{}'`. `published_at DESC NULLS LAST` matches the feed's
 ordering — the Postgres default would float undated items to the top.
 
-Item lifecycle: the **local pipeline** uploads finished items (classified + summarized) via the sync API as `status='pending'` → Dan approves/edits/rejects in the site's **admin review queue** → approval flips to `published`. The public feed renders only `published` + `relevance='patient_relevant'` by default, with the "show early-stage research" toggle for `early_stage`; `excluded` relevance is never uploaded at all (filtered locally, saving Claude time). Because of the gate, **every published summary is human-reviewed**.
+Item lifecycle: the **local pipeline** uploads finished items (classified + summarized) via the sync API. In **Auto mode (the default, WI-212)** a summarized item that passed the automated safety checks lands as `published` immediately (`reviewed_by='auto'`); a flagged or not-yet-summarized item lands as `pending` for a person. In **Review mode** everything lands `pending` and Dan approves/edits/rejects in the **admin review queue**. The public feed renders only `published` items — `patient_relevant` (and `pending`-relevance until M3 classifies them) by default, with the "show early-stage research" toggle for `early_stage`; `excluded` relevance is never uploaded at all (filtered locally, saving Claude time). See content-pipeline.md §"Publish mode".
 
 ### subscribers + digest — the email loop
 

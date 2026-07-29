@@ -20,6 +20,11 @@ public sealed class FeedRow
     public string[] TumorTags { get; set; } = [];
     public string? ResearchStage { get; set; }
     public string Relevance { get; set; } = "";
+    public string? ReviewedBy { get; set; }
+
+    /// <summary>True when this item published automatically, with no person in
+    /// the loop. The item page says so — the audience deserves that honesty.</summary>
+    public bool WasAutoPublished => ReviewedBy == "auto";
 }
 
 /// <summary>What the reader asked for.</summary>
@@ -60,7 +65,8 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         published_at AS "PublishedAt",
         tumor_tags AS "TumorTags",
         research_stage AS "ResearchStage",
-        relevance AS "Relevance"
+        relevance AS "Relevance",
+        reviewed_by AS "ReviewedBy"
         """;
 
     public async Task<FeedPage> GetAsync(FeedQuery query, CancellationToken cancellationToken)

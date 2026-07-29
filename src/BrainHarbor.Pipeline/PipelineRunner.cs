@@ -123,9 +123,10 @@ public sealed class PipelineRunner(
                 [.. newItems.Select(i => i.ToSyncItem())], fetched.Cursor, cancellationToken);
 
             logger.LogInformation(
-                "[{Source}] fetched {Fetched}, new {New}, uploaded {Uploaded} (frozen {Frozen}, rejected {Rejected}).",
+                "[{Source}] fetched {Fetched}, new {New}, uploaded {Uploaded} " +
+                "(auto-published {Auto}, frozen {Frozen}, rejected {Rejected}).",
                 fetcher.Source, fetched.Items.Count, newItems.Count,
-                upload.Inserted + upload.Updated, upload.Frozen, upload.Rejected);
+                upload.Inserted + upload.Updated, upload.AutoPublished, upload.Frozen, upload.Rejected);
 
             return new SourceRunResult(
                 fetcher.Source,

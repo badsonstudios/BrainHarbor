@@ -1,6 +1,7 @@
 using BrainHarbor.Web.Content;
 using BrainHarbor.Web.Services;
 using Dapper;
+using Microsoft.Extensions.Options;
 
 namespace BrainHarbor.Web.Api;
 
@@ -8,9 +9,22 @@ namespace BrainHarbor.Web.Api;
 /// Data access for the sync API. The upsert is idempotent on
 /// (source, external_id) — re-running a pipeline batch must never duplicate
 /// items or resurrect a rejected one.
+///
+/// Publish mode (content-pipeline.md §"Publish mode"): in Auto (the default) a
+/// summarized item that passes the pipeline's automated safety checks
+/// (summary present and not flagged) publishes itself; anything flagged or
+/// not yet summarized is held in the review queue. In Review nothing publishes
+/// without a person.
 /// </summary>
-public sealed class SyncRepository(IDbConnectionFactory connectionFactory, TaxonomyStore taxonomy)
+public sealed class SyncRepository(
+    IDbConnectionFactory connectionFactory,
+    TaxonomyStore taxonomy,
+    IOptions<PublishingOptions> publishing)
 {
+    private PublishMode Mode => publishing.Value.Mode;
+
+    private sealed record UpsertRow(long Id, bool Inserted);
+
     // The documented sources (data-model.md aggregated_items.source). A typo'd
     // or invented source would create an orphan feed of items nobody browses
     // and a phantom row on the admin health page.
@@ -71,6 +85,7 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
         var updated = 0;
         var rejected = 0;
         var frozen = 0;
+        var autoPublished = 0;
         var succeededSources = new HashSet<string>(StringComparer.Ordinal);
 
         // Last write wins within a batch: a duplicate key would otherwise
@@ -116,7 +131,7 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
             //     contentless with nobody in the loop.
             // COALESCE keeps a previously-generated summary when a later run
             // legitimately omits one.
-            var wasInserted = await connection.ExecuteScalarAsync<bool?>(new CommandDefinition(
+            var row = await connection.QuerySingleOrDefaultAsync<UpsertRow>(new CommandDefinition(
                 """
                 INSERT INTO aggregated_items
                     (source, source_kind, external_id, title, raw_summary, url, published_at,
@@ -145,7 +160,7 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
                         COALESCE(EXCLUDED.summary_generated_at, aggregated_items.summary_generated_at),
                     fetched_at = now()
                 WHERE aggregated_items.status = 'pending'
-                RETURNING (xmax = 0)
+                RETURNING id AS "Id", (xmax = 0) AS "Inserted"
                 """,
                 new
                 {
@@ -170,23 +185,39 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
                 transaction,
                 cancellationToken: cancellationToken));
 
-            switch (wasInserted)
+            if (row is null)
             {
-                case true:
-                    inserted++;
-                    succeededSources.Add(item.Source);
-                    break;
-                case false:
-                    updated++;
-                    succeededSources.Add(item.Source);
-                    break;
-                default:
-                    // No row returned: the WHERE filtered it out because a human
-                    // already reviewed this item. Still a successful sync — the
-                    // pipeline saw the item, we simply keep the reviewed copy.
-                    frozen++;
-                    succeededSources.Add(item.Source);
-                    break;
+                // The WHERE filtered it out because a human already reviewed
+                // this item. Still a successful sync — the pipeline saw the
+                // item, we simply keep the reviewed copy.
+                frozen++;
+                succeededSources.Add(item.Source);
+                continue;
+            }
+
+            if (row.Inserted)
+            {
+                inserted++;
+            }
+            else
+            {
+                updated++;
+            }
+            succeededSources.Add(item.Source);
+
+            // Auto-publish (content-pipeline.md §"Publish mode"): the row is
+            // still pending here (the freeze WHERE guarantees it). In Auto
+            // mode, an item that has a plain-language summary AND was NOT
+            // flagged by the pipeline's automated checks goes live now.
+            // A flagged item, or one with no summary yet, stays pending for a
+            // human — which is why the review queue still exists.
+            if (Mode == PublishMode.Auto
+                && !string.IsNullOrWhiteSpace(item.PlainSummary)
+                && !item.SummaryFlagged)
+            {
+                await PublishAsync(connection, transaction, row.Id,
+                    item.PlainTitle ?? item.Title, cancellationToken);
+                autoPublished++;
             }
         }
 
@@ -214,7 +245,52 @@ public sealed class SyncRepository(IDbConnectionFactory connectionFactory, Taxon
         return new UploadResponse(inserted, updated, rejected, [.. rejectedTags.Distinct()], errors)
         {
             Frozen = frozen,
+            AutoPublished = autoPublished,
         };
+    }
+
+    /// <summary>
+    /// Publishes an item without a human — Auto mode, and the item passed the
+    /// pipeline's automated checks. Recorded in review_events with actor 'auto'
+    /// so the audit trail (and the item page's provenance) can tell a
+    /// machine-published item from a human-reviewed one. The item page says so.
+    /// </summary>
+    private static async Task PublishAsync(
+        System.Data.Common.DbConnection connection,
+        System.Data.Common.DbTransaction transaction,
+        long id,
+        string titleForSlug,
+        CancellationToken cancellationToken)
+    {
+        var baseSlug = Slug.From(titleForSlug);
+        var taken = await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+            "SELECT EXISTS (SELECT 1 FROM aggregated_items WHERE slug = @baseSlug AND id <> @id)",
+            new { baseSlug, id },
+            transaction,
+            cancellationToken: cancellationToken));
+        var slug = taken ? $"{baseSlug}-{id}" : baseSlug;
+
+        await connection.ExecuteAsync(new CommandDefinition(
+            """
+            UPDATE aggregated_items
+               SET status = 'published',
+                   reviewed_at = now(),
+                   reviewed_by = 'auto',
+                   slug = COALESCE(slug, @slug)
+             WHERE id = @id AND status = 'pending'
+            """,
+            new { id, slug },
+            transaction,
+            cancellationToken: cancellationToken));
+
+        await connection.ExecuteAsync(new CommandDefinition(
+            """
+            INSERT INTO review_events (item_id, action, actor, note)
+            VALUES (@id, 'approved', 'auto', 'Auto-published: passed automated safety checks')
+            """,
+            new { id },
+            transaction,
+            cancellationToken: cancellationToken));
     }
 
     /// <summary>

@@ -41,6 +41,22 @@
 
 ## Log (newest first)
 
+- **2026-07-20** — **WI-212 done — auto-publish mode (Dan's request)**: the
+  human review gate is now **optional**. `Publishing:Mode` config, **Auto by
+  default**: a summarized item that passes the automated safety checks
+  publishes itself (slug generated, `review_events` row with actor `auto`);
+  flagged or not-yet-summarized items stay pending for a person; Review mode
+  restores mandatory review. The item page is **honest** — auto-published
+  items say "written by AI and published automatically… a person did not
+  review it," not "reviewed by a person." Chose "hold only the flagged ones"
+  (Dan's pick) so the automated guardrails (numeral post-check, banned-phrase
+  scan, reading level — all M3/WI-304) gate every auto-publish. **Safe-by-
+  construction until M3**: no summarizer yet → nothing has a summary → nothing
+  auto-publishes, even though the mode is on. Design docs (PLAN,
+  content-pipeline §"Publish mode", data-model, architecture, both CLAUDE.md)
+  updated — human review is a mode now, not a hard requirement. 384/384.
+  (On `auto/M2`, extends PR #4.)
+
 - **2026-07-20** — **WI-211 done — M2 COMPLETE**: live shakedown against the
   real PubMed, NCI, ScienceDaily, medRxiv and bioRxiv endpoints, from an
   empty database. The loop works: 5/5 sources → 1,360 items pending → approve

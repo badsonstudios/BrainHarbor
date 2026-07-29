@@ -236,6 +236,23 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   shakedown result.
   Depends on: WI-205, WI-206, WI-209, WI-210.
 
+- [x] **WI-212 Auto-publish mode (human review optional)**
+  Goal: the human review gate is optional, not mandatory — Dan's call
+  (2026-07-20). Auto by default: a summarized item that passes the automated
+  safety checks publishes itself; only flagged or unsummarized items wait for
+  a person.
+  Acceptance: `Publishing:Mode` config (Auto default, Review opt-in); sync-API
+  upsert auto-publishes a new item that has a plain summary AND is not
+  `summary_flagged`, generating a slug and recording a `review_events` row with
+  actor `auto`; flagged/unsummarized items stay `pending`; Review mode holds
+  everything; item page discloses auto-published vs human-reviewed honestly;
+  design docs (PLAN, content-pipeline §"Publish mode", data-model,
+  architecture, CLAUDE) updated to reflect that human review is a mode, not a
+  hard requirement; tests for each branch + the default. Safe-by-construction
+  pre-M3 (no summarizer → nothing auto-publishes). **The automated guardrails
+  themselves land in M3 (WI-304); until then Auto mode is on but dormant.**
+  Refs: content-pipeline.md §9/§"Publish mode". Depends on: WI-202, WI-208, WI-209.
+
 ## Phase M3 — Claude classification + plain-language summaries
 
 - [ ] **WI-301 Golden set**

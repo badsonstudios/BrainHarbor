@@ -190,7 +190,7 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
                 transaction,
                 cancellationToken: cancellationToken));
 
-        var baseSlug = Slugify(titles.PlainTitle ?? titles.Title);
+        var baseSlug = Slug.From(titles.PlainTitle ?? titles.Title);
 
         // Collisions are rare but real (two outlets, same headline). Suffix
         // with the id rather than failing the approval.
@@ -203,24 +203,5 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         return taken ? $"{baseSlug}-{id}" : baseSlug;
     }
 
-    internal static string Slugify(string title)
-    {
-        var chars = title.ToLowerInvariant()
-            .Select(c => char.IsLetterOrDigit(c) ? c : '-')
-            .ToArray();
-
-        var slug = new string(chars);
-        while (slug.Contains("--", StringComparison.Ordinal))
-        {
-            slug = slug.Replace("--", "-", StringComparison.Ordinal);
-        }
-
-        slug = slug.Trim('-');
-        if (slug.Length > 80)
-        {
-            slug = slug[..80].TrimEnd('-');
-        }
-
-        return slug.Length == 0 ? "item" : slug;
-    }
+    internal static string Slugify(string title) => Slug.From(title);
 }

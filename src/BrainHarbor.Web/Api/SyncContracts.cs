@@ -86,4 +86,10 @@ public sealed record UploadResponse(
     /// on a published page.
     /// </summary>
     public int Frozen { get; init; }
+
+    /// <summary>
+    /// Items published automatically (Auto mode, passed the automated checks)
+    /// without a human — a subset of Inserted + Updated.
+    /// </summary>
+    public int AutoPublished { get; init; }
 }

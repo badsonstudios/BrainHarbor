@@ -50,9 +50,23 @@
             <p><strong>Correction:</strong> @Model.CorrectionNote</p>
         }
 
-        <p class="ai-note">
-            Summaries are drafted with AI assistance and reviewed by a person
-            before publishing. <a href="/how-we-write">How we write.</a>
-        </p>
+        @if (Model.Item.WasAutoPublished)
+        {
+            <p class="ai-note">
+                This plain-language summary was written by AI and published
+                automatically after passing our automatic safety checks. A
+                person did not review it before publishing.
+                <a href="/how-we-write">How we write.</a> If something looks
+                wrong, <a href="@Model.Item.Url" rel="noopener">check the
+                original</a> and tell us.
+            </p>
+        }
+        else
+        {
+            <p class="ai-note">
+                This summary was drafted with AI assistance and reviewed by a
+                person before publishing. <a href="/how-we-write">How we write.</a>
+            </p>
+        }
     </div>
 </div>

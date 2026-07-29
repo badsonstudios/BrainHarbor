@@ -62,7 +62,7 @@ I profiled ABTA, National Brain Tumor Society (NBTS), NCI/cancer.gov, Mayo, Clev
 Our users may have cognitive impairment from the tumor itself, from seizures, or from treatment. This is not a nice-to-have; it's the core constraint.
 
 - **Reading level 6th–8th grade** — for static pages (CI-gated, FK ≤ 8.5) AND for every AI summary (part of the prompt contract). ~90% of brain-tumor education materials online sit at 11th–13th grade; beating this is a measurable edge.
-- **Anti-hype is a safety property.** A mouse-study headline reads as false hope to a scared patient. Hence: hard relevance filtering, stage badges on every item ("Tested in people" / "Early lab research" / "Preprint — not yet checked by other scientists"), and a mandatory "what this means — and doesn't mean" block in every summary.
+- **Anti-hype is a safety property.** A mouse-study headline reads as false hope to a scared patient. Hence: hard relevance filtering, stage badges on every item ("Tested in people" / "Early lab research" / "Preprint — not yet checked by other scientists"), and a mandatory "what this means — and doesn't mean" block in every summary. These guardrails are automated, so they hold whether or not a person reviews the item — which is what makes the default Auto publish mode (WI-212) safe: the numeral post-check, banned-phrase scan and reading-level check gate every auto-published summary, and anything they flag is held for a human.
 - **Cognitive load matters medically.** 30–60%+ of glioma patients show cognitive impairment even before treatment; "chemo brain" affects ~1 in 3. Short chunked sections, one primary action per screen, big text, generous spacing, no dense nav walls, repetition of key info.
 - **Always-visible "talk to a human" affordance** — persistent helpline band (ABTA CareLine 800-886-2282) on every page, including error pages.
 - **Low click-depth.** Feed → item page → original source is the whole depth of the core loop.
@@ -163,7 +163,7 @@ Stack changed 2026-07-12 from Blazor static SSR + htmx (Htmxor unmaintained sinc
 
 Key shape:
 - **Pipeline stages (local):** fetch (per source, isolated failures) → dedupe via `POST /api/sync/check` (only new items spend Claude time) → classify (closed taxonomy, relevance tiers; `excluded` never uploaded) → summarize (fixed template, JSON-validated, numeral post-check) → upload (idempotent upsert as `pending`). Model + prompt version logged per item.
-- **Human gate:** approve/edit/reject in the site's admin queue (Identity + 2FA) — every published summary is human-reviewed.
+- **Publish mode (WI-212):** Auto by default — a summary that passes the automated safety checks (numeral post-check, banned-phrase scan, reading level) publishes itself; anything flagged waits in the admin queue (Identity + 2FA), where a person can approve/edit/reject. Review mode makes the human gate mandatory again. Auto-published items disclose on the page that no person reviewed them.
 - **Security:** the PC holds only a revocable API key, never DB credentials; HTTPS + rate-limited sync endpoints.
 - Progressive enhancement: htmx (~14KB) is the whole JS budget; every interaction has a no-JS fallback; tested on cheap Android + throttled 3G.
 - Digest drafted by a weekly local run from approved items → reviewed → sent via hosted ESP (Buttondown/Kit).
@@ -175,7 +175,7 @@ Key shape:
 ## 9. Cross-cutting legal / compliance guardrails
 
 - Site-wide **"informational, not medical advice"** disclaimer.
-- **Every AI summary:** visible disclosure ("written with AI assistance, **reviewed by a human before publishing** — report a problem"), stage badge, link to the original as the primary source, public correction notes when fixed.
+- **Every AI summary:** visible disclosure of how it was published — "reviewed by a person before publishing" (Review mode / flagged items) or "written by AI and published automatically after passing our automatic safety checks — a person did not review it" (Auto mode). Always with a stage badge, link to the original as the primary source, a "report a problem" affordance, and public correction notes when fixed.
 - **Preprints:** permanently badged "not yet checked by other scientists"; never front-page-tier.
 - **Aggregated content:** per-source attribution (ClinicalTrials.gov, NCI, ScienceDaily) + "fetched" stamps + no-warranty language. Summarize-and-link, never republish full abstracts.
 - **Benefits section (Phase 2):** "not legal advice / not affiliated with SSA."

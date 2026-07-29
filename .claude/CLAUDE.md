@@ -11,8 +11,11 @@
 
 **BrainHarbor** (brainharbor.org) is a plain-language brain-tumor research hub
 for patients and caregivers. Core product: a daily-updated feed of research /
-news / trials with **AI-generated plain-language summaries**, human-approved
-before publishing. Two applications:
+news / trials with **AI-generated plain-language summaries**. By default the
+site runs in **Auto publish mode** (WI-212): a summary that passes the
+automated safety checks publishes itself, and only flagged items wait for a
+person. A **Review mode** makes human approval mandatory again. Two
+applications:
 
 - **`BrainHarbor.Web`** — ASP.NET Core Razor Pages + htmx website (feed, item
   pages, trials, digest, admin review queue, secured sync API). Runs on Azure
@@ -23,8 +26,12 @@ before publishing. Two applications:
   **No Anthropic API key** — the local `claude` CLI does the LLM work.
 
 The audience may be cognitively impaired (tumor/seizures/treatment): reading
-level ≤ 8th grade, WCAG AA, anti-hype framing, and a human review gate are
-**hard requirements**, not preferences. See `docs/` for the full design.
+level ≤ 8th grade, WCAG AA, and anti-hype framing are **hard requirements**,
+not preferences. The anti-hype guardrails (numeral post-check, banned-phrase
+scan, reading-level check, stage badges, the means/doesn't-mean block) are
+**automated**, so they hold whether or not a person reviews an item — which is
+what makes the default Auto publish mode safe. Human review is optional (a
+mode), not mandatory. See `docs/` for the full design.
 
 **Design docs (the source of truth for what to build):**
 
@@ -184,8 +191,11 @@ Configured in `.claude/settings.json`:
 - **DbUp** migrations (plain SQL in the repo) run on Web start in dev.
 - **The medical-content rules are non-negotiable:** reading level ≤ 8.5 grade
   (CI-gated for static pages), sources-only summarization, stage badges,
-  banned hype phrases, nothing publishes without human approval. See
-  `docs/content-pipeline.md` before touching anything content-related.
+  banned hype phrases, and the automated safety checks that gate auto-publish.
+  Human review is a *mode* (default Auto = optional; Review = mandatory), but
+  the automated guardrails are not optional — they run in both modes. See
+  `docs/content-pipeline.md` §"Publish mode" before touching anything
+  content-related.
 - **Never** ingest AHFS/MedlinePlus drug monographs or reuse NCI embedded
   images (licensing — see `PLAN.md` §5).
 - The Claude Code CLI is invoked by the Pipeline as `claude -p --output-format

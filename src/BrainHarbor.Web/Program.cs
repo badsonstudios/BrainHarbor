@@ -81,6 +81,13 @@ builder.Services.AddAuthorizationBuilder()
 // Sync API (WI-202) — the only write surface.
 builder.Services.AddScoped<SyncRepository>();
 builder.Services.AddScoped<BrainHarbor.Web.Admin.ReviewRepository>();
+
+// Publish mode (WI-212): Auto by default — summarized items that pass the
+// pipeline's automated checks publish themselves; flagged or unsummarized
+// items wait in the review queue. Set Publishing:Mode=Review to require a
+// person for everything.
+builder.Services.Configure<PublishingOptions>(
+    builder.Configuration.GetSection(PublishingOptions.SectionName));
 builder.Services.AddScoped<BrainHarbor.Web.Feed.FeedRepository>();
 // AddEndpointFilter<T> resolves once from the ROOT provider at endpoint build
 // time, so a scoped registration would be a captive-dependency trap later.
