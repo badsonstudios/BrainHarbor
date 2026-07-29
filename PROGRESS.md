@@ -10,9 +10,9 @@
 | | |
 |---|---|
 | **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
-| **In progress** | nothing mid-flight — **M2 complete** on `auto/M2` (PR #4, draft), awaiting Dan's review + merge |
-| **Next up** | Dan: review + merge PR #4, then `/autopilot M3` |
-| **Blockers** | none |
+| **In progress** | nothing mid-flight — **M2 + WI-212 complete** on `auto/M2` (PR #4, draft), paused |
+| **Next up** | **[user] Dan:** fix GitHub Actions billing → confirm CI green on PR #4 → merge → `/autopilot M3` |
+| **Blockers** | ⛔ **GitHub Actions billing block** — CI job won't start ("recent account payments have failed or your spending limit needs to be increased"). Fix in the `badsonstudios` GitHub → Settings → Billing & plans. Code is green locally (384/384) and the last CI that ran (WI-211) passed; this blocks CI on PR #4 **and all future M3 pushes**. Dan chose to pause until it's fixed. |
 
 ## Notes for the next session
 
