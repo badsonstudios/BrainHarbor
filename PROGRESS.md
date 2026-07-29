@@ -10,9 +10,9 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 run** starting on branch `auto/M3` |
-| **Next up** | WI-303 Classify step |
-| **Blockers** | none — CI billing resolved (repo made public 2026-07-20); PR #4 CI passed, squash-merged to `main` (f966553) |
+| **In progress** | **Autopilot M3 PAUSED** after the foundation (WI-301, WI-302 done on `auto/M3`, PR #5). Paused for golden-set ratification. |
+| **Next up** | **[user] Dan:** ratify the draft golden set (tests/BrainHarbor.Tests/GoldenSet/) → then resume `/autopilot M3` for WI-303+ |
+| **Blockers** | ⏸ WI-303 (classify) grades the classifier against the golden set, which is a DRAFT pending Dan's ratification. Not a hard block — Dan can say "proceed against the draft, I'll ratify later." |
 
 ## Notes for the next session
 
