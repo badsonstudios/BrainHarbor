@@ -262,7 +262,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   in `tests/`; a documented rubric for adding cases.
   Refs: content-pipeline.md §10. Depends on: WI-211.
 
-- [ ] **WI-302 Claude Code CLI wrapper**
+- [x] **WI-302 Claude Code CLI wrapper**
   Goal: reliable programmatic access to the local `claude` CLI.
   Acceptance: invokes `claude -p --output-format json` with a versioned prompt
   template; parses/validates against a JSON schema; one retry on malformed

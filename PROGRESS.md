@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **In progress** | **Autopilot M3 run** starting on branch `auto/M3` |
-| **Next up** | WI-302 Claude Code CLI wrapper |
+| **Next up** | WI-303 Classify step |
 | **Blockers** | none — CI billing resolved (repo made public 2026-07-20); PR #4 CI passed, squash-merged to `main` (f966553) |
 
 ## Notes for the next session
@@ -41,6 +41,15 @@
 
 ## Log (newest first)
 
+- **2026-07-20** — **WI-302 done** (autopilot M3): Claude Code CLI wrapper.
+  Invokes `claude -p --output-format json` (prompt on stdin), unwraps the JSON
+  envelope, parses the model's JSON into the expected shape, validates, and
+  retries ONCE on garbled output — failing fast on timeouts, auth-style exit
+  codes, and validation (deterministic). A bad call NEVER returns a value
+  (never a guess). Versioned PromptTemplate with a strict placeholder guard.
+  Review caught a blocker (spawn failure threw instead of failing safe) +
+  process-handling fixes (bounded stdin write, full stdout drain, kill on
+  cancellation) — all fixed; real-runner "CLI not installed" test added. 410.
 - **2026-07-20** — **Autopilot M3 started** (branch `auto/M3`, PR #5). Repo
   made public → scrubbed a personal email (NCBI contact → role address) and
   added a PII/secrets scan to the commit-push-pr + autopilot skills. Dan's
