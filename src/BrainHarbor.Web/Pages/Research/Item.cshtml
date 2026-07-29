@@ -1,0 +1,72 @@
+@page "/research/{slug}"
+@model BrainHarbor.Web.Pages.Research.ItemModel
+@{
+    ViewData["Title"] = Model.Item.PlainTitle ?? Model.Item.Title;
+}
+
+@* WI-209: the item permalink — the shareable, indexable unit of the site.
+   The full six-block template arrives with the M3 summarizer (WI-306); this
+   is the honest v0: what we know, badged, with provenance. *@
+
+<div class="container--read">
+    <p><a href="/research">← All research updates</a></p>
+
+    <partial name="_StageBadge" model="Model.Badge" />
+
+    <h1>@(Model.Item.PlainTitle ?? Model.Item.Title)</h1>
+
+    @if (Model.Item.PlainTitle is not null)
+    {
+        <p class="original-title">Original title: @Model.Item.Title</p>
+    }
+
+    @if (Model.Item.PlainSummary is not null)
+    {
+        <p>@Model.Item.PlainSummary</p>
+    }
+    else
+    {
+        @* Never fake a summary. Until M3, say plainly that there isn't one
+           and send the reader to the source. *@
+        <p>
+            We have not written a plain-language summary of this one yet. The
+            title above is the researchers' own wording.
+        </p>
+    }
+
+    <h2>How early is this?</h2>
+    <p>@Model.StageExplanation</p>
+
+    <div class="provenance">
+        <p>
+            Source: @Model.SourceLabel@(Model.Item.PublishedAt is { } date
+                ? $", {date.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)}"
+                : "") ·
+            <a href="@Model.Item.Url" rel="noopener">Read the original</a>
+        </p>
+
+        @if (Model.CorrectionNote is not null)
+        {
+            <p><strong>Correction:</strong> @Model.CorrectionNote</p>
+        }
+
+        @if (Model.Item.WasAutoPublished)
+        {
+            <p class="ai-note">
+                This plain-language summary was written by AI and published
+                automatically after passing our automatic safety checks. A
+                person did not review it before publishing.
+                <a href="/how-we-write">How we write.</a> If something looks
+                wrong, <a href="@Model.Item.Url" rel="noopener">check the
+                original</a> and tell us.
+            </p>
+        }
+        else
+        {
+            <p class="ai-note">
+                This summary was drafted with AI assistance and reviewed by a
+                person before publishing. <a href="/how-we-write">How we write.</a>
+            </p>
+        }
+    </div>
+</div>

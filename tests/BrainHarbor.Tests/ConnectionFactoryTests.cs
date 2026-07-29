@@ -8,6 +8,7 @@ namespace BrainHarbor.Tests;
 /// Requires the local Postgres container (docker compose up -d) or the CI
 /// service container.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class ConnectionFactoryTests
 {
     private static string ConnectionString =>

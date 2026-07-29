@@ -13,13 +13,13 @@ CREATE TABLE aggregated_items (
     source_kind   text NOT NULL,        -- research | news | preprint | trial_update
     external_id   text NOT NULL,        -- PMID / DOI / guid / NCT id — the dedupe key
     title         text NOT NULL,        -- original title
-    raw_summary   text,                 -- abstract or feed summary (per-source licensing rules)
+    raw_summary   text,                 -- abstract or feed summary — PIPELINE INPUT ONLY, never rendered publicly
     url           text NOT NULL,
     published_at  date,
     fetched_at    timestamptz NOT NULL DEFAULT now(),
 
     -- classification (pipeline stage 2)
-    tumor_tags    text[] DEFAULT '{}',  -- slugs from repo taxonomy (glioma, gbm, meningioma…)
+    tumor_tags    text[] NOT NULL DEFAULT '{}',  -- slugs from repo taxonomy (glioma, gbm, meningioma…)
     research_stage text,                -- human_trial | observational | review_guideline |
                                         -- preclinical_animal | preclinical_cell | news_other
     relevance     text NOT NULL DEFAULT 'pending',
@@ -34,7 +34,9 @@ CREATE TABLE aggregated_items (
     summary_generated_at timestamptz,
     summary_flagged   boolean NOT NULL DEFAULT false,  -- reader hit "report a problem"
 
-    -- publication workflow (human review gate — nothing public without approval)
+    -- publication workflow (Auto mode publishes clean summaries; flagged ones
+    -- and, in Review mode, everything waits for a person. reviewed_by='auto'
+    -- marks a machine-published item — see content-pipeline.md §"Publish mode")
     status        text NOT NULL DEFAULT 'pending',
         -- pending | published | rejected | pulled (was live, taken down)
     reviewed_at   timestamptz,
@@ -43,11 +45,33 @@ CREATE TABLE aggregated_items (
     slug          text UNIQUE,          -- permalink for the item page (SEO surface)
     UNIQUE (source, external_id)
 );
-CREATE INDEX ON aggregated_items (status, published_at DESC);
+CREATE INDEX ON aggregated_items (status, published_at DESC NULLS LAST);
 CREATE INDEX ON aggregated_items USING gin (tumor_tags);
 ```
 
-Item lifecycle: the **local pipeline** uploads finished items (classified + summarized) via the sync API as `status='pending'` → Dan approves/edits/rejects in the site's **admin review queue** → approval flips to `published`. The public feed renders only `published` + `relevance='patient_relevant'` by default, with the "show early-stage research" toggle for `early_stage`; `excluded` relevance is never uploaded at all (filtered locally, saving Claude time). Because of the gate, **every published summary is human-reviewed**.
+**`raw_summary` is never rendered on a public page.** Abstracts can carry
+publisher rights, so the site summarizes and links rather than republishing
+(PLAN.md §5). The column exists solely as input to the M3 summarizer, and to
+show a reviewer the source text beside the generated summary in the admin
+queue. Any change that puts it in front of a reader is a licensing decision,
+not a UI decision.
+
+**CHECK constraints (added in WI-201).** The enum-ish columns are constrained
+to the values documented above, and one medical-safety rule is enforced by the
+database rather than trusted to every future caller:
+
+```sql
+CHECK (NOT (source_kind = 'preprint' AND relevance = 'patient_relevant'))
+```
+
+That is content-pipeline.md §9's "preprints are never patient_relevant"
+made unbypassable. A preprint that later appears in a journal arrives as a new
+`research` row (or has its `source_kind` updated), both of which the constraint
+allows. `tumor_tags` is `NOT NULL` so GIN containment queries never have to
+distinguish NULL from `'{}'`. `published_at DESC NULLS LAST` matches the feed's
+ordering — the Postgres default would float undated items to the top.
+
+Item lifecycle: the **local pipeline** uploads finished items (classified + summarized) via the sync API. In **Auto mode (the default, WI-212)** a summarized item that passed the automated safety checks lands as `published` immediately (`reviewed_by='auto'`); a flagged or not-yet-summarized item lands as `pending` for a person. In **Review mode** everything lands `pending` and Dan approves/edits/rejects in the **admin review queue**. The public feed renders only `published` items — `patient_relevant` (and `pending`-relevance until M3 classifies them) by default, with the "show early-stage research" toggle for `early_stage`; `excluded` relevance is never uploaded at all (filtered locally, saving Claude time). See content-pipeline.md §"Publish mode".
 
 ### subscribers + digest — the email loop
 
@@ -147,6 +171,25 @@ Plus append-only `story_events (story_id, event, actor, at, detail)` for moderat
 ## Curated-content taxonomy (repo, not DB)
 
 Tumor types and section slugs are defined once in `Content/taxonomy.yml` and referenced everywhere: classifier output (`tumor_tags`), feed filters, subscriber prefs, and (later) curated-page front matter and story tagging. One source of truth; the classifier is constrained to emit only these slugs.
+
+**The taxonomy is a tree** (WI-201). Each entry may declare a `parent`, so
+`glioblastoma → high-grade-glioma → glioma`. Rules that follow from that:
+
+- The classifier tags the **most specific** type it can justify. It does not
+  also emit the ancestors — `TaxonomyStore.Matches` walks up at query time, so
+  filtering `glioma` returns glioblastoma items.
+- `all-brain-tumors` is the catch-all for items that apply broadly (caregiving,
+  side effects, general treatment news); it matches every filter.
+- **Aliases must be true synonyms.** Naming follows WHO CNS5 (2021). "Grade 4
+  glioma" is *not* an alias for glioblastoma — CNS5 grade 4 also covers
+  IDH-mutant astrocytoma and H3 K27-altered midline glioma, so it maps to
+  `high-grade-glioma`. Likewise DIPG is the pontine subset of diffuse midline
+  glioma, not a synonym for it. Getting this wrong shows a patient research
+  about a different disease with a different prognosis; when in doubt, add a
+  slug rather than an alias.
+- Unknown tags are dropped before they reach the database, and the rejected
+  values are reported (`TagFilterResult.Rejected`) so a recurring unknown term
+  becomes evidence for a new entry instead of silent data loss.
 
 ## PII notes
 

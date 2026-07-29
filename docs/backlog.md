@@ -150,14 +150,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M2 — Ingestion + sync API + browse
 
-- [ ] **WI-201 Core schema + taxonomy**
+- [x] **WI-201 Core schema + taxonomy**
   Goal: the data foundation for everything aggregated.
   Acceptance: DbUp migration for `aggregated_items` + `source_sync_state`
   exactly per data-model.md; `Content/taxonomy.yml` with initial tumor slugs;
   taxonomy loader with tests.
   Refs: data-model.md. Depends on: WI-004.
 
-- [ ] **WI-202 Sync API**
+- [x] **WI-202 Sync API**
   Goal: the only write surface, secure and idempotent.
   Acceptance: `GET /api/sync/state`, `POST /api/sync/check`, `POST
   /api/sync/items` per architecture.md §4; API-key header auth (401 without),
@@ -165,7 +165,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   the same batch twice; source_sync_state updated on success.
   Refs: architecture.md §4, security reference. Depends on: WI-201.
 
-- [ ] **WI-203 Pipeline skeleton + sync client**
+- [x] **WI-203 Pipeline skeleton + sync client**
   Goal: the console app frame every fetcher plugs into.
   Acceptance: config binding (base URL, API key via user-secrets), typed
   sync-API client, `--once` run mode, structured console logging, per-source
@@ -173,7 +173,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   against the locally-running Web app.
   Refs: architecture.md §3. Depends on: WI-202.
 
-- [ ] **WI-204 PubMed fetcher + hard-rule pre-filter**
+- [x] **WI-204 PubMed fetcher + hard-rule pre-filter**
   Goal: the primary research source flowing end-to-end.
   Acceptance: E-utilities query set for brain tumors with `reldate` windowing
   driven by sync state (self-healing catch-up); API-key + 10 rps politeness;
@@ -181,35 +181,35 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   pending with raw titles.
   Refs: PLAN.md §5, roadmap M2. Depends on: WI-203.
 
-- [ ] **WI-205 RSS fetchers: NCI + ScienceDaily**
+- [x] **WI-205 RSS fetchers: NCI + ScienceDaily**
   Goal: the news sources, licensing rules respected.
   Acceptance: NCI RSS (full text OK) and ScienceDaily brain-tumor feed
   (headline+summary+link ONLY) fetchers; per-source licensing enforced in
   code; dedupe against existing items via /check; tests with recorded feeds.
   Refs: PLAN.md §5. Depends on: WI-203.
 
-- [ ] **WI-206 Preprint fetcher: medRxiv/bioRxiv**
+- [x] **WI-206 Preprint fetcher: medRxiv/bioRxiv**
   Goal: preprints in the pipeline, permanently badged.
   Acceptance: metadata-only fetcher; `source_kind='preprint'` forced; items
   can never carry `patient_relevant` (rule + test); "not peer-reviewed"
   badge data present.
   Refs: PLAN.md §5, content-pipeline.md §9. Depends on: WI-203.
 
-- [ ] **WI-207 Admin auth**
+- [x] **WI-207 Admin auth**
   Goal: a locked front door for moderation.
   Acceptance: ASP.NET Identity, single seeded admin, TOTP 2FA enforced, no
   registration endpoint; admin area route group requires auth; anti-forgery on
   POSTs; login/lockout tested.
   Refs: security reference. Depends on: WI-004.
 
-- [ ] **WI-208 Review queue v0**
+- [x] **WI-208 Review queue v0**
   Goal: the human gate exists.
   Acceptance: admin list of pending items (newest first, source/kind badges);
   approve → published, reject → rejected (htmx actions, no-JS fallback);
   status transitions audit who/when; tests for transitions.
   Refs: data-model.md lifecycle. Depends on: WI-207, WI-201.
 
-- [ ] **WI-209 /research feed**
+- [x] **WI-209 /research feed**
   Goal: the public product page, v0.
   Acceptance: published items with filters (date, source, kind) as htmx
   partials degrading to querystring links; "load more" paging; items rendered
@@ -220,7 +220,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: sitemap.md, architecture.md §5, docs/design/entry-hub-handoff/.
   Depends on: WI-208, WI-109.
 
-- [ ] **WI-210 Source health + scheduled task**
+- [x] **WI-210 Source health + scheduled task**
   Goal: the loop runs itself and staleness is visible.
   Acceptance: admin source-health page ("PubMed last synced N days ago", last
   error); pipeline ends with a desktop notification ("N items awaiting
@@ -228,13 +228,30 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   checked into the repo with setup instructions.
   Refs: architecture.md §6/§8. Depends on: WI-204.
 
-- [ ] **WI-211 M2 end-to-end shakedown**
+- [x] **WI-211 M2 end-to-end shakedown**
   Goal: prove the whole loop before building on it.
   Acceptance: from a fresh DB: scheduled run fetches all sources → items
   pending → approve in admin → visible on /research; a second run ingests 0
   duplicates; findings fixed or filed as new items; PROGRESS.md notes the
   shakedown result.
   Depends on: WI-205, WI-206, WI-209, WI-210.
+
+- [x] **WI-212 Auto-publish mode (human review optional)**
+  Goal: the human review gate is optional, not mandatory — Dan's call
+  (2026-07-20). Auto by default: a summarized item that passes the automated
+  safety checks publishes itself; only flagged or unsummarized items wait for
+  a person.
+  Acceptance: `Publishing:Mode` config (Auto default, Review opt-in); sync-API
+  upsert auto-publishes a new item that has a plain summary AND is not
+  `summary_flagged`, generating a slug and recording a `review_events` row with
+  actor `auto`; flagged/unsummarized items stay `pending`; Review mode holds
+  everything; item page discloses auto-published vs human-reviewed honestly;
+  design docs (PLAN, content-pipeline §"Publish mode", data-model,
+  architecture, CLAUDE) updated to reflect that human review is a mode, not a
+  hard requirement; tests for each branch + the default. Safe-by-construction
+  pre-M3 (no summarizer → nothing auto-publishes). **The automated guardrails
+  themselves land in M3 (WI-304); until then Auto mode is on but dormant.**
+  Refs: content-pipeline.md §9/§"Publish mode". Depends on: WI-202, WI-208, WI-209.
 
 ## Phase M3 — Claude classification + plain-language summaries
 

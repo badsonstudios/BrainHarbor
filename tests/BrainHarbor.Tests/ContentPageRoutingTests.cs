@@ -7,6 +7,7 @@ namespace BrainHarbor.Tests;
 /// WI-104 routing tests: curated pages resolve by top-level slug and by
 /// section/slug through the catch-all route, against the fixture content dir.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class ContentPageRoutingTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

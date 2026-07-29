@@ -12,6 +12,7 @@ namespace BrainHarbor.Tests;
 /// disabled — the no-JS fallback is an acceptance criterion, not a nicety.
 /// </summary>
 [Trait("Category", "E2E")]
+[Collection(DatabaseCollection.Name)]
 public sealed class A11ySmokeTests : IClassFixture<KestrelWebApplicationFactory>, IAsyncLifetime
 {
     private readonly KestrelWebApplicationFactory _factory;

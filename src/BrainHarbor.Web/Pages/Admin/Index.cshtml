@@ -1,0 +1,29 @@
+@page "/admin"
+@model BrainHarbor.Web.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<div class="container--read">
+    <h1>Admin</h1>
+
+    @if (!Model.TwoFactorEnabled)
+    {
+        <div class="disclaimer" role="alert">
+            <p>
+                <strong>Two-factor is not on.</strong> Approving an item puts
+                medical content in front of patients.
+                <a href="/admin/two-factor">Turn on two-factor</a> first.
+            </p>
+        </div>
+    }
+
+    <ul>
+        <li><a href="/admin/queue">Review queue</a></li>
+        <li><a href="/admin/two-factor">Two-factor settings</a></li>
+    </ul>
+
+    <form method="post" asp-page="/Admin/Logout">
+        <p><input type="submit" value="Sign out" /></p>
+    </form>
+</div>

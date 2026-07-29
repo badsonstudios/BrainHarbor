@@ -101,7 +101,7 @@ A CI script walks all pages and reports: overdue reviews, missing sources, `vola
 3. **What they found** — 2–3 sentences, concrete numbers where the source gives them.
 4. **What this means — and doesn't mean** — the anti-hype block, mandatory: stage of research, distance from clinical use, explicit "this does not mean X is a cure/available."
 5. **How early is this?** — the stage badge, standardized: *Tested in people* / *Early research (animals)* / *Early research (lab cells)* / *Review of existing research* / *News* / *New or updated trial* / *Preprint — not yet checked by other scientists*.
-6. **Provenance box** — source, journal/registry, date, link to original, model disclosure ("This summary was written with AI assistance and **reviewed by a human before publishing** — report a problem").
+6. **Provenance box** — source, journal/registry, date, link to original, model disclosure. The wording is honest about how the item was published: human-reviewed items say "reviewed by a person before publishing"; auto-published items say "written by AI and published automatically after passing our automatic safety checks — a person did not review it" (see "Publish mode" below). Both invite a "report a problem".
 
 ### Prompt contract (enforced via structured output)
 
@@ -109,6 +109,30 @@ A CI script walks all pages and reports: overdue reviews, missing sources, `vola
 - Reading level instruction + banned-phrase list ("breakthrough", "miracle", "game-changer", "cure" unless quoting-with-context).
 - Numbers must come verbatim from the source (the classic failure mode is invented percentages) — a post-check script verifies every numeral in the summary appears in the source text; mismatch → `summary_flagged`, held for review.
 - Output is JSON (structured outputs) → template fields, so rendering is deterministic and a malformed response can't leak prose onto the site.
+
+### Publish mode (WI-212)
+
+**The site runs in Auto mode by default** — the human review gate is optional,
+not mandatory. How an uploaded item reaches readers:
+
+- **Auto (default):** an item that has a plain-language summary AND was **not**
+  flagged by any automated safety check publishes itself immediately. The
+  automated checks are the ones above — every numeral traceable to the source,
+  no banned hype phrases, reading level within target, required template
+  fields present. Anything a check flags (`summary_flagged`), or that isn't
+  summarized yet, is held in the review queue for a person. So the queue still
+  exists; in Auto mode it holds only the items the machine wasn't sure about.
+- **Review:** nothing publishes without a person approving it in the admin
+  queue (the original M2 behavior). Set `Publishing:Mode=Review`.
+
+Auto-published items are recorded in `review_events` with actor `auto`, and the
+item page **says so** — it does not claim a person reviewed it. This keeps the
+audience's trust honest: an auto-published summary tells the reader it was
+machine-published and passed automatic checks, and points at the original.
+
+Because auto-publish requires a summary that passed the checks, it is
+**safe-by-construction before M3**: with no summarizer yet, nothing has a
+summary, so nothing auto-publishes even though the mode is on.
 
 ### Classification rules (before summarization)
 

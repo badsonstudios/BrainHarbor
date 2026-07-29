@@ -7,6 +7,7 @@ namespace BrainHarbor.Tests;
 /// Requires the local Postgres container (docker compose up -d) or the CI
 /// service container. Connection string overridable via BRAINHARBOR_TEST_DB.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class DatabaseSmokeTests
 {
     private static string ConnectionString =>

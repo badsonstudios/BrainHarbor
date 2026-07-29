@@ -8,4 +8,18 @@
     <UserSecretsId>8b4c21c8-bbe8-448b-92b0-8e0bbe3d3e37</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Parsing and windowing helpers are internal but must be unit-testable
+         without going through the network. -->
+    <InternalsVisibleTo Include="BrainHarbor.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.10" />
+  </ItemGroup>
+
 </Project>

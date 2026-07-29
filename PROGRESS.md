@@ -9,34 +9,12 @@
 
 | | |
 |---|---|
-| **Phase** | M1 — Design system & shell (M0 complete & merged) |
-| **In progress** | nothing mid-flight — **M1 complete** on `auto/M1` (PR #3, draft), awaiting Dan's review + merge |
-| **Next up** | Dan: visual review of PR #3 (see checklist below), then merge; then `/autopilot M2` |
-| **Blockers** | none |
+| **Phase** | M2 — Ingestion + sync API + browse (M0, M1 complete & merged) |
+| **In progress** | nothing mid-flight — **M2 + WI-212 complete** on `auto/M2` (PR #4, draft), paused |
+| **Next up** | **[user] Dan:** fix GitHub Actions billing → confirm CI green on PR #4 → merge → `/autopilot M3` |
+| **Blockers** | ⛔ **GitHub Actions billing block** — CI job won't start ("recent account payments have failed or your spending limit needs to be increased"). Fix in the `badsonstudios` GitHub → Settings → Billing & plans. Code is green locally (384/384) and the last CI that ran (WI-211) passed; this blocks CI on PR #4 **and all future M3 pushes**. Dan chose to pause until it's fixed. |
 
 ## Notes for the next session
-
-### Dan's visual-review checklist for PR #3 (M1)
-
-Run `dotnet run --project src/BrainHarbor.Web` (Docker Postgres up first),
-then eyeball — this is the part autopilot cannot do:
-
-1. **`/`** — Entry Hub: three doors, spacing, the teal, does it feel calm?
-2. **Larger text** (header toggle) — does anything break or overflow at 22px?
-3. **`/dev/styleguide`** — all 7 stage badges side by side. The dot-meter is
-   the core trust device; does 5/5 vs 1/5 read instantly?
-4. **`/about`** — a curated Markdown page end-to-end (disclaimer box,
-   provenance, sources).
-5. **Glossary tooltip** — on `/dev/styleguide`, click/tab a dotted term.
-   (No shipped shell page happens to use a glossary term yet, so the
-   styleguide is the only place to see it until the feed lands.)
-   Then check the `/glossary` A–Z page itself.
-6. **`/start`** — the emergency red-flag block: is it findable and calm?
-7. **`/get-help-now`** — big tap targets, phone links.
-8. **Print preview `/about`** (Ctrl+P) — chrome gone, ink on white.
-9. **A dead link** (e.g. `/nope`) — friendly 404 with helpline band.
-
-### Standing notes
 
 - **Approved visual design lives at `docs/design/entry-hub-handoff/`** ("Clear
   & Kind" theme + Entry Hub home, from Claude Design 2026-07-19). It is the
@@ -46,7 +24,8 @@ then eyeball — this is the part autopilot cannot do:
   sitemap.md (/get-help, /start-here) do NOT override the sitemap
   (/get-help-now, /start). The handoff folder is not yet committed — it goes
   in with WI-108's branch.
-- **Remaining dead links after M1**: only `/research` (M2) and `/trials` (M4).
+- **Remaining dead links**: only `/trials` (M4). `/research` went live in
+  WI-209.
   `/get-help-now`, `/digest`, `/glossary`, `/about`, `/how-we-write`,
   `/start`, `/privacy`, `/terms` are all live, and a `ShellPagesTests` link
   check fails the build if any *other* internal link 404s. Custom 404/500
@@ -62,6 +41,163 @@ then eyeball — this is the part autopilot cannot do:
 
 ## Log (newest first)
 
+- **2026-07-20** — **WI-212 done — auto-publish mode (Dan's request)**: the
+  human review gate is now **optional**. `Publishing:Mode` config, **Auto by
+  default**: a summarized item that passes the automated safety checks
+  publishes itself (slug generated, `review_events` row with actor `auto`);
+  flagged or not-yet-summarized items stay pending for a person; Review mode
+  restores mandatory review. The item page is **honest** — auto-published
+  items say "written by AI and published automatically… a person did not
+  review it," not "reviewed by a person." Chose "hold only the flagged ones"
+  (Dan's pick) so the automated guardrails (numeral post-check, banned-phrase
+  scan, reading level — all M3/WI-304) gate every auto-publish. **Safe-by-
+  construction until M3**: no summarizer yet → nothing has a summary → nothing
+  auto-publishes, even though the mode is on. Design docs (PLAN,
+  content-pipeline §"Publish mode", data-model, architecture, both CLAUDE.md)
+  updated — human review is a mode now, not a hard requirement. 384/384.
+  (On `auto/M2`, extends PR #4.)
+
+- **2026-07-20** — **WI-211 done — M2 COMPLETE**: live shakedown against the
+  real PubMed, NCI, ScienceDaily, medRxiv and bioRxiv endpoints, from an
+  empty database. The loop works: 5/5 sources → 1,360 items pending → approve
+  one → exactly 1 visible on /research, 1,359 still behind the gate; a second
+  run ingested **0 duplicates** and left the published item published (the
+  WI-202 human-decision fix proven for real).
+  **Three real bugs only a live run could find, all fixed:**
+  (1) the pre-filter's keep-bias is right for sources that already selected
+  for us, but bioRxiv/medRxiv return every field — it passed **91%** of the
+  firehose (protein folding, chondrogenesis) into the review queue. Added a
+  SourceScope so firehose sources require a POSITIVE brain-tumor match:
+  bioRxiv 2863→77, medRxiv 784→11, total 4871→1360.
+  (2) the feed filtered to relevance='patient_relevant', but nothing is
+  classified until M3 — so approving an item in M2 did nothing visible.
+  Unclassified-but-approved items are now shown; early-stage stays behind the
+  toggle. (3) ScienceDaily stamps dates "EDT", which .NET won't parse — all
+  48 items were undated, sorting to the bottom of the feed forever and never
+  advancing the cursor. Now 0 undated of 48.
+  Also hardened the feed ordering tests to stop assuming an empty table —
+  the suite now passes *with* 1,360 real rows present. 374/374.
+
+- **2026-07-19** — **WI-210 done** (autopilot M2): source health + the
+  scheduled task. Added POST /api/sync/failure so a broken source actually
+  writes last_error — until now nothing ever did, so a source that died a
+  week ago would still show its last success. /admin/health lists every
+  source with plain-language staleness ("5 days ago", "never"), flags
+  failures first, and calls out any expected source that has never reported
+  at all. The pipeline reports its own failures (best-effort — reporting must
+  not break the run) and raises a desktop toast on finish. Task Scheduler
+  registration script uses StartWhenAvailable so a sleeping PC catches up
+  rather than skipping the day. 360/360.
+
+- **2026-07-19** — **WI-209 done** (autopilot M2): the public feed. Two
+  safety rules are enforced in the repository rather than a view — only
+  status='published' is ever visible, and early-stage animal/cell work is
+  hidden unless the reader ticks the box (a mouse-study headline reads as
+  false hope). Tumor filters walk the taxonomy tree, so browsing "glioma"
+  surfaces glioblastoma; filter values are normalized against a fixed set and
+  never concatenated into SQL. Item permalinks render the badge with a
+  plain-language explanation of what it means, and refuse to invent a summary
+  when there isn't one. A pulled item's permalink 404s exactly like one that
+  never existed. Tests pin that raw source text never reaches a public page.
+  /research is now live — only /trials remains dead. 348/348.
+
+- **2026-07-19** — **WI-208 done** (autopilot M2): the review queue — the
+  human gate itself. Pending items with the badge a READER would see (same
+  mapper the public feed uses, so the decision is made on what actually
+  publishes), source text behind a details toggle for comparison, htmx
+  approve/reject with a no-JS form fallback. Every transition writes an
+  append-only review_events row (who, what, when, note) because "every
+  published summary is human-reviewed" needs to be auditable, not assumed.
+  Status transitions are guarded, so two open tabs can't double-apply, and
+  slugs are generated from the plain-language title on approval with
+  collision handling. Flagged items sort first. 22 new tests. 330/330.
+
+- **2026-07-19** — **WI-207 done** (autopilot M2): admin auth — ASP.NET
+  Identity (the only EF Core usage; its tables live in an `identity` schema so
+  DbUp and EF never collide), ONE account seeded from config with no
+  registration or password-reset endpoint, TOTP 2FA enrolment (manual key, no
+  JS/QR dependency), hard lockout, anti-forgery on every admin POST, POST-only
+  logout. Folder-level authorization means a new admin page is protected by
+  default rather than by remembering an attribute. 12 boundary tests. Note:
+  the seeder logs loudly and continues if the password is rejected — a weak
+  config value must not silently leave the review queue unreachable. 308/308.
+
+- **2026-07-19** — **WI-205 + WI-206 done** (autopilot M2): NCI + ScienceDaily
+  RSS fetchers with per-source licensing enforced in the type system
+  (FeedTextPolicy; ScienceDaily is headline+teaser+link only, and the enum
+  now fails closed), and medRxiv/bioRxiv preprints with source_kind forced to
+  "preprint" at all three layers. Review probed the LIVE APIs and found two
+  silent breakages: the NCI feed URL 404d (would have failed every run
+  forever — corrected to the publishedcontent path, verified 200/10 items),
+  and the preprint API pages at 30 not 100, so the fetcher read 30 of ~745
+  records and then advanced the cursor past the rest. Paging now follows the
+  API's own total and a truncated window advances only to the newest record
+  actually read. Also: relevance is judged on the FULL description before the
+  licence truncates it (the teaser cut was dropping breast-cancer items whose
+  brain-metastases mention fell past the cut), empty feeds warn instead of
+  looking healthy, and PubMedPreFilter is renamed BrainTumorPreFilter now
+  that three sources share it. 296/296.
+
+- **2026-07-19** — **WI-204 done** (autopilot M2): PubMed fetcher (paged
+  esearch + efetch XML, self-healing reldate window, NCBI throttling and key)
+  and the hard-rule pre-filter. **The pre-filter decides what patients never
+  see, and it was silently dropping real research** — found across my own
+  tests and review: a trailing `\b` meant prefixes never matched plurals (so
+  "brain metasta" missed "brain metastases" and breast-cancer brain-mets
+  research vanished); multi-word terms assumed a literal space (missed
+  "brain-tumor", "tumor-treating fields"); the notice rule ate ordinary
+  titles starting "Response to"/"Withdrawal"/"Correction of"; the keep list
+  lacked the words the audience uses ("brain mets", "CNS involvement",
+  "leptomeningeal", and *"brain cancer"* itself); and broad neurology rules
+  dropped late-effects research (stroke after cranial irradiation, dementia
+  after whole-brain radiotherapy). All 15 titles are now regression tests.
+  Also: pagination with **cursor held back** when a window is truncated
+  (otherwise the remainder is invisible forever), esearch errors throw rather
+  than burning the window, ArticleDate preferred for ahead-of-print,
+  OtherAbstract excluded, and the NCBI key no longer lands in logs. 269/269.
+- **2026-07-19** — **WI-203 done** (autopilot M2): Pipeline host (user-secrets
+  config + validation, structured console logging, distinct exit codes for
+  Task Scheduler, retry/backoff), typed sync client (chunking, cursor only on
+  the last chunk, actionable auth errors, never logs the key), ISourceFetcher
+  abstraction, and a runner with per-source isolation. Review caught a
+  **blocker**: `Enumerable.Chunk` yields no chunks for an empty list, so the
+  "advance the cursor when nothing is new" call made no HTTP request at all —
+  a source's window could never move forward and would refetch a
+  forever-growing range. My unit test had passed because it asserted the
+  *stub's* recorded call, not the real client (mock hiding the bug). Added a
+  real `/api/sync/cursor` endpoint + real-server tests. Also: AlwaysUpload so
+  ClinicalTrials.gov updates aren't dropped by the new-only filter, full
+  contract round-trip test, unknown-arg rejection, args no longer bind config
+  (would put the key in the process list). 203/203.
+- **2026-07-19** — **WI-202 done** (autopilot M2): sync API (state/check/items)
+  with API-key auth (constant-time, fails CLOSED → 503 if unconfigured),
+  key-partitioned rate limiting, per-item validation, and an idempotent
+  upsert. Two real bugs found before commit: (1) API 401s were being
+  re-executed into the HTML status page — machine clients got markup, and a
+  POST re-execute degraded to a bogus 400; (2) **review blocker** — a
+  classify-only rerun could null the plain_summary of an already-*published*
+  item, leaving a live patient page contentless with no human involved.
+  Content is now frozen once a human reviews it (`Frozen` count in the
+  response). Also: cursor no longer advances on all-rejected batches (would
+  skip that window forever), single-source cursor rule, field bounds +
+  source whitelist, null-body 400s, DateOnly Dapper handler. 181/181.
+- **2026-07-19** — **WI-201 done** (autopilot M2): aggregated_items +
+  source_sync_state migration with CHECK constraints (incl. preprint can
+  never be patient_relevant, enforced in the DB); taxonomy.yml as a **tree**
+  (22 types, parent/child) + TaxonomyStore with alias resolution, Matches()
+  ancestor walk, and a FilterTags gate that reports rejected tags.
+  Review caught two **medically wrong aliases** — "grade 4 glioma" mapped to
+  glioblastoma (WHO CNS5 grade 4 also covers IDH-mutant astrocytoma and H3
+  K27-altered DMG) and DIPG treated as a synonym for diffuse midline glioma
+  rather than its pontine subset. Both would have shown patients research
+  about a different disease. Also fixed the DbUp journal race **in prod**
+  (advisory lock, not just serialized tests) and the NULLS LAST feed index.
+  data-model.md updated to match. 147/147.
+- **2026-07-19** — **M1 MERGED**: Dan ran the site, visual review passed
+  ("everything is looking good"); running it surfaced one real gap — no
+  shipped page used a glossary term, so the tooltip was invisible; fixed with
+  a real-pipeline sample on /dev/styleguide. PR #3 squash-merged to `main`
+  (0f6be65), `auto/M1` deleted. Autopilot M2 starting.
 - **2026-07-19** — **M1 COMPLETE** (autopilot): all 8 items shipped on
   `auto/M1`, 112/112 tests, ContentCheck clean, 0 build warnings. Awaiting
   Dan's visual review + merge of PR #3. Nothing merged to `main` by autopilot.

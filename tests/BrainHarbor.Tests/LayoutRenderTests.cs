@@ -8,6 +8,7 @@ namespace BrainHarbor.Tests;
 /// Development, so this needs the local Postgres container (docker compose
 /// up -d) or the CI service container — hence the Database trait.
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class LayoutRenderTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

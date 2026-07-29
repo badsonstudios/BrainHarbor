@@ -1,0 +1,72 @@
+@page "/research"
+@model BrainHarbor.Web.Pages.Research.IndexModel
+@{
+    ViewData["Title"] = "Research updates";
+}
+
+@* WI-209: the public feed. Filters are plain links (htmx swaps the results,
+   but every control works without JavaScript). Early-stage work is hidden by
+   default — a mouse-study headline reads as false hope (PLAN.md §3). *@
+
+<h1>Research updates</h1>
+<p>
+    New brain tumor research and news, in plain language. The marks on each
+    item show how far along the evidence is — more marks mean it has been
+    tested more.
+</p>
+
+<form method="get" class="feed-filters" hx-get="/research" hx-target="#feed-results"
+      hx-select="#feed-results" hx-swap="outerHTML" hx-push-url="true">
+    <label for="tumor">Tumor type</label>
+    <select id="tumor" name="tumor">
+        <option value="">All types</option>
+        @foreach (var type in Model.TumorTypes)
+        {
+            <option value="@type.Slug" selected="@(Model.Query.TumorType == type.Slug)">@type.Label</option>
+        }
+    </select>
+
+    <label for="kind">Kind</label>
+    <select id="kind" name="kind">
+        <option value="">Everything</option>
+        <option value="research" selected="@(Model.Query.Kind == "research")">Research</option>
+        <option value="news" selected="@(Model.Query.Kind == "news")">News</option>
+        <option value="trial_update" selected="@(Model.Query.Kind == "trial_update")">Trials</option>
+        <option value="preprint" selected="@(Model.Query.Kind == "preprint")">Preprints</option>
+    </select>
+
+    <label>
+        <input type="checkbox" name="early" value="true" checked="@Model.Query.IncludeEarlyStage" />
+        Show early-stage research (animal and lab studies)
+    </label>
+
+    <button type="submit">Apply</button>
+</form>
+
+<div id="feed-results">
+    <p class="text-muted">
+        @Model.Result.TotalCount item(s)@(Model.Query.IncludeEarlyStage
+            ? ", including early-stage research"
+            : ". Early-stage animal and lab research is hidden — tick the box above to include it").
+    </p>
+
+    @if (Model.Result.Items.Count == 0)
+    {
+        <p>
+            Nothing matches yet. Try clearing the filters, or
+            <a href="/research">see everything</a>.
+        </p>
+    }
+
+    <ul class="feed-grid">
+        @foreach (var row in Model.Result.Items)
+        {
+            <partial name="_FeedCard" model="Model.ToCard(row)" />
+        }
+    </ul>
+
+    @if (Model.Result.HasMore)
+    {
+        <p><a href="@Model.NextPageUrl">Show more →</a></p>
+    }
+</div>

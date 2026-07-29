@@ -8,6 +8,7 @@ namespace BrainHarbor.Tests;
 /// cookie → redirect, and the cookie → html class render path. Uses the
 /// in-memory TestServer (Database trait: startup runs DbUp).
 /// </summary>
+[Collection(DatabaseCollection.Name)]
 public class TextSizeToggleTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
