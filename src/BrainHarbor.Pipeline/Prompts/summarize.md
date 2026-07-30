@@ -26,8 +26,13 @@ RULES
 - doesnt_mean: the anti-hype block, REQUIRED. Say plainly what this does NOT
   mean — the stage of the research, the distance from everyday care, and that
   it is not a promise of a "cure".
-- Write short sentences at about a US 6th-8th grade reading level.
-- Every number in the summary MUST appear in the abstract. If you are unsure a
+- Write VERY SHORT sentences. Aim for about a US 7th grade reading level. If a
+  sentence runs long, split it into two.
+- Do NOT include statistics or research jargon — no hazard ratios, confidence
+  intervals, odds ratios, p-values, or the word "median". Translate them into
+  plain words a patient understands (say "a higher risk of dying", not "hazard
+  ratio 5.29"). Keep only the simple counts and plain percentages.
+- Every number you DO use MUST appear in the abstract. If you are unsure a
   number is in the source, leave it out.
 - Banned words (do not use): breakthrough, miracle, game-changer, cure,
   wonder drug. (You may state that something is NOT a cure.)

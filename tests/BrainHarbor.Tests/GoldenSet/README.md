@@ -83,6 +83,20 @@ before Auto mode: (1) pin a stronger model than Haiku for classify/summarize
 if tag completeness matters; (2) the borderline "excluded" cases are exactly
 where the human review gate earns its keep.
 
+## Summary run with Opus — recorded (WI-304)
+
+Ran `summarize-v1` through `claude --model claude-opus-5` on a representative
+subset (2026-07-30). **Quality was excellent** — accurate, honest, with strong
+"what this doesn't mean" anti-hype blocks. One real finding: Opus writes
+*thorough* summaries that packed in research jargon (hazard ratios, confidence
+intervals, long sentences), pushing several over the 8.5 reading-level ceiling
+(grade 10+). That's the guardrail working — but the fix is upstream: the prompt
+was tightened to forbid statistics/jargon ("say 'a higher risk of dying', not
+'hazard ratio 5.29'") and demand very short sentences. Re-running the flagged
+items dropped them from grade **10.8/10.0/10.6 → 5.7/7.1/6.6** with no loss of
+accuracy. Lesson for Auto mode: the reading-level guardrail is load-bearing —
+keep it, and keep tuning the prompt against it.
+
 ## Findings from the first pass (worth acting on)
 
 - **Taxonomy gap: spinal-cord tumors — RESOLVED.** Added a standalone
