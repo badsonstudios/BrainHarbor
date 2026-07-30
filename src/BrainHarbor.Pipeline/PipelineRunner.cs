@@ -36,6 +36,7 @@ public sealed class PipelineRunner(
     IEnumerable<ISourceFetcher> fetchers,
     ISyncApiClient syncApi,
     BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
+    BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
     ILogger<PipelineRunner> logger)
 {
     public async Task<RunResult> RunAsync(CancellationToken cancellationToken)
@@ -148,6 +149,26 @@ public sealed class PipelineRunner(
                         ClassifyModel =
                             $"{classification.Model ?? "claude-code-cli"} ({classification.PromptVersion})",
                     };
+
+                    // Summarize (WI-304). A summary that fails or trips the
+                    // automated checks doesn't block upload — the item goes up
+                    // (flagged if checks failed) and the review queue handles it.
+                    var summary = await summarizer.SummarizeAsync(item, cancellationToken);
+                    if (summary.Output is { } s)
+                    {
+                        sync = sync with
+                        {
+                            PlainTitle = s.PlainTitle,
+                            PlainSummary = s.Hook,
+                            PlainWhatStudied = s.WhatStudied,
+                            PlainWhatFound = s.WhatFound,
+                            PlainMeans = s.Means,
+                            PlainDoesntMean = s.DoesntMean,
+                            SummaryModel = $"{summary.Model ?? "claude-code-cli"} ({summary.PromptVersion})",
+                            PromptVersion = summary.PromptVersion,
+                            SummaryFlagged = summary.Flagged,
+                        };
+                    }
                 }
 
                 toUpload.Add(sync);

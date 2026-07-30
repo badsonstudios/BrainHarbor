@@ -50,6 +50,11 @@ public sealed class ClaudeProcessRunner(IOptions<ClaudeOptions> options) : IProc
         process.StartInfo.ArgumentList.Add("-p");
         process.StartInfo.ArgumentList.Add("--output-format");
         process.StartInfo.ArgumentList.Add("json");
+        if (!string.IsNullOrWhiteSpace(opts.Model))
+        {
+            process.StartInfo.ArgumentList.Add("--model");
+            process.StartInfo.ArgumentList.Add(opts.Model);
+        }
 
         // Drain both streams to completion; only the null Data event marks EOF,
         // and reading the buffers before that races a dropped final chunk.

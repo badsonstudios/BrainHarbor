@@ -278,7 +278,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   `classify_model` + prompt version stamped per item.
   Refs: content-pipeline.md §9. Depends on: WI-301, WI-302.
 
-- [ ] **WI-304 Summarize step**
+- [x] **WI-304 Summarize step**
   Goal: the differentiator — plain-language summaries with guardrails.
   Acceptance: summarize prompt implementing the 6-block template; numeral
   post-check (every number traceable to source, mismatch → flagged);

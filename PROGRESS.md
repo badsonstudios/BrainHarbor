@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **In progress** | **Autopilot M3 PAUSED** after WI-301/302/303 + infra fix (on `auto/M3`, PR #5, CI green). Checkpoint before WI-304. |
-| **Next up** | WI-304 Summarize step + guardrails |
+| **Next up** | WI-305 Review queue v1 |
 | **Blockers** | none hard. WI-303/304 both want a real-CLI golden-set quality run (Dan's machine) — autopilot builds in Review mode and can't run the live CLI. Golden set is ratified. |
 
 ## Notes for the next session

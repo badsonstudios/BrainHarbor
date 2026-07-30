@@ -116,13 +116,31 @@ public class PipelineRunnerTests
         Url = $"https://example.org/{externalId}",
     };
 
+    /// <summary>By default produces no summary (item uploads classified but
+    /// unsummarized). A test can supply one to check the summary is attached.</summary>
+    private sealed class StubSummarizer(BrainHarbor.Pipeline.Summarize.SummarizeOutput? output = null)
+        : BrainHarbor.Pipeline.Summarize.ISummarizer
+    {
+        public bool Flagged { get; init; }
+
+        public Task<BrainHarbor.Pipeline.Summarize.SummaryResult> SummarizeAsync(
+            FetchedItem item, CancellationToken ct) =>
+            Task.FromResult(new BrainHarbor.Pipeline.Summarize.SummaryResult(
+                output, "summarize-v1", output is null ? null : "claude-opus-5", Flagged, []));
+    }
+
     private static PipelineRunner Runner(ISyncApiClient api, params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, new StubClassifier(), NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, new StubClassifier(), new StubSummarizer(), NullLogger<PipelineRunner>.Instance);
 
     private static PipelineRunner Runner(
         ISyncApiClient api, BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
         params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, classifier, NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, classifier, new StubSummarizer(), NullLogger<PipelineRunner>.Instance);
+
+    private static PipelineRunner Runner(
+        ISyncApiClient api, BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
+        params ISourceFetcher[] fetchers) =>
+        new(fetchers, api, new StubClassifier(), summarizer, NullLogger<PipelineRunner>.Instance);
 
     [Fact]
     public async Task UploadsOnlyTheItemsTheServerSaysAreNew()
@@ -291,6 +309,33 @@ public class PipelineRunnerTests
         Assert.Contains("classify-v1", uploaded.ClassifyModel);
         // No summary yet — that's WI-304.
         Assert.Null(uploaded.PlainSummary);
+    }
+
+    [Fact]
+    public async Task AClassifiedItemCarriesItsSummaryBlocksAndFlag()
+    {
+        var api = new StubSyncApi();
+        var summary = new BrainHarbor.Pipeline.Summarize.SummarizeOutput
+        {
+            PlainTitle = "A plain title",
+            Hook = "A one-line hook.",
+            WhatStudied = "What was studied.",
+            WhatFound = "What they found.",
+            Means = "What it means.",
+            DoesntMean = "What it doesn't mean.",
+        };
+        var summarizer = new StubSummarizer(summary) { Flagged = true };
+
+        await Runner(api, summarizer, new StubFetcher("pubmed", [Item("pubmed", "sum-1")]))
+            .RunAsync(CancellationToken.None);
+
+        var uploaded = Assert.Single(Assert.Single(api.Uploads).Items);
+        Assert.Equal("A plain title", uploaded.PlainTitle);
+        Assert.Equal("A one-line hook.", uploaded.PlainSummary);
+        Assert.Equal("What was studied.", uploaded.PlainWhatStudied);
+        Assert.Equal("What it doesn't mean.", uploaded.PlainDoesntMean);
+        Assert.True(uploaded.SummaryFlagged);
+        Assert.Contains("summarize-v1", uploaded.SummaryModel);
     }
 
     [Fact]

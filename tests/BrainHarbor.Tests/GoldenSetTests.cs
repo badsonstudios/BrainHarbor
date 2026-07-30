@@ -135,6 +135,26 @@ public class GoldenSetTests
     }
 
     [Fact]
+    public void EveryIdealSummaryPassesTheWI304Guardrails()
+    {
+        // The 301↔304 tie: an "ideal" summary must itself pass the automated
+        // safety checks (numbers trace to source, no hype, reading level).
+        // If the yardstick fails its own guardrails, the guardrails or the
+        // golden set is wrong.
+        foreach (var item in Golden.Items.Where(i => i.IdealSummary is not null))
+        {
+            var s = item.IdealSummary!;
+            var prose = string.Join("\n", s.PlainTitle, s.WhatStudied, s.WhatFound, s.Means, s.DoesntMean);
+            var source = $"{item.Input.Title}\n{item.Input.RawSummary}";
+
+            var result = BrainHarbor.Pipeline.Summarize.Guardrails.Check(prose, source);
+
+            Assert.True(result.Passed,
+                $"{item.Input.ExternalId} ideal summary tripped a guardrail: {string.Join("; ", result.Reasons)}");
+        }
+    }
+
+    [Fact]
     public void InputsAreRealPubmedItemsWithAbstracts()
     {
         foreach (var item in Golden.Items)

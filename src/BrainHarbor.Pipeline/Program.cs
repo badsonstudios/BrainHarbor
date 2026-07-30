@@ -161,8 +161,9 @@ public static class PipelineHost
         builder.Services.AddSingleton<Claude.ClaudeCli>();
         builder.Services.AddSingleton<Claude.PromptLibrary>();
 
-        // Classify step (WI-303).
+        // Classify + summarize steps (WI-303/304).
         builder.Services.AddSingleton<Classify.IItemClassifier, Classify.Classifier>();
+        builder.Services.AddSingleton<Summarize.ISummarizer, Summarize.Summarizer>();
 
         builder.Services.AddTransient<PipelineRunner>();
         builder.Services.AddSingleton<DesktopNotifier>();

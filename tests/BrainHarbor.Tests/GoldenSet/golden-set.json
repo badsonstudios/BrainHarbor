@@ -110,7 +110,7 @@
       "ideal_summary": {
         "plain_title": "A brain scan helped doctors track how IDH-mutant gliomas responded to a targeted pill",
         "what_studied": "Doctors studied 22 people with IDH-mutant glioma who took an IDH-blocking pill (ivosidenib or vorasidenib). They compared a special amino acid PET scan with a standard MRI.",
-        "what_found": "MRI found a measurable tumor in 10 of 22 people (45%). The PET scan found one in 20 of 22 people (91%). For tracking the treatment, the PET scan worked about as well as MRI.",
+        "what_found": "MRI found a measurable tumor in 10 of 22 people (45%). The PET scan found tumors in 20 of 22 people (91%). For tracking the treatment, the PET scan worked about as well as MRI.",
         "means": "A PET scan may give doctors another way to see and follow these tumors during treatment.",
         "doesnt_mean": "This was a small study of 22 people. It does not test whether the pill helps you live longer, and it does not mean PET should replace MRI.",
         "stage_label": "Tested in people"
@@ -168,11 +168,12 @@
       },
       "note": "Systematic review, 85 patients, bevacizumab around spinal tumor surgery. Tagged spinal-cord-tumor (added to the taxonomy after this was first classified).",
       "ideal_summary": {
-        "plain_title": "A review looked at bevacizumab around spinal tumor surgery",
-        "what_studied": "Researchers combined 10 studies with 85 people who received bevacizumab, a drug that targets blood vessel growth, around surgery for spinal tumors.",
-        "what_found": "Clinical improvement was seen in 48% and imaging improvement in 61%. People with tumors other than glioblastoma lived longer (39.1 months) than those with glioblastoma (16.2 months). Side effects included fatigue (35%) and high blood pressure (23%).",
-        "means": "The drug may help some people with spinal tumors, especially those without glioblastoma.",
-        "doesnt_mean": "The studies were small and looked back at old records. This does not prove the drug caused the results, and stronger trials are needed.",
+        "plain_title": "A review looked at a drug used around spinal tumor surgery",
+        "hook": "A drug that slows blood vessel growth may help some people having surgery for a spinal tumor.",
+        "what_studied": "Researchers pooled several studies of 85 people. All had a drug called bevacizumab around surgery for a spinal tumor.",
+        "what_found": "Nearly half got better in the clinic (48%). More got better on scans (61%). People whose tumor was not glioblastoma lived longer, about 39.1 months versus 16.2 months. Some had fatigue (35%) or high blood pressure (23%).",
+        "means": "The drug may help some people with spinal tumors, most of all those without glioblastoma.",
+        "doesnt_mean": "The studies were small and looked back at old records. This does not prove the drug caused the results. Bigger trials are needed.",
         "stage_label": "Review of existing research"
       }
     },
@@ -302,11 +303,12 @@
       },
       "note": "Review of vorasidenib for IDH-mutant glioma, incl. the INDIGO trial. Patient-relevant treatment review.",
       "ideal_summary": {
-        "plain_title": "A plain-language look at vorasidenib, a pill for IDH-mutant glioma",
-        "what_studied": "This review pulls together the main studies of vorasidenib, a pill that blocks mutant IDH and can reach the brain.",
-        "what_found": "In the 2023 INDIGO trial, vorasidenib lengthened the time before the tumor grew and delayed the need for the next treatment in people with IDH-mutant low-grade glioma.",
-        "means": "For some people with IDH-mutant low-grade glioma, this pill may add time before stronger treatments are needed.",
-        "doesnt_mean": "It is not a cure, and it is only for gliomas with an IDH change. It does not replace surgery, radiation, or chemotherapy for everyone.",
+        "plain_title": "A pill called vorasidenib for a type of glioma",
+        "hook": "A daily pill may add time before some people with a glioma need stronger treatment.",
+        "what_studied": "This review pulls together the main studies of vorasidenib. It is a pill that can reach the brain. It works on gliomas that have an IDH gene change.",
+        "what_found": "In the 2023 INDIGO trial, the pill made the time before the tumor grew longer. It also put off the need for the next treatment.",
+        "means": "For some people with this kind of low-grade glioma, the pill may buy time before stronger treatment is needed.",
+        "doesnt_mean": "The pill does not get rid of the tumor. It is only for gliomas with an IDH change. It does not replace surgery, radiation, or chemo for everyone.",
         "stage_label": "Review of existing research"
       }
     },
@@ -328,11 +330,12 @@
       },
       "note": "SEER database, 3882 patients, age/treatment/survival in atypical meningioma. Large human observational study.",
       "ideal_summary": {
-        "plain_title": "In a large database, older age was linked to worse survival with atypical meningioma",
-        "what_studied": "Researchers looked at 3882 adults with atypical meningioma in the SEER cancer database. They checked how age and treatment related to survival.",
-        "what_found": "People aged 60 and older had a higher risk of death than people under 40. Older people were given radiation less often. Age did not change how fully the tumor could be removed by surgery.",
-        "means": "Age matters when planning care for atypical meningioma, and treatment should be tailored to each person.",
-        "doesnt_mean": "This is a look back at old records, not a trial. It cannot prove that any one treatment causes better or worse survival.",
+        "plain_title": "Older age was linked to worse survival with atypical meningioma",
+        "hook": "In a large record review, older adults with this brain tumor tended to live less long.",
+        "what_studied": "Researchers looked at records for 3882 adults with atypical meningioma. They checked how age and treatment linked to survival.",
+        "what_found": "Adults 60 and older had a higher risk of death than those under 40. Older adults got radiation less often. Age did not change how much of the tumor surgeons could remove.",
+        "means": "Age matters when planning care. Treatment should fit each person.",
+        "doesnt_mean": "This is a look back at old records, not a trial. It cannot prove that any one treatment changes how long people live.",
         "stage_label": "Tested in people"
       }
     },
@@ -354,11 +357,12 @@
       },
       "note": "Cohort, 1383 patients, radionecrosis vs recurrence after radiosurgery for brain metastases.",
       "ideal_summary": {
-        "plain_title": "After radiosurgery for brain metastases, tissue damage had better survival than tumor regrowth",
-        "what_studied": "Researchers followed 1383 people who had stereotactic radiosurgery for brain metastases. Some later developed radiation tissue damage (radionecrosis); others had the tumor grow back.",
-        "what_found": "People with radiation tissue damage lived a median of 40.4 months. People whose tumor grew back lived a median of 15.2 months. The tumor regrowth was usually found earlier.",
-        "means": "Telling these two problems apart matters, because they point to very different outlooks.",
-        "doesnt_mean": "This does not mean radiation damage is harmless, and it cannot tell any one person what will happen to them.",
+        "plain_title": "After brain radiation, tissue damage had better survival than tumor regrowth",
+        "hook": "Two problems can look alike after brain radiation, but they point to very different outlooks.",
+        "what_studied": "Researchers followed 1383 people who had focused radiation for brain metastases. Some later had radiation tissue damage. Others had the tumor grow back.",
+        "what_found": "People with tissue damage lived about 40.4 months. People whose tumor grew back lived about 15.2 months.",
+        "means": "Telling these two problems apart matters, because the outlooks are so different.",
+        "doesnt_mean": "This does not mean tissue damage is safe. It cannot say what will happen to any one person.",
         "stage_label": "Tested in people"
       }
     },
@@ -380,11 +384,12 @@
       },
       "note": "CDC WONDER, 12274 patients, geographic disparities in meningioma mortality. Population study.",
       "ideal_summary": {
-        "plain_title": "Where people live was linked to differences in meningioma deaths",
-        "what_studied": "Researchers used a national CDC death database covering 12,274 people whose cause of death was meningioma between 1999 and 2020. They compared city and metro areas.",
-        "what_found": "Where people died varied by sex, race, and ethnicity across metro areas. Overall meningioma death rates did not change much based on how urban an area was.",
-        "means": "This points to differences in care or access that may be worth a closer look.",
-        "doesnt_mean": "This is a study of death records. It cannot explain why the differences happen or say anything about one person's care.",
+        "plain_title": "Where people lived was linked to differences in meningioma deaths",
+        "hook": "A national study found gaps in meningioma deaths across places and groups.",
+        "what_studied": "Researchers used a national death database. It covered 12274 people whose cause of death was meningioma.",
+        "what_found": "Where people died varied by sex, race, and where they lived. Overall death rates did not change much by how urban an area was.",
+        "means": "This points to gaps in care or access that may be worth a closer look.",
+        "doesnt_mean": "This is a study of death records. It cannot say why the gaps happen or judge any one person's care.",
         "stage_label": "Tested in people"
       }
     },
@@ -409,11 +414,12 @@
       },
       "note": "Practical treatment guidance for grade 2 IDH-mutant glioma in the vorasidenib era.",
       "ideal_summary": {
-        "plain_title": "How doctors are deciding when to use vorasidenib for grade 2 IDH-mutant glioma",
-        "what_studied": "This is expert guidance on where a newer pill, vorasidenib, fits among the other options for adults with grade 2 IDH-mutant glioma.",
-        "what_found": "The authors suggest starting with safe surgery. Watching closely can be right after a full removal. Vorasidenib may suit people with stable, measurable tumor when radiation and chemotherapy can wait.",
-        "means": "There is now another option that may delay stronger treatment for carefully chosen people.",
-        "doesnt_mean": "This is opinion-based guidance, not a trial. Vorasidenib is not a replacement for radiation or chemotherapy when the tumor is growing fast or causing symptoms.",
+        "plain_title": "When to use the pill vorasidenib for a grade 2 glioma",
+        "hook": "Experts weigh where a newer pill fits among the options for a slow-growing glioma.",
+        "what_studied": "This is expert advice on where a newer pill, vorasidenib, fits for adults with a grade 2 glioma that has an IDH gene change.",
+        "what_found": "The authors say to start with safe surgery. Watching closely can be right after a full removal. The pill may suit people with a stable tumor when radiation and chemo can wait.",
+        "means": "There is now another choice that may put off stronger treatment for the right people.",
+        "doesnt_mean": "This is advice, not a trial. The pill does not replace radiation or chemo when a tumor grows fast or causes symptoms.",
         "stage_label": "Review of existing research"
       }
     },
@@ -435,11 +441,12 @@
       },
       "note": "NCI natural-history study, first 1000 participants with primary CNS tumors. Human observational.",
       "ideal_summary": {
-        "plain_title": "A large study is following 1000 adults with brain and spine tumors over time",
-        "what_studied": "The National Cancer Institute enrolled its first 1000 adults with primary brain or spine tumors. They collected medical history and how people rated their own symptoms.",
-        "what_found": "796 had brain tumors and 92 had spine tumors. After advanced testing, 190 of about 900 people (21%) had their diagnosis changed. Nearly half of brain tumor patients (46%) reported anxiety or depression.",
-        "means": "Careful molecular testing can change the diagnosis, and these tumors carry a heavy symptom burden that care should address.",
-        "doesnt_mean": "This describes a group of patients. It does not test a treatment or say what will happen to any one person.",
+        "plain_title": "A large study is following 1000 adults with brain and spine tumors",
+        "hook": "A long-term study is tracking how these tumors affect daily life.",
+        "what_studied": "The National Cancer Institute signed up its first 1000 adults with a brain or spine tumor. They gathered medical history and how people rated their own symptoms.",
+        "what_found": "796 had brain tumors and 92 had spine tumors. After more testing, 190 people had their diagnosis changed. Nearly half of brain tumor patients said they felt anxious or low.",
+        "means": "Careful testing can change a diagnosis. These tumors bring a heavy load of symptoms that care should treat.",
+        "doesnt_mean": "This describes a group of people. It does not test a treatment or say what will happen to any one person.",
         "stage_label": "Tested in people"
       }
     }

@@ -136,12 +136,14 @@ public sealed class SyncRepository(
                 INSERT INTO aggregated_items
                     (source, source_kind, external_id, title, raw_summary, url, published_at,
                      tumor_tags, research_stage, relevance, classify_model,
-                     plain_title, plain_summary, summary_model, prompt_version,
+                     plain_title, plain_summary, plain_what_studied, plain_what_found,
+                     plain_means, plain_doesnt_mean, summary_model, prompt_version,
                      summary_generated_at, summary_flagged)
                 VALUES
                     (@Source, @SourceKind, @ExternalId, @Title, @RawSummary, @Url, @PublishedAt,
                      @TumorTags, @ResearchStage, @Relevance, @ClassifyModel,
-                     @PlainTitle, @PlainSummary, @SummaryModel, @PromptVersion,
+                     @PlainTitle, @PlainSummary, @PlainWhatStudied, @PlainWhatFound,
+                     @PlainMeans, @PlainDoesntMean, @SummaryModel, @PromptVersion,
                      @SummaryGeneratedAt, @SummaryFlagged)
                 ON CONFLICT (source, external_id) DO UPDATE SET
                     title = EXCLUDED.title,
@@ -154,10 +156,20 @@ public sealed class SyncRepository(
                     classify_model = EXCLUDED.classify_model,
                     plain_title = COALESCE(EXCLUDED.plain_title, aggregated_items.plain_title),
                     plain_summary = COALESCE(EXCLUDED.plain_summary, aggregated_items.plain_summary),
+                    plain_what_studied = COALESCE(EXCLUDED.plain_what_studied, aggregated_items.plain_what_studied),
+                    plain_what_found = COALESCE(EXCLUDED.plain_what_found, aggregated_items.plain_what_found),
+                    plain_means = COALESCE(EXCLUDED.plain_means, aggregated_items.plain_means),
+                    plain_doesnt_mean = COALESCE(EXCLUDED.plain_doesnt_mean, aggregated_items.plain_doesnt_mean),
                     summary_model = COALESCE(EXCLUDED.summary_model, aggregated_items.summary_model),
                     prompt_version = COALESCE(EXCLUDED.prompt_version, aggregated_items.prompt_version),
                     summary_generated_at =
                         COALESCE(EXCLUDED.summary_generated_at, aggregated_items.summary_generated_at),
+                    -- Refresh the flag on a re-summarize. Safe because this
+                    -- UPDATE only runs for status='pending' rows, which have no
+                    -- reader problem-report yet (that only happens once
+                    -- published); a stale flag would otherwise hide the
+                    -- "read this closely" warning in the queue.
+                    summary_flagged = EXCLUDED.summary_flagged,
                     fetched_at = now()
                 WHERE aggregated_items.status = 'pending'
                 RETURNING id AS "Id", (xmax = 0) AS "Inserted"
@@ -177,6 +189,10 @@ public sealed class SyncRepository(
                     item.ClassifyModel,
                     item.PlainTitle,
                     item.PlainSummary,
+                    item.PlainWhatStudied,
+                    item.PlainWhatFound,
+                    item.PlainMeans,
+                    item.PlainDoesntMean,
                     item.SummaryModel,
                     item.PromptVersion,
                     SummaryGeneratedAt = item.PlainSummary is null ? (DateTimeOffset?)null : DateTimeOffset.UtcNow,

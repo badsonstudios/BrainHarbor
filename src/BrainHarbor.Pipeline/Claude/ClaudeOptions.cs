@@ -15,6 +15,15 @@ public sealed class ClaudeOptions
     [Required]
     public string Executable { get; set; } = "claude";
 
+    /// <summary>
+    /// Model for the classify + summarize calls, passed as <c>--model</c>.
+    /// Defaults to the latest Opus: these are medical summaries for patients,
+    /// so quality outranks cost (Dan's call). Set to a cheaper model
+    /// (e.g. "sonnet" or "haiku") in config if cost becomes a concern.
+    /// </summary>
+    [Required]
+    public string Model { get; set; } = "claude-opus-5";
+
     /// <summary>Kill a single invocation after this long — a hung model call
     /// must not stall the nightly run.</summary>
     [Range(10, 600)]

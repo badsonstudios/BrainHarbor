@@ -43,9 +43,14 @@ public sealed record SyncItem
     public string? Relevance { get; init; }
     public string? ClassifyModel { get; init; }
 
-    // plain-language summary
+    // plain-language summary (content-pipeline.md §9 blocks). PlainSummary is
+    // the one-sentence feed hook; the body is the four block fields.
     public string? PlainTitle { get; init; }
     public string? PlainSummary { get; init; }
+    public string? PlainWhatStudied { get; init; }
+    public string? PlainWhatFound { get; init; }
+    public string? PlainMeans { get; init; }
+    public string? PlainDoesntMean { get; init; }
     public string? SummaryModel { get; init; }
     public string? PromptVersion { get; init; }
 
