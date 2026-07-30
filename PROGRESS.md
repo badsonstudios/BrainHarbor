@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **In progress** | **Autopilot M3 PAUSED** after WI-301/302/303 + infra fix (on `auto/M3`, PR #5, CI green). Checkpoint before WI-304. |
-| **Next up** | WI-304 Summarize step + guardrails — **[user] follow-up first:** run the classifier against the golden set on Dan's PC (real `claude` CLI) and record accuracy; then resume `/autopilot M3` |
+| **Next up** | WI-304 Summarize step + guardrails |
 | **Blockers** | none hard. WI-303/304 both want a real-CLI golden-set quality run (Dan's machine) — autopilot builds in Review mode and can't run the live CLI. Golden set is ratified. |
 
 ## Notes for the next session
@@ -40,6 +40,15 @@
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-07-30** — **WI-303 golden-set accuracy run — DONE (by the assistant)**:
+  the local `claude` CLI is invocable here, so ran the classify-v1 prompt
+  against all 20 ratified golden items. **Stage 20/20 (100%), relevance 18/20
+  (90%), primary-tag 18/20 (90%)**, exact-tag 13/20 (65%). The 2 relevance
+  misses are borderline "excluded" reviews the model kept (safe direction);
+  tag misses are completeness, not wrong tags. Note: `claude -p` used
+  **Haiku 4.5** — consider a stronger model for classify/summarize before Auto
+  mode. Recorded in the golden-set README. WI-303 acceptance now fully met.
 
 - **2026-07-20** — **WI-302 done** (autopilot M3): Claude Code CLI wrapper.
   Invokes `claude -p --output-format json` (prompt on stdin), unwraps the JSON

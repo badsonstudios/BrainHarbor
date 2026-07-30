@@ -50,6 +50,39 @@ regression blocks the change (content-pipeline.md §10).
    numbers from the source only, short sentences.
 4. Re-run `dotnet test --filter GoldenSet`.
 
+## Accuracy run — recorded (WI-303)
+
+First live run of the `classify-v1` prompt through the local `claude` CLI
+against all 20 items (2026-07-30). **The CLI used `claude-haiku-4-5`** for
+`claude -p` — worth noting, since a stronger model would likely do better on
+tag completeness.
+
+| Metric | Result |
+|---|---|
+| Research stage exact | **20/20 (100%)** |
+| Relevance tier exact | **18/20 (90%)** |
+| Tumor tags — ≥1 correct (primary) | **18/20 (90%)** |
+| Tumor tags — exact set | 13/20 (65%) |
+
+The disagreements are borderline editorial calls, not errors, and the human
+review gate catches them:
+
+- **Relevance (2 misses):** both are items I marked `excluded` where the model
+  kept them — `42157432` (a general photodynamic-therapy review that lists GBM
+  among many cancers) and `42323004` (Teneurin-4 across solid tumors, brain in
+  passing). The model is more inclusive on brain-adjacent reviews; erring
+  toward "show it for review" is the safe direction.
+- **Tags (exact 65%, overlap 90%):** misses are almost all *completeness*, not
+  wrong tags — the model gets the primary type but sometimes drops a secondary
+  one (e.g. omits `oligodendroglioma` when the item names it). Because feed
+  filters walk the taxonomy tree (a `glioma` filter catches its children), a
+  missing child tag rarely changes what a reader sees.
+
+Verdict: the classifier is sound on this yardstick. Two things to consider
+before Auto mode: (1) pin a stronger model than Haiku for classify/summarize
+if tag completeness matters; (2) the borderline "excluded" cases are exactly
+where the human review gate earns its keep.
+
 ## Findings from the first pass (worth acting on)
 
 - **Taxonomy gap: spinal-cord tumors — RESOLVED.** Added a standalone
