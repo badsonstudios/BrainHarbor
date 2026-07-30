@@ -52,11 +52,11 @@ regression blocks the change (content-pipeline.md §10).
 
 ## Findings from the first pass (worth acting on)
 
-- **Taxonomy gap: spinal-cord tumors.** Several real items are about spinal
-  tumors (`42047997`, `42107211`) with no matching slug — tagged
-  `all-brain-tumors` as a stopgap. Consider adding a `spinal-cord-tumor` slug
-  (and note `acoustic-neuroma` is specifically *vestibular* schwannoma, not the
-  cervical-spine schwannomas in `42107211`).
+- **Taxonomy gap: spinal-cord tumors — RESOLVED.** Added a standalone
+  `spinal-cord-tumor` slug (not a child of any brain type, so it never
+  surfaces under a brain filter) and retagged `42047997` and `42107211` to it.
+  Note `acoustic-neuroma` is specifically *vestibular* schwannoma, not the
+  cervical-spine schwannomas in `42107211` (now `spinal-cord-tumor`).
 - **Hard case: technical reviews.** `42031225` (GBM resistance mechanisms) is
   on-topic but dense; classified `patient_relevant` / `review_guideline` as a
   landscape review. The human review gate is where calls like this get made.

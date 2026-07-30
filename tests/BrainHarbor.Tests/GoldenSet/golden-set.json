@@ -161,12 +161,12 @@
       },
       "expected": {
         "tumor_tags": [
-          "all-brain-tumors"
+          "spinal-cord-tumor"
         ],
         "relevance": "patient_relevant",
         "research_stage": "review_guideline"
       },
-      "note": "Systematic review, 85 patients, bevacizumab around spinal tumor surgery. TAXONOMY GAP: no spinal-cord-tumor slug — tagged all-brain-tumors.",
+      "note": "Systematic review, 85 patients, bevacizumab around spinal tumor surgery. Tagged spinal-cord-tumor (added to the taxonomy after this was first classified).",
       "ideal_summary": {
         "plain_title": "A review looked at bevacizumab around spinal tumor surgery",
         "what_studied": "Researchers combined 10 studies with 85 people who received bevacizumab, a drug that targets blood vessel growth, around surgery for spinal tumors.",
@@ -215,12 +215,12 @@
       "expected": {
         "tumor_tags": [
           "meningioma",
-          "acoustic-neuroma"
+          "spinal-cord-tumor"
         ],
         "relevance": "patient_relevant",
         "research_stage": "observational"
       },
-      "note": "10-patient case series, Gamma Knife for upper cervical-spine lesions (schwannomas, meningiomas). Small human series.",
+      "note": "10-patient case series, Gamma Knife for upper cervical-spine lesions (schwannomas, meningiomas). Spinal schwannomas -> spinal-cord-tumor (NOT acoustic-neuroma, which is specifically vestibular).",
       "ideal_summary": {
         "plain_title": "A radiation technique was extended to treat upper neck-spine tumors",
         "what_studied": "Surgeons describe 10 years of using Gamma Knife radiosurgery for tumors of the upper neck spine (C1 to C4), using a new way to hold the frame in place.",

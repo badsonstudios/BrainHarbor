@@ -103,6 +103,16 @@ tumor_types:
   - slug: chordoma
     label: "Chordoma"
 
+  # ---- spinal (CNS, not brain) ----
+  # Standalone on purpose: a spinal-cord tumor is NOT a brain tumor, so this is
+  # NOT a child of any brain type and must never surface under a brain filter.
+  # It exists so the classifier can tag genuinely-spinal items precisely
+  # instead of mislabeling them as brain. The site stays brain-focused; this
+  # just covers the real overlap in neuro-oncology care.
+  - slug: spinal-cord-tumor
+    label: "Spinal cord tumor"
+    also: ["spinal cord neoplasm", "spinal tumor", "spinal tumour", "spinal cord lesion", "spinal metastasis"]
+
   # ---- secondary ----
   - slug: brain-metastases
     label: "Brain metastases"
