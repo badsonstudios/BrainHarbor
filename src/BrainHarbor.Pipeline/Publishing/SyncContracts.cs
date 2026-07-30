@@ -51,6 +51,10 @@ public sealed record CursorRequest(string Source, string Cursor);
 
 public sealed record FailureRequest(string Source, string Error);
 
+public sealed record TaxonomyResponse(IReadOnlyList<TaxonomyTypeDto> Types);
+
+public sealed record TaxonomyTypeDto(string Slug, string Label, IReadOnlyList<string> Aliases);
+
 public sealed record UploadResponse(
     int Inserted,
     int Updated,

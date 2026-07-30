@@ -123,6 +123,28 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
     // ---------- state ----------
 
     [Fact]
+    public async Task TheTaxonomyEndpointServesTheClosedSlugList()
+    {
+        // WI-303: the pipeline's classifier prompt is built from this.
+        var response = await AuthedClient().GetFromJsonAsync<TaxonomyResponse>("/api/sync/taxonomy");
+
+        Assert.NotNull(response);
+        Assert.Contains(response!.Types, t => t.Slug == "glioblastoma");
+        Assert.Contains(response.Types, t => t.Slug == "spinal-cord-tumor");
+        // Aliases come through (the model is shown them).
+        var gbm = response.Types.Single(t => t.Slug == "glioblastoma");
+        Assert.Contains("GBM", gbm.Aliases);
+    }
+
+    [Fact]
+    public async Task TheTaxonomyEndpointRequiresTheApiKey()
+    {
+        var response = await _factory.CreateClient().GetAsync("/api/sync/taxonomy");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task StateReturnsPerSourceCursors()
     {
         var client = AuthedClient();

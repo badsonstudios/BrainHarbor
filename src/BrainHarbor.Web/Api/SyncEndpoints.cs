@@ -22,6 +22,15 @@ public static class SyncEndpoints
         group.MapGet("/state", async (SyncRepository repository, CancellationToken cancellationToken) =>
             Results.Ok(new SyncStateResponse(await repository.GetStateAsync(cancellationToken))));
 
+        // The closed taxonomy, so the pipeline's classifier prompt lists the
+        // exact slugs the model may emit — one source of truth, served rather
+        // than duplicated in the console app (WI-303).
+        group.MapGet("/taxonomy", (BrainHarbor.Web.Content.TaxonomyStore taxonomy) =>
+            Results.Ok(new TaxonomyResponse(
+            [
+                .. taxonomy.TumorTypes.Select(t => new TaxonomyTypeDto(t.Slug, t.Label, t.Also)),
+            ])));
+
         group.MapPost("/check", async (
             CheckRequest? request, SyncRepository repository, CancellationToken cancellationToken) =>
         {

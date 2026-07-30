@@ -73,6 +73,11 @@ public sealed record CursorRequest(string Source, string Cursor);
 /// </summary>
 public sealed record FailureRequest(string Source, string Error);
 
+/// <summary>The closed tumor taxonomy, for the pipeline's classifier prompt.</summary>
+public sealed record TaxonomyResponse(IReadOnlyList<TaxonomyTypeDto> Types);
+
+public sealed record TaxonomyTypeDto(string Slug, string Label, IReadOnlyList<string> Aliases);
+
 public sealed record UploadResponse(
     int Inserted,
     int Updated,

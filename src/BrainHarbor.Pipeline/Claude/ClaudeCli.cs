@@ -9,9 +9,9 @@ namespace BrainHarbor.Pipeline.Claude;
 /// is default. There is no partial or guessed value: a bad summary must never
 /// look like a good one (content-pipeline.md §9, "never publish a guess").
 /// </summary>
-public sealed record ClaudeResult<T>(bool Success, T? Value, string? FailureReason)
+public sealed record ClaudeResult<T>(bool Success, T? Value, string? FailureReason, string? Model = null)
 {
-    public static ClaudeResult<T> Ok(T value) => new(true, value, null);
+    public static ClaudeResult<T> Ok(T value, string? model) => new(true, value, null, model);
     public static ClaudeResult<T> Fail(string reason) => new(false, default, reason);
 }
 
@@ -23,7 +23,12 @@ public sealed record ClaudeResult<T>(bool Success, T? Value, string? FailureReas
 /// </summary>
 public sealed class ClaudeCli(IProcessRunner runner, ILogger<ClaudeCli> logger)
 {
-    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+    // The model is prompted to return snake_case JSON (tumor_tags, etc.).
+    private static readonly JsonSerializerOptions Json = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true,
+    };
 
     public async Task<ClaudeResult<T>> RunJsonAsync<T>(
         string prompt, Func<T, bool>? validate, CancellationToken cancellationToken)
@@ -79,6 +84,7 @@ public sealed class ClaudeCli(IProcessRunner runner, ILogger<ClaudeCli> logger)
         // 1) Unwrap the CLI's JSON envelope and pull out the model's text.
         //    Garbled envelope/output is non-deterministic → retryable.
         string? resultText;
+        string? model = null;
         try
         {
             using var envelope = JsonDocument.Parse(proc.Stdout);
@@ -96,6 +102,14 @@ public sealed class ClaudeCli(IProcessRunner runner, ILogger<ClaudeCli> logger)
             }
 
             resultText = result.GetString();
+
+            // Capture the real model id for auditability (classify_model /
+            // summary_model) — a silent model switch should be traceable.
+            if (root.TryGetProperty("model", out var modelElement) &&
+                modelElement.ValueKind == JsonValueKind.String)
+            {
+                model = modelElement.GetString();
+            }
         }
         catch (JsonException)
         {
@@ -129,7 +143,7 @@ public sealed class ClaudeCli(IProcessRunner runner, ILogger<ClaudeCli> logger)
             return (ClaudeResult<T>.Fail("model output failed validation"), false);
         }
 
-        return (ClaudeResult<T>.Ok(value), false);
+        return (ClaudeResult<T>.Ok(value, model), false);
     }
 
     /// <summary>

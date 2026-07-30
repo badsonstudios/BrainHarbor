@@ -270,7 +270,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   handling; wrapper unit tests with a fake CLI.
   Refs: architecture.md §5, content-pipeline.md §9. Depends on: WI-203.
 
-- [ ] **WI-303 Classify step**
+- [x] **WI-303 Classify step**
   Goal: items sorted for a patient audience automatically.
   Acceptance: classify prompt (closed taxonomy, relevance tier, research
   stage); `excluded` items are not uploaded; preprints capped at early_stage

@@ -159,6 +159,10 @@ public static class PipelineHost
             .ValidateDataAnnotations();
         builder.Services.AddSingleton<Claude.IProcessRunner, Claude.ClaudeProcessRunner>();
         builder.Services.AddSingleton<Claude.ClaudeCli>();
+        builder.Services.AddSingleton<Claude.PromptLibrary>();
+
+        // Classify step (WI-303).
+        builder.Services.AddSingleton<Classify.IItemClassifier, Classify.Classifier>();
 
         builder.Services.AddTransient<PipelineRunner>();
         builder.Services.AddSingleton<DesktopNotifier>();

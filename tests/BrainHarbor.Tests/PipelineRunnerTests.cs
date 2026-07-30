@@ -74,6 +74,37 @@ public class PipelineRunnerTests
             ReportedFailures.Add((source, error));
             return Task.CompletedTask;
         }
+
+        public Task<IReadOnlyList<TaxonomyTypeDto>> GetTaxonomyAsync(CancellationToken ct) =>
+            Task.FromResult<IReadOnlyList<TaxonomyTypeDto>>([]);
+    }
+
+    /// <summary>A classifier the runner tests control. Default: classify
+    /// everything as patient_relevant so existing upload assertions hold.</summary>
+    private sealed class StubClassifier : BrainHarbor.Pipeline.Classify.IItemClassifier
+    {
+        public HashSet<string> ExcludeExternalIds { get; } = new(StringComparer.Ordinal);
+        public HashSet<string> UnclassifiableExternalIds { get; } = new(StringComparer.Ordinal);
+
+        public Task<BrainHarbor.Pipeline.Classify.Classification> ClassifyAsync(
+            FetchedItem item, CancellationToken ct)
+        {
+            if (ExcludeExternalIds.Contains(item.ExternalId))
+            {
+                return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
+                    BrainHarbor.Pipeline.Classify.ClassifyDecision.Exclude, [], "excluded", "news_other", "classify-v1"));
+            }
+
+            if (UnclassifiableExternalIds.Contains(item.ExternalId))
+            {
+                return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
+                    BrainHarbor.Pipeline.Classify.ClassifyDecision.Unclassified, [], null, null, "classify-unavailable"));
+            }
+
+            return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
+                BrainHarbor.Pipeline.Classify.ClassifyDecision.Classified,
+                ["glioblastoma"], "patient_relevant", "human_trial", "classify-v1"));
+        }
     }
 
     private static FetchedItem Item(string source, string externalId) => new()
@@ -86,7 +117,12 @@ public class PipelineRunnerTests
     };
 
     private static PipelineRunner Runner(ISyncApiClient api, params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, new StubClassifier(), NullLogger<PipelineRunner>.Instance);
+
+    private static PipelineRunner Runner(
+        ISyncApiClient api, BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
+        params ISourceFetcher[] fetchers) =>
+        new(fetchers, api, classifier, NullLogger<PipelineRunner>.Instance);
 
     [Fact]
     public async Task UploadsOnlyTheItemsTheServerSaysAreNew()
@@ -241,7 +277,7 @@ public class PipelineRunnerTests
     }
 
     [Fact]
-    public async Task ItemsUploadWithoutClassificationUntilM3()
+    public async Task ClassifiedItemsUploadWithTheirClassificationAttached()
     {
         var api = new StubSyncApi();
 
@@ -249,8 +285,59 @@ public class PipelineRunnerTests
             .RunAsync(CancellationToken.None);
 
         var uploaded = Assert.Single(Assert.Single(api.Uploads).Items);
-        Assert.Null(uploaded.Relevance);
+        Assert.Equal("patient_relevant", uploaded.Relevance);
+        Assert.Equal("human_trial", uploaded.ResearchStage);
+        Assert.Equal(["glioblastoma"], uploaded.TumorTags);
+        Assert.Contains("classify-v1", uploaded.ClassifyModel);
+        // No summary yet — that's WI-304.
         Assert.Null(uploaded.PlainSummary);
-        Assert.Empty(uploaded.TumorTags);
+    }
+
+    [Fact]
+    public async Task ExcludedItemsAreDroppedNotUploaded()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.ExcludeExternalIds.Add("off-topic");
+
+        var result = await Runner(api, classifier,
+            new StubFetcher("pubmed", [Item("pubmed", "keep"), Item("pubmed", "off-topic")]))
+            .RunAsync(CancellationToken.None);
+
+        var uploaded = Assert.Single(api.Uploads).Items;
+        Assert.Single(uploaded);
+        Assert.Equal("keep", uploaded[0].ExternalId);
+        Assert.Equal(1, result.Sources[0].Rejected);   // the excluded one counts as rejected
+    }
+
+    [Fact]
+    public async Task IfEveryNewItemIsExcludedNothingUploadsButTheCursorAdvances()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.ExcludeExternalIds.Add("x1");
+
+        await Runner(api, classifier,
+            new StubFetcher("pubmed", [Item("pubmed", "x1")], cursor: "2026-06-12"))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Empty(api.Uploads);
+        Assert.Equal(("pubmed", "2026-06-12"), Assert.Single(api.CursorAdvances));
+    }
+
+    [Fact]
+    public async Task AnUnclassifiableItemIsStillUploadedForAHuman()
+    {
+        // Classifier failure must never drop an item — it goes up as pending.
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnclassifiableExternalIds.Add("dunno");
+
+        await Runner(api, classifier, new StubFetcher("pubmed", [Item("pubmed", "dunno")]))
+            .RunAsync(CancellationToken.None);
+
+        var uploaded = Assert.Single(Assert.Single(api.Uploads).Items);
+        Assert.Equal("dunno", uploaded.ExternalId);
+        Assert.Null(uploaded.Relevance);   // stays pending for the review queue
     }
 }
