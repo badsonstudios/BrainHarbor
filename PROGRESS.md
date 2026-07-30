@@ -10,9 +10,9 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 PAUSED** after the foundation (WI-301, WI-302 done on `auto/M3`, PR #5). Paused for golden-set ratification. |
-| **Next up** | **[user] Dan:** ratify the draft golden set (tests/BrainHarbor.Tests/GoldenSet/) → then resume `/autopilot M3` for WI-303+ |
-| **Blockers** | ⏸ WI-303 (classify) grades the classifier against the golden set, which is a DRAFT pending Dan's ratification. Not a hard block — Dan can say "proceed against the draft, I'll ratify later." |
+| **In progress** | **Autopilot M3 PAUSED** after WI-301/302/303 + infra fix (on `auto/M3`, PR #5, CI green). Checkpoint before WI-304. |
+| **Next up** | WI-304 Summarize step + guardrails — **[user] follow-up first:** run the classifier against the golden set on Dan's PC (real `claude` CLI) and record accuracy; then resume `/autopilot M3` |
+| **Blockers** | none hard. WI-303/304 both want a real-CLI golden-set quality run (Dan's machine) — autopilot builds in Review mode and can't run the live CLI. Golden set is ratified. |
 
 ## Notes for the next session
 
