@@ -114,6 +114,31 @@ public class SummarizerTests
         Assert.Null(result.Output);
     }
 
+    [Fact]
+    public async Task EmDashesAreStrippedFromEveryBlockBeforeUpload()
+    {
+        // Dan's rule: published prose must not read as machine-written. Even if
+        // the model slips an em dash in, the reader never sees one.
+        var runner = new ScriptedRunner(Envelope(FullSummary(
+            "People went 27 months — versus 11 months — before the tumor grew.")));
+
+        var result = await Build(runner).SummarizeAsync(Item(), CancellationToken.None);
+
+        Assert.NotNull(result.Output);
+        Assert.DoesNotContain('—', result.Output!.AllProse);
+        Assert.DoesNotContain('–', result.Output.AllProse);
+    }
+
+    [Theory]
+    [InlineData("It helped — a lot.", "It helped, a lot.")]
+    [InlineData("Survival was 10–20 months.", "Survival was 10 to 20 months.")]
+    [InlineData("The pill — taken daily — worked.", "The pill, taken daily, worked.")]
+    [InlineData("No dashes here.", "No dashes here.")]
+    public void NormalizeRemovesDashesWithoutManglingText(string input, string expected)
+    {
+        Assert.Equal(expected, ProseStyle.Normalize(input));
+    }
+
     private static string RepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

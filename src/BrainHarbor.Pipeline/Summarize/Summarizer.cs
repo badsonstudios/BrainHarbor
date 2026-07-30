@@ -1,8 +1,42 @@
+using System.Text.RegularExpressions;
 using BrainHarbor.Pipeline.Claude;
 using BrainHarbor.Pipeline.Sources;
 using Microsoft.Extensions.Logging;
 
 namespace BrainHarbor.Pipeline.Summarize;
+
+/// <summary>
+/// Small style pass so published prose doesn't read as machine-written. Dan's
+/// rule: no em dashes, and nothing that screams "an AI wrote this". The prompt
+/// asks the model to avoid these; this is the belt-and-suspenders that runs
+/// regardless of what the model returns, because a prompt can be ignored and a
+/// normalizer can't.
+/// </summary>
+public static partial class ProseStyle
+{
+    /// <summary>
+    /// Removes em/en dashes (the most common AI tell). A dash between two
+    /// numbers becomes " to " (so "10–20" reads "10 to 20", not "10, 20", which
+    /// would change the meaning); every other dash becomes a comma. Trailing
+    /// double spaces / stray punctuation left behind are tidied.
+    /// </summary>
+    public static string Normalize(string? text)
+    {
+        if (string.IsNullOrEmpty(text)) return text ?? "";
+        var s = NumberRange().Replace(text, " to ");   // 10–20 -> 10 to 20
+        s = OtherDash().Replace(s, ", ");              // parenthetical / contrast -> comma
+        s = BeforePunct().Replace(s, "$1");            // " ," -> ","
+        s = DoubleComma().Replace(s, ",");             // ", ," -> ","
+        s = MultiSpace().Replace(s, " ");              // collapse runs of spaces
+        return s.Trim();
+    }
+
+    [GeneratedRegex(@"(?<=\d)\s*[—–]\s*(?=\d)")] private static partial Regex NumberRange();
+    [GeneratedRegex(@"\s*[—–]\s*")]             private static partial Regex OtherDash();
+    [GeneratedRegex(@"\s+([,.;:!?])")]                    private static partial Regex BeforePunct();
+    [GeneratedRegex(@",\s*,")]                            private static partial Regex DoubleComma();
+    [GeneratedRegex(@"\s{2,}")]                           private static partial Regex MultiSpace();
+}
 
 /// <summary>What the summarizer model returns (content-pipeline.md §9 template).</summary>
 public sealed record SummarizeOutput
@@ -68,7 +102,17 @@ public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<
             return new SummaryResult(null, template.Version, null, Flagged: false, []);
         }
 
-        var output = result.Value!;
+        // Strip AI tells (em dashes, etc.) from every block before the checks
+        // and the upload — the reader (and the guardrails) see only clean prose.
+        var output = result.Value! with
+        {
+            PlainTitle = ProseStyle.Normalize(result.Value!.PlainTitle),
+            Hook = ProseStyle.Normalize(result.Value!.Hook),
+            WhatStudied = ProseStyle.Normalize(result.Value!.WhatStudied),
+            WhatFound = ProseStyle.Normalize(result.Value!.WhatFound),
+            Means = ProseStyle.Normalize(result.Value!.Means),
+            DoesntMean = ProseStyle.Normalize(result.Value!.DoesntMean),
+        };
 
         // The source the numerals must trace back to is the title + abstract.
         var sourceText = $"{item.Title}\n{item.RawSummary}";
