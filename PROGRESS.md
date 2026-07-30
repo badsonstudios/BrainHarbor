@@ -10,9 +10,9 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 PAUSED** after WI-301/302/303 + infra fix (on `auto/M3`, PR #5, CI green). Checkpoint before WI-304. |
-| **Next up** | WI-305 Review queue v1 |
-| **Blockers** | none hard. WI-303/304 both want a real-CLI golden-set quality run (Dan's machine) — autopilot builds in Review mode and can't run the live CLI. Golden set is ratified. |
+| **In progress** | **Autopilot M3 PAUSED** — medical core DONE (WI-301–304 + model config + infra fix, on `auto/M3`, PR #5, CI green). Both classify + summarize validated LIVE with Opus. |
+| **Next up** | WI-305 Review queue v1 (then 306 permalinks, 307 feed flip, 308 SEO, 309 search, then ship Publishing:Mode=Review) |
+| **Blockers** | none. Classifier validated live (stage 100%, relevance 90% on the golden set); summarizer validated live with Opus (quality excellent; prompt tuned so summaries pass the 8.5 reading-level guardrail). Default model is now claude-opus-5. |
 
 ## Notes for the next session
 
