@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Options;
 
@@ -37,24 +38,8 @@ public sealed class ClaudeProcessRunner(IOptions<ClaudeOptions> options) : IProc
 
         using var process = new Process
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = opts.Executable,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            },
+            StartInfo = BuildStartInfo(opts, RuntimeInformation.IsOSPlatform(OSPlatform.Windows)),
         };
-        process.StartInfo.ArgumentList.Add("-p");
-        process.StartInfo.ArgumentList.Add("--output-format");
-        process.StartInfo.ArgumentList.Add("json");
-        if (!string.IsNullOrWhiteSpace(opts.Model))
-        {
-            process.StartInfo.ArgumentList.Add("--model");
-            process.StartInfo.ArgumentList.Add(opts.Model);
-        }
 
         // Drain both streams to completion; only the null Data event marks EOF,
         // and reading the buffers before that races a dropped final chunk.
@@ -112,6 +97,51 @@ public sealed class ClaudeProcessRunner(IOptions<ClaudeOptions> options) : IProc
             // leave an orphaned claude process behind.
             TryKill(process);
         }
+    }
+
+    /// <summary>
+    /// Builds the launch for `claude -p --output-format json [--model X]`.
+    /// On Windows the installed <c>claude</c> is an npm <c>.cmd</c> shim, and
+    /// .NET can't launch a <c>.cmd</c> with redirected I/O directly (CreateProcess
+    /// needs a real executable image) — so it's run through <c>cmd.exe /c</c>,
+    /// which resolves the shim via PATHEXT. This is the .NET equivalent of the
+    /// Python <c>shell=True</c> trick the Trading app uses. The prompt still goes
+    /// on stdin, which cmd passes straight through to claude. Non-Windows launches
+    /// the executable directly. Static + <paramref name="isWindows"/> so the
+    /// platform branch is unit-testable without spawning anything.
+    /// </summary>
+    internal static ProcessStartInfo BuildStartInfo(ClaudeOptions opts, bool isWindows)
+    {
+        var info = new ProcessStartInfo
+        {
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+
+        if (isWindows)
+        {
+            info.FileName = "cmd.exe";
+            info.ArgumentList.Add("/c");
+            info.ArgumentList.Add(opts.Executable);
+        }
+        else
+        {
+            info.FileName = opts.Executable;
+        }
+
+        info.ArgumentList.Add("-p");
+        info.ArgumentList.Add("--output-format");
+        info.ArgumentList.Add("json");
+        if (!string.IsNullOrWhiteSpace(opts.Model))
+        {
+            info.ArgumentList.Add("--model");
+            info.ArgumentList.Add(opts.Model);
+        }
+
+        return info;
     }
 
     private static void TryKill(Process process)
