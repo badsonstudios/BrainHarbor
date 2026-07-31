@@ -8,7 +8,7 @@ sources:
     title: "American Brain Tumor Association"
     accessed: 2026-07-19
   - url: https://www.cancer.gov/types/brain
-    title: "National Cancer Institute — Brain Tumors"
+    title: "National Cancer Institute: Brain Tumors"
     accessed: 2026-07-19
 reviewed: 2026-07-19
 review_due: 2027-01-19

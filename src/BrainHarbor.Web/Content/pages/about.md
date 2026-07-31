@@ -5,7 +5,7 @@ description: "Who runs this site, and why it exists."
 tags: [about]
 sources:
   - url: https://www.cancer.gov/types/brain
-    title: "National Cancer Institute — Brain Tumors"
+    title: "National Cancer Institute: Brain Tumors"
     accessed: 2026-07-19
 reviewed: 2026-07-19
 review_due: 2027-01-19

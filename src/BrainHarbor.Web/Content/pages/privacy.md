@@ -20,7 +20,7 @@ anyone, ever.
 and we do not build a profile of you.
 
 **When you change text size:** a small cookie remembers your choice for a
-year. It holds one word — large or standard — and nothing else.
+year. It holds one word, large or standard, and nothing else.
 
 **When the digest opens:** we will ask for your email address, and nothing
 else. Sign-up is not open yet, so we hold no addresses today.

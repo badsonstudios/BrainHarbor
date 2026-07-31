@@ -31,7 +31,7 @@
             <tr>
                 <th scope="row">@source.Source</th>
                 <td>@source.LastSuccessText</td>
-                <td>@(source.Cursor ?? "—")</td>
+                <td>@(source.Cursor ?? "-")</td>
                 <td>
                     @if (source.LastError is not null)
                     {

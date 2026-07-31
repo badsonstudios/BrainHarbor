@@ -50,7 +50,7 @@
         <div class="means-block">
             <div class="means-block__head">
                 <span class="means-block__icon" aria-hidden="true">i</span>
-                <h2>What this means — and doesn't mean</h2>
+                <h2>What this means, and what it doesn't</h2>
             </div>
             <p><strong>What it could mean:</strong> @Model.Block(Model.Item.PlainMeans)</p>
             <p><strong>What it doesn't mean:</strong> @Model.Block(Model.Item.PlainDoesntMean)</p>
@@ -108,7 +108,7 @@
             <form method="post" asp-page-handler="Report">
                 <input type="hidden" name="slug" value="@Model.Item.Slug" />
                 <label for="report-reason">
-                    What looks wrong? (optional — this flags the summary for another look)
+                    What looks wrong? (optional, this flags the summary for another look)
                 </label>
                 <textarea id="report-reason" name="reason" rows="3"></textarea>
                 <p><button type="submit">Send report</button></p>

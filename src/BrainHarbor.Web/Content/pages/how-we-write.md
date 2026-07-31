@@ -5,7 +5,7 @@ description: "How we pick research, how AI writes each summary, and the automati
 tags: [about, editorial, ai]
 sources:
   - url: https://www.cancer.gov/types/brain
-    title: "National Cancer Institute — Brain Tumors"
+    title: "National Cancer Institute: Brain Tumors"
     accessed: 2026-07-19
 reviewed: 2026-07-30
 review_due: 2027-01-30
@@ -73,12 +73,12 @@ mouse study can never look close to the clinic.
 
 Every item shows how far along the research is, with a mark for each step:
 
-- **Tested in people** — the strongest kind of evidence we share.
-- **Review of existing research** — a look across many studies.
-- **Early research (animals)** — it worked in mice, not people.
-- **Early research (lab cells)** — it worked in a dish.
-- **News** or **New or updated trial** — not a finding yet.
-- **Preprint** — not yet checked by other scientists.
+- **Tested in people**: the strongest kind of evidence we share.
+- **Review of existing research**: a look across many studies.
+- **Early research (animals)**: it worked in mice, not people.
+- **Early research (lab cells)**: it worked in a dish.
+- **News** or **New or updated trial**: not a finding yet.
+- **Preprint**: not yet checked by other scientists.
 
 ## When we get it wrong
 
