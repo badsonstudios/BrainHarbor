@@ -188,6 +188,26 @@ public sealed class AutoPublishTests : IAsyncLifetime
         Assert.Equal(PublishMode.Auto, new PublishingOptions().Mode);
     }
 
+    [Fact]
+    public void TheShippedRolloutConfigStartsInReviewMode()
+    {
+        // The M3 rollout gate: appsettings.json ships Publishing:Mode=Review, so
+        // the first real AI summaries are all human-checked. The CODE default is
+        // still Auto (test above); this pins that the shipped CONFIG overrides
+        // it to Review, so a stray edit can't silently deploy Auto. Dan flips it
+        // to Auto by changing this one value when he's confident.
+        var appsettings = Path.Combine(
+            FindRepoRoot(), "src", "BrainHarbor.Web", "appsettings.json");
+        using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(appsettings));
+
+        var mode = doc.RootElement
+            .GetProperty(PublishingOptions.SectionName)
+            .GetProperty(nameof(PublishingOptions.Mode))
+            .GetString();
+
+        Assert.Equal(nameof(PublishMode.Review), mode);
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

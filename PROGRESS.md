@@ -10,9 +10,20 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 PAUSED** — medical core DONE (WI-301–304 + model config + infra fix + **Readiness score**, on `auto/M3`, PR #5, CI green). Classify + summarize validated LIVE with Opus. |
-| **Next up** | WI-305 Review queue v1 (then 306 permalinks incl. **readiness badge**, 307 feed flip, 308 SEO, 309 search, then ship Publishing:Mode=Review) |
-| **Blockers** | none. Classifier validated live (stage 100%, relevance 90%); summarizer validated live with Opus (quality excellent; no em dashes / AI tells; prompt tuned for the 8.5 reading-level guardrail). Default model is claude-opus-5. |
+| **In progress** | **M3 COMPLETE** — all of WI-301–309 + model config + infra fix + **Readiness score** done on `auto/M3` (PR #5). Classify + summarize validated LIVE with Opus. Awaiting Dan's review + merge of PR #5. |
+| **Next up** | Dan: review & merge PR #5. Then M4 (Azure + trials + digest). Optionally flip `Publishing:Mode` to Auto once confident in live summaries. |
+| **Blockers** | none. Shipped in **Review mode** (appsettings `Publishing:Mode=Review`) so the first real AI summaries are all human-checked; flip to Auto when ready. Default model is claude-opus-5. |
+
+### M3 shipped (all on `auto/M3`, PR #5)
+- **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
+- **Readiness score (1–10)** — Dan's ask: how close a finding is to everyday care, stage-capped, shown on item pages + queue.
+- **WI-305** review queue v1 (side-by-side, inline edit, keyboard, readiness badge).
+- **WI-306** item permalink pages (6 blocks, readiness, glossary tooltips, provenance, report-a-problem → admin queue).
+- **WI-307** feed patient-first with persisted early-stage toggle.
+- **WI-308** SEO (sitemap/robots/RSS, OG + JSON-LD) + honest `/how-we-write` rewrite (was falsely claiming mandatory human review).
+- **WI-309** site search (Postgres FTS over items + static pages).
+- Prompt/style: no em dashes or AI tells; summaries validated live with Opus.
+- 513 tests green.
 
 **Readiness score (Dan's ask, built 2026-07-30):** every summary now carries a
 1-10 "how close is this to something a patient can get?" score + one plain
