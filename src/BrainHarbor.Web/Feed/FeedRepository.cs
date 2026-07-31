@@ -247,6 +247,29 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         return true;
     }
 
+    /// <summary>
+    /// All published items, newest first, for syndication (sitemap.xml,
+    /// feed.xml — WI-308). Every published permalink is public regardless of
+    /// the feed's early-stage toggle, so this is not filtered by relevance.
+    /// </summary>
+    public async Task<IReadOnlyList<FeedRow>> GetAllPublishedAsync(
+        int limit, CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var rows = await connection.QueryAsync<FeedRow>(new CommandDefinition(
+            $"""
+            SELECT {SelectColumns}
+            FROM aggregated_items
+            WHERE status = 'published'
+            ORDER BY published_at DESC NULLS LAST, id DESC
+            LIMIT @limit
+            """,
+            new { limit },
+            cancellationToken: cancellationToken));
+
+        return [.. rows];
+    }
+
     /// <summary>A slug plus every type beneath it in the taxonomy tree.</summary>
     private IEnumerable<string> DescendantsOf(string slug) =>
         taxonomy.TumorTypes

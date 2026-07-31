@@ -2,6 +2,15 @@
 @model BrainHarbor.Web.Pages.Research.ItemModel
 @{
     ViewData["Title"] = Model.Item.PlainTitle ?? Model.Item.Title;
+    ViewData["Description"] = Model.MetaDescription;
+    ViewData["OgType"] = "article";
+}
+
+@section Head {
+    @* One Html.Raw so Razor doesn't entity-encode the "+" in the type; the JSON
+       is serialized with the default encoder (escapes < > &), so it can't break
+       out of the <script>. *@
+    @Html.Raw($"<script type=\"application/ld+json\">{Model.JsonLd()}</script>")
 }
 
 @* WI-306: the item permalink — the shareable, indexable unit of the site. The

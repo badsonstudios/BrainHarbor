@@ -311,7 +311,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   taxonomy; plain titles shown where available.
   Depends on: WI-306.
 
-- [ ] **WI-308 SEO + real /how-we-write**
+- [x] **WI-308 SEO + real /how-we-write**
   Goal: discoverable and honest.
   Acceptance: sitemap.xml (items + static), Article/MedicalWebPage +
   BreadcrumbList structured data, meta/OG tags (items unfurl well when

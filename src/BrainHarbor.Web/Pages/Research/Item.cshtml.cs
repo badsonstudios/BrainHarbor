@@ -25,6 +25,67 @@ public class ItemModel(FeedRepository feed, SummaryRenderer summaries) : PageMod
     /// <summary>Renders a summary block with glossary tooltips (WI-306).</summary>
     public IHtmlContent Block(string? text) => summaries.Render(text);
 
+    /// <summary>The one-line description for meta/OG tags — the hook if we have
+    /// one, else the plain or original title.</summary>
+    public string MetaDescription =>
+        Item.PlainSummary ?? Item.PlainTitle ?? Item.Title;
+
+    /// <summary>
+    /// Schema.org JSON-LD for the item (WI-308): a MedicalWebPage plus a
+    /// BreadcrumbList, so search engines index it as health content with a clear
+    /// trail. Built with the default JSON encoder, which escapes &lt; &gt; &amp;
+    /// — so no field (title, summary) can break out of the &lt;script&gt; tag.
+    /// </summary>
+    public string JsonLd()
+    {
+        var url = $"{Request.Scheme}://{Request.Host}/research/{Item.Slug}";
+        var graph = new object[]
+        {
+            new Dictionary<string, object?>
+            {
+                ["@type"] = "MedicalWebPage",
+                ["name"] = Item.PlainTitle ?? Item.Title,
+                ["headline"] = Item.PlainTitle ?? Item.Title,
+                ["description"] = MetaDescription,
+                ["url"] = url,
+                ["datePublished"] = Item.PublishedAt?.ToString("yyyy-MM-dd"),
+                ["isBasedOn"] = Item.Url,
+                ["publisher"] = new Dictionary<string, object?>
+                {
+                    ["@type"] = "Organization",
+                    ["name"] = "BrainHarbor",
+                },
+            },
+            new Dictionary<string, object?>
+            {
+                ["@type"] = "BreadcrumbList",
+                ["itemListElement"] = new object[]
+                {
+                    Crumb(1, "Home", $"{Request.Scheme}://{Request.Host}/"),
+                    Crumb(2, "Research", $"{Request.Scheme}://{Request.Host}/research"),
+                    Crumb(3, Item.PlainTitle ?? Item.Title, url),
+                },
+            },
+        };
+
+        var doc = new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@graph"] = graph,
+        };
+
+        return System.Text.Json.JsonSerializer.Serialize(doc,
+            new System.Text.Json.JsonSerializerOptions { DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull });
+    }
+
+    private static Dictionary<string, object?> Crumb(int position, string name, string item) => new()
+    {
+        ["@type"] = "ListItem",
+        ["position"] = position,
+        ["name"] = name,
+        ["item"] = item,
+    };
+
     /// <summary>
     /// Plain-language explanation of the badge. This is the anti-hype work:
     /// the badge is a mark, this sentence says what it means for you.

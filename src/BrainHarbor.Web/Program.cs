@@ -4,6 +4,7 @@ using BrainHarbor.Web.Content;
 using BrainHarbor.Web.Database;
 using BrainHarbor.Web.Identity;
 using BrainHarbor.Web.Middleware;
+using BrainHarbor.Web.Seo;
 using BrainHarbor.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
@@ -168,6 +169,7 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 app.MapSyncApi();
+app.MapSyndication();
 
 app.Run();
 
