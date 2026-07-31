@@ -10,9 +10,12 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **M3 COMPLETE** — all of WI-301–309 + model config + infra fix + **Readiness score** done on `auto/M3` (PR #5). Classify + summarize validated LIVE with Opus. Awaiting Dan's review + merge of PR #5. |
-| **Next up** | Dan: review & merge PR #5. Then M4 (Azure + trials + digest). Optionally flip `Publishing:Mode` to Auto once confident in live summaries. |
-| **Blockers** | none. Shipped in **Review mode** (appsettings `Publishing:Mode=Review`) so the first real AI summaries are all human-checked; flip to Auto when ready. Default model is claude-opus-5. |
+| **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
+| **In progress** | nothing. Clean stopping point — `main` is green, PR #5 merged, `auto/M3` deleted. |
+| **Next up** | **M4.** First item **WI-401 is `[user]`+assisted** (Dan provisions Azure App Service + Postgres, brainharbor.org DNS + TLS). BUT **WI-402 (trials fetcher) + WI-403 (/trials browse) are code, buildable now WITHOUT Azure** (WI-402 depends only on WI-304). So the assistant can autopilot the trials feature while Dan does the cloud setup. Digest (WI-404/405) and maintenance (WI-406) need prod/ESP → after WI-401. |
+| **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
+
+**Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
 
 ### M3 shipped (all on `auto/M3`, PR #5)
 - **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
