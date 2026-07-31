@@ -29,16 +29,35 @@ public class QueueModel(
     }
 
     /// <summary>
-    /// Approve or reject. Returns the swapped-out row for htmx; without
-    /// JavaScript the same POST re-renders the whole page.
+    /// Approve or reject. On approve, any inline edits to the summary are saved
+    /// first (WI-305), so the reviewer can fix a nearly-good summary instead of
+    /// rejecting it, and the slug is built from the corrected title. Returns the
+    /// swapped-out row for htmx; without JavaScript the same POST re-renders the
+    /// whole page.
     /// </summary>
     public async Task<IActionResult> OnPostDecideAsync(
-        long id, string action, string? note, CancellationToken cancellationToken)
+        long id, string action, string? note,
+        string? plainTitle, string? hook, string? whatStudied, string? whatFound,
+        string? means, string? doesntMean, int? readinessScore, string? readinessReason,
+        CancellationToken cancellationToken)
     {
         if (!Enum.TryParse<ReviewAction>(action, ignoreCase: true, out var parsed) ||
             parsed is not (ReviewAction.Approved or ReviewAction.Rejected))
         {
             return BadRequest();
+        }
+
+        // Save inline edits before publishing. Blank fields mean "no change"
+        // (→ null, so the DB COALESCE keeps what's there); only a reviewer who
+        // typed something overwrites it.
+        if (parsed == ReviewAction.Approved)
+        {
+            var edits = new SummaryEdits(
+                NullIfBlank(plainTitle), NullIfBlank(hook), NullIfBlank(whatStudied),
+                NullIfBlank(whatFound), NullIfBlank(means), NullIfBlank(doesntMean),
+                readinessScore is >= 1 and <= 10 ? readinessScore : null,
+                NullIfBlank(readinessReason));
+            await reviews.SaveSummaryEditsAsync(id, edits, cancellationToken);
         }
 
         var actor = User.Identity?.Name ?? "unknown";
@@ -68,4 +87,7 @@ public class QueueModel(
 
         return RedirectToPage("/Admin/Queue");
     }
+
+    private static string? NullIfBlank(string? text) =>
+        string.IsNullOrWhiteSpace(text) ? null : text.Trim();
 }

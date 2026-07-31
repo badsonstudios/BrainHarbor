@@ -25,6 +25,12 @@ public sealed class ReviewItem
     public string Relevance { get; set; } = "";
     public string? PlainTitle { get; set; }
     public string? PlainSummary { get; set; }
+    public string? PlainWhatStudied { get; set; }
+    public string? PlainWhatFound { get; set; }
+    public string? PlainMeans { get; set; }
+    public string? PlainDoesntMean { get; set; }
+    public int? ReadinessScore { get; set; }
+    public string? ReadinessReason { get; set; }
     public bool SummaryFlagged { get; set; }
     public string Status { get; set; } = "";
 
@@ -33,7 +39,28 @@ public sealed class ReviewItem
     /// feed uses, so the reviewer judges what will actually be published.
     /// </summary>
     public StageBadge Badge => StageBadge.For(ResearchStageMapper.From(SourceKind, ResearchStage));
+
+    /// <summary>The readiness badge a reader would see, or null if unscored.</summary>
+    public ReadinessBadge? Readiness => ReadinessScore is { } score ? ReadinessBadge.For(score) : null;
+
+    /// <summary>True once the summarizer has produced the plain-language body.</summary>
+    public bool HasSummary => !string.IsNullOrWhiteSpace(PlainSummary);
 }
+
+/// <summary>
+/// A reviewer's inline edits to a summary, applied before approval. Null fields
+/// are left unchanged; this is the corrected copy that gets published, so the
+/// reviewer can fix a summary rather than reject a nearly-good one.
+/// </summary>
+public sealed record SummaryEdits(
+    string? PlainTitle,
+    string? PlainSummary,
+    string? PlainWhatStudied,
+    string? PlainWhatFound,
+    string? PlainMeans,
+    string? PlainDoesntMean,
+    int? ReadinessScore,
+    string? ReadinessReason);
 
 public enum ReviewAction { Approved, Rejected, Pulled, Reopened }
 
@@ -62,6 +89,12 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         relevance AS "Relevance",
         plain_title AS "PlainTitle",
         plain_summary AS "PlainSummary",
+        plain_what_studied AS "PlainWhatStudied",
+        plain_what_found AS "PlainWhatFound",
+        plain_means AS "PlainMeans",
+        plain_doesnt_mean AS "PlainDoesntMean",
+        readiness_score AS "ReadinessScore",
+        readiness_reason AS "ReadinessReason",
         summary_flagged AS "SummaryFlagged",
         status AS "Status"
         """;
@@ -103,6 +136,62 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
             $"SELECT {SelectColumns} FROM aggregated_items WHERE id = @id",
             new { id },
             cancellationToken: cancellationToken));
+    }
+
+    /// <summary>
+    /// Saves a reviewer's inline edits to the plain-language summary before
+    /// approval (WI-305). Only touches <c>status='pending'</c> rows — a
+    /// reviewed/published item's content is frozen, same rule the sync upsert
+    /// obeys. COALESCE keeps a field the reviewer left blank. The readiness
+    /// score is re-clamped to its stage ceiling so an edit can't push a lab
+    /// finding to "near clinic" either. Returns false if nothing pending matched.
+    /// </summary>
+    public async Task<bool> SaveSummaryEditsAsync(
+        long id, SummaryEdits edits, CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var updated = await connection.ExecuteAsync(new CommandDefinition(
+            """
+            UPDATE aggregated_items
+               SET plain_title        = COALESCE(@PlainTitle, plain_title),
+                   plain_summary      = COALESCE(@PlainSummary, plain_summary),
+                   plain_what_studied = COALESCE(@PlainWhatStudied, plain_what_studied),
+                   plain_what_found   = COALESCE(@PlainWhatFound, plain_what_found),
+                   plain_means        = COALESCE(@PlainMeans, plain_means),
+                   plain_doesnt_mean  = COALESCE(@PlainDoesntMean, plain_doesnt_mean),
+                   -- Re-clamp a reviewer-set score to 1..stage-ceiling, so an
+                   -- edit can't push a lab/animal finding to "near clinic"
+                   -- either. A null edit leaves the score untouched (LEAST would
+                   -- ignore the null and wrongly overwrite, hence the CASE).
+                   readiness_score    = CASE
+                       WHEN @ReadinessScore IS NULL THEN readiness_score
+                       ELSE GREATEST(1, LEAST(@ReadinessScore, CASE research_stage
+                           WHEN 'news_other'         THEN 10
+                           WHEN 'human_trial'        THEN 8
+                           WHEN 'review_guideline'   THEN 6
+                           WHEN 'observational'      THEN 5
+                           WHEN 'preclinical_animal' THEN 2
+                           WHEN 'preclinical_cell'   THEN 2
+                           ELSE 5 END))
+                   END,
+                   readiness_reason   = COALESCE(@ReadinessReason, readiness_reason)
+             WHERE id = @id AND status = 'pending'
+            """,
+            new
+            {
+                id,
+                edits.PlainTitle,
+                edits.PlainSummary,
+                edits.PlainWhatStudied,
+                edits.PlainWhatFound,
+                edits.PlainMeans,
+                edits.PlainDoesntMean,
+                edits.ReadinessScore,
+                edits.ReadinessReason,
+            },
+            cancellationToken: cancellationToken));
+
+        return updated > 0;
     }
 
     /// <summary>

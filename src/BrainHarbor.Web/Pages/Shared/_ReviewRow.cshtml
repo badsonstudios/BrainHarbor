@@ -1,48 +1,83 @@
 @using BrainHarbor.Web.Admin
 @model ReviewItem
 
-@* One queue row (WI-208). The reviewer sees the source text and the badge a
-   reader would see, side by side, so the decision is made on what will
-   actually be published. *@
+@* One queue row (WI-305). Summary and source abstract sit side by side so the
+   decision is made on what will actually be published; the summary can be
+   edited inline before approving; approve/reject are keyboard-driven. The
+   source text is licensed as pipeline input only (data-model.md) and shown to
+   a signed-in reviewer for comparison, never on a public page. *@
 
-<li class="card" id="review-item-@Model.Id">
-    <partial name="_StageBadge" model="Model.Badge" />
+<li class="card review-card" id="review-item-@Model.Id" tabindex="-1" data-review-card>
+    <div class="review-card__badges">
+        <partial name="_StageBadge" model="Model.Badge" />
+        @if (Model.Readiness is not null)
+        {
+            <partial name="_ReadinessBadge" model="Model.Readiness" />
+        }
+    </div>
 
     @if (Model.SummaryFlagged)
     {
-        <p class="disclaimer">
+        <p class="disclaimer" role="alert">
             <strong>Flagged.</strong> A reader reported a problem, or an
             automatic check failed. Read this one closely.
         </p>
     }
 
-    <h3>@(Model.PlainTitle ?? Model.Title)</h3>
+    <div class="review-compare">
+        <div class="review-compare__col review-compare__summary">
+            <h3 class="review-compare__heading">What readers will see</h3>
+            <h4>@(Model.PlainTitle ?? Model.Title)</h4>
+            @if (Model.PlainTitle is not null)
+            {
+                <p class="original-title">Original title: @Model.Title</p>
+            }
 
-    @if (Model.PlainTitle is not null)
-    {
-        <p class="original-title">Original title: @Model.Title</p>
-    }
+            @if (Model.HasSummary)
+            {
+                <p class="hook">@Model.PlainSummary</p>
+                @if (Model.PlainWhatStudied is not null)
+                {
+                    <p><strong>What was studied.</strong> @Model.PlainWhatStudied</p>
+                }
+                @if (Model.PlainWhatFound is not null)
+                {
+                    <p><strong>What they found.</strong> @Model.PlainWhatFound</p>
+                }
+                @if (Model.PlainMeans is not null)
+                {
+                    <p><strong>What it could mean.</strong> @Model.PlainMeans</p>
+                }
+                @if (Model.PlainDoesntMean is not null)
+                {
+                    <p><strong>What it does not mean.</strong> @Model.PlainDoesntMean</p>
+                }
+                @if (Model.Readiness is not null && Model.ReadinessReason is not null)
+                {
+                    <p class="readiness-reason"><em>@Model.ReadinessReason</em></p>
+                }
+            }
+            else
+            {
+                <p class="text-muted">
+                    No plain-language summary yet. Approving publishes the item
+                    without one; usually it should wait for the summarizer.
+                </p>
+            }
+        </div>
 
-    @if (Model.PlainSummary is not null)
-    {
-        <p>@Model.PlainSummary</p>
-    }
-    else
-    {
-        <p class="text-muted">
-            No plain-language summary yet — the summarizer lands in M3.
-        </p>
-    }
-
-    @* Source text is licensed as pipeline input only (data-model.md); it is
-       shown to a signed-in reviewer for comparison, never on a public page. *@
-    @if (Model.RawSummary is not null)
-    {
-        <details>
-            <summary>Source text</summary>
-            <p class="text-muted">@Model.RawSummary</p>
-        </details>
-    }
+        <div class="review-compare__col review-compare__source">
+            <h3 class="review-compare__heading">Source abstract</h3>
+            @if (Model.RawSummary is not null)
+            {
+                <p class="text-muted">@Model.RawSummary</p>
+            }
+            else
+            {
+                <p class="text-muted">No source abstract was provided.</p>
+            }
+        </div>
+    </div>
 
     <p class="card__meta">
         @foreach (var tag in Model.TumorTags)
@@ -60,13 +95,53 @@
     <form method="post" asp-page="/Admin/Queue" asp-page-handler="Decide"
           hx-post="/admin/queue?handler=Decide"
           hx-target="#review-item-@Model.Id"
-          hx-swap="outerHTML">
+          hx-swap="outerHTML"
+          data-review-form>
         <input type="hidden" name="id" value="@Model.Id" />
-        <label for="note-@Model.Id">Correction note (shown publicly if set)</label><br />
+
+        @if (Model.HasSummary)
+        {
+            <details class="review-edit">
+                <summary>Edit before approving</summary>
+                <div class="review-edit__grid">
+                    <label for="edit-title-@Model.Id">Plain title</label>
+                    <input id="edit-title-@Model.Id" type="text" name="plainTitle" value="@Model.PlainTitle" />
+
+                    <label for="edit-hook-@Model.Id">Hook (one sentence)</label>
+                    <textarea id="edit-hook-@Model.Id" name="hook" rows="2">@Model.PlainSummary</textarea>
+
+                    <label for="edit-studied-@Model.Id">What was studied</label>
+                    <textarea id="edit-studied-@Model.Id" name="whatStudied" rows="2">@Model.PlainWhatStudied</textarea>
+
+                    <label for="edit-found-@Model.Id">What they found</label>
+                    <textarea id="edit-found-@Model.Id" name="whatFound" rows="2">@Model.PlainWhatFound</textarea>
+
+                    <label for="edit-means-@Model.Id">What it could mean</label>
+                    <textarea id="edit-means-@Model.Id" name="means" rows="2">@Model.PlainMeans</textarea>
+
+                    <label for="edit-doesnt-@Model.Id">What it does not mean</label>
+                    <textarea id="edit-doesnt-@Model.Id" name="doesntMean" rows="2">@Model.PlainDoesntMean</textarea>
+
+                    <label for="edit-readiness-@Model.Id">Readiness (1–10)</label>
+                    <input id="edit-readiness-@Model.Id" type="number" min="1" max="10"
+                           name="readinessScore" value="@Model.ReadinessScore" />
+
+                    <label for="edit-reason-@Model.Id">Readiness reason</label>
+                    <textarea id="edit-reason-@Model.Id" name="readinessReason" rows="2">@Model.ReadinessReason</textarea>
+                </div>
+                <p class="text-muted">A blank field keeps what's there. The score is
+                    re-capped to its research stage on save.</p>
+            </details>
+        }
+
+        <label for="note-@Model.Id">Correction note (shown publicly if set)</label>
         <input id="note-@Model.Id" type="text" name="note" />
-        <p>
-            <button type="submit" name="action" value="Approved">Approve</button>
-            <button type="submit" name="action" value="Rejected">Reject</button>
+
+        <p class="review-actions">
+            <button type="submit" name="action" value="Approved"
+                    accesskey="a" data-approve>Approve <kbd>a</kbd></button>
+            <button type="submit" name="action" value="Rejected"
+                    accesskey="r" data-reject>Reject <kbd>r</kbd></button>
         </p>
     </form>
 </li>

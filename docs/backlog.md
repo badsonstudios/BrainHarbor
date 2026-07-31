@@ -286,7 +286,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   `summary_model` + prompt version stamped.
   Refs: content-pipeline.md §9/§11. Depends on: WI-303.
 
-- [ ] **WI-305 Review queue v1**
+- [x] **WI-305 Review queue v1**
   Goal: reviewing 10–30 summaries/day takes ~5 minutes and means something.
   Acceptance: side-by-side summary vs source abstract; inline edit before
   approve; correction-note field (rendered publicly per content-pipeline §10);

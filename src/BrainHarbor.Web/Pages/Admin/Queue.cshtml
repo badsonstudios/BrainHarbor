@@ -29,6 +29,14 @@
     }
 </p>
 
+@if (Model.PendingCount > 0)
+{
+    <p class="text-muted" id="kbd-help">
+        Keyboard: <kbd>j</kbd>/<kbd>k</kbd> move between items,
+        <kbd>a</kbd> approve, <kbd>r</kbd> reject, <kbd>e</kbd> edit the focused item.
+    </p>
+}
+
 @if (Model.Items.Count == 0)
 {
     <p>Nothing to review. The pipeline uploads new items as it finds them.</p>
@@ -46,4 +54,51 @@
     <p>
         <a href="/admin/queue?page=@(Model.Page + 1)">Next page →</a>
     </p>
+}
+
+@section Scripts {
+    <script>
+        // Progressive enhancement (WI-305): keyboard-drive the queue. Everything
+        // still works with the plain forms if this never runs.
+        (function () {
+            var cards = function () { return Array.prototype.slice.call(
+                document.querySelectorAll('[data-review-card]')); };
+            var focused = -1;
+
+            function focus(i) {
+                var list = cards();
+                if (!list.length) return;
+                focused = Math.max(0, Math.min(i, list.length - 1));
+                list[focused].focus();
+                list[focused].scrollIntoView({ block: 'nearest' });
+            }
+
+            function typingInField(e) {
+                var t = e.target;
+                return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey || e.metaKey || e.altKey) return;
+                if (typingInField(e)) return;
+                var card = focused >= 0 ? cards()[focused] : null;
+                switch (e.key) {
+                    case 'j': focus(focused + 1); e.preventDefault(); break;
+                    case 'k': focus(focused - 1); e.preventDefault(); break;
+                    case 'a':
+                        if (card) { var a = card.querySelector('[data-approve]'); if (a) { a.click(); e.preventDefault(); } }
+                        break;
+                    case 'r':
+                        if (card) { var r = card.querySelector('[data-reject]'); if (r) { r.click(); e.preventDefault(); } }
+                        break;
+                    case 'e':
+                        if (card) {
+                            var d = card.querySelector('.review-edit');
+                            if (d) { d.open = true; var f = d.querySelector('input,textarea'); if (f) f.focus(); e.preventDefault(); }
+                        }
+                        break;
+                }
+            });
+        })();
+    </script>
 }
