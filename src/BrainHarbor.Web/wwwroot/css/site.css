@@ -648,6 +648,47 @@ main {
   padding-inline-start: var(--space-3);
 }
 
+/* Item-page header: badge above the plain-language headline (WI-306). */
+.item-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+.item-header h1 { margin: 0; }
+
+/* The one-sentence hook, given a little more presence than body text. */
+.hook {
+  font-size: var(--text-lg);
+  line-height: var(--leading);
+}
+
+/* Report-a-problem — quiet by default, one tap to open. */
+.report-problem {
+  margin-block-start: var(--space-4);
+}
+
+.report-problem summary {
+  cursor: pointer;
+  color: var(--color-accent);
+  text-decoration: underline;
+  min-block-size: var(--tap-target);
+  display: inline-flex;
+  align-items: center;
+}
+
+.report-problem textarea { width: 100%; }
+
+/* Reader-reported live pages, at the top of the admin queue (WI-306). */
+.reported-section {
+  border: 1px solid var(--color-border);
+  border-inline-start: 6px solid #b23c17;
+  border-radius: var(--card-radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block-end: var(--space-6);
+}
+
 /* ---------- Dev style guide (WI-109; /dev/styleguide, dev-only) ---------- */
 
 .styleguide-badges {

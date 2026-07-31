@@ -314,6 +314,56 @@ public sealed class ReviewQueueTests : IAsyncLifetime
         Assert.Equal("Published title", title);
     }
 
+    // ---------- reader-reported live pages (WI-306) ----------
+
+    [Fact]
+    public async Task ReportedPublishedItemsSurfaceForTheAdmin()
+    {
+        // A live page a reader flagged must reach the admin — it isn't 'pending'
+        // (already published), so the normal queue wouldn't show it.
+        var id = await InsertPendingAsync("rq-reported");
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET summary_flagged = true WHERE id = @id", new { id });
+
+        var reported = await _reviews.GetReportedAsync(50, CancellationToken.None);
+
+        Assert.Contains(reported, i => i.Id == id);
+        Assert.Equal(1, await _reviews.CountReportedAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ApprovingClearsThePipelineFlagSoItIsNotMistakenForAReaderReport()
+    {
+        // A numeral/banned-phrase flag from the pipeline must not linger on the
+        // published row — otherwise it shows in "Reported by readers" with no
+        // reader behind it.
+        var id = await InsertPendingAsync("rq-pipeflag", flagged: true);
+
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+
+        var flagged = await _connection.ExecuteScalarAsync<bool>(
+            "SELECT summary_flagged FROM aggregated_items WHERE id = @id", new { id });
+        Assert.False(flagged);
+        Assert.DoesNotContain(await _reviews.GetReportedAsync(50, CancellationToken.None), i => i.Id == id);
+    }
+
+    [Fact]
+    public async Task DismissingAReportClearsTheFlagButLeavesThePagePublished()
+    {
+        var id = await InsertPendingAsync("rq-dismiss");
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET summary_flagged = true WHERE id = @id", new { id });
+
+        Assert.True(await _reviews.DismissReportAsync(id, CancellationToken.None));
+
+        var row = await _connection.QuerySingleAsync<(bool Flagged, string Status)>(
+            "SELECT summary_flagged, status FROM aggregated_items WHERE id = @id", new { id });
+        Assert.False(row.Flagged);
+        Assert.Equal("published", row.Status);
+    }
+
     // ---------- the badge the reviewer sees ----------
 
     [Theory]

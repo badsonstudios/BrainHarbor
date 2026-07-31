@@ -357,6 +357,146 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
             await client.GetStringAsync("/research/study-f-raw"));
     }
 
+    // ---------- WI-306: the full six-block item page ----------
+
+    private Task InsertFullSummaryAsync(string externalId, string slug, int? readiness = 7) =>
+        _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 research_stage, plain_title, plain_summary, plain_what_studied,
+                 plain_what_found, plain_means, plain_doesnt_mean,
+                 readiness_score, readiness_reason, reviewed_by)
+            VALUES
+                (@TestSource, 'research', @externalId, 'A jargon-heavy title', 'https://example.org',
+                 'published', 'patient_relevant', @slug, 'human_trial',
+                 'A pill slowed a glioma', 'A daily pill helped people.',
+                 'Researchers studied people with a glioma.',
+                 'The pill slowed the tumor.', 'It may add time before stronger care.',
+                 'This is not a cure and does not fit every tumor.',
+                 @readiness, 'Being tested in people in trials, but not yet approved.',
+                 'dan@example.org')
+            """,
+            new { TestSource, externalId, slug, readiness });
+
+    [Fact]
+    public async Task TheItemPageRendersAllSixBlocksAndTheReadinessScore()
+    {
+        await InsertFullSummaryAsync("f-full", "study-f-full");
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-full"));
+
+        Assert.Contains("The short version", html);
+        Assert.Contains("What was studied", html);
+        Assert.Contains("What they found", html);
+        Assert.Contains("What this means", html);          // the means-block heading
+        Assert.Contains("does not fit every tumor", html); // the doesn't-mean block
+        Assert.Contains("Readiness 7/10", html);
+        Assert.Contains("In late human trials", html);     // the readiness band label
+    }
+
+    [Fact]
+    public async Task GlossaryTermsInSummaryBlocksGetTooltips()
+    {
+        // "glioma" is a glossary term — the item page marks it in the summary so
+        // a reader can tap for a plain definition (content-pipeline.md §6).
+        await InsertFullSummaryAsync("f-tip", "study-f-tip");
+
+        var html = await _factory.CreateClient().GetStringAsync("/research/study-f-tip");
+
+        Assert.Contains("class=\"term\"", html);
+        Assert.Contains("popover", html);
+    }
+
+    [Fact]
+    public async Task TheItemPageOffersAOneTapReportAProblem()
+    {
+        await InsertFullSummaryAsync("f-report-ui", "study-f-report-ui");
+
+        var html = await _factory.CreateClient().GetStringAsync("/research/study-f-report-ui");
+
+        Assert.Contains("Report a problem", html);
+    }
+
+    [Fact]
+    public async Task ReportingAProblemFlagsThePublishedItemAndRecordsItWithoutUnpublishing()
+    {
+        await InsertFullSummaryAsync("f-reported", "study-f-reported");
+
+        var ok = await _feed.ReportProblemAsync(
+            "study-f-reported", "The number looks wrong.", CancellationToken.None);
+        Assert.True(ok);
+
+        var row = await _connection.QuerySingleAsync<(bool Flagged, string Status)>(
+            "SELECT summary_flagged, status FROM aggregated_items WHERE slug = 'study-f-reported'");
+        Assert.True(row.Flagged);
+        Assert.Equal("published", row.Status); // a reader can't take a page down
+
+        var (action, actor, note) = await _connection.QuerySingleAsync<(string, string, string?)>(
+            """
+            SELECT re.action, re.actor, re.note FROM review_events re
+            JOIN aggregated_items a ON a.id = re.item_id
+            WHERE a.slug = 'study-f-reported'
+            """);
+        Assert.Equal("reported", action);
+        Assert.Equal("reader", actor);
+        Assert.Equal("The number looks wrong.", note);
+    }
+
+    [Fact]
+    public async Task MarkdownLinksAndImagesInSummaryBlocksAreNeutralized()
+    {
+        // Summaries come from untrusted abstracts via an LLM. A prompt-injected
+        // markdown link/image must not become a live <a href="javascript:"> or
+        // an <img> (stored click-XSS / tracking pixel).
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 research_stage, plain_title, plain_summary, plain_what_studied,
+                 plain_what_found, plain_means, plain_doesnt_mean, reviewed_by)
+            VALUES
+                (@TestSource, 'research', 'f-xss', 'A study', 'https://example.org',
+                 'published', 'patient_relevant', 'study-f-xss', 'human_trial',
+                 'A title', 'A hook.',
+                 '[click](javascript:alert(1)) and ![x](http://evil/pixel.png)',
+                 'Found.', 'Means.', 'Does not mean.', 'dan@example.org')
+            """,
+            new { TestSource });
+
+        var html = await _factory.CreateClient().GetStringAsync("/research/study-f-xss");
+
+        Assert.DoesNotContain("href=\"javascript:", html);
+        Assert.DoesNotContain("<img", html);
+    }
+
+    [Fact]
+    public async Task ReportingTwiceDoesNotFloodTheAuditTrail()
+    {
+        await InsertFullSummaryAsync("f-dedup", "study-f-dedup");
+
+        await _feed.ReportProblemAsync("study-f-dedup", "first", CancellationToken.None);
+        await _feed.ReportProblemAsync("study-f-dedup", "second", CancellationToken.None);
+
+        var events = await _connection.ExecuteScalarAsync<int>(
+            """
+            SELECT count(*) FROM review_events re
+            JOIN aggregated_items a ON a.id = re.item_id
+            WHERE a.slug = 'study-f-dedup' AND re.action = 'reported'
+            """);
+        Assert.Equal(1, events); // the second report is a no-op while unresolved
+    }
+
+    [Fact]
+    public async Task ReportingOnAnUnknownOrUnpublishedSlugDoesNothing()
+    {
+        await InsertAsync("f-pending-report", status: "pending", slug: "study-f-pending-report");
+
+        Assert.False(await _feed.ReportProblemAsync("no-such-slug", null, CancellationToken.None));
+        Assert.False(await _feed.ReportProblemAsync(
+            "study-f-pending-report", null, CancellationToken.None));
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

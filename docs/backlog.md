@@ -293,7 +293,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   keyboard-friendly approve/reject; flagged items surfaced first.
   Depends on: WI-304, WI-208.
 
-- [ ] **WI-306 Item permalink pages**
+- [x] **WI-306 Item permalink pages**
   Goal: the shareable, indexable unit of the site.
   Acceptance: `/research/{slug}` renders the 6 template blocks, stage badge,
   provenance box with human-review disclosure, glossary tooltips active in

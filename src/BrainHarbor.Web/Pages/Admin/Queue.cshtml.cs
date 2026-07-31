@@ -13,7 +13,9 @@ public class QueueModel(
     public const int PageSize = 20;
 
     public IReadOnlyList<ReviewItem> Items { get; private set; } = [];
+    public IReadOnlyList<ReviewItem> Reported { get; private set; } = [];
     public int PendingCount { get; private set; }
+    public int ReportedCount { get; private set; }
     public int Page { get; private set; }
     public bool HasMore => (Page + 1) * PageSize < PendingCount;
     public bool TwoFactorEnabled { get; private set; }
@@ -24,8 +26,39 @@ public class QueueModel(
         PendingCount = await reviews.CountPendingAsync(cancellationToken);
         Items = await reviews.GetPendingAsync(PageSize, Page * PageSize, cancellationToken);
 
+        // Reader-reported live pages (WI-306) — shown once, at the top of the
+        // first page, because they are already published and need a person.
+        ReportedCount = await reviews.CountReportedAsync(cancellationToken);
+        if (Page == 0 && ReportedCount > 0)
+        {
+            Reported = await reviews.GetReportedAsync(PageSize, cancellationToken);
+        }
+
         var user = await userManager.GetUserAsync(User);
         TwoFactorEnabled = user is not null && await userManager.GetTwoFactorEnabledAsync(user);
+    }
+
+    /// <summary>Pull a reader-reported page from the site, or dismiss the flag
+    /// (keep it published). Both are recorded/reflected; then back to the queue.</summary>
+    public async Task<IActionResult> OnPostResolveReportAsync(
+        long id, string action, CancellationToken cancellationToken)
+    {
+        var actor = User.Identity?.Name ?? "unknown";
+        if (string.Equals(action, "pull", StringComparison.OrdinalIgnoreCase))
+        {
+            await reviews.ApplyAsync(id, ReviewAction.Pulled, actor,
+                "Pulled after a reader report", cancellationToken);
+        }
+        else if (string.Equals(action, "dismiss", StringComparison.OrdinalIgnoreCase))
+        {
+            await reviews.DismissReportAsync(id, cancellationToken);
+        }
+        else
+        {
+            return BadRequest();
+        }
+
+        return RedirectToPage("/Admin/Queue");
     }
 
     /// <summary>

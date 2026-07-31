@@ -12,6 +12,7 @@ namespace BrainHarbor.Web.Admin;
 public sealed class ReviewItem
 {
     public long Id { get; set; }
+    public string? Slug { get; set; }
     public string Source { get; set; } = "";
     public string SourceKind { get; set; } = "";
     public string ExternalId { get; set; } = "";
@@ -76,6 +77,7 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
     // record without this.
     private const string SelectColumns = """
         id AS "Id",
+        slug AS "Slug",
         source AS "Source",
         source_kind AS "SourceKind",
         external_id AS "ExternalId",
@@ -127,6 +129,56 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
             "SELECT count(*) FROM aggregated_items WHERE status = 'pending'",
             cancellationToken: cancellationToken));
+    }
+
+    /// <summary>
+    /// Published items a reader flagged as having a problem (WI-306). These are
+    /// live pages, so they need eyes: a person decides whether to pull, correct,
+    /// or dismiss the report. Newest fetch first as a rough recency proxy.
+    /// </summary>
+    public async Task<IReadOnlyList<ReviewItem>> GetReportedAsync(
+        int limit, CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var rows = await connection.QueryAsync<ReviewItem>(new CommandDefinition(
+            $"""
+            SELECT {SelectColumns}
+            FROM aggregated_items
+            WHERE status = 'published' AND summary_flagged = true
+            ORDER BY fetched_at DESC, id DESC
+            LIMIT @limit
+            """,
+            new { limit },
+            cancellationToken: cancellationToken));
+
+        return [.. rows];
+    }
+
+    public async Task<int> CountReportedAsync(CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(new CommandDefinition(
+            "SELECT count(*) FROM aggregated_items WHERE status = 'published' AND summary_flagged = true",
+            cancellationToken: cancellationToken));
+    }
+
+    /// <summary>
+    /// Clears a reader's problem flag on a published item without changing what
+    /// readers see — the "I looked, it's fine" outcome. The report stays in the
+    /// audit trail. Returns false if the item isn't a flagged published one.
+    /// </summary>
+    public async Task<bool> DismissReportAsync(long id, CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var updated = await connection.ExecuteAsync(new CommandDefinition(
+            """
+            UPDATE aggregated_items SET summary_flagged = false
+            WHERE id = @id AND status = 'published' AND summary_flagged = true
+            """,
+            new { id },
+            cancellationToken: cancellationToken));
+
+        return updated > 0;
     }
 
     public async Task<ReviewItem?> GetAsync(long id, CancellationToken cancellationToken)
@@ -225,6 +277,15 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
                    reviewed_at = now(),
                    reviewed_by = @actor,
                    review_note = COALESCE(@note, review_note),
+                   -- Approving resolves the pipeline's automated flag: a person
+                   -- looked and published. Otherwise a numeral/banned-phrase
+                   -- flag would linger on the published row and masquerade as a
+                   -- reader report in the "Reported by readers" queue (which is
+                   -- published AND summary_flagged). Reader reports re-set it.
+                   summary_flagged = CASE
+                       WHEN @newStatus = 'published' THEN false
+                       ELSE summary_flagged
+                   END,
                    slug = CASE
                        WHEN @newStatus = 'published' AND slug IS NULL THEN @slug
                        ELSE slug

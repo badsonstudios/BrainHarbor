@@ -31,6 +31,7 @@ builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddSingleton<GlossaryStore>();
 builder.Services.AddSingleton<ContentStore>();
+builder.Services.AddSingleton<SummaryRenderer>();
 builder.Services.AddSingleton<TaxonomyStore>();
 
 // Admin auth (WI-207): one seeded account, TOTP 2FA, NO registration

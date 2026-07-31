@@ -21,6 +21,37 @@
     </div>
 }
 
+@if (Model.Reported.Count > 0)
+{
+    <section class="reported-section" aria-labelledby="reported-heading">
+        <h2 id="reported-heading">Reported by readers (@Model.ReportedCount)</h2>
+        <p class="text-muted">
+            These pages are live. A reader flagged a problem — pull the page or,
+            if it's fine, dismiss the flag.
+        </p>
+        <ul class="feed-grid">
+            @foreach (var item in Model.Reported)
+            {
+                <li class="card" id="reported-item-@item.Id">
+                    <div class="review-card__badges">
+                        <partial name="_StageBadge" model="item.Badge" />
+                        @if (item.Readiness is not null)
+                        {
+                            <partial name="_ReadinessBadge" model="item.Readiness" />
+                        }
+                    </div>
+                    <h3><a href="/research/@item.Slug">@(item.PlainTitle ?? item.Title)</a></h3>
+                    <form method="post" asp-page-handler="ResolveReport">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" name="action" value="pull">Pull from site</button>
+                        <button type="submit" name="action" value="dismiss">Dismiss (keep published)</button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </section>
+}
+
 <p>
     <strong>@Model.PendingCount</strong> item(s) waiting.
     @if (Model.PendingCount > 0)

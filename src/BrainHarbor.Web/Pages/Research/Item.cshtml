@@ -4,34 +4,72 @@
     ViewData["Title"] = Model.Item.PlainTitle ?? Model.Item.Title;
 }
 
-@* WI-209: the item permalink — the shareable, indexable unit of the site.
-   The full six-block template arrives with the M3 summarizer (WI-306); this
-   is the honest v0: what we know, badged, with provenance. *@
+@* WI-306: the item permalink — the shareable, indexable unit of the site. The
+   full six-block plain-language template, badged, with readiness, provenance,
+   glossary tooltips, and a one-tap "report a problem". Layout follows the
+   handoff's research-item.html: 46rem reading column, means-block, ai-note. *@
 
 <div class="container--read">
     <p><a href="/research">← All research updates</a></p>
 
-    <partial name="_StageBadge" model="Model.Badge" />
-
-    <h1>@(Model.Item.PlainTitle ?? Model.Item.Title)</h1>
-
-    @if (Model.Item.PlainTitle is not null)
+    @if (Model.JustReported)
     {
-        <p class="original-title">Original title: @Model.Item.Title</p>
+        <div class="disclaimer" role="status">
+            <p>Thank you. You have flagged this summary for a person to look at.</p>
+        </div>
     }
 
-    @if (Model.Item.PlainSummary is not null)
+    <div class="item-header">
+        <partial name="_StageBadge" model="Model.Badge" />
+        <h1>@(Model.Item.PlainTitle ?? Model.Item.Title)</h1>
+        @if (Model.Item.PlainTitle is not null)
+        {
+            <p class="original-title">Original title: @Model.Item.Title</p>
+        }
+    </div>
+
+    @if (Model.Item.HasFullSummary)
     {
-        <p>@Model.Item.PlainSummary</p>
+        <h2>The short version</h2>
+        @if (Model.Item.PlainSummary is not null)
+        {
+            <p class="hook">@Model.Block(Model.Item.PlainSummary)</p>
+        }
+        <p><strong>What was studied.</strong> @Model.Block(Model.Item.PlainWhatStudied)</p>
+        <p><strong>What they found.</strong> @Model.Block(Model.Item.PlainWhatFound)</p>
+
+        <div class="means-block">
+            <div class="means-block__head">
+                <span class="means-block__icon" aria-hidden="true">i</span>
+                <h2>What this means — and doesn't mean</h2>
+            </div>
+            <p><strong>What it could mean:</strong> @Model.Block(Model.Item.PlainMeans)</p>
+            <p><strong>What it doesn't mean:</strong> @Model.Block(Model.Item.PlainDoesntMean)</p>
+        </div>
+    }
+    else if (Model.Item.PlainSummary is not null)
+    {
+        @* Hook only (older/partial item) — show it honestly, no invented blocks. *@
+        <p class="hook">@Model.Block(Model.Item.PlainSummary)</p>
     }
     else
     {
-        @* Never fake a summary. Until M3, say plainly that there isn't one
-           and send the reader to the source. *@
         <p>
             We have not written a plain-language summary of this one yet. The
             title above is the researchers' own wording.
         </p>
+    }
+
+    @if (Model.Readiness is not null)
+    {
+        <div class="readiness-callout">
+            <h2>How close is this to helping patients?</h2>
+            <partial name="_ReadinessBadge" model="Model.Readiness" />
+            @if (Model.Item.ReadinessReason is not null)
+            {
+                <p class="readiness-reason">@Model.Block(Model.Item.ReadinessReason)</p>
+            }
+        </div>
     }
 
     <h2>How early is this?</h2>
@@ -56,9 +94,7 @@
                 This plain-language summary was written by AI and published
                 automatically after passing our automatic safety checks. A
                 person did not review it before publishing.
-                <a href="/how-we-write">How we write.</a> If something looks
-                wrong, <a href="@Model.Item.Url" rel="noopener">check the
-                original</a> and tell us.
+                <a href="/how-we-write">How we write.</a>
             </p>
         }
         else
@@ -68,5 +104,17 @@
                 person before publishing. <a href="/how-we-write">How we write.</a>
             </p>
         }
+
+        <details class="report-problem">
+            <summary>Report a problem with this summary</summary>
+            <form method="post" asp-page-handler="Report">
+                <input type="hidden" name="slug" value="@Model.Item.Slug" />
+                <label for="report-reason">
+                    What looks wrong? (optional — this sends it to a person to check)
+                </label>
+                <textarea id="report-reason" name="reason" rows="3"></textarea>
+                <p><button type="submit">Send report</button></p>
+            </form>
+        </details>
     </div>
 </div>
