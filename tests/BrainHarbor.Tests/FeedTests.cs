@@ -521,6 +521,86 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
             "study-f-pending-report", null, CancellationToken.None));
     }
 
+    // ---------- WI-309: search ----------
+
+    [Fact]
+    public async Task SearchFindsPublishedItemsByTheirPlainLanguageText()
+    {
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 research_stage, plain_title, plain_summary, plain_what_found)
+            VALUES
+                (@TestSource, 'research', 'srch-1', 'Original', 'https://example.org',
+                 'published', 'patient_relevant', 'study-srch-1', 'human_trial',
+                 'A pill for glioblastoma', 'A daily pill helped.',
+                 'The vorasidenib pill slowed the tumor.')
+            """,
+            new { TestSource });
+
+        var hits = await _feed.SearchAsync("vorasidenib", 10, CancellationToken.None);
+
+        Assert.Contains(hits, h => h.Slug == "study-srch-1");
+    }
+
+    [Fact]
+    public async Task SearchOnlyReturnsPublishedItems()
+    {
+        await InsertAsync("srch-pending", status: "pending", slug: "study-srch-pending");
+        // The plain title carries a distinctive word to match on.
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET plain_title = 'zzquux therapy' WHERE source = @TestSource AND external_id = 'srch-pending'",
+            new { TestSource });
+
+        var hits = await _feed.SearchAsync("zzquux", 10, CancellationToken.None);
+
+        Assert.DoesNotContain(hits, h => h.Slug == "study-srch-pending");
+    }
+
+    [Fact]
+    public async Task SearchIsForgivingOfMessyInputAndNeverThrows()
+    {
+        // websearch_to_tsquery must swallow stray quotes/operators rather than
+        // 500 on a scared reader's messy query.
+        var hits = await _feed.SearchAsync("\"glioma symptoms -- OR)(", 10, CancellationToken.None);
+
+        Assert.NotNull(hits); // no exception is the assertion
+    }
+
+    [Fact]
+    public async Task TheSearchPageRunsAQueryOverItemsAndPages()
+    {
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 research_stage, plain_title, plain_summary)
+            VALUES
+                (@TestSource, 'research', 'srch-page', 'Original', 'https://example.org',
+                 'published', 'patient_relevant', 'study-srch-page', 'human_trial',
+                 'A glioma study', 'A plain hook about glioma.')
+            """,
+            new { TestSource });
+
+        var html = await _factory.CreateClient().GetStringAsync("/search?q=glioma");
+
+        Assert.Contains("result(s) for", html);
+        Assert.Contains("study-srch-page", html);          // an item hit
+        Assert.Contains("<h2>Research</h2>", html);
+    }
+
+    [Fact]
+    public async Task SearchAlsoCoversStaticPages()
+    {
+        // The "Pages" section only renders on a real static-page hit, so its
+        // presence proves the curated pages are searched too.
+        var html = await _factory.CreateClient().GetStringAsync("/search?q=privacy");
+
+        Assert.Contains("<h2>Pages</h2>", html);
+        Assert.Contains("href=\"/privacy\"", html);
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

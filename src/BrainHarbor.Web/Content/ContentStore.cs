@@ -45,6 +45,67 @@ public sealed partial class ContentStore(
         configuration["Content:Root"]
         ?? Path.Combine(environment.ContentRootPath, "Content", "pages");
 
+    /// <summary>One static page that matched a search (WI-309).</summary>
+    public sealed record PageMatch(string Title, string UrlPath, string Description);
+
+    /// <summary>
+    /// Searches the curated static pages (WI-309). The page set is tiny and
+    /// changes rarely, so a plain case-insensitive term match with light
+    /// title-weighting is enough — Postgres FTS is reserved for the item feed.
+    /// Returns the best matches, most relevant first.
+    /// </summary>
+    public IReadOnlyList<PageMatch> SearchPages(string query, int limit)
+    {
+        if (string.IsNullOrWhiteSpace(query) || !Directory.Exists(Root))
+        {
+            return [];
+        }
+
+        var terms = query.ToLowerInvariant()
+            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+            .Where(t => t.Length >= 2)
+            .Distinct()
+            .ToArray();
+        if (terms.Length == 0)
+        {
+            return [];
+        }
+
+        var scored = new List<(int Score, PageMatch Match)>();
+        foreach (var file in Directory.EnumerateFiles(Root, "*.md", SearchOption.AllDirectories))
+        {
+            var urlPath = Path.GetRelativePath(Root, file)
+                .Replace(Path.DirectorySeparatorChar, '/')[..^3]; // drop ".md"
+
+            ContentPage? page;
+            try
+            {
+                page = GetPage(urlPath);
+            }
+            catch (FormatException)
+            {
+                continue; // a malformed page shouldn't break search
+            }
+            if (page is null)
+            {
+                continue;
+            }
+
+            var title = page.FrontMatter.Title.ToLowerInvariant();
+            var body = page.Markdown.ToLowerInvariant();
+            var score = terms.Sum(t =>
+                (title.Contains(t) ? 5 : 0) + (body.Contains(t) ? 1 : 0));
+
+            if (score > 0)
+            {
+                scored.Add((score, new PageMatch(
+                    page.FrontMatter.Title, "/" + page.UrlPath, page.FrontMatter.Description)));
+            }
+        }
+
+        return [.. scored.OrderByDescending(s => s.Score).Take(limit).Select(s => s.Match)];
+    }
+
     /// <summary>Returns the page for a URL path like "about" or "benefits/fast-track", or null.</summary>
     public ContentPage? GetPage(string urlPath)
     {

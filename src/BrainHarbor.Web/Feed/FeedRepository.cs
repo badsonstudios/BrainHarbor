@@ -248,6 +248,44 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
     }
 
     /// <summary>
+    /// Full-text search over published items (WI-309). Uses Postgres
+    /// <c>websearch_to_tsquery</c>, which parses user input forgivingly (quotes,
+    /// OR, minus) and never throws on syntax — so a scared reader's messy query
+    /// still returns something rather than an error. Ranked by relevance. Only
+    /// published items, matching the human gate.
+    /// </summary>
+    public async Task<IReadOnlyList<FeedRow>> SearchAsync(
+        string query, int limit, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return [];
+        }
+
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var rows = await connection.QueryAsync<FeedRow>(new CommandDefinition(
+            $"""
+            SELECT {SelectColumns}
+            FROM aggregated_items,
+                 websearch_to_tsquery('english', @query) AS q,
+                 to_tsvector('english',
+                     coalesce(plain_title, title) || ' ' ||
+                     coalesce(plain_summary, '') || ' ' ||
+                     coalesce(plain_what_studied, '') || ' ' ||
+                     coalesce(plain_what_found, '') || ' ' ||
+                     coalesce(plain_means, '') || ' ' ||
+                     coalesce(plain_doesnt_mean, '')) AS doc
+            WHERE status = 'published' AND doc @@ q
+            ORDER BY ts_rank(doc, q) DESC, published_at DESC NULLS LAST, id DESC
+            LIMIT @limit
+            """,
+            new { query, limit },
+            cancellationToken: cancellationToken));
+
+        return [.. rows];
+    }
+
+    /// <summary>
     /// All published items, newest first, for syndication (sitemap.xml,
     /// feed.xml — WI-308). Every published permalink is public regardless of
     /// the feed's early-stage toggle, so this is not filtered by relevance.

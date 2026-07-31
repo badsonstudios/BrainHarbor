@@ -319,7 +319,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   human gate; feed.xml RSS of published items.
   Refs: PLAN.md §10. Depends on: WI-306.
 
-- [ ] **WI-309 Site search**
+- [x] **WI-309 Site search**
   Goal: one search over items + static pages.
   Acceptance: /search with htmx live results (no-JS form fallback) across
   published items (Postgres FTS) and static pages; drug-name typo tolerance

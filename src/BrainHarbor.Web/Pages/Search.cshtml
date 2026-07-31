@@ -1,0 +1,65 @@
+@page "/search"
+@model BrainHarbor.Web.Pages.SearchModel
+@{
+    ViewData["Title"] = Model.Searched ? $"Search: {Model.Query}" : "Search";
+    ViewData["Description"] = "Search brain tumor research summaries and pages on BrainHarbor.";
+}
+
+@* WI-309: one search over published items (Postgres full-text) and the static
+   pages. Plain GET form works with no JavaScript; htmx swaps results in place. *@
+
+<h1>Search</h1>
+
+<form method="get" class="feed-filters search-form" hx-get="/search"
+      hx-target="#search-results" hx-select="#search-results" hx-swap="outerHTML"
+      hx-push-url="true" role="search">
+    <label for="q">Search research and pages</label>
+    <input id="q" name="q" type="search" value="@Model.Query"
+           placeholder="e.g. glioma, vorasidenib, side effects" />
+    <button type="submit">Search</button>
+</form>
+
+<div id="search-results">
+    @if (Model.Searched)
+    {
+        <p class="text-muted">
+            @Model.TotalCount result(s) for &ldquo;@Model.Query&rdquo;.
+        </p>
+
+        @if (Model.TotalCount == 0)
+        {
+            <p>
+                Nothing matched. Try fewer or simpler words, or
+                <a href="/research">browse all research</a>.
+            </p>
+        }
+
+        @if (Model.Pages.Count > 0)
+        {
+            <h2>Pages</h2>
+            <ul class="search-pages">
+                @foreach (var hit in Model.Pages)
+                {
+                    <li>
+                        <a href="@hit.UrlPath">@hit.Title</a>
+                        @if (!string.IsNullOrWhiteSpace(hit.Description))
+                        {
+                            <span class="text-muted"> — @hit.Description</span>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+
+        @if (Model.Items.Count > 0)
+        {
+            <h2>Research</h2>
+            <ul class="feed-grid">
+                @foreach (var row in Model.Items)
+                {
+                    <partial name="_FeedCard" model="Model.ToCard(row)" />
+                }
+            </ul>
+        }
+    }
+</div>
