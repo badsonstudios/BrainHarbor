@@ -1,0 +1,20 @@
+@using BrainHarbor.Web.Models
+@model ReadinessBadge
+
+@* The readiness score (WI-305/306): how close a finding is to everyday care,
+   1-10. Like the stage badge, trust is read from a filled bar + words, never
+   color alone. The bar is aria-hidden; the whole control is one img with a
+   server-built label so screen readers hear exactly what sighted users see.
+   The per-item reason is passed separately by the caller. *@
+
+<span class="@Model.CssClass" role="img" aria-label="@Model.AriaLabel">
+    <span class="readiness__bar" aria-hidden="true">
+        @for (var step = 1; step <= ReadinessBadge.Max; step++)
+        {
+            <span class="readiness__step @(step <= Model.Score ? "readiness__step--on" : null)"></span>
+        }
+    </span>
+    <span class="readiness__text" aria-hidden="true">
+        <strong>Readiness @Model.Score/@ReadinessBadge.Max</strong> · @Model.Label
+    </span>
+</span>

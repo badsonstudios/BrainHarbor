@@ -151,6 +151,20 @@ public static class PipelineHost
                 name));
         }
 
+        // Claude Code CLI wrapper (WI-302) — the LLM work runs through the
+        // local `claude` CLI, no Anthropic API key.
+        builder.Services
+            .AddOptions<Claude.ClaudeOptions>()
+            .Bind(builder.Configuration.GetSection(Claude.ClaudeOptions.SectionName))
+            .ValidateDataAnnotations();
+        builder.Services.AddSingleton<Claude.IProcessRunner, Claude.ClaudeProcessRunner>();
+        builder.Services.AddSingleton<Claude.ClaudeCli>();
+        builder.Services.AddSingleton<Claude.PromptLibrary>();
+
+        // Classify + summarize steps (WI-303/304).
+        builder.Services.AddSingleton<Classify.IItemClassifier, Classify.Classifier>();
+        builder.Services.AddSingleton<Summarize.ISummarizer, Summarize.Summarizer>();
+
         builder.Services.AddTransient<PipelineRunner>();
         builder.Services.AddSingleton<DesktopNotifier>();
 

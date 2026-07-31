@@ -232,6 +232,138 @@ public sealed class ReviewQueueTests : IAsyncLifetime
         Assert.Equal(expected, ReviewRepository.Slugify(title));
     }
 
+    // ---------- inline edit before approve (WI-305) ----------
+
+    [Fact]
+    public async Task InlineEditsPersistAndTheApprovedSlugUsesTheEditedTitle()
+    {
+        var id = await InsertPendingAsync("rq-edit", title: "Original jargon title");
+
+        var edits = new SummaryEdits(
+            PlainTitle: "A clearer plain title",
+            PlainSummary: "A one-sentence hook.",
+            PlainWhatStudied: "Who and what.",
+            PlainWhatFound: "The finding.",
+            PlainMeans: "What it could mean.",
+            PlainDoesntMean: "What it does not mean.",
+            ReadinessScore: 7,
+            ReadinessReason: "In trials, not yet approved.");
+        Assert.True(await _reviews.SaveSummaryEditsAsync(id, edits, CancellationToken.None));
+
+        var row = await _connection.QuerySingleAsync<(string Title, string Found, int Score, string Reason)>(
+            """
+            SELECT plain_title, plain_what_found, readiness_score, readiness_reason
+            FROM aggregated_items WHERE id = @id
+            """, new { id });
+        Assert.Equal("A clearer plain title", row.Title);
+        Assert.Equal("The finding.", row.Found);
+        Assert.Equal(7, row.Score);
+
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+        var slug = await _connection.ExecuteScalarAsync<string>(
+            "SELECT slug FROM aggregated_items WHERE id = @id", new { id });
+        Assert.Equal("a-clearer-plain-title", slug);
+    }
+
+    [Fact]
+    public async Task ABlankEditFieldKeepsTheExistingText()
+    {
+        // A reviewer who edits one block must not wipe the others (they post
+        // blank → null → COALESCE keeps what's there).
+        var id = await InsertPendingAsync("rq-blank", plainTitle: "Keep this title");
+
+        var onlyReason = new SummaryEdits(
+            null, null, null, null, null, null, null, "Just a new reason.");
+        await _reviews.SaveSummaryEditsAsync(id, onlyReason, CancellationToken.None);
+
+        var title = await _connection.ExecuteScalarAsync<string>(
+            "SELECT plain_title FROM aggregated_items WHERE id = @id", new { id });
+        Assert.Equal("Keep this title", title);
+    }
+
+    [Fact]
+    public async Task AReviewerCannotEditAReadinessScoreAboveTheStageCeiling()
+    {
+        // The anti-hype cap holds even for a human edit: a mouse study can't be
+        // marked "near clinic" from the queue any more than from the pipeline.
+        var id = await InsertPendingAsync("rq-clamp", researchStage: "preclinical_animal");
+
+        var overscore = new SummaryEdits(null, null, null, null, null, null,
+            ReadinessScore: 9, ReadinessReason: null);
+        await _reviews.SaveSummaryEditsAsync(id, overscore, CancellationToken.None);
+
+        var score = await _connection.ExecuteScalarAsync<int?>(
+            "SELECT readiness_score FROM aggregated_items WHERE id = @id", new { id });
+        Assert.Equal(2, score);
+    }
+
+    [Fact]
+    public async Task EditsAreRefusedOnceAnItemIsReviewed()
+    {
+        // Content freezes after review — an edit must not alter a published page.
+        var id = await InsertPendingAsync("rq-frozen", plainTitle: "Published title");
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+
+        var applied = await _reviews.SaveSummaryEditsAsync(
+            id, new SummaryEdits("Sneaky edit", null, null, null, null, null, null, null),
+            CancellationToken.None);
+
+        Assert.False(applied);
+        var title = await _connection.ExecuteScalarAsync<string>(
+            "SELECT plain_title FROM aggregated_items WHERE id = @id", new { id });
+        Assert.Equal("Published title", title);
+    }
+
+    // ---------- reader-reported live pages (WI-306) ----------
+
+    [Fact]
+    public async Task ReportedPublishedItemsSurfaceForTheAdmin()
+    {
+        // A live page a reader flagged must reach the admin — it isn't 'pending'
+        // (already published), so the normal queue wouldn't show it.
+        var id = await InsertPendingAsync("rq-reported");
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET summary_flagged = true WHERE id = @id", new { id });
+
+        var reported = await _reviews.GetReportedAsync(50, CancellationToken.None);
+
+        Assert.Contains(reported, i => i.Id == id);
+        Assert.Equal(1, await _reviews.CountReportedAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ApprovingClearsThePipelineFlagSoItIsNotMistakenForAReaderReport()
+    {
+        // A numeral/banned-phrase flag from the pipeline must not linger on the
+        // published row — otherwise it shows in "Reported by readers" with no
+        // reader behind it.
+        var id = await InsertPendingAsync("rq-pipeflag", flagged: true);
+
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+
+        var flagged = await _connection.ExecuteScalarAsync<bool>(
+            "SELECT summary_flagged FROM aggregated_items WHERE id = @id", new { id });
+        Assert.False(flagged);
+        Assert.DoesNotContain(await _reviews.GetReportedAsync(50, CancellationToken.None), i => i.Id == id);
+    }
+
+    [Fact]
+    public async Task DismissingAReportClearsTheFlagButLeavesThePagePublished()
+    {
+        var id = await InsertPendingAsync("rq-dismiss");
+        await _reviews.ApplyAsync(id, ReviewAction.Approved, "dan@example.org", null, CancellationToken.None);
+        await _connection.ExecuteAsync(
+            "UPDATE aggregated_items SET summary_flagged = true WHERE id = @id", new { id });
+
+        Assert.True(await _reviews.DismissReportAsync(id, CancellationToken.None));
+
+        var row = await _connection.QuerySingleAsync<(bool Flagged, string Status)>(
+            "SELECT summary_flagged, status FROM aggregated_items WHERE id = @id", new { id });
+        Assert.False(row.Flagged);
+        Assert.Equal("published", row.Status);
+    }
+
     // ---------- the badge the reviewer sees ----------
 
     [Theory]

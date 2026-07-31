@@ -12,14 +12,41 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
 
     public IReadOnlyList<TumorType> TumorTypes => taxonomy.TumorTypes;
 
+    /// <summary>Remembers the "show early-stage research" choice across visits
+    /// (WI-307), so a reader who opted in doesn't have to re-tick it every time.
+    /// A functional preference cookie, not tracking.</summary>
+    private const string EarlyCookie = "bh_show_early";
+
     public async Task OnGetAsync(
         string? tumor = null,
         string? kind = null,
         bool early = false,
         int page = 0,
+        bool applied = false,
         CancellationToken cancellationToken = default)
     {
-        Query = new FeedQuery(tumor, kind, early, page);
+        // When the filter form is submitted (`applied`), the checkbox is
+        // authoritative — an unchecked box sends no value, so absence means
+        // "off", and we remember the choice. On a plain visit (a nav link, a
+        // shared URL with no `applied`), fall back to the remembered choice.
+        bool includeEarly;
+        if (applied)
+        {
+            includeEarly = early;
+            Response.Cookies.Append(EarlyCookie, early ? "1" : "0", new CookieOptions
+            {
+                MaxAge = TimeSpan.FromDays(365),
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                IsEssential = true, // a display preference the reader set themselves
+            });
+        }
+        else
+        {
+            includeEarly = Request.Cookies.TryGetValue(EarlyCookie, out var saved) && saved == "1";
+        }
+
+        Query = new FeedQuery(tumor, kind, includeEarly, page);
         Result = await feed.GetAsync(Query, cancellationToken);
     }
 

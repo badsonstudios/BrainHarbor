@@ -123,6 +123,28 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
     // ---------- state ----------
 
     [Fact]
+    public async Task TheTaxonomyEndpointServesTheClosedSlugList()
+    {
+        // WI-303: the pipeline's classifier prompt is built from this.
+        var response = await AuthedClient().GetFromJsonAsync<TaxonomyResponse>("/api/sync/taxonomy");
+
+        Assert.NotNull(response);
+        Assert.Contains(response!.Types, t => t.Slug == "glioblastoma");
+        Assert.Contains(response.Types, t => t.Slug == "spinal-cord-tumor");
+        // Aliases come through (the model is shown them).
+        var gbm = response.Types.Single(t => t.Slug == "glioblastoma");
+        Assert.Contains("GBM", gbm.Aliases);
+    }
+
+    [Fact]
+    public async Task TheTaxonomyEndpointRequiresTheApiKey()
+    {
+        var response = await _factory.CreateClient().GetAsync("/api/sync/taxonomy");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task StateReturnsPerSourceCursors()
     {
         var client = AuthedClient();
@@ -286,14 +308,19 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
     }
 
     [Fact]
-    public async Task ReaderReportedFlagSurvivesAReupload()
+    public async Task ReaderReportedFlagOnAPublishedItemSurvivesAReupload()
     {
+        // A reader "report a problem" only happens on a PUBLISHED item, and the
+        // upsert freezes published rows entirely (WHERE status='pending'), so
+        // the flag survives. (On a pending item the flag is instead refreshed
+        // from the pipeline — see SummaryFlagOnPendingItemIsRefreshed.)
         var client = AuthedClient();
         await client.PostAsJsonAsync("/api/sync/items", new UploadRequest([NewItem("flag-1")], null));
 
         await using var connection = new NpgsqlConnection(_database.ConnectionString);
         await connection.ExecuteAsync(
-            "UPDATE aggregated_items SET summary_flagged = true WHERE source = @TestSource AND external_id = 'flag-1'",
+            "UPDATE aggregated_items SET status = 'published', summary_flagged = true " +
+            "WHERE source = @TestSource AND external_id = 'flag-1'",
             new { TestSource });
 
         await client.PostAsJsonAsync("/api/sync/items", new UploadRequest([NewItem("flag-1")], null));
@@ -303,6 +330,26 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
             new { TestSource });
 
         Assert.True(flagged);
+    }
+
+    [Fact]
+    public async Task SummaryFlagOnAPendingItemIsRefreshedByAReSummarize()
+    {
+        // A re-summarize of a still-pending item should update the flag, so a
+        // newly-tripped check isn't hidden by a stale value in the queue.
+        var client = AuthedClient();
+        await client.PostAsJsonAsync("/api/sync/items",
+            new UploadRequest([NewItem("reflag-1") with { SummaryFlagged = true }], null));
+
+        await client.PostAsJsonAsync("/api/sync/items",
+            new UploadRequest([NewItem("reflag-1") with { SummaryFlagged = false }], null));
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var flagged = await connection.ExecuteScalarAsync<bool>(
+            "SELECT summary_flagged FROM aggregated_items WHERE source = @TestSource AND external_id = 'reflag-1'",
+            new { TestSource });
+
+        Assert.False(flagged);
     }
 
     [Fact]
@@ -350,6 +397,80 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
             "SELECT title FROM aggregated_items WHERE source = @TestSource AND external_id = 'dup-key'",
             new { TestSource });
         Assert.Equal("Second", title);
+    }
+
+    [Fact]
+    public async Task TheSummaryBlockColumnsAreStoredAndReturned()
+    {
+        // WI-304: the 6-block summary body persists to its columns.
+        var item = NewItem("blocks-1") with
+        {
+            PlainTitle = "A plain title",
+            PlainSummary = "A hook.",
+            PlainWhatStudied = "What was studied.",
+            PlainWhatFound = "What they found.",
+            PlainMeans = "What it means.",
+            PlainDoesntMean = "What it doesn't mean.",
+            ReadinessScore = 7,
+            ReadinessReason = "Being tested in people in trials, but not yet approved.",
+            SummaryModel = "claude-opus-5 (summarize-v2)",
+        };
+        await AuthedClient().PostAsJsonAsync("/api/sync/items", new UploadRequest([item], null));
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var row = await connection.QuerySingleAsync<(string? Studied, string? Found, string? Means, string? Doesnt, int? Score, string? Reason)>(
+            """
+            SELECT plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean,
+                   readiness_score, readiness_reason
+            FROM aggregated_items WHERE source = @TestSource AND external_id = 'blocks-1'
+            """,
+            new { TestSource });
+
+        Assert.Equal("What was studied.", row.Studied);
+        Assert.Equal("What they found.", row.Found);
+        Assert.Equal("What it means.", row.Means);
+        Assert.Equal("What it doesn't mean.", row.Doesnt);
+        Assert.Equal(7, row.Score);
+        Assert.Equal("Being tested in people in trials, but not yet approved.", row.Reason);
+    }
+
+    [Fact]
+    public async Task AnAnimalStudyScoredHighIsStoredCappedToItsStageCeiling()
+    {
+        // The hard anti-hype backstop: even if a buggy or hostile client sends
+        // readiness 9 for an animal study, the trust boundary re-clamps it to 2
+        // before it can reach a page. The pipeline already clamps; this proves
+        // the DB can't hold a lab/animal finding as near-clinic regardless.
+        var item = NewItem("animal-hype") with
+        {
+            ResearchStage = "preclinical_animal",
+            Relevance = "early_stage",
+            ReadinessScore = 9,
+            ReadinessReason = "This was only tested in mice.",
+        };
+        await AuthedClient().PostAsJsonAsync("/api/sync/items", new UploadRequest([item], null));
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var score = await connection.ExecuteScalarAsync<int?>(
+            "SELECT readiness_score FROM aggregated_items WHERE source = @TestSource AND external_id = 'animal-hype'",
+            new { TestSource });
+
+        Assert.Equal(2, score);
+    }
+
+    [Fact]
+    public async Task AnOffScaleReadinessScoreIsRejected()
+    {
+        // The API bounds-check (and the DB CHECK behind it) refuse a score
+        // outside 1-10 — a scared reader must never see a "12/10" on a page.
+        var item = NewItem("bad-readiness") with { ReadinessScore = 12 };
+
+        var response = await AuthedClient().PostAsJsonAsync(
+            "/api/sync/items", new UploadRequest([item], null));
+        var body = await response.Content.ReadFromJsonAsync<UploadResponse>();
+
+        Assert.Equal(1, body!.Rejected);
+        Assert.Contains(body.Errors, e => e.Contains("readinessScore"));
     }
 
     [Fact]

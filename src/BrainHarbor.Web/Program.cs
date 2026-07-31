@@ -4,6 +4,7 @@ using BrainHarbor.Web.Content;
 using BrainHarbor.Web.Database;
 using BrainHarbor.Web.Identity;
 using BrainHarbor.Web.Middleware;
+using BrainHarbor.Web.Seo;
 using BrainHarbor.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
@@ -31,6 +32,7 @@ builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddSingleton<GlossaryStore>();
 builder.Services.AddSingleton<ContentStore>();
+builder.Services.AddSingleton<SummaryRenderer>();
 builder.Services.AddSingleton<TaxonomyStore>();
 
 // Admin auth (WI-207): one seeded account, TOTP 2FA, NO registration
@@ -167,6 +169,7 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 app.MapSyncApi();
+app.MapSyndication();
 
 app.Run();
 

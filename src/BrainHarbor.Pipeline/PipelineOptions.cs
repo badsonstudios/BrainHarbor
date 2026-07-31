@@ -30,8 +30,13 @@ public sealed class PipelineOptions
     /// <summary>NCBI E-utilities key (WI-204); politeness rate rises with it.</summary>
     public string? NcbiApiKey { get; set; }
 
-    /// <summary>Contact address NCBI asks API consumers to send (PLAN.md §5).</summary>
+    /// <summary>
+    /// Contact address NCBI asks API consumers to send (PLAN.md §5) — a
+    /// mailbox they can reach if the tool misbehaves. A role address on the
+    /// project domain, never a personal one: this ships in a public repo.
+    /// Override via user-secrets/env if a monitored inbox is preferred.
+    /// </summary>
     [Required]
     [EmailAddress]
-    public string ContactEmail { get; set; } = "dheinz100@gmail.com";
+    public string ContactEmail { get; set; } = "contact@brainharbor.org";
 }

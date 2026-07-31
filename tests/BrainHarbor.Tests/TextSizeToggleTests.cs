@@ -13,10 +13,7 @@ public class TextSizeToggleTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
 
-    private static string ConnectionString =>
-        Environment.GetEnvironmentVariable("BRAINHARBOR_TEST_DB")
-        ?? "Host=localhost;Port=5433;Database=brainharbor;Username=brainharbor;" +
-           $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "brainharbor_dev"}";
+    private static string ConnectionString => TestDatabase.ConnectionString;
 
     public TextSizeToggleTests(WebApplicationFactory<Program> factory)
     {

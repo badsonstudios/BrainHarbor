@@ -10,9 +10,29 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 run** starting on branch `auto/M3` |
-| **Next up** | WI-301 Golden set |
-| **Blockers** | none — CI billing resolved (repo made public 2026-07-20); PR #4 CI passed, squash-merged to `main` (f966553) |
+| **In progress** | **M3 COMPLETE** — all of WI-301–309 + model config + infra fix + **Readiness score** done on `auto/M3` (PR #5). Classify + summarize validated LIVE with Opus. Awaiting Dan's review + merge of PR #5. |
+| **Next up** | Dan: review & merge PR #5. Then M4 (Azure + trials + digest). Optionally flip `Publishing:Mode` to Auto once confident in live summaries. |
+| **Blockers** | none. Shipped in **Review mode** (appsettings `Publishing:Mode=Review`) so the first real AI summaries are all human-checked; flip to Auto when ready. Default model is claude-opus-5. |
+
+### M3 shipped (all on `auto/M3`, PR #5)
+- **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
+- **Readiness score (1–10)** — Dan's ask: how close a finding is to everyday care, stage-capped, shown on item pages + queue.
+- **WI-305** review queue v1 (side-by-side, inline edit, keyboard, readiness badge).
+- **WI-306** item permalink pages (6 blocks, readiness, glossary tooltips, provenance, report-a-problem → admin queue).
+- **WI-307** feed patient-first with persisted early-stage toggle.
+- **WI-308** SEO (sitemap/robots/RSS, OG + JSON-LD) + honest `/how-we-write` rewrite (was falsely claiming mandatory human review).
+- **WI-309** site search (Postgres FTS over items + static pages).
+- Prompt/style: no em dashes or AI tells; summaries validated live with Opus.
+- 513 tests green.
+
+**Readiness score (Dan's ask, built 2026-07-30):** every summary now carries a
+1-10 "how close is this to something a patient can get?" score + one plain
+reason (`summarize-v2`). Two-layer safety: Opus proposes within a rubric, then
+`Readiness.Clamp` caps by research stage (animal/cell→2, obs→5, review→6,
+trial→8, news→10; only ever lowers), and `SyncRepository` re-clamps at the
+API/DB boundary as a backstop. Migration 0005. Live-validated (mouse study→2,
+observational→4, honest reasons). Not yet rendered on a page — the badge lands
+with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Notes for the next session
 
@@ -41,6 +61,37 @@
 
 ## Log (newest first)
 
+- **2026-07-30** — **WI-303 golden-set accuracy run — DONE (by the assistant)**:
+  the local `claude` CLI is invocable here, so ran the classify-v1 prompt
+  against all 20 ratified golden items. **Stage 20/20 (100%), relevance 18/20
+  (90%), primary-tag 18/20 (90%)**, exact-tag 13/20 (65%). The 2 relevance
+  misses are borderline "excluded" reviews the model kept (safe direction);
+  tag misses are completeness, not wrong tags. Note: `claude -p` used
+  **Haiku 4.5** — consider a stronger model for classify/summarize before Auto
+  mode. Recorded in the golden-set README. WI-303 acceptance now fully met.
+
+- **2026-07-20** — **WI-302 done** (autopilot M3): Claude Code CLI wrapper.
+  Invokes `claude -p --output-format json` (prompt on stdin), unwraps the JSON
+  envelope, parses the model's JSON into the expected shape, validates, and
+  retries ONCE on garbled output — failing fast on timeouts, auth-style exit
+  codes, and validation (deterministic). A bad call NEVER returns a value
+  (never a guess). Versioned PromptTemplate with a strict placeholder guard.
+  Review caught a blocker (spawn failure threw instead of failing safe) +
+  process-handling fixes (bounded stdin write, full stdout drain, kill on
+  cancellation) — all fixed; real-runner "CLI not installed" test added. 410.
+- **2026-07-20** — **Autopilot M3 started** (branch `auto/M3`, PR #5). Repo
+  made public → scrubbed a personal email (NCBI contact → role address) and
+  added a PII/secrets scan to the commit-push-pr + autopilot skills. Dan's
+  call on the M3 quality gate: **build in Review mode** — full capability, but
+  real AI summaries wait in the queue for Dan to judge before auto-publish;
+  he flips Publishing:Mode=Auto when confident. Golden set ships as a DRAFT
+  for Dan to ratify.
+- **2026-07-20** — **WI-301 done** (autopilot M3): golden set — 20 real PubMed
+  abstracts hand-classified (11 patient_relevant, 5 early_stage, 4 excluded)
+  with ideal 6-block summaries for 10, numbers verbatim from source. Rubric +
+  validation tests (real taxonomy slugs, documented vocab, complete
+  summaries, every case has a rationale). Flagged a taxonomy gap
+  (spinal-cord tumors) for later. DRAFT pending Dan's ratification. 393/393.
 - **2026-07-20** — **WI-212 done — auto-publish mode (Dan's request)**: the
   human review gate is now **optional**. `Publishing:Mode` config, **Auto by
   default**: a summarized item that passes the automated safety checks

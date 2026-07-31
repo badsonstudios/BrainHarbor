@@ -34,7 +34,7 @@ them. We link to those sources instead of copying them.
 
 ## AI-assisted summaries
 
-Summaries are drafted with AI help and approved by a person before
+Summaries are written by AI and must pass our automatic safety checks before
 publishing. See [how we write](/how-we-write) for the whole process.
 
 ## What to do next

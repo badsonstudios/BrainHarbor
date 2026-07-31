@@ -188,6 +188,25 @@ public sealed class AutoPublishTests : IAsyncLifetime
         Assert.Equal(PublishMode.Auto, new PublishingOptions().Mode);
     }
 
+    [Fact]
+    public void TheShippedConfigRunsInAutoMode()
+    {
+        // The site publishes automatically: a summary that passes every
+        // automated safety check goes live on its own, and the site never claims
+        // a person reviewed it. Pin the shipped config so a stray edit can't
+        // silently turn on a human gate the copy no longer promises.
+        var appsettings = Path.Combine(
+            FindRepoRoot(), "src", "BrainHarbor.Web", "appsettings.json");
+        using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(appsettings));
+
+        var mode = doc.RootElement
+            .GetProperty(PublishingOptions.SectionName)
+            .GetProperty(nameof(PublishingOptions.Mode))
+            .GetString();
+
+        Assert.Equal(nameof(PublishMode.Auto), mode);
+    }
+
     private static string FindRepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

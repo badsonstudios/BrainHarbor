@@ -255,14 +255,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M3 — Claude classification + plain-language summaries
 
-- [ ] **WI-301 Golden set**
+- [x] **WI-301 Golden set**
   Goal: the quality yardstick exists before any prompt is written.
   Acceptance: ~30 real fetched items hand-verified (correct tumor tags,
   relevance tier, stage; ideal summary for ~10 of them) as versioned fixtures
   in `tests/`; a documented rubric for adding cases.
   Refs: content-pipeline.md §10. Depends on: WI-211.
 
-- [ ] **WI-302 Claude Code CLI wrapper**
+- [x] **WI-302 Claude Code CLI wrapper**
   Goal: reliable programmatic access to the local `claude` CLI.
   Acceptance: invokes `claude -p --output-format json` with a versioned prompt
   template; parses/validates against a JSON schema; one retry on malformed
@@ -270,7 +270,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   handling; wrapper unit tests with a fake CLI.
   Refs: architecture.md §5, content-pipeline.md §9. Depends on: WI-203.
 
-- [ ] **WI-303 Classify step**
+- [x] **WI-303 Classify step**
   Goal: items sorted for a patient audience automatically.
   Acceptance: classify prompt (closed taxonomy, relevance tier, research
   stage); `excluded` items are not uploaded; preprints capped at early_stage
@@ -278,7 +278,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   `classify_model` + prompt version stamped per item.
   Refs: content-pipeline.md §9. Depends on: WI-301, WI-302.
 
-- [ ] **WI-304 Summarize step**
+- [x] **WI-304 Summarize step**
   Goal: the differentiator — plain-language summaries with guardrails.
   Acceptance: summarize prompt implementing the 6-block template; numeral
   post-check (every number traceable to source, mismatch → flagged);
@@ -286,14 +286,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   `summary_model` + prompt version stamped.
   Refs: content-pipeline.md §9/§11. Depends on: WI-303.
 
-- [ ] **WI-305 Review queue v1**
+- [x] **WI-305 Review queue v1**
   Goal: reviewing 10–30 summaries/day takes ~5 minutes and means something.
   Acceptance: side-by-side summary vs source abstract; inline edit before
   approve; correction-note field (rendered publicly per content-pipeline §10);
   keyboard-friendly approve/reject; flagged items surfaced first.
   Depends on: WI-304, WI-208.
 
-- [ ] **WI-306 Item permalink pages**
+- [x] **WI-306 Item permalink pages**
   Goal: the shareable, indexable unit of the site.
   Acceptance: `/research/{slug}` renders the 6 template blocks, stage badge,
   provenance box with human-review disclosure, glossary tooltips active in
@@ -304,14 +304,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: sitemap.md, content-pipeline.md §9,
   docs/design/entry-hub-handoff/research-item.html. Depends on: WI-305, WI-105.
 
-- [ ] **WI-307 Feed flip to patient-first**
+- [x] **WI-307 Feed flip to patient-first**
   Goal: the front page now serves the audience.
   Acceptance: /research defaults to `patient_relevant`; "show early-stage
   research" toggle (persisted, no-JS fallback); tumor-type filter from
   taxonomy; plain titles shown where available.
   Depends on: WI-306.
 
-- [ ] **WI-308 SEO + real /how-we-write**
+- [x] **WI-308 SEO + real /how-we-write**
   Goal: discoverable and honest.
   Acceptance: sitemap.xml (items + static), Article/MedicalWebPage +
   BreadcrumbList structured data, meta/OG tags (items unfurl well when
@@ -319,7 +319,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   human gate; feed.xml RSS of published items.
   Refs: PLAN.md §10. Depends on: WI-306.
 
-- [ ] **WI-309 Site search**
+- [x] **WI-309 Site search**
   Goal: one search over items + static pages.
   Acceptance: /search with htmx live results (no-JS form fallback) across
   published items (Postgres FTS) and static pages; drug-name typo tolerance

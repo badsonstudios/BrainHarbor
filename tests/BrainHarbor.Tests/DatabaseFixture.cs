@@ -15,10 +15,7 @@ namespace BrainHarbor.Tests;
 /// </summary>
 public sealed class DatabaseFixture
 {
-    public string ConnectionString { get; } =
-        Environment.GetEnvironmentVariable("BRAINHARBOR_TEST_DB")
-        ?? "Host=localhost;Port=5433;Database=brainharbor;Username=brainharbor;" +
-           $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "brainharbor_dev"}";
+    public string ConnectionString { get; } = TestDatabase.ConnectionString;
 
     public DatabaseFixture()
     {

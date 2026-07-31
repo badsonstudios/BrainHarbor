@@ -648,6 +648,47 @@ main {
   padding-inline-start: var(--space-3);
 }
 
+/* Item-page header: badge above the plain-language headline (WI-306). */
+.item-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+.item-header h1 { margin: 0; }
+
+/* The one-sentence hook, given a little more presence than body text. */
+.hook {
+  font-size: var(--text-lg);
+  line-height: var(--leading);
+}
+
+/* Report-a-problem — quiet by default, one tap to open. */
+.report-problem {
+  margin-block-start: var(--space-4);
+}
+
+.report-problem summary {
+  cursor: pointer;
+  color: var(--color-accent);
+  text-decoration: underline;
+  min-block-size: var(--tap-target);
+  display: inline-flex;
+  align-items: center;
+}
+
+.report-problem textarea { width: 100%; }
+
+/* Reader-reported live pages, at the top of the admin queue (WI-306). */
+.reported-section {
+  border: 1px solid var(--color-border);
+  border-inline-start: 6px solid #b23c17;
+  border-radius: var(--card-radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block-end: var(--space-6);
+}
+
 /* ---------- Dev style guide (WI-109; /dev/styleguide, dev-only) ---------- */
 
 .styleguide-badges {
@@ -721,6 +762,134 @@ main {
   display: inline-flex;
   align-items: center;
   min-block-size: var(--tap-target);
+}
+
+/* ---------- Readiness score (WI-305/306) ---------- */
+/* How close a finding is to everyday care, 1-10. Meaning is carried by the
+   number, the label, and a filled bar — never color alone (WCAG). */
+
+.readiness {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.readiness__bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+}
+
+.readiness__step {
+  display: block;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  border: 1.5px solid var(--badge-empty);
+}
+
+.readiness__step--on {
+  background: var(--badge-fill);
+  border-color: var(--badge-fill);
+}
+
+.readiness__text { line-height: 1.15; }
+
+/* Item-page readiness callout wraps the badge + the plain reason. */
+.readiness-callout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--card-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.readiness-reason { color: var(--color-ink-muted); }
+
+/* ---------- Review queue v1 (WI-305) ---------- */
+
+.review-card:focus-visible {
+  outline: var(--focus-ring) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.review-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-block-end: var(--space-3);
+}
+
+/* Summary and source side by side, so the reviewer judges the real output. */
+.review-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+@media (max-width: 48rem) {
+  .review-compare { grid-template-columns: 1fr; }
+}
+
+.review-compare__col { min-width: 0; }
+
+.review-compare__heading {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-muted);
+  margin-block-end: var(--space-2);
+}
+
+.review-compare__source {
+  padding-inline-start: var(--space-5);
+  border-inline-start: 1px solid var(--color-border-subtle);
+}
+
+@media (max-width: 48rem) {
+  .review-compare__source {
+    padding-inline-start: 0;
+    border-inline-start: none;
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+}
+
+.review-edit {
+  margin-block: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+}
+
+.review-edit__grid {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.review-edit__grid input,
+.review-edit__grid textarea {
+  width: 100%;
+}
+
+.review-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.review-actions kbd {
+  font-size: var(--text-sm);
+  padding: 0 0.4em;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  opacity: 0.8;
 }
 
 /* ---------- Motion ---------- */

@@ -20,6 +20,9 @@ public interface ISyncApiClient
 
     /// <summary>Reports a source failure so staleness is visible in admin.</summary>
     Task ReportFailureAsync(string source, string error, CancellationToken cancellationToken);
+
+    /// <summary>The closed tumor taxonomy, for building the classifier prompt.</summary>
+    Task<IReadOnlyList<TaxonomyTypeDto>> GetTaxonomyAsync(CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -75,6 +78,15 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
         await EnsureSuccessAsync(response, "POST /api/sync/cursor", cancellationToken);
 
         logger.LogInformation("[{Source}] cursor advanced to {Cursor} (nothing new).", source, cursor);
+    }
+
+    public async Task<IReadOnlyList<TaxonomyTypeDto>> GetTaxonomyAsync(CancellationToken cancellationToken)
+    {
+        using var response = await httpClient.GetAsync("/api/sync/taxonomy", cancellationToken);
+        await EnsureSuccessAsync(response, "GET /api/sync/taxonomy", cancellationToken);
+
+        var body = await response.Content.ReadFromJsonAsync<TaxonomyResponse>(Json, cancellationToken);
+        return body?.Types ?? [];
     }
 
     public async Task ReportFailureAsync(

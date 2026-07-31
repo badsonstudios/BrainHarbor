@@ -17,6 +17,9 @@
 
 <form method="get" class="feed-filters" hx-get="/research" hx-target="#feed-results"
       hx-select="#feed-results" hx-swap="outerHTML" hx-push-url="true">
+    @* Marks a real form submit, so an unchecked "early" box is read as "off"
+       and remembered — distinct from a plain visit that uses the saved choice. *@
+    <input type="hidden" name="applied" value="true" />
     <label for="tumor">Tumor type</label>
     <select id="tumor" name="tumor">
         <option value="">All types</option>

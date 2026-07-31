@@ -35,6 +35,8 @@ public sealed record RunResult(IReadOnlyList<SourceRunResult> Sources)
 public sealed class PipelineRunner(
     IEnumerable<ISourceFetcher> fetchers,
     ISyncApiClient syncApi,
+    BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
+    BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
     ILogger<PipelineRunner> logger)
 {
     public async Task<RunResult> RunAsync(CancellationToken cancellationToken)
@@ -116,16 +118,91 @@ public sealed class PipelineRunner(
                 return new SourceRunResult(fetcher.Source, fetched.Items.Count, 0, 0, 0, 0, null);
             }
 
-            // M3 inserts classify + summarize here. Until then items upload
-            // with raw fields and relevance 'pending' — the review queue shows
-            // them, and nothing reaches readers without approval either way.
-            var upload = await syncApi.UploadAsync(
-                [.. newItems.Select(i => i.ToSyncItem())], fetched.Cursor, cancellationToken);
+            // Classify each new item (WI-303). Excluded items are dropped
+            // (never uploaded); items we can't classify are still uploaded, as
+            // 'pending', so a human sorts them — never silently lost.
+            // Summarization (WI-304) fills the plain-language fields next.
+            var toUpload = new List<SyncItem>();
+            var excluded = 0;
+            foreach (var item in newItems)
+            {
+                var classification = await classifier.ClassifyAsync(item, cancellationToken);
+                if (classification.Decision == Classify.ClassifyDecision.Exclude)
+                {
+                    // Log the identity, not just a count: a false-exclude
+                    // permanently drops a relevant item (the window won't be
+                    // refetched), so it must at least be discoverable.
+                    logger.LogInformation("[{Source}] excluded {Id} as off-topic: {Title}",
+                        fetcher.Source, item.ExternalId, item.Title);
+                    excluded++;
+                    continue;
+                }
+
+                var sync = item.ToSyncItem();
+                if (classification.Decision == Classify.ClassifyDecision.Classified)
+                {
+                    sync = sync with
+                    {
+                        TumorTags = classification.TumorTags,
+                        Relevance = classification.Relevance,
+                        ResearchStage = classification.ResearchStage,
+                        ClassifyModel =
+                            $"{classification.Model ?? "claude-code-cli"} ({classification.PromptVersion})",
+                    };
+
+                    // Summarize (WI-304). A summary that fails or trips the
+                    // automated checks doesn't block upload — the item goes up
+                    // (flagged if checks failed) and the review queue handles it.
+                    var summary = await summarizer.SummarizeAsync(item, cancellationToken);
+                    if (summary.Output is { } s)
+                    {
+                        // Cap the readiness score by the stage we just classified:
+                        // a mouse study can never read as "near the clinic", no
+                        // matter what the model proposed (Readiness.Clamp).
+                        var readiness = Summarize.Readiness.Clamp(
+                            s.ReadinessScore, classification.ResearchStage, out var capped);
+                        if (capped)
+                        {
+                            logger.LogInformation(
+                                "[{Source}/{Id}] readiness capped {Proposed}->{Final} for stage {Stage}.",
+                                fetcher.Source, item.ExternalId, s.ReadinessScore, readiness,
+                                classification.ResearchStage);
+                        }
+
+                        sync = sync with
+                        {
+                            PlainTitle = s.PlainTitle,
+                            PlainSummary = s.Hook,
+                            PlainWhatStudied = s.WhatStudied,
+                            PlainWhatFound = s.WhatFound,
+                            PlainMeans = s.Means,
+                            PlainDoesntMean = s.DoesntMean,
+                            ReadinessScore = readiness,
+                            ReadinessReason = s.ReadinessReason,
+                            SummaryModel = $"{summary.Model ?? "claude-code-cli"} ({summary.PromptVersion})",
+                            PromptVersion = summary.PromptVersion,
+                            SummaryFlagged = summary.Flagged,
+                        };
+                    }
+                }
+
+                toUpload.Add(sync);
+            }
+
+            if (toUpload.Count == 0)
+            {
+                logger.LogInformation("[{Source}] fetched {Fetched}, new {New}, all excluded as off-topic.",
+                    fetcher.Source, fetched.Items.Count, newItems.Count);
+                await AdvanceCursorIfAnyAsync(fetcher.Source, fetched.Cursor, cancellationToken);
+                return new SourceRunResult(fetcher.Source, fetched.Items.Count, newItems.Count, 0, 0, excluded, null);
+            }
+
+            var upload = await syncApi.UploadAsync(toUpload, fetched.Cursor, cancellationToken);
 
             logger.LogInformation(
-                "[{Source}] fetched {Fetched}, new {New}, uploaded {Uploaded} " +
+                "[{Source}] fetched {Fetched}, new {New}, excluded {Excluded}, uploaded {Uploaded} " +
                 "(auto-published {Auto}, frozen {Frozen}, rejected {Rejected}).",
-                fetcher.Source, fetched.Items.Count, newItems.Count,
+                fetcher.Source, fetched.Items.Count, newItems.Count, excluded,
                 upload.Inserted + upload.Updated, upload.AutoPublished, upload.Frozen, upload.Rejected);
 
             return new SourceRunResult(
@@ -134,7 +211,7 @@ public sealed class PipelineRunner(
                 newItems.Count,
                 upload.Inserted + upload.Updated,
                 upload.Frozen,
-                upload.Rejected,
+                upload.Rejected + excluded,
                 null);
         }
         catch (OperationCanceledException)

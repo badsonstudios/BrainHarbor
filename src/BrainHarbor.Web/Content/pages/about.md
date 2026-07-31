@@ -30,7 +30,7 @@ it does not sell your email or track you around the web.
 
 - We will not tell you what to do about your own care. That is your team's job.
 - We will not print hype words like miracle or breakthrough.
-- We will not publish a summary that a person has not read first.
+- We will not publish a summary that has not passed our automatic safety checks.
 
 ## How to reach us
 

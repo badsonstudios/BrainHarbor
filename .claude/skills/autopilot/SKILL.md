@@ -22,6 +22,11 @@ Hard boundaries that still apply, always:
   draft PR. Dan reviews and merges when he's back. `main` stays always-working.
 - **Never commit red.** Tests green before every commit — no exceptions.
 - **Never touch `.claude/.env`** or put secrets anywhere git-tracked.
+- **The repo is PUBLIC.** Before every commit, scan the staged diff for
+  personal PII (real names, personal emails/phones — not org contacts) and
+  secrets, per `commit-push-pr` SKILL §"Privacy & secrets scan". Contact
+  addresses in code must be role/domain addresses, never a personal inbox. A
+  hit blocks the commit until fixed.
 - Medical-content rules (`docs/content-pipeline.md`) are hard requirements.
 - Nothing outward-facing beyond the repo: no deploys, no purchases, no emails,
   no DNS. Those are `[user]` territory even if an item implies them.

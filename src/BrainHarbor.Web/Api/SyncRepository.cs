@@ -36,6 +36,44 @@ public sealed class SyncRepository(
     private static readonly string[] ValidStages =
         ["human_trial", "observational", "review_guideline", "preclinical_animal", "preclinical_cell", "news_other"];
 
+    // The most a finding at a given research stage may score on the 1-10
+    // readiness scale. The pipeline already clamps to these (Readiness.Clamp),
+    // but the anti-hype cap is a HARD requirement, so the trust boundary
+    // re-enforces it as a backstop rather than trusting the client — mirroring
+    // how the preprint rule is enforced on both sides. Keep in sync with
+    // BrainHarbor.Pipeline.Summarize.Readiness (deliberately duplicated: Web
+    // must not depend on the Pipeline assembly). Unknown stage → conservative 5.
+    private static readonly IReadOnlyDictionary<string, int> ReadinessCeilings = new Dictionary<string, int>
+    {
+        ["news_other"] = 10,
+        ["human_trial"] = 8,
+        ["review_guideline"] = 6,
+        ["observational"] = 5,
+        ["preclinical_animal"] = 2,
+        ["preclinical_cell"] = 2,
+    };
+
+    private const int UnknownStageReadinessCeiling = 5;
+
+    /// <summary>
+    /// Backstop clamp of a readiness score to its stage ceiling. Only ever
+    /// lowers (erring low is the safe direction), so a lab/animal study can
+    /// never be stored as near-clinic even if a buggy or hostile client sends a
+    /// high score. Null stays null (not yet summarized).
+    /// </summary>
+    private static int? ClampReadinessToStage(int? score, string? researchStage)
+    {
+        if (score is not { } value)
+        {
+            return null;
+        }
+
+        var ceiling = researchStage is not null && ReadinessCeilings.TryGetValue(researchStage, out var c)
+            ? c
+            : UnknownStageReadinessCeiling;
+        return Math.Min(Math.Clamp(value, 1, 10), ceiling);
+    }
+
     public async Task<IReadOnlyList<SourceState>> GetStateAsync(CancellationToken cancellationToken)
     {
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
@@ -136,12 +174,16 @@ public sealed class SyncRepository(
                 INSERT INTO aggregated_items
                     (source, source_kind, external_id, title, raw_summary, url, published_at,
                      tumor_tags, research_stage, relevance, classify_model,
-                     plain_title, plain_summary, summary_model, prompt_version,
+                     plain_title, plain_summary, plain_what_studied, plain_what_found,
+                     plain_means, plain_doesnt_mean, readiness_score, readiness_reason,
+                     summary_model, prompt_version,
                      summary_generated_at, summary_flagged)
                 VALUES
                     (@Source, @SourceKind, @ExternalId, @Title, @RawSummary, @Url, @PublishedAt,
                      @TumorTags, @ResearchStage, @Relevance, @ClassifyModel,
-                     @PlainTitle, @PlainSummary, @SummaryModel, @PromptVersion,
+                     @PlainTitle, @PlainSummary, @PlainWhatStudied, @PlainWhatFound,
+                     @PlainMeans, @PlainDoesntMean, @ReadinessScore, @ReadinessReason,
+                     @SummaryModel, @PromptVersion,
                      @SummaryGeneratedAt, @SummaryFlagged)
                 ON CONFLICT (source, external_id) DO UPDATE SET
                     title = EXCLUDED.title,
@@ -154,10 +196,22 @@ public sealed class SyncRepository(
                     classify_model = EXCLUDED.classify_model,
                     plain_title = COALESCE(EXCLUDED.plain_title, aggregated_items.plain_title),
                     plain_summary = COALESCE(EXCLUDED.plain_summary, aggregated_items.plain_summary),
+                    plain_what_studied = COALESCE(EXCLUDED.plain_what_studied, aggregated_items.plain_what_studied),
+                    plain_what_found = COALESCE(EXCLUDED.plain_what_found, aggregated_items.plain_what_found),
+                    plain_means = COALESCE(EXCLUDED.plain_means, aggregated_items.plain_means),
+                    plain_doesnt_mean = COALESCE(EXCLUDED.plain_doesnt_mean, aggregated_items.plain_doesnt_mean),
+                    readiness_score = COALESCE(EXCLUDED.readiness_score, aggregated_items.readiness_score),
+                    readiness_reason = COALESCE(EXCLUDED.readiness_reason, aggregated_items.readiness_reason),
                     summary_model = COALESCE(EXCLUDED.summary_model, aggregated_items.summary_model),
                     prompt_version = COALESCE(EXCLUDED.prompt_version, aggregated_items.prompt_version),
                     summary_generated_at =
                         COALESCE(EXCLUDED.summary_generated_at, aggregated_items.summary_generated_at),
+                    -- Refresh the flag on a re-summarize. Safe because this
+                    -- UPDATE only runs for status='pending' rows, which have no
+                    -- reader problem-report yet (that only happens once
+                    -- published); a stale flag would otherwise hide the
+                    -- "read this closely" warning in the queue.
+                    summary_flagged = EXCLUDED.summary_flagged,
                     fetched_at = now()
                 WHERE aggregated_items.status = 'pending'
                 RETURNING id AS "Id", (xmax = 0) AS "Inserted"
@@ -177,6 +231,14 @@ public sealed class SyncRepository(
                     item.ClassifyModel,
                     item.PlainTitle,
                     item.PlainSummary,
+                    item.PlainWhatStudied,
+                    item.PlainWhatFound,
+                    item.PlainMeans,
+                    item.PlainDoesntMean,
+                    // Backstop: re-clamp to the stage ceiling at the trust
+                    // boundary, so the DB can never hold an animal study at 9.
+                    ReadinessScore = ClampReadinessToStage(item.ReadinessScore, item.ResearchStage),
+                    item.ReadinessReason,
                     item.SummaryModel,
                     item.PromptVersion,
                     SummaryGeneratedAt = item.PlainSummary is null ? (DateTimeOffset?)null : DateTimeOffset.UtcNow,
@@ -377,6 +439,11 @@ public sealed class SyncRepository(
         if (item.RawSummary?.Length > 20000) return "rawSummary is too long (max 20000)";
         if (item.PlainTitle?.Length > 1000) return "plainTitle is too long (max 1000)";
         if (item.PlainSummary?.Length > 20000) return "plainSummary is too long (max 20000)";
+        if (item.ReadinessReason?.Length > 500) return "readinessReason is too long (max 500)";
+        if (item.ReadinessScore is { } score && score is < 1 or > 10)
+        {
+            return $"readinessScore '{score}' is out of range (1-10)";
+        }
 
         // A far-future date would pin an item to the top of the feed forever.
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
