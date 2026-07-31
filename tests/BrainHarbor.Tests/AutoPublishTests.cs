@@ -189,13 +189,12 @@ public sealed class AutoPublishTests : IAsyncLifetime
     }
 
     [Fact]
-    public void TheShippedRolloutConfigStartsInReviewMode()
+    public void TheShippedConfigRunsInAutoMode()
     {
-        // The M3 rollout gate: appsettings.json ships Publishing:Mode=Review, so
-        // the first real AI summaries are all human-checked. The CODE default is
-        // still Auto (test above); this pins that the shipped CONFIG overrides
-        // it to Review, so a stray edit can't silently deploy Auto. Dan flips it
-        // to Auto by changing this one value when he's confident.
+        // The site publishes automatically: a summary that passes every
+        // automated safety check goes live on its own, and the site never claims
+        // a person reviewed it. Pin the shipped config so a stray edit can't
+        // silently turn on a human gate the copy no longer promises.
         var appsettings = Path.Combine(
             FindRepoRoot(), "src", "BrainHarbor.Web", "appsettings.json");
         using var doc = System.Text.Json.JsonDocument.Parse(File.ReadAllText(appsettings));
@@ -205,7 +204,7 @@ public sealed class AutoPublishTests : IAsyncLifetime
             .GetProperty(nameof(PublishingOptions.Mode))
             .GetString();
 
-        Assert.Equal(nameof(PublishMode.Review), mode);
+        Assert.Equal(nameof(PublishMode.Auto), mode);
     }
 
     private static string FindRepoRoot()

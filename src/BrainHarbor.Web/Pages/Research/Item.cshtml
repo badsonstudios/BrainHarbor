@@ -24,7 +24,7 @@
     @if (Model.JustReported)
     {
         <div class="disclaimer" role="status">
-            <p>Thank you. You have flagged this summary for a person to look at.</p>
+            <p>Thank you. You have flagged this summary for another look.</p>
         </div>
     }
 
@@ -97,29 +97,18 @@
             <p><strong>Correction:</strong> @Model.CorrectionNote</p>
         }
 
-        @if (Model.Item.WasAutoPublished)
-        {
-            <p class="ai-note">
-                This plain-language summary was written by AI and published
-                automatically after passing our automatic safety checks. A
-                person did not review it before publishing.
-                <a href="/how-we-write">How we write.</a>
-            </p>
-        }
-        else
-        {
-            <p class="ai-note">
-                This summary was drafted with AI assistance and reviewed by a
-                person before publishing. <a href="/how-we-write">How we write.</a>
-            </p>
-        }
+        <p class="ai-note">
+            This plain-language summary was written by AI and published
+            automatically after passing our automatic safety checks.
+            <a href="/how-we-write">How we write.</a>
+        </p>
 
         <details class="report-problem">
             <summary>Report a problem with this summary</summary>
             <form method="post" asp-page-handler="Report">
                 <input type="hidden" name="slug" value="@Model.Item.Slug" />
                 <label for="report-reason">
-                    What looks wrong? (optional — this sends it to a person to check)
+                    What looks wrong? (optional — this flags the summary for another look)
                 </label>
                 <textarea id="report-reason" name="reason" rows="3"></textarea>
                 <p><button type="submit">Send report</button></p>

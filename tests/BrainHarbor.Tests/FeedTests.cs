@@ -315,10 +315,8 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     }
 
     [Fact]
-    public async Task AnAutoPublishedItemPageSaysNoPersonReviewedIt()
+    public async Task AnItemPageSaysItWasWrittenByAiAndPublishedAutomatically()
     {
-        // WI-212: when the review gate is off, the item page must say so
-        // rather than claim a person reviewed it.
         await _connection.ExecuteAsync(
             """
             INSERT INTO aggregated_items
@@ -332,8 +330,8 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
 
         var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-auto"));
 
-        Assert.Contains("published automatically", html);
-        Assert.Contains("A person did not review it before publishing", html);
+        Assert.Contains("written by AI and published", html);
+        Assert.Contains("automatic safety checks", html);
     }
 
     // Rendered HTML wraps prose across lines; compare on collapsed whitespace.
@@ -341,16 +339,19 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         System.Text.RegularExpressions.Regex.Replace(html, @"\s+", " ");
 
     [Fact]
-    public async Task AHumanReviewedItemPageSaysAPersonReviewedIt()
+    public async Task TheItemPageNeverClaimsAPersonReviewedIt()
     {
-        await InsertAsync("f-human-rev", slug: "study-f-human-rev");
+        // The site publishes automatically and must not claim human review —
+        // not even for a row whose reviewed_by happens to be a person's email.
+        await InsertAsync("f-no-human", slug: "study-f-no-human");
         await _connection.ExecuteAsync(
-            "UPDATE aggregated_items SET reviewed_by = 'dan@example.org' WHERE source = @TestSource AND external_id = 'f-human-rev'",
+            "UPDATE aggregated_items SET reviewed_by = 'dan@example.org' WHERE source = @TestSource AND external_id = 'f-no-human'",
             new { TestSource });
 
-        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-human-rev"));
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-no-human"));
 
-        Assert.Contains("reviewed by a person before publishing", html);
+        Assert.DoesNotContain("reviewed by a person", html);
+        Assert.DoesNotContain("review it before publishing", html);
     }
 
     [Fact]
