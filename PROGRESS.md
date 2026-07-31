@@ -10,9 +10,18 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **In progress** | **Autopilot M3 PAUSED** — medical core DONE (WI-301–304 + model config + infra fix, on `auto/M3`, PR #5, CI green). Both classify + summarize validated LIVE with Opus. |
-| **Next up** | WI-305 Review queue v1 (then 306 permalinks, 307 feed flip, 308 SEO, 309 search, then ship Publishing:Mode=Review) |
-| **Blockers** | none. Classifier validated live (stage 100%, relevance 90% on the golden set); summarizer validated live with Opus (quality excellent; prompt tuned so summaries pass the 8.5 reading-level guardrail). Default model is now claude-opus-5. |
+| **In progress** | **Autopilot M3 PAUSED** — medical core DONE (WI-301–304 + model config + infra fix + **Readiness score**, on `auto/M3`, PR #5, CI green). Classify + summarize validated LIVE with Opus. |
+| **Next up** | WI-305 Review queue v1 (then 306 permalinks incl. **readiness badge**, 307 feed flip, 308 SEO, 309 search, then ship Publishing:Mode=Review) |
+| **Blockers** | none. Classifier validated live (stage 100%, relevance 90%); summarizer validated live with Opus (quality excellent; no em dashes / AI tells; prompt tuned for the 8.5 reading-level guardrail). Default model is claude-opus-5. |
+
+**Readiness score (Dan's ask, built 2026-07-30):** every summary now carries a
+1-10 "how close is this to something a patient can get?" score + one plain
+reason (`summarize-v2`). Two-layer safety: Opus proposes within a rubric, then
+`Readiness.Clamp` caps by research stage (animal/cell→2, obs→5, review→6,
+trial→8, news→10; only ever lowers), and `SyncRepository` re-clamps at the
+API/DB boundary as a backstop. Migration 0005. Live-validated (mouse study→2,
+observational→4, honest reasons). Not yet rendered on a page — the badge lands
+with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Notes for the next session
 
