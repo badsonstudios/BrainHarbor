@@ -158,13 +158,25 @@ public static partial class Guardrails
         return found.Distinct().ToList();
     }
 
-    /// <summary>True if a negation word appears within the few words before
-    /// <paramref name="index"/> (e.g. "not a cure", "does not cure").</summary>
+    /// <summary>
+    /// True if "cure" is negated somewhere earlier in its own sentence — the
+    /// anti-hype block, which is exactly what we want to allow ("this is not a
+    /// cure", "it is not a promise of a cure", "this does not mean it is a
+    /// cure"). A fixed few-word window missed the longer, natural phrasings and
+    /// false-flagged legitimate anti-hype summaries, holding most items in Auto
+    /// mode. Scope to the current sentence so a negation in a PRIOR sentence
+    /// can't excuse a fresh affirmative cure claim.
+    /// </summary>
     private static bool IsNegated(string text, int index)
     {
-        var before = text[..index];
-        var words = Word().Matches(before).Select(m => m.Value).TakeLast(4).ToList();
-        return words.Any(w => Negations.Contains(w, StringComparer.OrdinalIgnoreCase));
+        var sentenceStart = 0;
+        foreach (Match end in SentenceEnd().Matches(text[..index]))
+        {
+            sentenceStart = end.Index + end.Length;
+        }
+
+        var clause = text[sentenceStart..index];
+        return Word().Matches(clause).Any(m => Negations.Contains(m.Value, StringComparer.OrdinalIgnoreCase));
     }
 
     /// <summary>Flesch-Kincaid grade level, with a medical-vocabulary allowance

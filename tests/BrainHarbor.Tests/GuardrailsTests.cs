@@ -59,11 +59,24 @@ public class GuardrailsTests
     [InlineData("This is not a cure.")]
     [InlineData("The pill does not cure the tumor.")]
     [InlineData("It is not a cure and does not work for everyone.")]
+    // The natural anti-hype phrasings that a fixed 4-word window wrongly flagged
+    // (found running the pipeline on real abstracts — most items were held):
+    [InlineData("This does not mean it is a cure.")]
+    [InlineData("It is not a promise of a cure.")]
+    [InlineData("This is early research and does not mean doctors have found a cure.")]
     public void ANegatedCureIsAllowed(string text)
     {
         // The anti-hype block is SUPPOSED to say "not a cure" — that must pass,
         // or every guideline-following summary gets held (turning Auto into Review).
         Assert.DoesNotContain("cure", Guardrails.BannedWordsIn(text));
+    }
+
+    [Fact]
+    public void ANegationInAPriorSentenceDoesNotExcuseAFreshCureClaim()
+    {
+        // Sentence-scoped: "not" belongs to the first sentence; the second makes
+        // a real affirmative cure claim and must still flag.
+        Assert.Contains("cure", Guardrails.BannedWordsIn("This is not easy. It is a cure for glioma."));
     }
 
     [Fact]
