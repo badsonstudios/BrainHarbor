@@ -255,6 +255,30 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     // ---------- the pages ----------
 
     [Fact]
+    public async Task TheEarlyStageChoicePersistsAcrossVisits()
+    {
+        // WI-307: a reader who opts into early-stage research shouldn't have to
+        // re-tick the box on every visit; a plain visit remembers the choice.
+        var client = _factory.CreateClient();
+
+        // Fresh visit: early-stage hidden (patient-first default).
+        var fresh = await client.GetStringAsync("/research");
+        Assert.Contains("Early-stage animal and lab research is hidden", fresh);
+
+        // Opt in via the filter form (applied=true carries the choice).
+        await client.GetAsync("/research?applied=true&early=true");
+
+        // A later plain visit (no query) now remembers it.
+        var remembered = await client.GetStringAsync("/research");
+        Assert.Contains("including early-stage research", remembered);
+
+        // And opting back out sticks too.
+        await client.GetAsync("/research?applied=true");
+        var optedOut = await client.GetStringAsync("/research");
+        Assert.Contains("Early-stage animal and lab research is hidden", optedOut);
+    }
+
+    [Fact]
     public async Task TheFeedPageRendersCardsAndTheEarlyStageToggle()
     {
         await InsertAsync("f-page", slug: "study-f-page");

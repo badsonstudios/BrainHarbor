@@ -304,7 +304,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: sitemap.md, content-pipeline.md §9,
   docs/design/entry-hub-handoff/research-item.html. Depends on: WI-305, WI-105.
 
-- [ ] **WI-307 Feed flip to patient-first**
+- [x] **WI-307 Feed flip to patient-first**
   Goal: the front page now serves the audience.
   Acceptance: /research defaults to `patient_relevant`; "show early-stage
   research" toggle (persisted, no-JS fallback); tumor-type filter from
