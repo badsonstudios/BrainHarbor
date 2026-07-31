@@ -51,6 +51,18 @@ public sealed record SyncItem
     public string? PlainWhatFound { get; init; }
     public string? PlainMeans { get; init; }
     public string? PlainDoesntMean { get; init; }
+
+    /// <summary>
+    /// How close this finding is to being something a patient can actually get,
+    /// on a 1-10 scale (10 = approved/standard care today, 1 = lab or idea
+    /// stage). Already clamped by research stage on the pipeline side so lab and
+    /// animal work can't read as near-clinic. Null until the item is summarized.
+    /// </summary>
+    public int? ReadinessScore { get; init; }
+
+    /// <summary>One plain sentence saying why the item scored as it did.</summary>
+    public string? ReadinessReason { get; init; }
+
     public string? SummaryModel { get; init; }
     public string? PromptVersion { get; init; }
 

@@ -20,7 +20,7 @@ public class GoldenSetTests
     public sealed record GoldenItem(GoldenInput Input, GoldenExpected Expected, string? Note, GoldenSummary? IdealSummary);
     public sealed record GoldenInput(string Source, string SourceKind, string ExternalId, string Title, string RawSummary, string? PublishedAt);
     public sealed record GoldenExpected(string[] TumorTags, string Relevance, string ResearchStage);
-    public sealed record GoldenSummary(string PlainTitle, string WhatStudied, string WhatFound, string Means, string DoesntMean, string StageLabel);
+    public sealed record GoldenSummary(string PlainTitle, string WhatStudied, string WhatFound, string Means, string DoesntMean, string StageLabel, int Readiness);
 
     private static readonly GoldenSet Golden = Load();
     private static readonly TaxonomyStore Taxonomy = new(File.ReadAllText(
@@ -151,6 +151,26 @@ public class GoldenSetTests
 
             Assert.True(result.Passed,
                 $"{item.Input.ExternalId} ideal summary tripped a guardrail: {string.Join("; ", result.Reasons)}");
+        }
+    }
+
+    [Fact]
+    public void EveryIdealReadinessScoreRespectsItsStageCeiling()
+    {
+        // The readiness↔stage tie: the yardstick's own scores must obey the
+        // same stage cap the pipeline enforces (Readiness.Clamp). If a golden
+        // "ideal" score sat above its stage ceiling, it would bless the model
+        // over-promising — a mouse study reading as near-clinic.
+        foreach (var item in Golden.Items.Where(i => i.IdealSummary is not null))
+        {
+            var score = item.IdealSummary!.Readiness;
+            var ceiling = BrainHarbor.Pipeline.Summarize.Readiness.CeilingFor(item.Expected.ResearchStage);
+
+            Assert.InRange(score, BrainHarbor.Pipeline.Summarize.Readiness.Min,
+                BrainHarbor.Pipeline.Summarize.Readiness.Max);
+            Assert.True(score <= ceiling,
+                $"{item.Input.ExternalId}: readiness {score} exceeds the ceiling {ceiling} " +
+                $"for stage '{item.Expected.ResearchStage}'");
         }
     }
 

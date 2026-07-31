@@ -43,13 +43,15 @@ public class SummarizerTests
         RawSummary = "In a trial of 331 people with glioma, survival was 27 months versus 11 months.",
     };
 
-    private static string FullSummary(string whatFound) =>
+    private static string FullSummary(string whatFound, int readiness = 6) =>
         $$"""
         {"plain_title":"A pill slowed glioma growth","hook":"A daily pill helped people go longer before their tumor grew.",
          "what_studied":"Researchers gave a daily pill to 331 people with glioma.",
          "what_found":{{System.Text.Json.JsonSerializer.Serialize(whatFound)}},
          "means":"For some people, the pill may add time before stronger care is needed.",
-         "doesnt_mean":"This is not a promise for everyone, and it does not get rid of the tumor."}
+         "doesnt_mean":"This is not a promise for everyone, and it does not get rid of the tumor.",
+         "readiness_score":{{readiness}},
+         "readiness_reason":"Being tested in people in trials, but not yet approved."}
         """;
 
     [Fact]
@@ -63,6 +65,27 @@ public class SummarizerTests
         Assert.False(result.Flagged);
         Assert.Empty(result.FlagReasons);
         Assert.Equal("claude-opus-5", result.Model);
+        // Readiness comes through as the model's raw proposal; the pipeline
+        // clamps it against research stage at upload (PipelineRunner).
+        Assert.Equal(6, result.Output.ReadinessScore);
+        Assert.False(string.IsNullOrWhiteSpace(result.Output.ReadinessReason));
+    }
+
+    [Fact]
+    public async Task AMissingReadinessScoreIsInvalidSoTheCallFailsToNoSummary()
+    {
+        // readiness_score omitted (deserializes to 0, out of the 1-10 range) →
+        // AllBlocksPresent is false → retry → no summary rather than a "0/10".
+        var noReadiness = Envelope(
+            """
+            {"plain_title":"x","hook":"y","what_studied":"a","what_found":"b",
+             "means":"c","doesnt_mean":"d","readiness_reason":"e"}
+            """);
+        var runner = new ScriptedRunner(noReadiness, noReadiness);
+
+        var result = await Build(runner).SummarizeAsync(Item(), CancellationToken.None);
+
+        Assert.Null(result.Output);
     }
 
     [Fact]

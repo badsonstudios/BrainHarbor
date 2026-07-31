@@ -156,6 +156,19 @@ public sealed class PipelineRunner(
                     var summary = await summarizer.SummarizeAsync(item, cancellationToken);
                     if (summary.Output is { } s)
                     {
+                        // Cap the readiness score by the stage we just classified:
+                        // a mouse study can never read as "near the clinic", no
+                        // matter what the model proposed (Readiness.Clamp).
+                        var readiness = Summarize.Readiness.Clamp(
+                            s.ReadinessScore, classification.ResearchStage, out var capped);
+                        if (capped)
+                        {
+                            logger.LogInformation(
+                                "[{Source}/{Id}] readiness capped {Proposed}->{Final} for stage {Stage}.",
+                                fetcher.Source, item.ExternalId, s.ReadinessScore, readiness,
+                                classification.ResearchStage);
+                        }
+
                         sync = sync with
                         {
                             PlainTitle = s.PlainTitle,
@@ -164,6 +177,8 @@ public sealed class PipelineRunner(
                             PlainWhatFound = s.WhatFound,
                             PlainMeans = s.Means,
                             PlainDoesntMean = s.DoesntMean,
+                            ReadinessScore = readiness,
+                            ReadinessReason = s.ReadinessReason,
                             SummaryModel = $"{summary.Model ?? "claude-code-cli"} ({summary.PromptVersion})",
                             PromptVersion = summary.PromptVersion,
                             SummaryFlagged = summary.Flagged,

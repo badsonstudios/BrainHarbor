@@ -113,7 +113,8 @@
         "what_found": "MRI found a measurable tumor in 10 of 22 people (45%). The PET scan found tumors in 20 of 22 people (91%). For tracking the treatment, the PET scan worked about as well as MRI.",
         "means": "A PET scan may give doctors another way to see and follow these tumors during treatment.",
         "doesnt_mean": "This was a small study of 22 people. It does not test whether the pill helps you live longer, and it does not mean PET should replace MRI.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 5
       }
     },
     {
@@ -174,7 +175,8 @@
         "what_found": "Nearly half got better in the clinic (48%). More got better on scans (61%). People whose tumor was not glioblastoma lived longer, about 39.1 months versus 16.2 months. Some had fatigue (35%) or high blood pressure (23%).",
         "means": "The drug may help some people with spinal tumors, most of all those without glioblastoma.",
         "doesnt_mean": "The studies were small and looked back at old records. This does not prove the drug caused the results. Bigger trials are needed.",
-        "stage_label": "Review of existing research"
+        "stage_label": "Review of existing research",
+        "readiness": 5
       }
     },
     {
@@ -201,7 +203,8 @@
         "what_found": "The rate of nerve problems after surgery was about the same for both methods (RR 1.02). The dye helped surgeons see and remove the tumor without adding to that risk.",
         "means": "Using the dye looks like a safe way to help surgeons see a glioma during an operation.",
         "doesnt_mean": "The evidence was rated low certainty. This does not prove the dye helps people live longer.",
-        "stage_label": "Review of existing research"
+        "stage_label": "Review of existing research",
+        "readiness": 6
       }
     },
     {
@@ -228,7 +231,8 @@
         "what_found": "They treated 10 people, most with schwannomas (5) or meningiomas (3). Every treated tumor shrank at the last check-up. Symptoms improved in 6 of 10 people (60%), with no radiation complications seen.",
         "means": "For carefully chosen people, this technique may be a lower-risk way to treat hard-to-reach upper-spine tumors.",
         "doesnt_mean": "This is one team's experience with only 10 people. It cannot show how well the technique works for most patients.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 5
       }
     },
     {
@@ -309,7 +313,8 @@
         "what_found": "In the 2023 INDIGO trial, the pill made the time before the tumor grew longer. It also put off the need for the next treatment.",
         "means": "For some people with this kind of low-grade glioma, the pill may buy time before stronger treatment is needed.",
         "doesnt_mean": "The pill does not get rid of the tumor. It is only for gliomas with an IDH change. It does not replace surgery, radiation, or chemo for everyone.",
-        "stage_label": "Review of existing research"
+        "stage_label": "Review of existing research",
+        "readiness": 6
       }
     },
     {
@@ -336,7 +341,8 @@
         "what_found": "Adults 60 and older had a higher risk of death than those under 40. Older adults got radiation less often. Age did not change how much of the tumor surgeons could remove.",
         "means": "Age matters when planning care. Treatment should fit each person.",
         "doesnt_mean": "This is a look back at old records, not a trial. It cannot prove that any one treatment changes how long people live.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 5
       }
     },
     {
@@ -363,7 +369,8 @@
         "what_found": "People with tissue damage lived about 40.4 months. People whose tumor grew back lived about 15.2 months.",
         "means": "Telling these two problems apart matters, because the outlooks are so different.",
         "doesnt_mean": "This does not mean tissue damage is safe. It cannot say what will happen to any one person.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 5
       }
     },
     {
@@ -390,7 +397,8 @@
         "what_found": "Where people died varied by sex, race, and where they lived. Overall death rates did not change much by how urban an area was.",
         "means": "This points to gaps in care or access that may be worth a closer look.",
         "doesnt_mean": "This is a study of death records. It cannot say why the gaps happen or judge any one person's care.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 4
       }
     },
     {
@@ -420,7 +428,8 @@
         "what_found": "The authors say to start with safe surgery. Watching closely can be right after a full removal. The pill may suit people with a stable tumor when radiation and chemo can wait.",
         "means": "There is now another choice that may put off stronger treatment for the right people.",
         "doesnt_mean": "This is advice, not a trial. The pill does not replace radiation or chemo when a tumor grows fast or causes symptoms.",
-        "stage_label": "Review of existing research"
+        "stage_label": "Review of existing research",
+        "readiness": 6
       }
     },
     {
@@ -447,7 +456,8 @@
         "what_found": "796 had brain tumors and 92 had spine tumors. After more testing, 190 people had their diagnosis changed. Nearly half of brain tumor patients said they felt anxious or low.",
         "means": "Careful testing can change a diagnosis. These tumors bring a heavy load of symptoms that care should treat.",
         "doesnt_mean": "This describes a group of people. It does not test a treatment or say what will happen to any one person.",
-        "stage_label": "Tested in people"
+        "stage_label": "Tested in people",
+        "readiness": 4
       }
     }
   ]

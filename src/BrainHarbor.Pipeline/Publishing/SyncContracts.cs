@@ -44,6 +44,12 @@ public sealed record SyncItem
     public string? PlainWhatFound { get; init; }
     public string? PlainMeans { get; init; }
     public string? PlainDoesntMean { get; init; }
+
+    /// <summary>How close this is to everyday care, 1-10 (Readiness scale),
+    /// already clamped by research stage. Null until summarized.</summary>
+    public int? ReadinessScore { get; init; }
+    public string? ReadinessReason { get; init; }
+
     public string? SummaryModel { get; init; }
     public string? PromptVersion { get; init; }
     public bool SummaryFlagged { get; init; }

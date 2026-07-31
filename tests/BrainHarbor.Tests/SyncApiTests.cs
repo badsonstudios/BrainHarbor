@@ -411,14 +411,17 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
             PlainWhatFound = "What they found.",
             PlainMeans = "What it means.",
             PlainDoesntMean = "What it doesn't mean.",
-            SummaryModel = "claude-opus-5 (summarize-v1)",
+            ReadinessScore = 7,
+            ReadinessReason = "Being tested in people in trials, but not yet approved.",
+            SummaryModel = "claude-opus-5 (summarize-v2)",
         };
         await AuthedClient().PostAsJsonAsync("/api/sync/items", new UploadRequest([item], null));
 
         await using var connection = new NpgsqlConnection(_database.ConnectionString);
-        var row = await connection.QuerySingleAsync<(string? Studied, string? Found, string? Means, string? Doesnt)>(
+        var row = await connection.QuerySingleAsync<(string? Studied, string? Found, string? Means, string? Doesnt, int? Score, string? Reason)>(
             """
-            SELECT plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean
+            SELECT plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean,
+                   readiness_score, readiness_reason
             FROM aggregated_items WHERE source = @TestSource AND external_id = 'blocks-1'
             """,
             new { TestSource });
@@ -427,6 +430,47 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
         Assert.Equal("What they found.", row.Found);
         Assert.Equal("What it means.", row.Means);
         Assert.Equal("What it doesn't mean.", row.Doesnt);
+        Assert.Equal(7, row.Score);
+        Assert.Equal("Being tested in people in trials, but not yet approved.", row.Reason);
+    }
+
+    [Fact]
+    public async Task AnAnimalStudyScoredHighIsStoredCappedToItsStageCeiling()
+    {
+        // The hard anti-hype backstop: even if a buggy or hostile client sends
+        // readiness 9 for an animal study, the trust boundary re-clamps it to 2
+        // before it can reach a page. The pipeline already clamps; this proves
+        // the DB can't hold a lab/animal finding as near-clinic regardless.
+        var item = NewItem("animal-hype") with
+        {
+            ResearchStage = "preclinical_animal",
+            Relevance = "early_stage",
+            ReadinessScore = 9,
+            ReadinessReason = "This was only tested in mice.",
+        };
+        await AuthedClient().PostAsJsonAsync("/api/sync/items", new UploadRequest([item], null));
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var score = await connection.ExecuteScalarAsync<int?>(
+            "SELECT readiness_score FROM aggregated_items WHERE source = @TestSource AND external_id = 'animal-hype'",
+            new { TestSource });
+
+        Assert.Equal(2, score);
+    }
+
+    [Fact]
+    public async Task AnOffScaleReadinessScoreIsRejected()
+    {
+        // The API bounds-check (and the DB CHECK behind it) refuse a score
+        // outside 1-10 — a scared reader must never see a "12/10" on a page.
+        var item = NewItem("bad-readiness") with { ReadinessScore = 12 };
+
+        var response = await AuthedClient().PostAsJsonAsync(
+            "/api/sync/items", new UploadRequest([item], null));
+        var body = await response.Content.ReadFromJsonAsync<UploadResponse>();
+
+        Assert.Equal(1, body!.Rejected);
+        Assert.Contains(body.Errors, e => e.Contains("readinessScore"));
     }
 
     [Fact]

@@ -39,6 +39,9 @@ regression blocks the change (content-pipeline.md §10).
 3. No banned hype words (breakthrough, miracle, game-changer, cure).
 4. Reading level ≤ 8.5 (Flesch-Kincaid).
 5. A mandatory "what it doesn't mean" block — the anti-hype guardrail.
+6. A `readiness` score (1-10) that respects its stage ceiling — the same cap
+   `Readiness.Clamp` enforces in the pipeline (e.g. an animal study ≤ 2). The
+   yardstick can't bless the model over-promising.
 
 ## How to add cases (grow toward ~30)
 

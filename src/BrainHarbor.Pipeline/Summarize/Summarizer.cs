@@ -47,14 +47,19 @@ public sealed record SummarizeOutput
     public string WhatFound { get; init; } = "";
     public string Means { get; init; } = "";
     public string DoesntMean { get; init; } = "";
+    public int ReadinessScore { get; init; }
+    public string ReadinessReason { get; init; } = "";
 
     public bool AllBlocksPresent =>
         !string.IsNullOrWhiteSpace(PlainTitle) && !string.IsNullOrWhiteSpace(Hook) &&
         !string.IsNullOrWhiteSpace(WhatStudied) && !string.IsNullOrWhiteSpace(WhatFound) &&
-        !string.IsNullOrWhiteSpace(Means) && !string.IsNullOrWhiteSpace(DoesntMean);
+        !string.IsNullOrWhiteSpace(Means) && !string.IsNullOrWhiteSpace(DoesntMean) &&
+        ReadinessScore is >= Readiness.Min and <= Readiness.Max &&
+        !string.IsNullOrWhiteSpace(ReadinessReason);
 
     /// <summary>All prose, for the guardrail checks (numerals, hype, reading level).</summary>
-    public string AllProse => string.Join("\n", PlainTitle, Hook, WhatStudied, WhatFound, Means, DoesntMean);
+    public string AllProse =>
+        string.Join("\n", PlainTitle, Hook, WhatStudied, WhatFound, Means, DoesntMean, ReadinessReason);
 }
 
 /// <summary>
@@ -112,6 +117,10 @@ public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<
             WhatFound = ProseStyle.Normalize(result.Value!.WhatFound),
             Means = ProseStyle.Normalize(result.Value!.Means),
             DoesntMean = ProseStyle.Normalize(result.Value!.DoesntMean),
+            ReadinessReason = ProseStyle.Normalize(result.Value!.ReadinessReason),
+            // ReadinessScore stays the model's raw proposal here; the pipeline
+            // clamps it against the classified research stage at upload time,
+            // where both the score and the stage are known (see PipelineRunner).
         };
 
         // The source the numerals must trace back to is the title + abstract.
