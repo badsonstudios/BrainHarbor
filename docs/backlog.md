@@ -380,11 +380,42 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   rehearsed once.
   Refs: roadmap M4. Depends on: WI-401, WI-403, WI-405.
 
+- [ ] **WI-409 Home page leads with the feed** ⚠ pre-launch blocker
+  Goal: the front door stops saying the front door is closed.
+  Problem (found 2026-08-01, Dan): home renders a static Entry Hub and a
+  paragraph reading "The daily research feed and the weekly digest are coming
+  soon." The feed shipped in WI-209 and `/research` is live, so the sentence is
+  false about the feed and the home page never shows an item. PLAN.md §3 says
+  "the feed is the front door… not a brochure" and sitemap.md specifies "Home —
+  latest plain-language research highlights + digest signup".
+  Acceptance: home renders the newest few published items (same `_FeedCard`
+  partial as /research, same early-stage rule) above the three doors; the
+  "coming soon" sentence is corrected so it refers only to the digest, which
+  genuinely is not built; a test fails if the home page claims the feed is
+  coming while published items exist.
+  Refs: PLAN.md §3, sitemap.md, docs/design/entry-hub-handoff/.
+  Depends on: nothing. **Do before WI-408.**
+
+- [ ] **WI-410 Sort the research feed**
+  Goal: let a reader ask "what is closest to helping me?" not just "what is
+  newest?" (Dan's ask, 2026-08-01.)
+  Acceptance: `/research` sortable by **date** (default, current behaviour),
+  **readiness** (the 1–10 score, highest first), and **type**
+  (research/news/trials/preprint); sort is a plain link/select that works with
+  JavaScript off and survives the existing tumor-type and early-stage filters;
+  the chosen sort is reflected in the URL so it can be shared and bookmarked.
+  Notes: readiness is nullable — unscored items must sort last, not first
+  (the same NULLS LAST trap as `published_at`). Sorting by type is a grouping,
+  not a ranking, so decide the within-group order (newest first) explicitly.
+  Consider whether `/trials` wants the same control.
+  Refs: docs/sitemap.md (feed anatomy), content-pipeline.md §9 (readiness).
+  Depends on: nothing.
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest
   origin story; feedback captured as new backlog items via /pm.
-  Depends on: WI-407.
+  Depends on: WI-407, WI-409.
 
 ---
 
