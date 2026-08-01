@@ -412,12 +412,17 @@ main {
 
 .feed-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr); /* two cards per row */
   gap: var(--space-4);
   list-style: none;
   margin: 0;
   padding: 0;
   max-width: none;
+}
+
+/* One card per row on narrow screens. */
+@media (max-width: 40rem) {
+  .feed-grid { grid-template-columns: 1fr; }
 }
 
 .card {
@@ -449,18 +454,22 @@ main {
   background-color: var(--color-surface);
 }
 
-/* Soft scrim for depth + so the dial always has some contrast under it. */
+/* Fade the photo back so the readiness dial is clearly the hero. A light wash
+   (~50%) softens the image toward the card, keeping it as a calm backdrop
+   rather than a focal point. Tune the two alpha values to taste. */
 .card-hero__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.18));
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.82));
 }
 
-/* The readiness dial, drawn on a dark disc so it reads on any photo. */
+/* The readiness dial — the card's hero. A soft drop shadow lifts it off the
+   washed backdrop so it reads as a chip floating on top, not embedded in it. */
 .card-hero__dial {
   position: relative;
-  width: 5rem;
-  height: 5rem;
+  width: 5.75rem;
+  height: 5.75rem;
+  filter: drop-shadow(0 4px 9px rgba(15, 30, 45, 0.45));
 }
 .card-hero__num {
   font-size: 2.9rem;

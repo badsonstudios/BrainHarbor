@@ -27,18 +27,22 @@ public static class CardArt
 
     private static string Dial(int score)
     {
-        const double r = 46, circ = 2 * Math.PI * r;
+        const double r = 45, circ = 2 * Math.PI * r;
         var offset = (circ * (1 - Math.Clamp(score, 1, 10) / 10.0)).ToString("0.0", CultureInfo.InvariantCulture);
-        var arc = score >= 7 ? "#5ec8bb" : score >= 4 ? "#7fb4e6" : "#e6b566";
+        var arc = score >= 7 ? "#2fc4b4" : score >= 4 ? "#4f9ff0" : "#f2a83c";
         var c = circ.ToString("0.0", CultureInfo.InvariantCulture);
 
         return "<svg class=\"card-hero__dial\" viewBox=\"0 0 120 120\" aria-hidden=\"true\" role=\"presentation\">" +
-               "<circle cx=\"60\" cy=\"60\" r=\"54\" fill=\"rgba(14,28,42,0.42)\"/>" +
-               "<circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"none\" stroke=\"rgba(255,255,255,0.32)\" stroke-width=\"11\"/>" +
-               $"<circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"none\" stroke=\"{arc}\" stroke-width=\"11\" " +
+               // deep, near-solid disc so the number owns the card...
+               "<circle cx=\"60\" cy=\"60\" r=\"54\" fill=\"#15263b\" fill-opacity=\"0.92\"/>" +
+               // ...with a crisp light rim to cut it out from the washed backdrop
+               "<circle cx=\"60\" cy=\"60\" r=\"54\" fill=\"none\" stroke=\"#ffffff\" stroke-opacity=\"0.9\" stroke-width=\"2\"/>" +
+               // the readiness ring: a subtle track + a bold, bright arc
+               "<circle cx=\"60\" cy=\"60\" r=\"45\" fill=\"none\" stroke=\"rgba(255,255,255,0.20)\" stroke-width=\"14\"/>" +
+               $"<circle cx=\"60\" cy=\"60\" r=\"45\" fill=\"none\" stroke=\"{arc}\" stroke-width=\"14\" " +
                $"stroke-linecap=\"round\" stroke-dasharray=\"{c}\" stroke-dashoffset=\"{offset}\" transform=\"rotate(-90 60 60)\"/>" +
-               $"<text x=\"60\" y=\"62\" text-anchor=\"middle\" class=\"card-hero__num\">{score}</text>" +
-               "<text x=\"60\" y=\"80\" text-anchor=\"middle\" class=\"card-hero__lbl\">of 10 ready</text>" +
+               $"<text x=\"60\" y=\"63\" text-anchor=\"middle\" class=\"card-hero__num\">{score}</text>" +
+               "<text x=\"60\" y=\"82\" text-anchor=\"middle\" class=\"card-hero__lbl\">of 10 ready</text>" +
                "</svg>";
     }
 }
