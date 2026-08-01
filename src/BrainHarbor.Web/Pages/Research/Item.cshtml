@@ -37,6 +37,32 @@
         }
     </div>
 
+    @* The trial's status as it is RIGHT NOW, read from the trial cache rather
+       than from the summary (WI-402). The summary is written once and frozen;
+       trials close. A page that still says "enrolling" about a closed trial
+       sends someone to a door that no longer opens. *@
+    @if (Model.Item.IsTrial && Model.Item.TrialStatus is not null)
+    {
+        <div class="trial-status @(Model.Item.TrialHasClosed ? "trial-status--closed" : "")" role="status">
+            <p>
+                <strong>
+                    @(Model.Item.TrialHasClosed
+                        ? "This trial is not taking new patients."
+                        : $"Status: {Model.Item.TrialStatus}.")
+                </strong>
+                @Model.TrialStatusExplanation
+            </p>
+            @if (Model.Item.TrialUpdatedAt is { } updated)
+            {
+                <p class="trial-status__checked">
+                    The trial team last updated this record on
+                    <time datetime="@updated.ToString("yyyy-MM-dd")">@updated.ToString("MMMM d, yyyy")</time>.
+                    Always check the trial page for the latest.
+                </p>
+            }
+        </div>
+    }
+
     @if (Model.Item.HasFullSummary)
     {
         <h2>The short version</h2>
@@ -44,8 +70,11 @@
         {
             <p class="hook">@Model.Block(Model.Item.PlainSummary)</p>
         }
-        <p><strong>What was studied.</strong> @Model.Block(Model.Item.PlainWhatStudied)</p>
-        <p><strong>What they found.</strong> @Model.Block(Model.Item.PlainWhatFound)</p>
+        @* A trial that is open has not found anything yet, so it gets headings
+           that match what the blocks actually hold (WI-402). Calling a
+           recruiting trial's status "what they found" would read as a result. *@
+        <p><strong>@Model.StudiedHeading</strong> @Model.Block(Model.Item.PlainWhatStudied)</p>
+        <p><strong>@Model.FoundHeading</strong> @Model.Block(Model.Item.PlainWhatFound)</p>
 
         <div class="means-block">
             <div class="means-block__head">

@@ -1,0 +1,163 @@
+{
+ "studies": [
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT04708171",
+     "briefTitle": "The PROGRAM-study: Awake Mapping Versus Asleep Mapping Versus No Mapping for Glioblastoma Resections"
+    },
+    "statusModule": {
+     "overallStatus": "RECRUITING",
+     "lastUpdatePostDateStruct": {
+      "date": "2022-05-06",
+      "type": "ACTUAL"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "The study is designed as an international, multicenter prospective cohort study. Patients with presumed glioblastoma (GBM) in- or near eloquent areas on diagnostic MRI will be selected by neurosurgeons. Patients will be treated following one of three study arms: 1) a craniotomy where the resection boundaries for motor or language functions will be identified by the \"awake\" mapping technique (awake craniotomy, AC); 2) a craniotomy where the resection boundaries for motor functions will be identified by \"asleep\" mapping techniques (MEPs, SSEPs, continuous dynamic mapping); 3) a craniotomy where the resection boundaries will not be identified by any mapping technique (\"no mapping group\"). All patients will receive follow-up according to standard practice."
+    },
+    "conditionsModule": {
+     "conditions": [
+      "Glioblastoma"
+     ]
+    },
+    "designModule": {},
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "University of California, San Francisco",
+       "status": "NOT_YET_RECRUITING",
+       "city": "San Francisco",
+       "state": "California",
+       "zip": "94143",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 37.77493,
+        "lon": -122.41942
+       }
+      },
+      {
+       "facility": "Massachusetts General Hospital",
+       "status": "NOT_YET_RECRUITING",
+       "city": "Boston",
+       "state": "Massachusetts",
+       "zip": "02114-2696",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 42.35843,
+        "lon": -71.05977
+       }
+      },
+      {
+       "facility": "University Hospitals Leuven",
+       "status": "NOT_YET_RECRUITING",
+       "city": "Leuven",
+       "state": "Vlaams-Brabant",
+       "zip": "3000",
+       "country": "Belgium",
+       "geoPoint": {
+        "lat": 50.87959,
+        "lon": 4.70093
+       }
+      },
+      {
+       "facility": "University Hospital Heidelberg",
+       "status": "NOT_YET_RECRUITING",
+       "city": "Heidelberg",
+       "country": "Germany",
+       "geoPoint": {
+        "lat": 49.40768,
+        "lon": 8.69079
+       }
+      },
+      {
+       "facility": "Technical University Munich",
+       "status": "NOT_YET_RECRUITING",
+       "city": "Munich",
+       "country": "Germany",
+       "geoPoint": {
+        "lat": 48.13743,
+        "lon": 11.57549
+       }
+      },
+      {
+       "facility": "Erasmus MC",
+       "status": "RECRUITING",
+       "city": "Rotterdam",
+       "state": "South Holland",
+       "zip": "3015 CE",
+       "country": "Netherlands",
+       "geoPoint": {
+        "lat": 51.9225,
+        "lon": 4.47917
+       }
+      },
+      {
+       "facility": "Medical Center Haaglanden",
+       "status": "NOT_YET_RECRUITING",
+       "city": "The Hague",
+       "state": "South Holland",
+       "zip": "2261 CP",
+       "country": "Netherlands",
+       "geoPoint": {
+        "lat": 52.07667,
+        "lon": 4.29861
+       }
+      },
+      {
+       "facility": "Inselspital Universitätsspital Bern",
+       "status": "NOT_YET_RECRUITING",
+       "city": "Bern",
+       "country": "Switzerland",
+       "geoPoint": {
+        "lat": 46.94809,
+        "lon": 7.44744
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT05326334",
+     "briefTitle": "THERApeutic Outcomes Related to Gut microBIOME in Glioblastoma (GBM) Patients Receiving Chemo-radiation (THERABIOME-GBM)"
+    },
+    "statusModule": {
+     "overallStatus": "RECRUITING",
+     "lastUpdatePostDateStruct": {
+      "date": "2023-04-18",
+      "type": "ACTUAL"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "This is a pilot or feasibility study to test the study plan and to find out whether enough participants will join a larger study and accept the study procedures. Eligible participants (adults with newly diagnosed glioblastoma multiforme \\[GBM\\] and had a good tumour resection \\[\\>= 70% of initial tumour volume\\] and plan to receive 6 weeks of chemoradiation followed by up to 6 months of chemotherapy) are asked to donate their own stool samples at 4 different time points during their treatment course. Participants will also complete a 7-day diet diary and two questionnaires about their health-related quality of life.\n\nGlioblastoma multiforme (GBM) is the most common and aggressive form of primary brain cancer in adults. The current best evidence-proven treatment for GBM includes maximum safe tumour resection, brain radiation over a 6-week period given with chemotherapy pills called temozolomide (Brand name: Temodal or Temodar), followed by approximately 6 months / cycles of temozolomide. Despite these treatments, the average life expectancy is generally less than 2 years.\n\nResearchers are recognizing that the immune system has an important role in directing the effectiveness of chemotherapy, radiation, and newer therapies such as immunotherapies. Some immunotherapies have been quite successful in improving cancer control and survival in other cancers like melanoma (an aggressive skin cancer), but when these drugs were given to patients with GBM, there appeared to only be a small effect. Therefore, finding ways to make existing and new treatments work better should be a priority. Recent scientific studies have shown that the bacteria that make up our stool, often referred to as the gut microbiome, play a major role in regulating the immune system. For example, researchers were able to make patients with melanoma who previously did not respond to immunotherapy become responsive to the treatment after receiving a stool transplant from responders to immunotherapy. This provides proof of concept that we could modify the body's immune environment to favour cancer killing by changing a person's gut bacteria environment.\n\nThe role of the gut bacteria in patients with brain cancer is poorly understood as very few studies have been published about it in this population. We believe that understanding the composition of the gut microbiome and how it relates to the effectiveness and side effects of treatments in GBM patients will be an important first step to understanding how we can modify the gut microbiome to improve outcomes for patients living with GBM."
+    },
+    "conditionsModule": {
+     "conditions": [
+      "Glioblastoma, IDH-wildtype"
+     ]
+    },
+    "designModule": {},
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "The Ottawa Hospital Cancer Centre",
+       "status": "RECRUITING",
+       "city": "Ottawa",
+       "state": "Ontario",
+       "zip": "K1H 8L6",
+       "country": "Canada",
+       "geoPoint": {
+        "lat": 45.41117,
+        "lon": -75.69812
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "nextPageToken": "ZVdj7o2Elu8o3lp2BMm74q2tmpOQJJxuY_mk2_McnD6SuP08FCfCF_fV9NVM1iI"
+}

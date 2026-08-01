@@ -94,6 +94,48 @@ public static class SyncEndpoints
                 : Results.BadRequest(new { error = $"unknown source '{request.Source}'" });
         });
 
+        // Trial FACTS (WI-402). A separate door from /items on purpose: these
+        // are facts about the world (status, phase, sites) and refresh
+        // unconditionally, where an item's plain-language text is editorial and
+        // is gated, editable, and frozen once reviewed. Uploading facts first
+        // means the worst case is a trial whose facts are known before its feed
+        // item exists, which harms nobody.
+        group.MapPost("/trials", async (
+            TrialsRequest? request, SyncRepository repository,
+            ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>
+        {
+            if (request?.Trials is null)
+            {
+                return Results.BadRequest(new { error = "trials is required" });
+            }
+
+            if (request.Trials.Count == 0)
+            {
+                return Results.BadRequest(new { error = "no trials" });
+            }
+
+            if (request.Trials.Any(t => t is null))
+            {
+                return Results.BadRequest(new { error = "trials may not contain nulls" });
+            }
+
+            if (request.Trials.Count > MaxBatchSize)
+            {
+                return Results.BadRequest(new { error = $"at most {MaxBatchSize} trials per request" });
+            }
+
+            var result = await repository.UpsertTrialsAsync(request.Trials, cancellationToken);
+
+            if (result.Errors.Count > 0)
+            {
+                loggerFactory.CreateLogger(typeof(SyncEndpoints)).LogWarning(
+                    "Trial upload rejected {Count} record(s): {Errors}",
+                    result.Rejected, string.Join(" | ", result.Errors));
+            }
+
+            return Results.Ok(result);
+        });
+
         group.MapPost("/items", async (
             UploadRequest? request, SyncRepository repository,
             ILoggerFactory loggerFactory, CancellationToken cancellationToken) =>

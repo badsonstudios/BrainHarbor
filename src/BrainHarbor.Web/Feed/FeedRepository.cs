@@ -40,6 +40,36 @@ public sealed class FeedRow
 
     /// <summary>The readiness badge a reader sees, or null if the item is unscored.</summary>
     public ReadinessBadge? Readiness => ReadinessScore is { } score ? ReadinessBadge.For(score) : null;
+
+    // ---- trial facts, joined live from trials_cache (WI-402) ----
+
+    /// <summary>
+    /// The trial's CURRENT recruiting status, read from trials_cache at render
+    /// time rather than baked into the summary. A trial's page is published
+    /// once and then frozen, but trials close — showing the status the trial
+    /// had on the day we summarized it would send a patient to a door that no
+    /// longer opens.
+    /// </summary>
+    public string? TrialStatus { get; set; }
+
+    public string? TrialPhase { get; set; }
+
+    /// <summary>When the registry last changed this trial's record.</summary>
+    public DateOnly? TrialUpdatedAt { get; set; }
+
+    public bool IsTrial => SourceKind == "trial_update";
+
+    /// <summary>
+    /// True when we know the trial is no longer taking new patients. Uses the
+    /// same list the SQL filter uses, so what the page says and what the feed
+    /// hides can never drift apart.
+    ///
+    /// A null status means we do not know, which is NOT the same as closed — an
+    /// unknown status must not produce a false "this has closed" claim.
+    /// </summary>
+    public bool TrialHasClosed =>
+        IsTrial && TrialStatus is not null &&
+        !FeedRepository.OpenTrialStatuses.Contains(TrialStatus);
 }
 
 /// <summary>What the reader asked for.</summary>
@@ -68,33 +98,72 @@ public sealed record FeedPage(IReadOnlyList<FeedRow> Items, int TotalCount, Feed
 /// </summary>
 public sealed class FeedRepository(IDbConnectionFactory connectionFactory, TaxonomyStore taxonomy)
 {
+    /// <summary>
+    /// Statuses that mean a patient could still get into the trial, in the same
+    /// plain words the fetcher stores. Shared by the SQL filter and
+    /// <see cref="FeedRow.TrialHasClosed"/> so the reader and the query can
+    /// never disagree about what "open" means.
+    /// </summary>
+    internal static readonly string[] OpenTrialStatuses =
+        ["Not yet recruiting", "Recruiting", "Enrolling by invitation", "Available"];
+
+    /// <summary>
+    /// Keeps closed trials out of the "here is what's new" surfaces (WI-402).
+    ///
+    /// A trial's card carries the hook written on the day we summarized it, and
+    /// that text is frozen — a known trial is never re-summarized. So once the
+    /// trial closes, its card is a standing invitation to something that no
+    /// longer exists. The permalink deliberately stays live and says plainly
+    /// that the trial has closed: someone looking that trial up still deserves
+    /// an answer. It just stops being served as news.
+    ///
+    /// A trial with NO cached status is left alone — unknown is not closed.
+    /// </summary>
+    private const string ExcludeClosedTrials = """
+        NOT (a.source_kind = 'trial_update'
+             AND t.overall_status IS NOT NULL
+             AND NOT (t.overall_status = ANY(@openTrialStatuses)))
+        """;
+
+    /// <summary>The join every reader-facing query needs to know a trial's
+    /// CURRENT status rather than the one baked into its summary.</summary>
+    private const string TrialJoin = """
+        LEFT JOIN trials_cache t
+          ON a.source = 'ctgov' AND t.nct_id = a.external_id
+        """;
+
+    // Qualified with the `a` alias throughout: these queries join trials_cache,
+    // which also has `title` and `summary` columns, so unqualified names would
+    // be ambiguous. Every query below aliases aggregated_items as `a`.
     private const string SelectColumns = """
-        id AS "Id",
-        slug AS "Slug",
-        source AS "Source",
-        source_kind AS "SourceKind",
-        title AS "Title",
-        plain_title AS "PlainTitle",
-        plain_summary AS "PlainSummary",
-        plain_what_studied AS "PlainWhatStudied",
-        plain_what_found AS "PlainWhatFound",
-        plain_means AS "PlainMeans",
-        plain_doesnt_mean AS "PlainDoesntMean",
-        readiness_score AS "ReadinessScore",
-        readiness_reason AS "ReadinessReason",
-        url AS "Url",
-        published_at AS "PublishedAt",
-        tumor_tags AS "TumorTags",
-        research_stage AS "ResearchStage",
-        relevance AS "Relevance",
-        reviewed_by AS "ReviewedBy"
+        a.id AS "Id",
+        a.slug AS "Slug",
+        a.source AS "Source",
+        a.source_kind AS "SourceKind",
+        a.title AS "Title",
+        a.plain_title AS "PlainTitle",
+        a.plain_summary AS "PlainSummary",
+        a.plain_what_studied AS "PlainWhatStudied",
+        a.plain_what_found AS "PlainWhatFound",
+        a.plain_means AS "PlainMeans",
+        a.plain_doesnt_mean AS "PlainDoesntMean",
+        a.readiness_score AS "ReadinessScore",
+        a.readiness_reason AS "ReadinessReason",
+        a.url AS "Url",
+        a.published_at AS "PublishedAt",
+        a.tumor_tags AS "TumorTags",
+        a.research_stage AS "ResearchStage",
+        a.relevance AS "Relevance",
+        a.reviewed_by AS "ReviewedBy"
         """;
 
     public async Task<FeedPage> GetAsync(FeedQuery query, CancellationToken cancellationToken)
     {
         // Filters are built from a fixed set of clauses with parameters —
-        // nothing from the querystring is ever concatenated into SQL.
-        var where = new List<string> { "status = 'published'" };
+        // nothing from the querystring is ever concatenated into SQL. Every
+        // clause is `a.`-qualified because the trial join brings in a second
+        // table with overlapping column names.
+        var where = new List<string> { "a.status = 'published'", ExcludeClosedTrials };
 
         // 'pending' means "not classified yet" — that is every item until the
         // M3 classifier lands, and those items have still passed the human
@@ -102,8 +171,8 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         // and nothing visibly happens. 'excluded' is never uploaded at all.
         // Early-stage stays behind the toggle in both cases.
         where.Add(query.IncludeEarlyStage
-            ? "relevance IN ('patient_relevant', 'pending', 'early_stage')"
-            : "relevance IN ('patient_relevant', 'pending')");
+            ? "a.relevance IN ('patient_relevant', 'pending', 'early_stage')"
+            : "a.relevance IN ('patient_relevant', 'pending')");
 
         // A tumor filter matches the type OR any of its descendants, so
         // browsing "glioma" includes glioblastoma (data-model.md tree rules).
@@ -112,13 +181,13 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         if (resolvedTumor is not null)
         {
             tagFilter = [.. DescendantsOf(resolvedTumor), "all-brain-tumors"];
-            where.Add("tumor_tags && @tagFilter");
+            where.Add("a.tumor_tags && @tagFilter");
         }
 
         var kind = NormalizeKind(query.Kind);
         if (kind is not null)
         {
-            where.Add("source_kind = @kind");
+            where.Add("a.source_kind = @kind");
         }
 
         var whereClause = string.Join(" AND ", where);
@@ -126,6 +195,7 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         {
             tagFilter,
             kind,
+            openTrialStatuses = OpenTrialStatuses,
             limit = FeedQuery.PageSize,
             offset = query.Offset,
         };
@@ -134,17 +204,26 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
 
         var rows = await connection.QueryAsync<FeedRow>(new CommandDefinition(
             $"""
-            SELECT {SelectColumns}
-            FROM aggregated_items
+            SELECT {SelectColumns},
+                   t.overall_status     AS "TrialStatus",
+                   t.phase              AS "TrialPhase",
+                   t.last_update_posted AS "TrialUpdatedAt"
+            FROM aggregated_items a
+            {TrialJoin}
             WHERE {whereClause}
-            ORDER BY published_at DESC NULLS LAST, id DESC
+            ORDER BY a.published_at DESC NULLS LAST, a.id DESC
             LIMIT @limit OFFSET @offset
             """,
             parameters,
             cancellationToken: cancellationToken));
 
         var total = await connection.ExecuteScalarAsync<int>(new CommandDefinition(
-            $"SELECT count(*) FROM aggregated_items WHERE {whereClause}",
+            $"""
+            SELECT count(*)
+            FROM aggregated_items a
+            {TrialJoin}
+            WHERE {whereClause}
+            """,
             parameters,
             cancellationToken: cancellationToken));
 
@@ -161,11 +240,20 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
     {
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
 
+        // The trial join is a LEFT join on purpose: an item that is not a trial
+        // (or a trial whose facts we somehow never stored) must still render.
+        // Reading the status here rather than from the frozen summary is what
+        // stops a published page advertising a closed trial as open (WI-402).
         var row = await connection.QuerySingleOrDefaultAsync<FeedRow>(new CommandDefinition(
             $"""
-            SELECT {SelectColumns}
-            FROM aggregated_items
-            WHERE slug = @slug AND status = 'published'
+            SELECT {SelectColumns},
+                   t.overall_status     AS "TrialStatus",
+                   t.phase              AS "TrialPhase",
+                   t.last_update_posted AS "TrialUpdatedAt"
+            FROM aggregated_items a
+            LEFT JOIN trials_cache t
+              ON a.source = 'ctgov' AND t.nct_id = a.external_id
+            WHERE a.slug = @slug AND a.status = 'published'
             """,
             new { slug },
             cancellationToken: cancellationToken));
@@ -263,20 +351,28 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         }
 
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        // Closed trials stay SEARCHABLE — someone looking one up deserves an
+        // answer — but the status rides along so the result can say plainly
+        // that it has closed, rather than showing a stale "now enrolling" hook.
         var rows = await connection.QueryAsync<FeedRow>(new CommandDefinition(
             $"""
-            SELECT {SelectColumns}
-            FROM aggregated_items,
+            SELECT {SelectColumns},
+                   t.overall_status     AS "TrialStatus",
+                   t.phase              AS "TrialPhase",
+                   t.last_update_posted AS "TrialUpdatedAt"
+            FROM aggregated_items a
+                 LEFT JOIN trials_cache t
+                   ON a.source = 'ctgov' AND t.nct_id = a.external_id,
                  websearch_to_tsquery('english', @query) AS q,
                  to_tsvector('english',
-                     coalesce(plain_title, title) || ' ' ||
-                     coalesce(plain_summary, '') || ' ' ||
-                     coalesce(plain_what_studied, '') || ' ' ||
-                     coalesce(plain_what_found, '') || ' ' ||
-                     coalesce(plain_means, '') || ' ' ||
-                     coalesce(plain_doesnt_mean, '')) AS doc
-            WHERE status = 'published' AND doc @@ q
-            ORDER BY ts_rank(doc, q) DESC, published_at DESC NULLS LAST, id DESC
+                     coalesce(a.plain_title, a.title) || ' ' ||
+                     coalesce(a.plain_summary, '') || ' ' ||
+                     coalesce(a.plain_what_studied, '') || ' ' ||
+                     coalesce(a.plain_what_found, '') || ' ' ||
+                     coalesce(a.plain_means, '') || ' ' ||
+                     coalesce(a.plain_doesnt_mean, '')) AS doc
+            WHERE a.status = 'published' AND doc @@ q
+            ORDER BY ts_rank(doc, q) DESC, a.published_at DESC NULLS LAST, a.id DESC
             LIMIT @limit
             """,
             new { query, limit },
@@ -294,15 +390,21 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         int limit, CancellationToken cancellationToken)
     {
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        // Same rule as the feed: a closed trial is not news, and its RSS entry
+        // would carry the frozen "now enrolling" hook into somebody's reader.
         var rows = await connection.QueryAsync<FeedRow>(new CommandDefinition(
             $"""
-            SELECT {SelectColumns}
-            FROM aggregated_items
-            WHERE status = 'published'
-            ORDER BY published_at DESC NULLS LAST, id DESC
+            SELECT {SelectColumns},
+                   t.overall_status     AS "TrialStatus",
+                   t.phase              AS "TrialPhase",
+                   t.last_update_posted AS "TrialUpdatedAt"
+            FROM aggregated_items a
+            {TrialJoin}
+            WHERE a.status = 'published' AND {ExcludeClosedTrials}
+            ORDER BY a.published_at DESC NULLS LAST, a.id DESC
             LIMIT @limit
             """,
-            new { limit },
+            new { limit, openTrialStatuses = OpenTrialStatuses },
             cancellationToken: cancellationToken));
 
         return [.. rows];
@@ -321,12 +423,22 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         _ => null,
     };
 
-    /// <summary>Maps a row to the card the shared partial renders.</summary>
+    /// <summary>
+    /// Maps a row to the card the shared partial renders.
+    ///
+    /// A closed trial replaces its hook rather than showing it (WI-402). The
+    /// hook was written while the trial was open and is never rewritten, so on
+    /// a search result for a trial that has since closed it would read as a
+    /// live invitation. Closed trials are already filtered out of the feed and
+    /// RSS; search still finds them, which is why the card has to say so.
+    /// </summary>
     public FeedCard ToCard(FeedRow row) => new(
         ResearchStageMapper.From(row.SourceKind, row.ResearchStage),
         row.PlainTitle ?? row.Title,
         $"/research/{row.Slug}",
-        row.PlainSummary ?? "",
+        row.TrialHasClosed
+            ? "This trial is not taking new patients."
+            : row.PlainSummary ?? "",
         [.. row.TumorTags.Select(taxonomy.LabelFor)],
         row.PublishedAt?.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)
             ?? "No date",

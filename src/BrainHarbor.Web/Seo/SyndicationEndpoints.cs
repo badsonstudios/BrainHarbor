@@ -16,7 +16,7 @@ public static class SyndicationEndpoints
 {
     // Live static pages worth indexing (dead/placeholder routes excluded).
     private static readonly string[] StaticPaths =
-        ["/", "/research", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
+        ["/", "/research", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
 
     private const int SitemapLimit = 5000;
     private const int FeedLimit = 50;

@@ -23,7 +23,8 @@ form {
 .door,
 .door--primary,
 .card,
-.means-block {
+.means-block,
+.trial-status {
   background: #fff !important;
   color: #000 !important;
   box-shadow: none !important;
@@ -35,7 +36,8 @@ form {
 
 .door,
 .card,
-.means-block {
+.means-block,
+.trial-status {
   border: 1pt solid #000 !important;
 }
 

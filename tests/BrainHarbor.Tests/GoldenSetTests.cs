@@ -18,9 +18,13 @@ public class GoldenSetTests
 
     public sealed record GoldenSet(GoldenItem[] Items);
     public sealed record GoldenItem(GoldenInput Input, GoldenExpected Expected, string? Note, GoldenSummary? IdealSummary);
-    public sealed record GoldenInput(string Source, string SourceKind, string ExternalId, string Title, string RawSummary, string? PublishedAt);
+    public sealed record GoldenInput(
+        string Source, string SourceKind, string ExternalId, string Title, string RawSummary,
+        string? PublishedAt, string? TrialPhase, string? TrialStatus);
     public sealed record GoldenExpected(string[] TumorTags, string Relevance, string ResearchStage);
-    public sealed record GoldenSummary(string PlainTitle, string WhatStudied, string WhatFound, string Means, string DoesntMean, string StageLabel, int Readiness);
+    public sealed record GoldenSummary(
+        string PlainTitle, string WhatStudied, string WhatFound, string Means, string DoesntMean,
+        string StageLabel, int Readiness, string? Hook);
 
     private static readonly GoldenSet Golden = Load();
     private static readonly TaxonomyStore Taxonomy = new(File.ReadAllText(
@@ -175,13 +179,104 @@ public class GoldenSetTests
     }
 
     [Fact]
-    public void InputsAreRealPubmedItemsWithAbstracts()
+    public void InputsAreRealRecordsFromDocumentedSourcesWithTheirRealText()
     {
+        // Real inputs only. A hand-written "abstract" would let the yardstick
+        // agree with a summarizer that both misread the same imaginary source.
         foreach (var item in Golden.Items)
         {
-            Assert.Equal("pubmed", item.Input.Source);
+            Assert.Contains(item.Input.Source, new[] { "pubmed", "ctgov" });
             Assert.False(string.IsNullOrWhiteSpace(item.Input.RawSummary),
-                $"{item.Input.ExternalId}: golden inputs must carry the real abstract");
+                $"{item.Input.ExternalId}: golden inputs must carry the real source text");
+        }
+    }
+
+    [Fact]
+    public void TrialCasesCarryThePhaseAndStatusTheTrialPromptIsGiven()
+    {
+        // The trial prompt scores readiness BY PHASE, so a trial case without a
+        // phase would be measuring the model on a guess.
+        foreach (var item in Golden.Items.Where(i => i.Input.SourceKind == "trial_update"))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(item.Input.TrialPhase),
+                $"{item.Input.ExternalId}: a trial case needs its phase");
+            Assert.False(string.IsNullOrWhiteSpace(item.Input.TrialStatus),
+                $"{item.Input.ExternalId}: a trial case needs its status");
+        }
+    }
+
+    [Fact]
+    public void EveryTrialCaseCoversTheSummarizeTrialPrompt()
+    {
+        // CLAUDE.md: a versioned prompt change re-runs the golden set. A new
+        // prompt with no cases in the set is an ungated prompt.
+        var trials = Golden.Items.Where(i => i.Input.SourceKind == "trial_update").ToList();
+
+        Assert.True(trials.Count >= 3,
+            "summarize-trial needs its own golden cases (recruiting, early phase, not yet open)");
+        Assert.All(trials, t => Assert.NotNull(t.IdealSummary));
+
+        // The failure mode the prompt exists to prevent: an open trial has no
+        // results, so NO ideal summary may claim one. Assert.All, not Contains
+        // — with Contains, two of the three could invent an outcome and the
+        // suite would still be green.
+        Assert.All(trials, t =>
+        {
+            var found = t.IdealSummary!.WhatFound;
+            Assert.True(
+                found.Contains("not reported results", StringComparison.OrdinalIgnoreCase)
+                || found.Contains("no results", StringComparison.OrdinalIgnoreCase)
+                || found.Contains("has not opened", StringComparison.OrdinalIgnoreCase),
+                $"{t.Input.ExternalId}: a trial's 'what found' must say there are no results yet, " +
+                $"got: {found}");
+        });
+    }
+
+    [Fact]
+    public void NoTrialTitleOrHookMakesAClaimAboutBeingOpen()
+    {
+        // These two lines are written once and never rewritten, but a trial's
+        // status changes. An enrollment claim in either would still be on the
+        // card and the search result long after it stopped being true — the
+        // status is rendered separately and is always current.
+        string[] statusWords =
+            ["recruiting", "enrolling", "now open", "is open", "accepting", "taking part"];
+
+        foreach (var trial in Golden.Items.Where(i => i.Input.SourceKind == "trial_update"))
+        {
+            var s = trial.IdealSummary!;
+            Assert.False(string.IsNullOrWhiteSpace(s.Hook),
+                $"{trial.Input.ExternalId}: the hook is what the feed card shows, so it must be graded");
+
+            foreach (var line in new[] { s.PlainTitle, s.Hook! })
+            {
+                Assert.DoesNotContain(statusWords,
+                    word => line.Contains(word, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+    }
+
+    [Fact]
+    public void TrialReadinessIsScoredByPhaseAndStaysInsideTheTrialBand()
+    {
+        // The prompt hard-codes a phase -> score rubric. Without this the
+        // rubric is only enforced by asking the model nicely.
+        foreach (var trial in Golden.Items.Where(i => i.Input.SourceKind == "trial_update"))
+        {
+            var score = trial.IdealSummary!.Readiness;
+            var phase = trial.Input.TrialPhase ?? "";
+
+            var expected = phase.Contains("Phase 3", StringComparison.OrdinalIgnoreCase)
+                           && !phase.Contains("Phase 2", StringComparison.OrdinalIgnoreCase)
+                ? 7
+                : phase.Contains("Phase 2", StringComparison.OrdinalIgnoreCase) ? 6 : 5;
+
+            Assert.True(score == expected,
+                $"{trial.Input.ExternalId}: phase '{phase}' should score {expected}, got {score}");
+
+            // Nothing being tested in a trial is approved care, and nothing
+            // running in people belongs in the animal/lab end of the scale.
+            Assert.InRange(score, 5, 7);
         }
     }
 

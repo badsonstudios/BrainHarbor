@@ -336,14 +336,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   SYNC_API_KEY; feed backfilled.
   Refs: architecture.md §8/§9. Depends on: WI-309 (M3 complete).
 
-- [ ] **WI-402 Trials fetcher**
+- [x] **WI-402 Trials fetcher**
   Goal: trials flow like everything else.
   Acceptance: ClinicalTrials.gov v2 fetcher → `trials_cache` + trial_update
   feed items (429-defensive); plain-summary treatment via existing pipeline;
   tests with recorded responses.
   Refs: PLAN.md §5, data-model.md. Depends on: WI-304.
 
-- [ ] **WI-403 /trials browse + near-me**
+- [x] **WI-403 /trials browse + near-me**
   Goal: the trial finder.
   Acceptance: /trials browse (condition/phase/status filters); near-me via
   browser geolocation with ZIP fallback → ZCTA centroid table → live

@@ -1,5 +1,5 @@
 {
-  "_about": "WI-301 golden set — the quality yardstick for classification + summaries. DRAFT: hand-verified by the assistant from real PubMed abstracts; awaiting Dan's ratification. See README.md for the rubric and how to grow this toward ~30 cases.",
+  "_about": "WI-301 golden set — the quality yardstick for classification + summaries. DRAFT: hand-verified by the assistant from real PubMed abstracts; awaiting Dan's ratification. See README.md for the rubric and how to grow this toward ~30 cases. WI-402 added three real ClinicalTrials.gov records for the summarize-trial prompt: an open trial has produced no results, so its yardstick is different.",
   "items": [
     {
       "input": {
@@ -458,6 +458,97 @@
         "doesnt_mean": "This describes a group of people. It does not test a treatment or say what will happen to any one person.",
         "stage_label": "Tested in people",
         "readiness": 4
+      }
+    },
+    {
+      "input": {
+        "source": "ctgov",
+        "source_kind": "trial_update",
+        "external_id": "NCT06039709",
+        "title": "Sonodynamic Therapy in Patients With Recurrent GBM",
+        "raw_summary": "Patients diagnosed with glioblastoma (GBM) are faced with limited treatment options. This pilot study will evaluate the safety and feasibility of combining an investigational drug called 5-ALA with neuronavigation-guided low-intensity focused ultrasound (LIFU) for patients who have recurrent GBM. Focused ultrasound (FUS) can be used to non-invasively destroy tumor tissue while preserving normal tissue. When FUS is combined with 5-ALA, this combinatorial approach is called sonodynamic therapy (SDT), and this investigational therapy is being tested for its ability to cause damage to GBM cells. SDT will take place prior to surgery for recurrent GBM.",
+        "published_at": "2026-04-28",
+        "trial_phase": "Phase 1",
+        "trial_status": "Recruiting"
+      },
+      "expected": {
+        "tumor_tags": [
+          "glioblastoma"
+        ],
+        "relevance": "patient_relevant",
+        "research_stage": "human_trial"
+      },
+      "note": "Recruiting phase 1 trial. The summarizer must describe what is BEING TESTED and say plainly that there are no results yet.",
+      "ideal_summary": {
+        "plain_title": "A trial is testing focused ultrasound with a drug for glioblastoma that has come back",
+        "what_studied": "This trial is for adults whose glioblastoma has come back. It tests a drug called 5-ALA together with focused ultrasound aimed at the tumor. The treatment is given before surgery.",
+        "what_found": "The trial is still running. It is checking whether the treatment is safe and whether it can be done at all. It has not reported results.",
+        "means": "If your glioblastoma has come back, you could ask your care team whether a trial like this one fits you.",
+        "doesnt_mean": "This is a test, not a proven treatment. Being in a trial is not a promise that it will help you, and it is not a cure.",
+        "stage_label": "New or updated trial",
+        "readiness": 5,
+        "hook": "A trial is testing whether sound waves plus a drug can damage glioblastoma cells."
+      }
+    },
+    {
+      "input": {
+        "source": "ctgov",
+        "source_kind": "trial_update",
+        "external_id": "NCT07120984",
+        "title": "A Study to Evaluate the Safety and Efficacy of L19TNF With Alkylating Chemotherapy for Patients With Recurrent IDH-mutant Astrocytoma or Oligodendroglioma",
+        "raw_summary": "The purpose of this study is to explore the safety and efficacy of the antibody-cytokine fusion protein L19TNF alone or in combination with alkylating chemotherapy in patients with recurrent IDH mutant glioma.",
+        "published_at": "2025-08-13",
+        "trial_phase": "Phase 2",
+        "trial_status": "Not yet recruiting"
+      },
+      "expected": {
+        "tumor_tags": [
+          "astrocytoma",
+          "oligodendroglioma"
+        ],
+        "relevance": "patient_relevant",
+        "research_stage": "human_trial"
+      },
+      "note": "Phase 2 trial that has NOT opened. The hard case: nothing has happened yet, so any 'what was found' claim would be invented.",
+      "ideal_summary": {
+        "plain_title": "A trial will test a protein drug with chemotherapy for IDH-mutant glioma that has come back",
+        "what_studied": "This trial is for adults whose IDH-mutant glioma has come back. It will test a drug called L19TNF on its own and alongside chemotherapy.",
+        "what_found": "The trial has not opened yet. It will look at how safe the drug is and how well it works. There are no results.",
+        "means": "If this matches your tumor type, your care team can watch for it opening.",
+        "doesnt_mean": "This is a test, not proven care. A trial that has not opened can change, or may never start, and this is not a cure.",
+        "stage_label": "New or updated trial",
+        "readiness": 6,
+        "hook": "A trial will test a protein drug, alone and with chemotherapy, for IDH-mutant glioma that came back."
+      }
+    },
+    {
+      "input": {
+        "source": "ctgov",
+        "source_kind": "trial_update",
+        "external_id": "NCT06988475",
+        "title": "DETERMINE Trial Treatment Arm 06: Capmatinib in Adult Patients With Cancers Harbouring MET Dysregulations",
+        "raw_summary": "This clinical trial is looking at a drug called capmatinib. Capmatinib is approved as standard of care treatment for adult patients with certain types of lung cancer. This means it has gone through clinical trials and been approved by the Medicines and Healthcare products Regulatory Agency (MHRA) in the UK.\n\nCapmatinib works in patients with lung cancer with a particular mutation in their cancer known as a METex14 skipping mutation.\n\nInvestigators now wish to find out if it will be useful in treating patients with other cancer types which have the same mutation or other specific mutations or changes which take place in the MET gene. If the results are positive, the study team will work with the NHS and the Cancer Drugs Fund to see if these drugs can be routinely accessed for patients in the future.\n\nThis trial is part of a trial programme called DETERMINE. The programme will also look at other anti-cancer drugs in the same way, through matching the drug to rare cancer types or ones with specific mutations.",
+        "published_at": "2025-11-24",
+        "trial_phase": "Phase 2/Phase 3",
+        "trial_status": "Recruiting"
+      },
+      "expected": {
+        "tumor_tags": [
+          "glioma"
+        ],
+        "relevance": "patient_relevant",
+        "research_stage": "human_trial"
+      },
+      "note": "Basket trial listing glioma among many tumor types, with a drug already approved elsewhere. Tests that the summary does not read approval for one cancer as proof for brain tumors.",
+      "ideal_summary": {
+        "plain_title": "A trial is testing capmatinib in cancers with MET gene changes, including glioma",
+        "what_studied": "This trial is for adults whose cancer has a change in the MET gene. That includes some gliomas. Capmatinib is already approved for a kind of lung cancer with one of these changes.",
+        "what_found": "The trial is open and still running. It is testing whether capmatinib helps other cancers that carry MET changes. It has not reported results.",
+        "means": "If your tumor has been tested and carries a MET change, you could ask your care team about a trial like this.",
+        "doesnt_mean": "Being approved for lung cancer does not mean it works for brain tumors. This is a test, not proven care for glioma, and it is not a cure.",
+        "stage_label": "New or updated trial",
+        "readiness": 6,
+        "hook": "A trial is testing whether a drug used for some lung cancers helps tumors with the same gene change."
       }
     }
   ]

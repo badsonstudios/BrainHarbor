@@ -102,20 +102,28 @@ CREATE TABLE digest_issues (
 
 ```sql
 CREATE TABLE trials_cache (
-    nct_id        text PRIMARY KEY,
-    title         text NOT NULL,
-    conditions    text[],
-    phase         text,
-    overall_status text,               -- recruiting etc.
-    locations     jsonb,               -- [{facility, city, state, lat, lon}]
-    summary       text,
-    plain_summary text,                -- same summarization treatment as papers
+    nct_id             text PRIMARY KEY,
+    title              text NOT NULL,
+    conditions         text[]      NOT NULL DEFAULT '{}',
+    phase              text,                  -- "Phase 2", "Not applicable"
+    overall_status     text,                  -- "Recruiting", in plain words
+    locations          jsonb       NOT NULL DEFAULT '[]'::jsonb,
+        -- [{facility, city, state, country, lat, lon}]
+    summary            text,                  -- the registry's own text, never shown raw
     last_update_posted date,
-    fetched_at    timestamptz NOT NULL
+    fetched_at         timestamptz NOT NULL DEFAULT now()
 );
 ```
 
 "Near me" = browser geolocation / ZIP → lat-lon → live `filter.geo` query; the cache backs browse lists and "newly posted trials" feed entries (which also land in `aggregated_items` as `trial_update`).
+
+**Facts vs. editorial content (WI-402).** This table holds facts only, and there is deliberately **no plain-language column here**. The plain-language text is editorial: it is what the automated safety checks gate, what a person can edit or reject in the review queue, and what a reader can report a problem with. All of that machinery lives on `aggregated_items`, so the text lives there too and `/trials` joins it (`nct_id = external_id AND source = 'ctgov'`). A second copy in this table would be a second, ungated door to the reader for exactly the prose the safety system held back.
+
+The facts move through their own endpoint, **`POST /api/sync/trials`**, separate from `POST /api/sync/items`, because they obey the opposite rule: they refresh on every run regardless of the review freeze. A trial shown as "Recruiting" after it closed sends a patient to a door that no longer opens. Facts are uploaded *first*, so the worst case of a partial run is a trial whose facts are known before its feed item exists.
+
+**What becomes a feed item.** Every trial the fetcher sees refreshes this table, so browse stays truthful. Only trials someone can still join (not yet recruiting, recruiting, enrolling by invitation, available) and that we have not seen before become feed items — the rest get no `aggregated_items` row at all, which keeps an administrative edit to a trial that finished in 2011 out of both the feed and the review queue. A trial we already know is never re-summarized: its summary says who the trial is for, and its live status is read from this table at render time (including on the already-published item page).
+
+Trials get their own summarization prompt (`summarize-trial`, with its own golden-set cases): the research template asks "what did they find", and an open trial has found nothing yet.
 
 ### sync bookkeeping
 

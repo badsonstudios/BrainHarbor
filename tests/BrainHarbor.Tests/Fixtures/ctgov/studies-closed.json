@@ -1,0 +1,157 @@
+{
+ "studies": [
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT01339052",
+     "briefTitle": "Phase II Study of BKM120 for Subjects With Recurrent Glioblastoma"
+    },
+    "statusModule": {
+     "overallStatus": "COMPLETED",
+     "lastUpdatePostDateStruct": {
+      "date": "2026-07-27",
+      "type": "ACTUAL"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "BKM120 is a newly discovered drug that has been used in other research studies. Information from those other research studies suggests that BKM120 may help to slow or stop the growth of malignant gliomas. The purpose of this study is to see how well BKM120 works in patients with malignant gliomas. Patients on this study will be treated in two groups: patients who are going to receive surgery and those who will not receive surgery. This study is trying to determine how effective BKM120 is in stopping cancer cells from growing. For patients receiving surgery the research will also try to determine if an effective level of BKM120 can penetrate the brain before surgery."
+    },
+    "conditionsModule": {
+     "conditions": [
+      "Glioblastoma"
+     ]
+    },
+    "designModule": {
+     "phases": [
+      "PHASE2"
+     ]
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "University of California, Los Angeles",
+       "city": "Los Angeles",
+       "state": "California",
+       "zip": "90095",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 34.05223,
+        "lon": -118.24368
+       }
+      },
+      {
+       "facility": "University of California, San Francisco",
+       "city": "San Francisco",
+       "state": "California",
+       "zip": "94143",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 37.77493,
+        "lon": -122.41942
+       }
+      },
+      {
+       "facility": "Massachusetts General Hospital",
+       "city": "Boston",
+       "state": "Massachusetts",
+       "zip": "02114",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 42.35843,
+        "lon": -71.05977
+       }
+      },
+      {
+       "facility": "Dana-Farber Cancer Institute",
+       "city": "Boston",
+       "state": "Massachusetts",
+       "zip": "02215",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 42.35843,
+        "lon": -71.05977
+       }
+      },
+      {
+       "facility": "Memorial Sloan-Kettering Cancer Center",
+       "city": "New York",
+       "state": "New York",
+       "zip": "10065",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 40.71427,
+        "lon": -74.00597
+       }
+      },
+      {
+       "facility": "UT, MD Anderson Cancer Center",
+       "city": "Houston",
+       "state": "Texas",
+       "zip": "77030",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 29.76328,
+        "lon": -95.36327
+       }
+      },
+      {
+       "facility": "Huntsman Cancer Institute, University of Utah",
+       "city": "Salt Lake City",
+       "state": "Utah",
+       "zip": "84112",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 40.76078,
+        "lon": -111.89105
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT02902757",
+     "briefTitle": "FDG PET/CT in Monitoring Very Early Therapy Response in Patients With Glioblastoma"
+    },
+    "statusModule": {
+     "overallStatus": "COMPLETED",
+     "lastUpdatePostDateStruct": {
+      "date": "2026-07-17",
+      "type": "ACTUAL"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "This pilot clinical trial studies fluordeoxyglucose (fludeoxyglucose) F-18 (FDG) positron emission tomography (PET)/computed tomography (CT) in monitoring very early therapy response in patients with glioblastoma. Diagnostic procedures, such as FDG PET/CT, may help measure a patient's response to earlier treatment. Chemotherapy can induce very rapid changes to the tumor's glucose consumption which can be measured with imaging. FDG PET/CT shortly after the start of therapy may help identify very early therapy response in patients with glioblastoma."
+    },
+    "conditionsModule": {
+     "conditions": [
+      "Glioblastoma"
+     ]
+    },
+    "designModule": {
+     "phases": [
+      "NA"
+     ]
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "UCLA / Jonsson Comprehensive Cancer Center",
+       "city": "Los Angeles",
+       "state": "California",
+       "zip": "90095",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 34.05223,
+        "lon": -118.24368
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "nextPageToken": "ZVdj7o2Elu8o3lp2BMm74q2tmpOQJJxuYvmh3vAcmD6SuP08FCfCFPfW_tVO0yI"
+}

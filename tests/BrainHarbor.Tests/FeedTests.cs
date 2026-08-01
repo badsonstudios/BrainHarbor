@@ -52,7 +52,9 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     }
 
     private Task CleanupAsync() => _connection.ExecuteAsync(
-        "DELETE FROM aggregated_items WHERE source = @TestSource", new { TestSource });
+        "DELETE FROM aggregated_items WHERE source = @TestSource OR external_id LIKE 'NCT8888%'; " +
+        "DELETE FROM trials_cache WHERE nct_id LIKE 'NCT8888%'",
+        new { TestSource });
 
     private sealed class TestConnectionFactory(string connectionString) : IDbConnectionFactory
     {
@@ -94,6 +96,36 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                 slug = slug ?? $"study-{externalId}",
                 publishedAt = publishedAt ?? new DateOnly(2026, 6, 12),
             });
+
+    /// <summary>
+    /// The feed's own rows, in feed order, found by walking the pages.
+    ///
+    /// The dev database holds real fetched items (the WI-211 shakedown left
+    /// 1,360, and later pipeline runs added more), and the feed pages at 20 —
+    /// so a test that reads page 0 and expects to see its own two rows is
+    /// really asserting "nothing else is in the table". Paging until the rows
+    /// turn up tests the ORDER, which is the part that matters, against any
+    /// database.
+    /// </summary>
+    private async Task<IReadOnlyList<FeedRow>> MyRowsInFeedOrderAsync(
+        FeedQuery query, params string[] slugs)
+    {
+        var wanted = slugs.ToHashSet(StringComparer.Ordinal);
+        var found = new List<FeedRow>();
+
+        for (var page = 0; page < 200; page++)
+        {
+            var result = await _feed.GetAsync(query with { Page = page }, CancellationToken.None);
+            found.AddRange(result.Items.Where(i => i.Slug is not null && wanted.Contains(i.Slug)));
+
+            if (found.Count == wanted.Count || !result.HasMore)
+            {
+                break;
+            }
+        }
+
+        return found;
+    }
 
     // ---------- the human gate ----------
 
@@ -158,10 +190,10 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     {
         await InsertAsync("f-mouse2", relevance: "early_stage", slug: "study-f-mouse2");
 
-        var page = await _feed.GetAsync(
-            new FeedQuery(IncludeEarlyStage: true), CancellationToken.None);
+        var mine = await MyRowsInFeedOrderAsync(
+            new FeedQuery(IncludeEarlyStage: true), "study-f-mouse2");
 
-        Assert.Contains(page.Items, i => i.Slug == "study-f-mouse2");
+        Assert.Contains(mine, i => i.Slug == "study-f-mouse2");
     }
 
     // ---------- filters ----------
@@ -238,18 +270,15 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
             """,
             new { TestSource });
 
-        // Scoped to this test's own rows: the dev database may hold real
-        // fetched items, and asserting on global position 0 would make the
-        // test depend on whatever else is in the table.
-        var page = await _feed.GetAsync(new FeedQuery(), CancellationToken.None);
-        var mine = page.Items
-            .Select((item, index) => (item, index))
-            .Where(x => x.item.Slug is "study-f-dated" or "study-f-undated")
-            .ToList();
+        // Scoped to this test's own rows: the dev database holds real fetched
+        // items, so asserting on global position 0 would make the test depend
+        // on whatever else happens to be in the table.
+        var mine = await MyRowsInFeedOrderAsync(
+            new FeedQuery(), "study-f-dated", "study-f-undated");
 
         Assert.Equal(2, mine.Count);
-        Assert.Equal("study-f-dated", mine[0].item.Slug);
-        Assert.Equal("study-f-undated", mine[1].item.Slug);
+        Assert.Equal("study-f-dated", mine[0].Slug);
+        Assert.Equal("study-f-undated", mine[1].Slug);
     }
 
     // ---------- the pages ----------
@@ -384,7 +413,8 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
 
     // ---------- WI-306: the full six-block item page ----------
 
-    private Task InsertFullSummaryAsync(string externalId, string slug, int? readiness = 7) =>
+    private Task InsertFullSummaryAsync(
+        string externalId, string slug, int? readiness = 7, string sourceKind = "research") =>
         _connection.ExecuteAsync(
             """
             INSERT INTO aggregated_items
@@ -393,7 +423,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                  plain_what_found, plain_means, plain_doesnt_mean,
                  readiness_score, readiness_reason, reviewed_by)
             VALUES
-                (@TestSource, 'research', @externalId, 'A jargon-heavy title', 'https://example.org',
+                (@TestSource, @sourceKind, @externalId, 'A jargon-heavy title', 'https://example.org',
                  'published', 'patient_relevant', @slug, 'human_trial',
                  'A pill slowed a glioma', 'A daily pill helped people.',
                  'Researchers studied people with a glioma.',
@@ -402,7 +432,163 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                  @readiness, 'Being tested in people in trials, but not yet approved.',
                  'dan@example.org')
             """,
-            new { TestSource, externalId, slug, readiness });
+            new { TestSource, externalId, slug, readiness, sourceKind });
+
+    /// <summary>
+    /// A published trial page plus its row in the trial cache. Source is the
+    /// real 'ctgov' because the join keys on it.
+    /// </summary>
+    private async Task InsertPublishedTrialAsync(string nctId, string slug, string status)
+    {
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 research_stage, plain_title, plain_summary, plain_what_studied,
+                 plain_what_found, plain_means, plain_doesnt_mean, reviewed_by)
+            VALUES
+                ('ctgov', 'trial_update', @nctId, 'A trial of a pill', 'https://example.org',
+                 'published', 'patient_relevant', @slug, 'human_trial',
+                 'A trial is testing a pill for glioma', 'A trial is testing a new pill.',
+                 'It is for adults with a glioma that has come back.',
+                 'The trial is still going. It has not reported results.',
+                 'If you fit, you could ask your care team about it.',
+                 'This is a test, not a proven treatment, and it is not a cure.',
+                 'auto')
+            """,
+            new { nctId, slug });
+
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO trials_cache
+                (nct_id, title, conditions, phase, overall_status, last_update_posted)
+            VALUES (@nctId, 'A trial of a pill', ARRAY['Glioma'], 'Phase 2', @status, DATE '2026-07-20')
+            """,
+            new { nctId, status });
+    }
+
+    [Fact]
+    public async Task APublishedTrialPageShowsTheStatusTheTrialHasNowNotTheOneItHadWhenWritten()
+    {
+        // The page is written once and then frozen; trials close. Reading the
+        // status live from the trial cache is what stops a live, indexed page
+        // sending someone to a door that no longer opens.
+        await InsertPublishedTrialAsync("NCT88880001", "trial-closed", "Completed");
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/trial-closed"));
+
+        Assert.Contains("This trial is not taking new patients", html);
+        Assert.Contains("It has finished", html);
+        Assert.DoesNotContain("Status: Recruiting", html);
+
+        // The badge explanation is separate hand-written copy further down the
+        // same page. It said "This is a trial that is enrolling" for every
+        // trial regardless of status, so the page contradicted itself.
+        Assert.DoesNotContain("is enrolling", html);
+    }
+
+    [Fact]
+    public async Task AClosedTrialDropsOutOfTheFeedAndTheRssButKeepsItsPage()
+    {
+        // The card carries the hook written while the trial was open, and that
+        // text is never rewritten. Left in the feed it is a standing invitation
+        // to something that no longer exists. The permalink stays live and says
+        // so plainly — someone looking that trial up still deserves an answer.
+        await InsertPublishedTrialAsync("NCT88880004", "trial-gone", "Completed");
+        await InsertPublishedTrialAsync("NCT88880005", "trial-here", "Recruiting");
+
+        var feed = await MyRowsInFeedOrderAsync(new FeedQuery(), "trial-gone", "trial-here");
+        Assert.Equal("trial-here", Assert.Single(feed).Slug);
+
+        var syndicated = await _feed.GetAllPublishedAsync(500, CancellationToken.None);
+        Assert.DoesNotContain(syndicated, i => i.Slug == "trial-gone");
+        Assert.Contains(syndicated, i => i.Slug == "trial-here");
+
+        // ...but the page itself is still there.
+        var response = await _factory.CreateClient().GetAsync("/research/trial-gone");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SearchStillFindsAClosedTrialButDoesNotRepeatItsStaleHook()
+    {
+        await InsertPublishedTrialAsync("NCT88880006", "trial-searchable", "Completed");
+
+        var hits = await _feed.SearchAsync("glioma pill", 20, CancellationToken.None);
+        var hit = hits.FirstOrDefault(h => h.Slug == "trial-searchable");
+
+        Assert.NotNull(hit);
+        Assert.True(hit!.TrialHasClosed);
+
+        // The card the search page renders must not repeat the frozen
+        // "a trial is testing" hook as though it were live.
+        Assert.Equal("This trial is not taking new patients.", _feed.ToCard(hit).Hook);
+    }
+
+    [Fact]
+    public async Task ATrialWithNoCachedStatusIsNotTreatedAsClosed()
+    {
+        // Unknown is not closed. Hiding a trial we simply have no facts for
+        // would silently shrink the feed on a bad sync.
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug,
+                 plain_summary, reviewed_by)
+            VALUES ('ctgov', 'trial_update', 'NCT88880007', 'A trial', 'https://example.org',
+                    'published', 'patient_relevant', 'trial-no-facts', 'A trial hook.', 'auto')
+            """);
+
+        var feed = await MyRowsInFeedOrderAsync(new FeedQuery(), "trial-no-facts");
+
+        Assert.Single(feed);
+    }
+
+    [Fact]
+    public async Task AnOpenTrialPageSaysSoWithoutTheClosedWarning()
+    {
+        await InsertPublishedTrialAsync("NCT88880002", "trial-open", "Recruiting");
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/trial-open"));
+
+        Assert.Contains("Status: Recruiting", html);
+        Assert.Contains("looking for patients now", html);
+        Assert.DoesNotContain("not taking new patients", html);
+    }
+
+    [Fact]
+    public async Task ATrialWeHaveNoFactsForRendersWithoutInventingAStatus()
+    {
+        // An unknown status is not the same as "closed" — claiming either way
+        // would be making something up.
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, status, relevance, slug, reviewed_by)
+            VALUES ('ctgov', 'trial_update', 'NCT88880003', 'A trial', 'https://example.org',
+                    'published', 'patient_relevant', 'trial-unknown', 'auto')
+            """);
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/trial-unknown"));
+
+        Assert.DoesNotContain("not taking new patients", html);
+        Assert.DoesNotContain("Status:", html);
+    }
+
+    [Fact]
+    public async Task ATrialPageNeverClaimsItFoundSomething()
+    {
+        // WI-402: the blocks hold who a trial is for and where it stands. An
+        // open trial has no results, so labelling them "what they found" would
+        // present a recruiting trial as if it had reported an outcome.
+        await InsertFullSummaryAsync("f-trial", "study-f-trial", sourceKind: "trial_update");
+
+        var html = Collapse(await _factory.CreateClient().GetStringAsync("/research/study-f-trial"));
+
+        Assert.Contains("Who this trial is for", html);
+        Assert.Contains("Where it stands", html);
+        Assert.DoesNotContain("What they found", html);
+    }
 
     [Fact]
     public async Task TheItemPageRendersAllSixBlocksAndTheReadinessScore()

@@ -29,7 +29,35 @@ public sealed class KestrelWebApplicationFactory : WebApplicationFactory<Program
             : _kestrelHost.Services.GetRequiredService<IServer>()
                 .Features.Get<IServerAddressesFeature>()!.Addresses.First();
 
-    public void EnsureServer() => _ = CreateClient();
+    private readonly Lock _startGate = new();
+
+    /// <summary>
+    /// Starts the dual host once, whoever asks first.
+    ///
+    /// Serialized because <see cref="WebApplicationFactory{T}.CreateClient"/> is
+    /// not thread-safe: two test classes sharing this fixture could both enter
+    /// host creation, and the loser would see the base factory's host still
+    /// unset — surfacing as "The server has not been started", with the real
+    /// cause swallowed. That failure has been seen intermittently, so if it
+    /// happens again the message below should say why.
+    /// </summary>
+    public void EnsureServer()
+    {
+        lock (_startGate)
+        {
+            try
+            {
+                _ = CreateClient();
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException(
+                    "The Kestrel test host did not start. This is usually the database " +
+                    "(is the dev container up?) or a port still held by a previous run.",
+                    exception);
+            }
+        }
+    }
 
     /// <summary>Key the Pipeline's client uses in WI-203 integration tests.</summary>
     public const string SyncApiKey = "kestrel-test-sync-key-0123456789";

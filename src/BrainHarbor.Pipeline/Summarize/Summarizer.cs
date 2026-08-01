@@ -88,14 +88,49 @@ public interface ISummarizer
 public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<Summarizer> logger)
     : ISummarizer
 {
+    /// <summary>
+    /// A clinical trial gets its own prompt (WI-402). The research template
+    /// asks "what did they find", and an open trial has found nothing yet —
+    /// asking that question of a trial description is an invitation to invent
+    /// an outcome, which is the exact failure mode the guardrails exist for.
+    /// </summary>
+    internal static string PromptNameFor(FetchedItem item) =>
+        item.SourceKind == "trial_update" ? "summarize-trial" : "summarize";
+
+    /// <summary>
+    /// The text a number in the summary must be traceable to. For a trial that
+    /// includes its phase and status: the prompt scores readiness by phase, so
+    /// "Phase 2" legitimately appears in the output and would otherwise trip
+    /// the numeral post-check as an invented figure.
+    /// </summary>
+    internal static string SourceTextFor(FetchedItem item)
+    {
+        var source = $"{item.Title}\n{item.RawSummary}";
+        return item.Trial is { } trial
+            ? $"{source}\n{trial.Phase}\n{trial.OverallStatus}"
+            : source;
+    }
+
     public async Task<SummaryResult> SummarizeAsync(FetchedItem item, CancellationToken cancellationToken)
     {
-        var template = prompts.Get("summarize");
-        var prompt = template.Render(new Dictionary<string, string>
+        var template = prompts.Get(PromptNameFor(item));
+
+        var fields = new Dictionary<string, string>
         {
             ["title"] = item.Title,
             ["abstract"] = item.RawSummary ?? "(no abstract available)",
-        });
+        };
+
+        if (item.Trial is { } facts)
+        {
+            // The prompt scores by phase, so it has to be TOLD the phase. Left
+            // to infer it from prose, the model would be guessing at exactly
+            // the field the score depends on.
+            fields["phase"] = facts.Phase ?? "not given";
+            fields["status"] = facts.OverallStatus ?? "not given";
+        }
+
+        var prompt = template.Render(fields);
 
         var result = await claude.RunJsonAsync<SummarizeOutput>(
             prompt, output => output.AllBlocksPresent, cancellationToken);
@@ -123,9 +158,7 @@ public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<
             // where both the score and the stage are known (see PipelineRunner).
         };
 
-        // The source the numerals must trace back to is the title + abstract.
-        var sourceText = $"{item.Title}\n{item.RawSummary}";
-        var checks = Guardrails.Check(output.AllProse, sourceText);
+        var checks = Guardrails.Check(output.AllProse, SourceTextFor(item));
 
         if (!checks.Passed)
         {

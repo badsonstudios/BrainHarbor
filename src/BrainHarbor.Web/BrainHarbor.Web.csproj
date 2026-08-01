@@ -12,6 +12,10 @@
     <Content Include="Content\pages\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Content\glossary\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Content\taxonomy.yml" CopyToOutputDirectory="PreserveNewest" />
+    <!-- ZIP -> coordinates for the trial finder's "near me" (WI-403). Census
+         public-domain data; shipped as a file rather than a table because it is
+         read-only reference data that changes once a year. -->
+    <Content Include="Content\zcta-centroids.csv" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -338,11 +338,12 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
         // A re-summarize of a still-pending item should update the flag, so a
         // newly-tripped check isn't hidden by a stale value in the queue.
         var client = AuthedClient();
-        await client.PostAsJsonAsync("/api/sync/items",
-            new UploadRequest([NewItem("reflag-1") with { SummaryFlagged = true }], null));
+        await client.PostAsJsonAsync("/api/sync/items", new UploadRequest(
+            [NewItem("reflag-1") with { PlainSummary = "First try.", SummaryFlagged = true }], null));
 
-        await client.PostAsJsonAsync("/api/sync/items",
-            new UploadRequest([NewItem("reflag-1") with { SummaryFlagged = false }], null));
+        await client.PostAsJsonAsync("/api/sync/items", new UploadRequest(
+            [NewItem("reflag-1") with { PlainSummary = "A cleaner second try.", SummaryFlagged = false }],
+            null));
 
         await using var connection = new NpgsqlConnection(_database.ConnectionString);
         var flagged = await connection.ExecuteScalarAsync<bool>(
@@ -350,6 +351,33 @@ public class SyncApiTests : IClassFixture<WebApplicationFactory<Program>>, IAsyn
             new { TestSource });
 
         Assert.False(flagged);
+    }
+
+    [Fact]
+    public async Task ARerunThatCarriesNoSummaryLeavesTheFlagAlone()
+    {
+        // The flagged PROSE survives a summary-less rerun (plain_summary is
+        // COALESCEd). Clearing the flag anyway would drop the "read this
+        // closely" warning off an item in the queue while the text it refers
+        // to is still sitting there.
+        var client = AuthedClient();
+        await client.PostAsJsonAsync("/api/sync/items", new UploadRequest(
+            [NewItem("keepflag-1") with { PlainSummary = "Suspect prose.", SummaryFlagged = true }], null));
+
+        // A classify-only rerun: no summary in the payload.
+        await client.PostAsJsonAsync("/api/sync/items",
+            new UploadRequest([NewItem("keepflag-1")], null));
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var row = await connection.QuerySingleAsync<(bool Flagged, string? Summary)>(
+            """
+            SELECT summary_flagged, plain_summary
+            FROM aggregated_items WHERE source = @TestSource AND external_id = 'keepflag-1'
+            """,
+            new { TestSource });
+
+        Assert.Equal("Suspect prose.", row.Summary);
+        Assert.True(row.Flagged);
     }
 
     [Fact]

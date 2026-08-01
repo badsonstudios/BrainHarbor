@@ -15,6 +15,13 @@ public interface ISyncApiClient
     Task<UploadResponse> UploadAsync(
         IReadOnlyList<SyncItem> items, string? cursor, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Refreshes the trial cache (WI-402). Facts only — status, phase, sites —
+    /// which is why this is separate from UploadAsync and needs no cursor.
+    /// </summary>
+    Task<TrialsResponse> UploadTrialsAsync(
+        IReadOnlyList<TrialFacts> trials, CancellationToken cancellationToken);
+
     /// <summary>Marks a window done when it produced nothing to upload.</summary>
     Task AdvanceCursorAsync(string source, string cursor, CancellationToken cancellationToken);
 
@@ -68,6 +75,44 @@ public sealed class SyncApiClient(HttpClient httpClient, ILogger<SyncApiClient> 
 
         logger.LogInformation("{New} of {Total} items are new.", unseen.Count, keys.Count);
         return unseen;
+    }
+
+    /// <summary>
+    /// Trials chunk smaller than items: one record can carry hundreds of sites
+    /// (a cooperative-group study runs to a few hundred), so a 500-record batch
+    /// could approach the server's request-body limit and 413 every night with
+    /// no self-healing.
+    /// </summary>
+    public const int TrialsBatchSize = 100;
+
+    public async Task<TrialsResponse> UploadTrialsAsync(
+        IReadOnlyList<TrialFacts> trials, CancellationToken cancellationToken)
+    {
+        var stored = 0;
+        var rejected = 0;
+        var errors = new List<string>();
+
+        foreach (var chunk in trials.Chunk(TrialsBatchSize))
+        {
+            using var response = await httpClient.PostAsJsonAsync(
+                "/api/sync/trials", new TrialsRequest(chunk), Json, cancellationToken);
+            await EnsureSuccessAsync(response, "POST /api/sync/trials", cancellationToken);
+
+            var body = await response.Content.ReadFromJsonAsync<TrialsResponse>(Json, cancellationToken)
+                       ?? throw new SyncApiException("Sync API returned an empty trials response.");
+
+            stored += body.Stored;
+            rejected += body.Rejected;
+            errors.AddRange(body.Errors);
+        }
+
+        foreach (var error in errors)
+        {
+            logger.LogWarning("Trial rejected by the sync API: {Error}", error);
+        }
+
+        logger.LogInformation("Refreshed {Stored} trial record(s).", stored);
+        return new TrialsResponse(stored, rejected, errors);
     }
 
     public async Task AdvanceCursorAsync(

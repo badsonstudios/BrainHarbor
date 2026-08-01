@@ -1,0 +1,264 @@
+{
+ "totalCount": 323,
+ "studies": [
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT03005132",
+     "briefTitle": "Integrative Analysis of Human Glioblastoma Multiforme"
+    },
+    "statusModule": {
+     "overallStatus": "RECRUITING",
+     "lastUpdatePostDateStruct": {
+      "date": "2016-12-29",
+      "type": "ESTIMATED"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "Integrative analysis of GBM"
+    },
+    "conditionsModule": {
+     "conditions": [
+      "GBM"
+     ]
+    },
+    "designModule": {},
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Shanghai Tenth People's Hospital",
+       "status": "RECRUITING",
+       "city": "Shanghai",
+       "state": "Shanghai Municipality",
+       "zip": "200072",
+       "country": "China",
+       "geoPoint": {
+        "lat": 31.22222,
+        "lon": 121.45806
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT03787056",
+     "briefTitle": "Predictive Value of Progastrin Titer at Diagnosis and of Progastrin Kinetics During Treatment in Cancer Patients"
+    },
+    "statusModule": {
+     "overallStatus": "RECRUITING",
+     "lastUpdatePostDateStruct": {
+      "date": "2021-07-16",
+      "type": "ACTUAL"
+     }
+    },
+    "descriptionModule": {
+     "briefSummary": "Progastrin is a pro-hormone that, in physiological conditions, is maturated in gastrin in G cells of the stomach. The role of the gastrin is to stimulate the secretion of gastric acids during digestion. It is also important for the regulation of cell growth of the gastric mucosal.\n\nIn a healthy person, progastrin is not detectable in the peripheral blood. However, progastrin is abnormally released in the blood of patients with different cancers (colorectal, gastric, ovarian, breast, cervix uterus, melanoma…) The gene GAST coding for progastrin is a direct target gene of the WNT/ß-catenin oncogenic pathway. The activation of this oncogenic pathway is an early event in cancer development.\n\nChronic activation of the WNT/ß-catenin oncogenic pathway occurs in almost all human solid tumors and is a central mechanism in cancer biology that induces cellular proliferation, blocking of differentiation leading to primary tumor growth and metastasis formation.\n\nProgastrin measured in the peripheral blood of patients on treatments, could be a new powerful marker for diagnosis and prognosis at different stages."
+    },
+    "conditionsModule": {
+     "conditions": [
+      "Cancer",
+      "Breast Cancer",
+      "Gastric Cancer",
+      "Renal Cancer",
+      "Prostate Cancer",
+      "Melanoma",
+      "Lung Cancer",
+      "Hepatocellular Cancer",
+      "Colorectal Cancer",
+      "Head and Neck Cancer",
+      "Pancreatic Cancer",
+      "Ovarian Cancer",
+      "Glioblastoma",
+      "Endometrial Cancer",
+      "Bladder Cancer",
+      "Esophageal Cancer",
+      "B-cell Lymphoma"
+     ]
+    },
+    "designModule": {
+     "phases": [
+      "NA"
+     ]
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Service de NEURO-ONCOLOGIE du Groupement Hospitalier EST",
+       "status": "RECRUITING",
+       "city": "Bron",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.73865,
+        "lon": 4.91303
+       }
+      },
+      {
+       "facility": "Service d'ONCOLOGIE DIGESTIVE et HEPATOLOGIE de l'hôpital de la Croix-Rousse",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service d'ONCOLOGIE DIGESTIVE et HEPATOLOGIE de l'Hôpital E. Herriot",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service d'Oto-Rhino-Laryngologie de l'Hôpital de la Croix-Rousse",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service d'Urologie de l'Hôpital E. Herriot",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service de Gynécologie de l'hôpital de la Croix-Rousse",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service de Gynécologie du Groupement Hospitalier Est",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service de Pneumologie de l'hôpital de la Croix-Rousse",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service de Pneumologie du Groupement Hospitalier Est",
+       "status": "RECRUITING",
+       "city": "Lyon",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.74906,
+        "lon": 4.84789
+       }
+      },
+      {
+       "facility": "Service d'Hématologie de l'Hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service d'ONCOLOGIE DIGESTIVE et HEPATOLOGIE du Centre Hospitalier Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service d'Oncologie médicale du Centre hospitalier Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service d'Urologie de l'hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service de Chirurgie de l'hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service de Dermatologie de l'hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service de Gynécologie de l'hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      },
+      {
+       "facility": "Service de Pneumologie de l'Hôpital Lyon Sud",
+       "status": "RECRUITING",
+       "city": "Pierre-Bénite",
+       "country": "France",
+       "geoPoint": {
+        "lat": 45.70359,
+        "lon": 4.82424
+       }
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "nextPageToken": "ZVdj7o2Elu8o3lp2BMm74q2tmpOQJJxuY_Oj3_0Zmj6SuP08FCfCEfjS9NdI3Q"
+}

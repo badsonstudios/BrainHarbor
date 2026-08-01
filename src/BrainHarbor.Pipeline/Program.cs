@@ -151,6 +151,19 @@ public static class PipelineHost
                 name));
         }
 
+        // ClinicalTrials.gov (WI-402) — public domain, no key. Deliberately
+        // WITHOUT the standard resilience handler: the fetcher does its own
+        // 429 handling (Retry-After aware), and two retry layers would multiply
+        // each other's waits on a rate-limited registry.
+        builder.Services.AddHttpClient<CtGovFetcher>(client =>
+        {
+            client.BaseAddress = new Uri("https://clinicaltrials.gov/api/v2/");
+            client.Timeout = TimeSpan.FromSeconds(90);
+            client.DefaultRequestHeaders.UserAgent.Add(
+                new ProductInfoHeaderValue("BrainHarborPipeline", "1.0"));
+        });
+        builder.Services.AddTransient<ISourceFetcher>(sp => sp.GetRequiredService<CtGovFetcher>());
+
         // Claude Code CLI wrapper (WI-302) — the LLM work runs through the
         // local `claude` CLI, no Anthropic API key.
         builder.Services
