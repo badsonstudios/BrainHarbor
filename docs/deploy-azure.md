@@ -31,8 +31,31 @@ PGPASS='<a long random password you generate>'
 SUB=$(az account show --query id -o tsv)
 ```
 
-> Check `az account show` before you start — you want the **Badson Studios**
-> subscription.
+## 0. Log in and check the runtime
+
+The cached `az` token is **expired** (issued May, inactive 90 days), so start
+here or every command below fails with `AADSTS700082`:
+
+```bash
+az login
+az account show          # confirm the Badson Studios subscription
+az account set --subscription "<name or id>"   # only if it picked the wrong one
+```
+
+Then confirm what .NET the platform actually offers. **.NET 10 is new and may
+not be there yet** — this is the one value in this file I could not verify:
+
+```bash
+az webapp list-runtimes --os linux | grep -i dotnet
+```
+
+Use the newest `DOTNETCORE:*` it prints in step 1. If 10.0 is missing, either
+deploy self-contained or stay on the newest available and set
+`<TargetFramework>` to match — tell me and I'll sort it.
+
+> Flag names below were validated against Azure CLI **2.79.0**, the version on
+> this machine. Values (SKUs, runtime strings) still depend on what your
+> subscription and region offer.
 
 ---
 
