@@ -17,6 +17,15 @@
 
 **Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
 
+**Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
+
+**Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB currently holds ~67 published demo items from live pipeline runs. NOTE: two `FeedTests` (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) fail *locally* only because that demo data fills the feed; they pass in CI (fresh DB). Minor test-isolation follow-up if desired.
+
+### Next up (M4, but buildable locally without Azure)
+- **WI-402 Trials fetcher** (ClinicalTrials.gov v2 → trials_cache + trial_update feed items; depends only on WI-304) and **WI-403 /trials browse** — pure code, testable locally, no cloud. **Recommended next.**
+- Azure provisioning (WI-401) is `[user]` + real money — do when ready to go public; not required to keep building.
+- Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot); harden the 2 fragile FeedTests.
+
 ### M3 shipped (all on `auto/M3`, PR #5)
 - **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
 - **Readiness score (1–10)** — Dan's ask: how close a finding is to everyday care, stage-capped, shown on item pages + queue.
