@@ -1,0 +1,127 @@
+# Deploys the site to Azure App Service (WI-401).
+#
+# Runs only after CI passes on main, so a red build can never reach production.
+# Order is deliberate: MIGRATE FIRST, then deploy. New code must never start
+# against an old schema, and a failed migration should fail the deploy rather
+# than crash-loop a live site.
+#
+# Auth is OIDC (federated credentials) — there is no publish profile or password
+# stored in this repository, which is public. See docs/deploy-azure.md for the
+# one-time setup and the exact az commands.
+
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  # Manual re-deploy without a new commit (e.g. after changing App Service config).
+  workflow_dispatch:
+
+concurrency:
+  # Never let two deploys race: the second would deploy older bits over newer.
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  id-token: write      # OIDC
+  contents: read
+
+jobs:
+  deploy:
+    # workflow_run fires for failures too; only ship green builds.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      APP_NAME: ${{ vars.AZURE_APP_NAME }}
+      RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      PG_SERVER: ${{ vars.AZURE_PG_SERVER }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish
+        run: dotnet publish src/BrainHarbor.Web -c Release -o publish
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Azure Postgres Flexible Server does not accept connections from an
+      # unknown IP, and GitHub-hosted runners have no stable address. So: open a
+      # hole for THIS runner only, migrate, and close it again in a step that
+      # runs even if the migration fails. Leaving it open would be a standing
+      # invitation to the patient database.
+      - name: Open database firewall for this runner
+        id: firewall
+        run: |
+          RUNNER_IP=$(curl -sf --retry 3 https://api.ipify.org)
+          echo "::add-mask::$RUNNER_IP"
+          RULE="ghdeploy-${{ github.run_id }}"
+          echo "rule=$RULE" >> "$GITHUB_OUTPUT"
+          az postgres flexible-server firewall-rule create \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$PG_SERVER" \
+            --rule-name "$RULE" \
+            --start-ip-address "$RUNNER_IP" \
+            --end-ip-address "$RUNNER_IP" \
+            --output none
+
+      # Only the connection string: --migrate returns before admin seeding and
+      # before anything serves, so the API key and admin credentials are not
+      # needed here. Verified by running it that way. Fewer secrets on a public
+      # repository's workflow is worth the check.
+      - name: Apply database migrations
+        run: dotnet publish/BrainHarbor.Web.dll --migrate
+        env:
+          ASPNETCORE_ENVIRONMENT: Production
+          ConnectionStrings__BrainHarbor: ${{ secrets.PROD_DB_CONNECTION_STRING }}
+
+      - name: Close database firewall
+        if: always() && steps.firewall.outputs.rule != ''
+        run: |
+          az postgres flexible-server firewall-rule delete \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$PG_SERVER" \
+            --rule-name "${{ steps.firewall.outputs.rule }}" \
+            --yes --output none
+
+      - name: Deploy to App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.APP_NAME }}
+          package: publish
+
+      # A deploy that "succeeded" while the site returns 500 is worse than a
+      # failed one, because nobody looks. Check two pages: the home page, and
+      # the one a person in crisis needs to work (WI-103).
+      - name: Smoke test
+        run: |
+          BASE="https://${APP_NAME}.azurewebsites.net"
+          for path in / /get-help-now /research /trials; do
+            echo "Checking $path"
+            for attempt in 1 2 3 4 5 6; do
+              CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 "$BASE$path" || echo 000)
+              [ "$CODE" = "200" ] && break
+              echo "  got $CODE, retrying in 10s (app may still be warming up)"
+              sleep 10
+            done
+            if [ "$CODE" != "200" ]; then
+              echo "::error::$path returned $CODE after the deploy"
+              exit 1
+            fi
+          done

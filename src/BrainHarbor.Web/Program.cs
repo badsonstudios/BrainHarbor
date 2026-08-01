@@ -162,7 +162,21 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// DbUp runs on startup in dev; in prod (M4) migrations become a CI step.
+// DbUp runs on startup in dev. In prod it is a deploy step instead
+// (WI-401): `dotnet BrainHarbor.Web.dll --migrate` applies pending scripts and
+// exits, so the schema is in place BEFORE the new code starts serving, and a
+// migration failure fails the deploy rather than crash-looping a live site.
+//
+// The scripts are embedded in this assembly, which is why the flag lives here
+// rather than in a separate tool that would need its own copy of them.
+if (args.Contains("--migrate", StringComparer.Ordinal))
+{
+    app.Logger.LogInformation("Applying database migrations, then exiting.");
+    MigrationRunner.Run(connectionStringSetting);
+    app.Logger.LogInformation("Migrations complete.");
+    return;
+}
+
 if (app.Environment.IsDevelopment())
 {
     MigrationRunner.Run(connectionStringSetting);
