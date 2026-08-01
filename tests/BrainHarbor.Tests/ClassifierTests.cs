@@ -37,6 +37,7 @@ public class ClassifierTests
         public Task<IReadOnlyDictionary<string, SourceState>> GetStateAsync(CancellationToken ct) => throw new NotImplementedException();
         public Task<IReadOnlyList<ItemKey>> FindNewAsync(IReadOnlyList<ItemKey> keys, CancellationToken ct) => throw new NotImplementedException();
         public Task<UploadResponse> UploadAsync(IReadOnlyList<SyncItem> items, string? cursor, CancellationToken ct) => throw new NotImplementedException();
+        public Task<TrialsResponse> UploadTrialsAsync(IReadOnlyList<TrialFacts> trials, CancellationToken ct) => throw new NotImplementedException();
         public Task AdvanceCursorAsync(string source, string cursor, CancellationToken ct) => throw new NotImplementedException();
         public Task ReportFailureAsync(string source, string error, CancellationToken ct) => throw new NotImplementedException();
     }

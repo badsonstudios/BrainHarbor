@@ -14,7 +14,7 @@ public class PipelineRunnerTests
 {
     private sealed class StubFetcher(
         string source, IReadOnlyList<FetchedItem>? items = null,
-        string? cursor = null, Exception? throws = null) : ISourceFetcher
+        string? cursor = null, Exception? throws = null, string? stalledReason = null) : ISourceFetcher
     {
         public string Source { get; } = source;
         public int FetchCount { get; private set; }
@@ -26,7 +26,7 @@ public class PipelineRunnerTests
             SeenCursor = incomingCursor;
             return throws is not null
                 ? Task.FromException<FetchResult>(throws)
-                : Task.FromResult(new FetchResult(items ?? [], cursor));
+                : Task.FromResult(new FetchResult(items ?? [], cursor, stalledReason));
         }
     }
 
@@ -61,6 +61,15 @@ public class PipelineRunnerTests
             return Task.FromResult(new UploadResponse(items.Count, 0, 0, [], []));
         }
 
+        public List<TrialFacts> TrialRefreshes { get; } = [];
+
+        public Task<TrialsResponse> UploadTrialsAsync(
+            IReadOnlyList<TrialFacts> trials, CancellationToken ct)
+        {
+            TrialRefreshes.AddRange(trials);
+            return Task.FromResult(new TrialsResponse(trials.Count, 0, []));
+        }
+
         public Task AdvanceCursorAsync(string source, string cursor, CancellationToken ct)
         {
             CursorAdvances.Add((source, cursor));
@@ -85,10 +94,13 @@ public class PipelineRunnerTests
     {
         public HashSet<string> ExcludeExternalIds { get; } = new(StringComparer.Ordinal);
         public HashSet<string> UnclassifiableExternalIds { get; } = new(StringComparer.Ordinal);
+        public List<string> Classified { get; } = [];
 
         public Task<BrainHarbor.Pipeline.Classify.Classification> ClassifyAsync(
             FetchedItem item, CancellationToken ct)
         {
+            Classified.Add(item.ExternalId);
+
             if (ExcludeExternalIds.Contains(item.ExternalId))
             {
                 return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
@@ -114,6 +126,23 @@ public class PipelineRunnerTests
         ExternalId = externalId,
         Title = $"Study {externalId}",
         Url = $"https://example.org/{externalId}",
+    };
+
+    private static FetchedItem Trial(string nctId, bool feedWorthy = true, string status = "Recruiting") => new()
+    {
+        Source = "ctgov",
+        SourceKind = "trial_update",
+        ExternalId = nctId,
+        Title = $"A trial {nctId}",
+        Url = $"https://clinicaltrials.gov/study/{nctId}",
+        FeedWorthy = feedWorthy,
+        Trial = new TrialFacts
+        {
+            NctId = nctId,
+            Title = $"A trial {nctId}",
+            OverallStatus = status,
+            LastUpdatePosted = new DateOnly(2026, 7, 20),
+        },
     };
 
     /// <summary>By default produces no summary (item uploads classified but
@@ -156,6 +185,92 @@ public class PipelineRunnerTests
         var uploaded = Assert.Single(upload.Items);
         Assert.Equal("new-1", uploaded.ExternalId);
         Assert.Equal(1, result.TotalNew);
+    }
+
+    // ---------- WI-402: facts and feed items are on separate tracks ----------
+
+    [Fact]
+    public async Task TrialFactsRefreshEvenForATrialTheClassifierThrowsOut()
+    {
+        // Blocker: facts used to ride on the item, so an Exclude decision took
+        // the status change with it. A trial's status is not the classifier's
+        // to veto.
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.ExcludeExternalIds.Add("NCT00000001");
+
+        await Runner(api, classifier, new StubFetcher("ctgov", [Trial("NCT00000001")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Empty(api.Uploads);                                  // no feed item...
+        Assert.Equal("NCT00000001", Assert.Single(api.TrialRefreshes).NctId);   // ...facts still stored
+    }
+
+    [Fact]
+    public async Task TrialFactsRefreshForATrialTheServerAlreadyKnows()
+    {
+        // The commonest case by far: a known trial changes status. It must not
+        // be re-summarized, and its facts must still land.
+        var api = new StubSyncApi();
+        api.AlreadyKnown.Add("NCT00000002");
+        var classifier = new StubClassifier();
+
+        await Runner(api, classifier, new StubFetcher("ctgov", [Trial("NCT00000002")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Empty(api.Uploads);
+        Assert.Empty(classifier.Classified);                        // no LLM spend
+        Assert.Single(api.TrialRefreshes);
+    }
+
+    [Fact]
+    public async Task AClosedTrialCostsNoLlmWorkAndNeverReachesTheReviewQueue()
+    {
+        // Fact-only items exist to keep trials_cache honest. They must not
+        // become pending rows for a person to wade through, and must not be
+        // worth a single model call.
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+
+        await Runner(api, classifier,
+                new StubFetcher("ctgov", [Trial("NCT00000003", feedWorthy: false, status: "Completed")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Empty(api.Uploads);
+        Assert.Empty(classifier.Classified);
+        Assert.Single(api.TrialRefreshes);
+    }
+
+    [Fact]
+    public async Task AnOpenTrialWeHaveNotSeenBeforeStillBecomesAFeedItem()
+    {
+        var api = new StubSyncApi();
+
+        await Runner(api, new StubFetcher("ctgov", [Trial("NCT00000004")]))
+            .RunAsync(CancellationToken.None);
+
+        var uploaded = Assert.Single(Assert.Single(api.Uploads).Items);
+        Assert.Equal("NCT00000004", uploaded.ExternalId);
+        Assert.Single(api.TrialRefreshes);
+    }
+
+    [Fact]
+    public async Task AStalledSourceIsReportedAsAFailureButItsFactsAreStillStored()
+    {
+        // The fetcher read records and could not move its window. Failing loudly
+        // is right; throwing the facts away with it is not, because the next run
+        // stalls the same way and they would never be stored at all.
+        var api = new StubSyncApi();
+        var fetcher = new StubFetcher("ctgov", [Trial("NCT00000005")],
+            stalledReason: "read 4000 record(s) without advancing");
+
+        var result = await Runner(api, fetcher).RunAsync(CancellationToken.None);
+
+        Assert.Single(api.TrialRefreshes);
+        Assert.Single(result.Failures);
+        Assert.Contains("without advancing", result.Failures[0].Error);
+        Assert.Empty(api.CursorAdvances);                           // window held
+        Assert.Contains(api.ReportedFailures, f => f.Source == "ctgov");
     }
 
     [Fact]

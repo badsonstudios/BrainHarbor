@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing. Clean stopping point — `main` is green, PR #5 merged, `auto/M3` deleted. |
+| **In progress** | **Autopilot M4 running** (branch `auto/M4`). WI-402 done; WI-403 next. |
 | **Next up** | **M4.** First item **WI-401 is `[user]`+assisted** (Dan provisions Azure App Service + Postgres, brainharbor.org DNS + TLS). BUT **WI-402 (trials fetcher) + WI-403 (/trials browse) are code, buildable now WITHOUT Azure** (WI-402 depends only on WI-304). So the assistant can autopilot the trials feature while Dan does the cloud setup. Digest (WI-404/405) and maintenance (WI-406) need prod/ESP → after WI-401. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -19,12 +19,13 @@
 
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
-**Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB currently holds ~67 published demo items from live pipeline runs. NOTE: two `FeedTests` (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) fail *locally* only because that demo data fills the feed; they pass in CI (fresh DB). Minor test-isolation follow-up if desired.
+**Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. Occasional flake: `A11ySmokeTests` sometimes fails to start its Kestrel host ("The server has not been started"); passes on re-run, unrelated to any change — worth a look if it gets more frequent.
 
 ### Next up (M4, but buildable locally without Azure)
-- **WI-402 Trials fetcher** (ClinicalTrials.gov v2 → trials_cache + trial_update feed items; depends only on WI-304) and **WI-403 /trials browse** — pure code, testable locally, no cloud. **Recommended next.**
+- **WI-403 /trials browse + near-me** — the browse page over `trials_cache`, plus near-me via geolocation/ZIP → live `filter.geo` query. WI-402 landed its supply line. **Recommended next.**
+  Note for WI-403: `trials_cache` has no `tumor_tags` — filtering by tumor type will have to match the registry's raw `conditions` strings or join `aggregated_items` for the taxonomy slugs. Decide which before building.
 - Azure provisioning (WI-401) is `[user]` + real money — do when ready to go public; not required to keep building.
-- Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot); harden the 2 fragile FeedTests.
+- Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
 - **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
@@ -72,6 +73,38 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-01** — **WI-402 done — trials fetcher** (autopilot M4):
+  ClinicalTrials.gov v2 fetcher, `trials_cache` (migration 0007), a
+  `trial_update` feed item for trials someone can still join, and a
+  trial-specific summarization prompt. Live-verified against the real registry
+  (80 trials in a 5-day window: all mapped, 79 with site coordinates, correct
+  50/30 open-vs-closed split, cursor advanced clean).
+  **The design changed twice under review, both times for the same reason —
+  a trial's FACTS and its plain-language text obey opposite rules:**
+  (1) the first cut wrote `plain_summary` into `trials_cache` through the
+  unfrozen facts path, which would have carried summaries the safety checks
+  FLAGGED, or a human REJECTED, to readers anyway. The cache now holds no
+  plain-language column at all; editorial text lives only on
+  `aggregated_items`, and facts move through their own `POST /api/sync/trials`.
+  (2) refreshing the cache fixed browse but not the pages a reader lands on —
+  a published trial page, its feed card, its search snippet and its RSS entry
+  all kept saying "now enrolling" forever, because a known trial is never
+  re-summarized. The item page now reads status live from the cache; closed
+  trials leave the feed, search snippets and RSS but keep their permalink,
+  which says plainly that they are not taking new patients.
+  Also: facts upload BEFORE classification (an off-topic verdict no longer
+  swallows a status change), fact-only trials create no review-queue rows, a
+  known trial costs no LLM call, the truncation guard can no longer walk the
+  cursor backwards, 5xx/network failures retry (a 400 does not), and three real
+  trials were added to the golden set — a new versioned prompt was otherwise
+  ungated. Stripped real investigator names, phones and emails from the
+  recorded fixtures before committing (public repo). 590 tests.
+
+- **2026-07-31** — **Autopilot M4 started** (branch `auto/M4`). WI-401 (Azure)
+  is `[user]` + real money, so it is skipped; WI-402/403 (trials) are pure code
+  and buildable without cloud. WI-404/405/406/407/408 all depend on WI-401, so
+  the run stops after the trials feature.
 
 - **2026-07-30** — **WI-303 golden-set accuracy run — DONE (by the assistant)**:
   the local `claude` CLI is invocable here, so ran the classify-v1 prompt

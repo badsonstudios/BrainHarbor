@@ -25,6 +25,49 @@ public class ItemModel(FeedRepository feed, SummaryRenderer summaries) : PageMod
     /// <summary>Renders a summary block with glossary tooltips (WI-306).</summary>
     public IHtmlContent Block(string? text) => summaries.Render(text);
 
+    private bool IsTrial => Item.SourceKind == "trial_update";
+
+    /// <summary>
+    /// The block headings (WI-402). A trial's blocks hold who it is for and
+    /// where it stands, not a study and its result, so labelling them "what
+    /// they found" would present an open trial as if it had reported an
+    /// outcome. Same columns, honest names.
+    /// </summary>
+    public string StudiedHeading => IsTrial ? "Who this trial is for." : "What was studied.";
+
+    public string FoundHeading => IsTrial ? "Where it stands." : "What they found.";
+
+    /// <summary>
+    /// Plain words for what the trial's current status means for the reader
+    /// (WI-402). The status itself comes from trials_cache and can change after
+    /// this page was written, so the explanation has to be generated from the
+    /// live value rather than baked into the summary.
+    /// </summary>
+    public string TrialStatusExplanation => Item.TrialStatus switch
+    {
+        "Recruiting" => "It is looking for patients now. Talk to your care team about whether it fits you.",
+        "Not yet recruiting" =>
+            "It has not opened yet. Ask your care team to watch for it if it looks like a fit.",
+        "Enrolling by invitation" =>
+            "It is only taking people the trial team invites. You cannot sign up for this one directly.",
+        "Available" => "It is open outside of a trial for people who qualify.",
+        "Active, not recruiting" =>
+            "It is still running with the people who already joined. It is not taking anyone new.",
+        "Completed" => "It has finished. Results may take a long time to be published.",
+        "Stopped early" =>
+            "It was stopped before it finished. That can happen for many reasons, good or bad.",
+        "Paused" => "It has stopped taking people for now. It may or may not start again.",
+        "Withdrawn before starting" => "It closed before anyone joined.",
+        "No longer available" => "It has closed and is no longer an option.",
+        "Temporarily not available" => "It is closed for now. It may open again.",
+        "Approved for marketing" =>
+            "The treatment being tested here has been approved, so it may be available through your doctor.",
+        "Withheld" => "The trial team has asked for the details to be held back.",
+        "Status unknown" =>
+            "The trial team has not updated this record in a long time, so we cannot tell if it is still going.",
+        _ => "We take this from the trial registry, which is the best record of where a trial stands.",
+    };
+
     /// <summary>The one-line description for meta/OG tags — the hook if we have
     /// one, else the plain or original title.</summary>
     public string MetaDescription =>
@@ -101,6 +144,12 @@ public class ItemModel(FeedRepository feed, SummaryRenderer summaries) : PageMod
             "become treatments.",
         ResearchStage.EarlyResearchLabCells =>
             "This was done on cells in a lab, not in people. It is a very early step.",
+        // A trial's badge is the same whatever its status, so this sentence has
+        // to check the live status itself. Saying "enrolling" two paragraphs
+        // under a banner that says the trial has closed is worse than saying
+        // nothing (WI-402).
+        ResearchStage.NewOrUpdatedTrial when Item.TrialHasClosed =>
+            "This is a trial. It is not open to new patients now, and it is not a finding.",
         ResearchStage.NewOrUpdatedTrial =>
             "This is a trial that is enrolling or has been updated. It is not a finding yet.",
         ResearchStage.Preprint =>

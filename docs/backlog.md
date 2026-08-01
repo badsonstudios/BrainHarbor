@@ -336,7 +336,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   SYNC_API_KEY; feed backfilled.
   Refs: architecture.md §8/§9. Depends on: WI-309 (M3 complete).
 
-- [ ] **WI-402 Trials fetcher**
+- [x] **WI-402 Trials fetcher**
   Goal: trials flow like everything else.
   Acceptance: ClinicalTrials.gov v2 fetcher → `trials_cache` + trial_update
   feed items (429-defensive); plain-summary treatment via existing pipeline;

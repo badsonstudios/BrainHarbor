@@ -73,6 +73,7 @@ docker-compose.yml              Local Postgres 16 on port 5433 (beside the exist
 | `GET /api/sync/state` | Per-source cursor (`last_success_at`, last window fetched) so runs are incremental and self-healing |
 | `POST /api/sync/check` | Body: list of `(source, external_id)` (+ DOIs/PMIDs for cross-source dedupe) → returns the subset that's new. **This is what saves Claude tokens** — only new items get processed |
 | `POST /api/sync/items` | Batch upsert of finished items (classification + summary + provenance + prompt/model version) as `status='pending'`. Idempotent on `(source, external_id)` |
+| `POST /api/sync/trials` | Batch refresh of trial **facts** into `trials_cache` (status, phase, conditions, sites). Separate from `/items` because facts obey the opposite rule: they refresh on every run regardless of the review freeze, since a closed trial shown as "Recruiting" sends a patient to a door that no longer opens. Carries no plain-language text — that stays on `aggregated_items` where the safety checks and the review queue can reach it |
 
 Security: single long random API key in a header, HTTPS only, rate-limited, endpoints return 401 without it; key lives in `dotnet user-secrets` locally / App Service config in prod, rotated by changing one setting. (A personal-project-appropriate design; upgradeable to HMAC-signed requests later if ever needed.)
 

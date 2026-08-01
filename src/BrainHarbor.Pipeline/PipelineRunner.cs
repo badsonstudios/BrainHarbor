@@ -85,19 +85,42 @@ public sealed class PipelineRunner(
         try
         {
             var fetched = await fetcher.FetchAsync(cursor, cancellationToken);
+
+            // Facts before anything else (WI-402). Trial status, phase and
+            // sites refresh on every run regardless of what happens to the feed
+            // item — whether it is new, excluded as off-topic, or frozen
+            // because a person reviewed it. Doing this first also means the
+            // worst case of a later failure is facts without a feed item, which
+            // harms nobody; the reverse would advertise a closed trial as open.
+            var factsRejected = await RefreshFactsAsync(fetcher.Source, fetched.Items, cancellationToken);
+
+            // The source read records but could not move its window forward.
+            // The facts above are stored; the run is still a failure, so it
+            // reaches the admin health page instead of reading as a quiet night.
+            if (fetched.StalledReason is { } stalled)
+            {
+                logger.LogError("[{Source}] stalled: {Reason}", fetcher.Source, stalled);
+                await syncApi.ReportFailureAsync(fetcher.Source, stalled, cancellationToken);
+                return new SourceRunResult(
+                    fetcher.Source, fetched.Items.Count, 0, 0, 0, factsRejected, stalled);
+            }
+
             if (fetched.Items.Count == 0)
             {
                 logger.LogInformation("[{Source}] nothing new.", fetcher.Source);
                 // The window still counts as processed — dropping the cursor
                 // here would refetch the same growing range every run.
                 await AdvanceCursorIfAnyAsync(fetcher.Source, fetched.Cursor, cancellationToken);
-                return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, null);
+                return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, factsRejected, null);
             }
 
             // Ask before spending: only genuinely new items are worth
             // classifying and summarizing (architecture.md §4). Items marked
             // AlwaysUpload bypass this — their content changes in place.
-            var candidates = fetched.Items.Where(i => !i.AlwaysUpload).ToList();
+            // Fact-only items can never become feed rows, so asking the server
+            // whether it already knows them is a wasted round trip (on ctgov
+            // that is most of the batch).
+            var candidates = fetched.Items.Where(i => i.FeedWorthy && !i.AlwaysUpload).ToList();
             var newKeys = candidates.Count == 0
                 ? []
                 : (await syncApi.FindNewAsync(
@@ -108,14 +131,20 @@ public sealed class PipelineRunner(
 
             var newItems = fetched.Items
                 .Where(i => i.AlwaysUpload || newKeys.Contains((i.Source, i.ExternalId)))
+                // Fact-only items (a trial nobody can join) never become feed
+                // rows: no classification, no summary, and nothing in the
+                // review queue for a person to wade through.
+                .Where(i => i.FeedWorthy)
                 .ToList();
 
             if (newItems.Count == 0)
             {
-                logger.LogInformation("[{Source}] fetched {Fetched}, all already known.",
+                logger.LogInformation(
+                    "[{Source}] fetched {Fetched}; nothing new to write up.",
                     fetcher.Source, fetched.Items.Count);
                 await AdvanceCursorIfAnyAsync(fetcher.Source, fetched.Cursor, cancellationToken);
-                return new SourceRunResult(fetcher.Source, fetched.Items.Count, 0, 0, 0, 0, null);
+                return new SourceRunResult(
+                    fetcher.Source, fetched.Items.Count, 0, 0, 0, factsRejected, null);
             }
 
             // Classify each new item (WI-303). Excluded items are dropped
@@ -194,7 +223,9 @@ public sealed class PipelineRunner(
                 logger.LogInformation("[{Source}] fetched {Fetched}, new {New}, all excluded as off-topic.",
                     fetcher.Source, fetched.Items.Count, newItems.Count);
                 await AdvanceCursorIfAnyAsync(fetcher.Source, fetched.Cursor, cancellationToken);
-                return new SourceRunResult(fetcher.Source, fetched.Items.Count, newItems.Count, 0, 0, excluded, null);
+                return new SourceRunResult(
+                    fetcher.Source, fetched.Items.Count, newItems.Count, 0, 0,
+                    excluded + factsRejected, null);
             }
 
             var upload = await syncApi.UploadAsync(toUpload, fetched.Cursor, cancellationToken);
@@ -211,7 +242,7 @@ public sealed class PipelineRunner(
                 newItems.Count,
                 upload.Inserted + upload.Updated,
                 upload.Frozen,
-                upload.Rejected + excluded,
+                upload.Rejected + excluded + factsRejected,
                 null);
         }
         catch (OperationCanceledException)
@@ -228,6 +259,47 @@ public sealed class PipelineRunner(
             await syncApi.ReportFailureAsync(fetcher.Source, exception.Message, cancellationToken);
             return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, exception.Message);
         }
+    }
+
+    /// <summary>
+    /// Uploads the factual half of whatever this source produced (WI-402 —
+    /// today only ClinicalTrials.gov). Runs before dedupe, classification and
+    /// summarization, so a trial's status refreshes even when its feed item is
+    /// old news, off-topic, or frozen by a reviewer.
+    /// </summary>
+    /// <summary>
+    /// Uploads the factual half of whatever this source produced. Returns how
+    /// many the server rejected, so a systematic validation failure (a registry
+    /// change pushing every record past a bound) is counted rather than logged
+    /// and forgotten. If EVERY record is rejected the source is failed
+    /// outright: silently never updating trials_cache while the health page
+    /// shows green is exactly the failure this reporting exists to prevent.
+    /// </summary>
+    private async Task<int> RefreshFactsAsync(
+        string source, IReadOnlyList<FetchedItem> items, CancellationToken cancellationToken)
+    {
+        var facts = items.Select(i => i.Trial).Where(t => t is not null).ToList();
+        if (facts.Count == 0)
+        {
+            return 0;
+        }
+
+        var result = await syncApi.UploadTrialsAsync(facts!, cancellationToken);
+
+        if (result.Stored == 0)
+        {
+            throw new InvalidOperationException(
+                $"every one of {facts.Count} trial record(s) was rejected: " +
+                string.Join(" | ", result.Errors.Take(3)));
+        }
+
+        if (result.Rejected > 0)
+        {
+            logger.LogWarning("[{Source}] {Rejected} of {Total} trial record(s) were rejected.",
+                source, result.Rejected, facts.Count);
+        }
+
+        return result.Rejected;
     }
 
     private async Task AdvanceCursorIfAnyAsync(

@@ -162,6 +162,37 @@ public class SummarizerTests
         Assert.Equal(expected, ProseStyle.Normalize(input));
     }
 
+    [Fact]
+    public void ATrialGetsTheTrialPromptAndEverythingElseGetsTheResearchOne()
+    {
+        // WI-402. The research template asks "what did they find", and an open
+        // trial has found nothing yet — asking that of a trial description
+        // invites the model to invent an outcome, which is exactly the failure
+        // the guardrails exist to prevent.
+        var trial = Item() with { Source = "ctgov", SourceKind = "trial_update" };
+
+        Assert.Equal("summarize-trial", Summarizer.PromptNameFor(trial));
+        Assert.Equal("summarize", Summarizer.PromptNameFor(Item()));
+        Assert.Equal("summarize", Summarizer.PromptNameFor(Item() with { SourceKind = "preprint" }));
+    }
+
+    [Fact]
+    public void TheTrialPromptExistsAndForbidsInventingAnOutcome()
+    {
+        var path = Path.Combine(RepoRoot(), "src", "BrainHarbor.Pipeline", "Prompts", "summarize-trial.md");
+        var text = File.ReadAllText(path);
+
+        Assert.StartsWith("version: summarize-trial-v", text, StringComparison.Ordinal);
+        Assert.Contains("has NOT produced results yet", text, StringComparison.Ordinal);
+        Assert.Contains("Never promise access", text, StringComparison.Ordinal);
+
+        // The same anti-hype floor as the research prompt.
+        foreach (var banned in new[] { "breakthrough", "miracle", "game-changer", "wonder drug" })
+        {
+            Assert.Contains(banned, text, StringComparison.Ordinal);
+        }
+    }
+
     private static string RepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

@@ -19,6 +19,9 @@
   --color-border-subtle: #dbe3ea;/* decorative hairlines only */
   --color-band: #0d3b4a;         /* helpline band + dark panels */
   --color-band-ink: #ffffff;     /* text on band — 11:1 */
+  --color-notice: #fdf3ef;       /* "this has closed / take care" panel fill */
+  --color-notice-border: #f0d3c6;
+  --color-notice-edge: #b4552b;  /* its left rule — 4.8:1 on the fill */
 
   /* Type — 18px base, ~1.2 modular scale */
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -681,6 +684,38 @@ main {
 .means-block h2 {
   margin: 0;
   font-size: var(--text-xl);
+}
+
+/* A trial's live status (WI-402). Read from the trial registry at page load,
+   not from the summary — trials close, and a stale "enrolling" is a wasted
+   phone call for someone who is already exhausted. The closed variant is
+   deliberately louder than the open one. */
+.trial-status {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-inline-start: 6px solid var(--color-accent);
+  border-radius: var(--card-radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block: var(--space-5);
+}
+
+.trial-status p {
+  margin: 0;
+}
+
+.trial-status p + p {
+  margin-block-start: var(--space-2);
+}
+
+.trial-status--closed {
+  background: var(--color-notice);
+  border-color: var(--color-notice-border);
+  border-inline-start-color: var(--color-notice-edge);
+}
+
+.trial-status__checked {
+  font-size: var(--text-base);
+  color: var(--color-ink-muted);
 }
 
 .provenance {

@@ -110,3 +110,30 @@ keep it, and keep tuning the prompt against it.
 - **Hard case: technical reviews.** `42031225` (GBM resistance mechanisms) is
   on-topic but dense; classified `patient_relevant` / `review_guideline` as a
   landscape review. The human review gate is where calls like this get made.
+
+## Trial cases (WI-402)
+
+Three real ClinicalTrials.gov records were added for the **`summarize-trial`**
+prompt: a recruiting phase 1, a recruiting phase 2/3 basket trial listing
+glioma among many tumor types, and a phase 2 trial that has **not opened yet**.
+
+They exist because a trial is a different summarization problem from a paper.
+A paper has a result; an open trial does not. Asking the research template's
+"what did they find" of a trial description is an invitation to invent an
+outcome, which is precisely what the guardrails exist to catch. So the trial
+cases hold the yardstick to a different standard:
+
+- `what_found` must describe **where the trial stands**, and say plainly that
+  there are no results yet.
+- `doesnt_mean` must say a trial is a test, not proven care.
+- Readiness is scored **by phase alone** (phase 3 → 7, phase 2 → 6, phase 1 →
+  5), which maps onto the site's existing readiness bands. Never above 7:
+  nothing being tested in a trial is approved care.
+- The not-yet-open case is the hard one. Nothing has happened at all, so any
+  claim beyond "it has not started" is fabricated.
+
+Trial inputs carry `trial_phase` and `trial_status` because the prompt is given
+both — it scores by phase, and a phase it had to guess at from prose would make
+the score meaningless. The guardrail check treats them as part of the source
+text, so a summary may legitimately say "Phase 2" without the numeral
+post-check reading it as an invented figure.

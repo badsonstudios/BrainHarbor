@@ -74,6 +74,58 @@ public sealed record SyncItem
     public bool SummaryFlagged { get; init; }
 }
 
+/// <summary>
+/// The FACTS about one ClinicalTrials.gov record (data-model.md
+/// §trials_cache), uploaded through their own endpoint rather than riding on a
+/// feed item (WI-402).
+///
+/// They travel separately because they obey opposite rules. A feed item's
+/// plain-language text is editorial: gated by the automated safety checks,
+/// editable and rejectable by a human, frozen once reviewed. A trial's status
+/// is a fact about the world: it must refresh on every run no matter what
+/// anyone decided about the summary, because a closed trial shown as
+/// "Recruiting" sends a patient to a door that no longer opens.
+///
+/// Note there is no plain-language field here. That text lives on
+/// aggregated_items, where the review machinery can reach it, and /trials
+/// joins it.
+/// </summary>
+public sealed record TrialFacts
+{
+    /// <summary>The NCT id — the same value as the feed item's external id.</summary>
+    public required string NctId { get; init; }
+
+    public required string Title { get; init; }
+
+    /// <summary>The registry's own brief summary. Raw source text, never shown
+    /// to a reader as-is.</summary>
+    public string? Summary { get; init; }
+
+    public IReadOnlyList<string> Conditions { get; init; } = [];
+
+    /// <summary>Plain phase text ("Phase 1", "Phase 2/Phase 3", "Not applicable").</summary>
+    public string? Phase { get; init; }
+
+    /// <summary>Recruiting status, already in plain words ("Recruiting").</summary>
+    public string? OverallStatus { get; init; }
+
+    public IReadOnlyList<TrialLocation> Locations { get; init; } = [];
+
+    public DateOnly? LastUpdatePosted { get; init; }
+}
+
+public sealed record TrialLocation(
+    string? Facility,
+    string? City,
+    string? State,
+    string? Country,
+    double? Latitude,
+    double? Longitude);
+
+public sealed record TrialsRequest(IReadOnlyList<TrialFacts> Trials);
+
+public sealed record TrialsResponse(int Stored, int Rejected, IReadOnlyList<string> Errors);
+
 public sealed record UploadRequest(IReadOnlyList<SyncItem> Items, string? Cursor);
 
 /// <summary>

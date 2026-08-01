@@ -111,6 +111,33 @@ A CI script walks all pages and reports: overdue reviews, missing sources, `vola
 - Numbers must come verbatim from the source (the classic failure mode is invented percentages) — a post-check script verifies every numeral in the summary appears in the source text; mismatch → `summary_flagged`, held for review.
 - Output is JSON (structured outputs) → template fields, so rendering is deterministic and a malformed response can't leak prose onto the site.
 
+### Trials get their own template (WI-402)
+
+A clinical trial is a different summarization problem from a paper, so
+`trial_update` items use a second versioned prompt, **`summarize-trial`**, with
+its own golden-set cases. The reason is block 3: a paper has a result, an open
+trial does not. Asking "what did they find" of a trial description invites the
+model to invent an outcome, which is the exact failure the guardrails exist to
+catch. In the trial template that block describes **where the trial stands** and
+must say plainly that there are no results yet, and the item page relabels the
+blocks to match ("Who this trial is for" / "Where it stands").
+
+Three rules follow from the fact that a trial's summary is written once and
+never rewritten, while the trial itself changes:
+
+- **The plain title and the hook may not mention enrollment status.** Those two
+  lines are what the feed card, the search result and the RSS entry show, and a
+  "now recruiting" written today is still there long after it stopped being
+  true. Status is rendered separately, read live from `trials_cache`.
+- **Readiness is scored by phase alone** (phase 3 → 7, phase 2 → 6, phase 1 →
+  5), never above 7: nothing being tested in a trial is approved care, and
+  nothing running in people belongs in the animal/lab end of the scale. The
+  prompt is given the phase rather than left to infer it.
+- **A closed trial leaves the feed, search snippets and RSS**, but keeps its
+  permalink, which states plainly that it is not taking new patients. Someone
+  looking that trial up still deserves an answer; they just should not be
+  invited to a door that no longer opens.
+
 ### Publish mode (WI-212)
 
 **The site runs in Auto mode by default** — the human review gate is optional,

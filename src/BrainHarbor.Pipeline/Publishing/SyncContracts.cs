@@ -55,6 +55,36 @@ public sealed record SyncItem
     public bool SummaryFlagged { get; init; }
 }
 
+/// <summary>
+/// The FACTS about one ClinicalTrials.gov record (WI-402), uploaded through
+/// their own endpoint. Facts refresh unconditionally; the plain-language text
+/// is editorial and travels as a normal item, so there is no summary field
+/// here.
+/// </summary>
+public sealed record TrialFacts
+{
+    public required string NctId { get; init; }
+    public required string Title { get; init; }
+    public string? Summary { get; init; }
+    public IReadOnlyList<string> Conditions { get; init; } = [];
+    public string? Phase { get; init; }
+    public string? OverallStatus { get; init; }
+    public IReadOnlyList<TrialLocation> Locations { get; init; } = [];
+    public DateOnly? LastUpdatePosted { get; init; }
+}
+
+public sealed record TrialLocation(
+    string? Facility,
+    string? City,
+    string? State,
+    string? Country,
+    double? Latitude,
+    double? Longitude);
+
+public sealed record TrialsRequest(IReadOnlyList<TrialFacts> Trials);
+
+public sealed record TrialsResponse(int Stored, int Rejected, IReadOnlyList<string> Errors);
+
 public sealed record UploadRequest(IReadOnlyList<SyncItem> Items, string? Cursor);
 
 public sealed record CursorRequest(string Source, string Cursor);

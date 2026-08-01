@@ -45,7 +45,8 @@ public sealed class SyncApiClientIntegrationTests : IClassFixture<KestrelWebAppl
         await using var connection = new NpgsqlConnection(_database.ConnectionString);
         await connection.ExecuteAsync(
             "DELETE FROM aggregated_items WHERE source = @TestSource; " +
-            "DELETE FROM source_sync_state WHERE source = @TestSource",
+            "DELETE FROM source_sync_state WHERE source = @TestSource; " +
+            "DELETE FROM trials_cache WHERE nct_id LIKE 'NCT9999%'",
             new { TestSource });
     }
 
@@ -176,6 +177,48 @@ public sealed class SyncApiClientIntegrationTests : IClassFixture<KestrelWebAppl
 
         // And still gated behind human review.
         Assert.Equal("pending", (string)row.status);
+    }
+
+    [Fact]
+    public async Task TheTrialFactsContractSurvivesTheRoundTripToo()
+    {
+        // WI-402: TrialFacts is declared twice, once per side. A rename or a
+        // dropped field here would silently empty the trial finder, so it gets
+        // the same pinning treatment as the item contract above.
+        var facts = new TrialFacts
+        {
+            NctId = "NCT99990042",
+            Title = "A study of a new pill for glioblastoma",
+            Summary = "This trial tests a new pill.",
+            Conditions = ["Glioblastoma"],
+            Phase = "Phase 2",
+            OverallStatus = "Recruiting",
+            LastUpdatePosted = new DateOnly(2026, 7, 20),
+            Locations =
+            [
+                new TrialLocation("A cancer center", "Columbus", "Ohio",
+                    "United States", 39.9612, -82.9988),
+            ],
+        };
+
+        var result = await _client.UploadTrialsAsync([facts], CancellationToken.None);
+        Assert.Equal(1, result.Stored);
+
+        await using var connection = new NpgsqlConnection(_database.ConnectionString);
+        var row = await connection.QuerySingleAsync(
+            """
+            SELECT overall_status, phase, conditions, last_update_posted,
+                   locations->0->>'city' AS city,
+                   (locations->0->>'lat')::float8 AS lat
+            FROM trials_cache WHERE nct_id = 'NCT99990042'
+            """);
+
+        Assert.Equal("Recruiting", (string)row.overall_status);
+        Assert.Equal("Phase 2", (string)row.phase);
+        Assert.Equal(["Glioblastoma"], (string[])row.conditions);
+        Assert.Equal(new DateOnly(2026, 7, 20), (DateOnly)row.last_update_posted);
+        Assert.Equal("Columbus", (string)row.city);
+        Assert.Equal(39.9612, (double)row.lat, 4);
     }
 
     [Fact]
