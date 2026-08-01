@@ -1,9 +1,13 @@
 @using BrainHarbor.Web.Models
+@inject BrainHarbor.Web.Feed.CardImages CardImages
 @model FeedCard
 
-@* One feed card (WI-109). Anatomy is fixed (sitemap.md): badge → title →
-   hook → tags + date · source, meta pinned to the card bottom via CSS. *@
+@* One feed card (WI-109). Anatomy: hero (content-matched photo + readiness
+   dial) → badge → title → hook → tags + date · source. The photo is picked
+   from a small human-vetted pool by CardImages; the dial is the item's own
+   readiness score. *@
 <li class="card">
+    @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
     <partial name="_StageBadge" model="StageBadge.For(Model.Stage)" />
     <h3><a href="@Model.Url">@Model.Title</a></h3>
     <p class="card__hook">@Model.Hook</p>

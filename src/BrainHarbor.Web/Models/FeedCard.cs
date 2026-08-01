@@ -13,4 +13,5 @@ public sealed record FeedCard(
     string Hook,
     IReadOnlyList<string> Tags,
     string DateText,
-    string Source);
+    string Source,
+    int? Readiness = null);

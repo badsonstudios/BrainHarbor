@@ -430,6 +430,46 @@ main {
   border-radius: var(--card-radius);
   box-shadow: var(--card-shadow);
   padding: var(--space-4) var(--space-5);
+  overflow: hidden; /* clip the banner to the card's rounded top */
+}
+
+/* Card hero: a content-matched photo backdrop with the readiness dial laid on
+   top. Bleeds to the card edges, sits above the badge, breaks up the wall of
+   text. Purely decorative. */
+.card-hero {
+  position: relative;
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-5)) 0;
+  height: 8rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-surface);
+}
+
+/* Soft scrim for depth + so the dial always has some contrast under it. */
+.card-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.18));
+}
+
+/* The readiness dial, drawn on a dark disc so it reads on any photo. */
+.card-hero__dial {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+}
+.card-hero__num {
+  font-size: 2.9rem;
+  font-weight: 700;
+  fill: #ffffff;
+}
+.card-hero__lbl {
+  font-size: 0.95rem;
+  fill: rgba(255, 255, 255, 0.85);
 }
 
 .card h3 {

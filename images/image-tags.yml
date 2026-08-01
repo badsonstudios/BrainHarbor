@@ -1,0 +1,94 @@
+# Card-backdrop image analysis (79 Unsplash images, reviewed 2026-07-31).
+#
+# use:  keep      = calm / abstract / on-theme, safe next to cautious text
+#       sparingly = usable but clinical/busy/loud — use only if nothing better fits
+#       avoid     = too clinical, dramatic, scary, or off-topic for this audience
+#
+# tags are a controlled vocabulary we can match to a post's content:
+#   brain, neuron, cells, dna, genetics, imaging, radiation, surgery,
+#   medication, lab, immunotherapy, clinical, people, equipment, data,
+#   abstract, texture, anatomy, offtopic
+#
+# The photographer's name is in each filename (Unsplash). Attribution isn't
+# required by the Unsplash license, but we'll list credits in IMAGE-CREDITS.md.
+
+images:
+  - { id: 0,  file: accuray-6Xiy0TQkIew,      desc: "clinic consult, doctor + patient", tags: [clinical, people, radiation], mood: clinical, use: avoid }
+  - { id: 1,  file: accuray-6pQPFuD7nJY,      desc: "radiologist at scan monitors",      tags: [clinical, people, imaging, data], mood: clinical, use: avoid }
+  - { id: 2,  file: accuray-VJ3o_O54Xp8,      desc: "CyberKnife radiation machine",      tags: [radiation, equipment], mood: clinical, use: sparingly }
+  - { id: 3,  file: brecht-corbeel-hPYXdo_NGBI, desc: "3D brain with wires",             tags: [brain, abstract], mood: neutral, use: keep }
+  - { id: 4,  file: bhautik-patel-CFSJUUb_Q-Y, desc: "glowing orange neurons",           tags: [neuron, abstract], mood: dramatic, use: sparingly }
+  - { id: 5,  file: bhautik-patel-NVprB2Xt1bA(1), desc: "glowing neurons (dup of 4)",    tags: [neuron, abstract], mood: dramatic, use: avoid }
+  - { id: 6,  file: bhautik-patel-NVprB2Xt1bA, desc: "white brains, red regions",        tags: [brain, abstract], mood: neutral, use: sparingly }
+  - { id: 7,  file: bhautik-patel-uhbFIkNhlXs, desc: "red screaming anatomy figure",     tags: [anatomy], mood: dramatic, use: avoid }
+  - { id: 8,  file: bhautik-patel-vWb8wGL5ah0, desc: "purple neuron, microscopy",        tags: [neuron, cells, lab], mood: calm, use: keep }
+  - { id: 9,  file: bioscience-image-library-wDH7c3pXkpY, desc: "colorful muscle figure", tags: [anatomy], mood: neutral, use: sparingly }
+  - { id: 10, file: buddhi-kumar-shrestha-iW_n3MqVVtU, desc: "brain on white",           tags: [brain], mood: calm, use: keep }
+  - { id: 11, file: cesar-badilla-miranda-0m4ZNiUcFy8, desc: "operating room, teal",     tags: [surgery, clinical], mood: dramatic, use: avoid }
+  - { id: 12, file: chidera-faustina-okeke--ci0K6OeaYI, desc: "woman in lab coat, dark", tags: [lab, people], mood: moody, use: avoid }
+  - { id: 13, file: chris-liverani-dBI_My696Rk, desc: "line chart on screen (financial-looking)", tags: [data, offtopic], mood: neutral, use: avoid }
+  - { id: 14, file: d-koi-COFXWa6LJdw,        desc: "white geometric node",             tags: [abstract, texture], mood: calm, use: keep }
+  - { id: 15, file: david-matos-xtLIgpytpck,  desc: "stone bust + brain diagram",        tags: [anatomy, brain], mood: neutral, use: sparingly }
+  - { id: 16, file: diana-polekhina-ZBstHWt9vLc, desc: "syringe in gloved hand",         tags: [medication, clinical], mood: clinical, use: avoid }
+  - { id: 17, file: digitale-de-2GEr4fLZt8A,  desc: "DNA helix, blue",                   tags: [dna, genetics], mood: calm, use: keep }
+  - { id: 18, file: digitale-de-MES6r7WFb0o,  desc: "DNA helix, blue",                   tags: [dna, genetics], mood: calm, use: keep }
+  - { id: 19, file: digitale-de-uD98M9OhNmc,  desc: "DNA helix close-up, blue",          tags: [dna, genetics], mood: calm, use: keep }
+  - { id: 20, file: drlyj-tSzgS0oKmB0,        desc: "surgeons, green scrubs",            tags: [surgery, people], mood: clinical, use: avoid }
+  - { id: 21, file: ecliptic-graphic-_jg8xh2SsXQ, desc: "circuit-board brain, blue",     tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 22, file: elen-sher-nbU4xF3YUbw,    desc: "ultrasound device",                tags: [equipment, imaging], mood: clinical, use: sparingly }
+  - { id: 23, file: elsa-olofsson-lwmrYYqklio, desc: "man smelling cannabis plant",      tags: [offtopic], mood: neutral, use: avoid }
+  - { id: 24, file: enis-can-ceyhan-vDTeJabev7c, desc: "blue digital tunnel / ring",     tags: [abstract], mood: calm, use: keep }
+  - { id: 25, file: etactics-inc-CVLsRdwkmmw, desc: "pill bottle spilling",              tags: [medication], mood: neutral, use: sparingly }
+  - { id: 26, file: etactics-inc-FRlQ1Tz5y2U, desc: "pills on yellow",                   tags: [medication], mood: neutral, use: sparingly }
+  - { id: 27, file: etactics-inc-g3PsF4_y7ZY, desc: "stethoscope on blue",               tags: [clinical, equipment], mood: calm, use: sparingly }
+  - { id: 28, file: etactics-inc-qyZ0YM63tPE, desc: "pile of colorful pills",            tags: [medication], mood: neutral, use: sparingly }
+  - { id: 29, file: etactics-inc-ucD2OP5cj28, desc: "pile of colorful pills",            tags: [medication], mood: neutral, use: sparingly }
+  - { id: 30, file: etactics-inc-vJ6HCZsx4ZE, desc: "blister pack, tan",                 tags: [medication], mood: calm, use: sparingly }
+  - { id: 31, file: europeana-StgBbODEWPs,    desc: "soft brain cross-section, pale",    tags: [brain, imaging, abstract], mood: calm, use: keep }
+  - { id: 32, file: freestocks-nss2eRzQwgw,   desc: "pile of tablets",                   tags: [medication], mood: neutral, use: sparingly }
+  - { id: 33, file: hal-gatewood-OgvqXGL7XO4(1), desc: "purple plasma ball",             tags: [abstract], mood: dramatic, use: avoid }
+  - { id: 34, file: hal-gatewood-OgvqXGL7XO4, desc: "purple plasma ball (dup)",          tags: [abstract], mood: dramatic, use: avoid }
+  - { id: 35, file: husien-bisky-ZuIucrhwHvA, desc: "operating room, dark",              tags: [surgery], mood: dramatic, use: avoid }
+  - { id: 36, file: igor-omilaev--AazHiQpS-A, desc: "red head, pills inside brain",      tags: [anatomy, medication, brain], mood: dramatic, use: avoid }
+  - { id: 37, file: irwan-rbDE93-0hHs,        desc: "surgeon at monitors",              tags: [clinical, people, data], mood: clinical, use: avoid }
+  - { id: 38, file: jaron-nix-7wWRXewYCH4,    desc: "microscope + petri dish",           tags: [lab, immunotherapy], mood: calm, use: keep }
+  - { id: 39, file: jj-ying-7JX0-bfiuxQ,      desc: "white woven texture",              tags: [abstract, texture], mood: calm, use: keep }
+  - { id: 40, file: josh-riemer-OH5BRdggi2w,  desc: "red glowing sphere + lines",        tags: [abstract, cells], mood: dramatic, use: sparingly }
+  - { id: 41, file: lee-campbell-6njoEbtarec, desc: "person at iMac",                    tags: [data, people], mood: neutral, use: sparingly }
+  - { id: 42, file: louis-reed-pwcKF7L4-no,   desc: "pink pipette, well plate",          tags: [lab, immunotherapy, cells], mood: calm, use: keep }
+  - { id: 43, file: luke-chesser-rCOWMC8qf8A, desc: "hands + smartwatch",                tags: [people, data], mood: neutral, use: sparingly }
+  - { id: 44, file: mathew-schwartz-8rj4sz9YLCI, desc: "grey skeleton",                  tags: [anatomy], mood: stark, use: avoid }
+  - { id: 45, file: maxim-berg-vLfzJSGCU9c,   desc: "colorful translucent brain",        tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 46, file: milad-fakurian-58Z17lnVS4U, desc: "small glowing brain, purple",     tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 47, file: mingwei-lim-QxGSSfatjRs,  desc: "dark grid, red dots",              tags: [abstract, cells], mood: neutral, use: sparingly }
+  - { id: 48, file: mjh-shikder--bJj_81Zois,  desc: "pink DNA-like particles, bokeh",    tags: [dna, cells, abstract], mood: calm, use: keep }
+  - { id: 49, file: nappy-0mFqLqD9DYI,        desc: "smartwatch + notebook",             tags: [data, people], mood: neutral, use: sparingly }
+  - { id: 50, file: nappy-heGTlwA705U,        desc: "tablet + stethoscope, hands",       tags: [clinical, people], mood: clinical, use: sparingly }
+  - { id: 51, file: natanael-melchor-43LwvC-eQPM, desc: "patient vitals monitor",        tags: [equipment], mood: clinical, use: avoid }
+  - { id: 52, file: national-cancer-institute-i7VL3yc-vbI, desc: "surgeons operating",    tags: [surgery], mood: clinical, use: avoid }
+  - { id: 53, file: national-cancer-institute-tV-RX0beDp8, desc: "lab tray under blue light", tags: [lab], mood: moody, use: sparingly }
+  - { id: 54, file: notorious-v1rus-gRWPsHqsFZ4, desc: "brain + orange network lines",   tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 55, file: ofx-vision-fVaG4uCXJCU,   desc: "blue 3D torso",                     tags: [anatomy], mood: calm, use: sparingly }
+  - { id: 56, file: pietro-jeng-n6B49lTx7NM,  desc: "green/red mesh net",               tags: [abstract], mood: neutral, use: sparingly }
+  - { id: 57, file: ricardo-gomez-angel-8XDfQmFImtQ, desc: "blue bubbles / cells",       tags: [cells, abstract], mood: calm, use: keep }
+  - { id: 58, file: ritu-chauhan-P9w9U_VyshQ, desc: "neuro OR team + screens",           tags: [surgery, clinical], mood: clinical, use: avoid }
+  - { id: 59, file: robina-weermeijer-IHfOpAzzjHM, desc: "brain cross-section + neuron model", tags: [brain, lab], mood: calm, use: keep }
+  - { id: 60, file: rodrigo-porto-vfy71fExF7g, desc: "operating room, bright",           tags: [surgery], mood: clinical, use: avoid }
+  - { id: 61, file: sam-moghadam-2rrsfMN4hn8, desc: "gloved hand, syringe + IV",         tags: [medication, clinical], mood: clinical, use: avoid }
+  - { id: 62, file: sandro-porfirio-d7BwTSp3uQs, desc: "empty OR / imaging suite",       tags: [equipment], mood: clinical, use: sparingly }
+  - { id: 63, file: shawn-day-aKMcboPYZZw,    desc: "grey brain outline",               tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 64, file: shawn-day-ii6BOPjAtVY,    desc: "brain, X-ray-clean",               tags: [brain, imaging, abstract], mood: calm, use: keep }
+  - { id: 65, file: shubham-dhage-2sz-3NrmZYU, desc: "pink brain hologram, grid",        tags: [brain, abstract], mood: calm, use: keep }
+  - { id: 66, file: shubham-dhage-kYdMZb8BWmw, desc: "green abstract bubbles",           tags: [abstract, texture], mood: calm, use: keep }
+  - { id: 67, file: stefano-bucciarelli-16IN3v0V12M, desc: "purple plasma ball",         tags: [abstract], mood: dramatic, use: avoid }
+  - { id: 68, file: stephen-andrews-hKfJZo_6wzw, desc: "patient vitals monitor",         tags: [equipment], mood: clinical, use: avoid }
+  - { id: 69, file: stephen-dawson-qwtCeJ5cLYs, desc: "analytics dashboard, charts",     tags: [data], mood: neutral, use: keep }
+  - { id: 70, file: tengyart-JnJylmuVofU,     desc: "syringe, blue liquid",              tags: [medication], mood: clinical, use: avoid }
+  - { id: 71, file: the-new-york-public-library-tBZXYspGH_M, desc: "vintage brain engravings", tags: [brain, anatomy], mood: calm, use: keep }
+  - { id: 72, file: tsd-studio-9_jvKRbNdTM,   desc: "neon hand reaching",               tags: [abstract], mood: dramatic, use: avoid }
+  - { id: 73, file: vitaly-gariev-2kopEHjST-g, desc: "two doctors + tablet",             tags: [clinical, people], mood: clinical, use: avoid }
+  - { id: 74, file: vitaly-gariev-EXOkTjoKkoU, desc: "doctor shows scan to patient",     tags: [clinical, people], mood: clinical, use: avoid }
+  - { id: 75, file: volodymyr-hryshchenko-e8YFkjN2CzY, desc: "yellow flat-lay: mask, pills", tags: [medication], mood: neutral, use: sparingly }
+  - { id: 76, file: xiao-cui-3S2FmTt4HKE,     desc: "red skull X-ray",                  tags: [imaging], mood: dramatic, use: avoid }
+  - { id: 77, file: yaser-mobarakabadi-QOZSJlsy8c8, desc: "surgeons under OR lights",    tags: [surgery], mood: dramatic, use: avoid }
+  - { id: 78, file: zoshua-colah-_fdWqec7VRo, desc: "empty hospital room",              tags: [clinical, equipment], mood: clinical, use: sparingly }

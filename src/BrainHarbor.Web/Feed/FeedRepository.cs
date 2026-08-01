@@ -330,7 +330,8 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
         [.. row.TumorTags.Select(taxonomy.LabelFor)],
         row.PublishedAt?.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)
             ?? "No date",
-        SourceLabel(row.Source));
+        SourceLabel(row.Source),
+        row.ReadinessScore);
 
     internal static string SourceLabel(string source) => source switch
     {

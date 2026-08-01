@@ -20,3 +20,8 @@ node_modules/
 # OS
 Thumbs.db
 .DS_Store
+
+# Raw Unsplash originals (heavy) — optimized versions live in wwwroot/img/cards
+/images/*.jpg
+/images/*.jpeg
+/images/*.png

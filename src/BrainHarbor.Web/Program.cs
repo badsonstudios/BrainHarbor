@@ -91,6 +91,7 @@ builder.Services.AddScoped<BrainHarbor.Web.Admin.ReviewRepository>();
 builder.Services.Configure<PublishingOptions>(
     builder.Configuration.GetSection(PublishingOptions.SectionName));
 builder.Services.AddScoped<BrainHarbor.Web.Feed.FeedRepository>();
+builder.Services.AddSingleton<BrainHarbor.Web.Feed.CardImages>();
 // AddEndpointFilter<T> resolves once from the ROOT provider at endpoint build
 // time, so a scoped registration would be a captive-dependency trap later.
 builder.Services.AddSingleton<SyncApiKeyFilter>();
