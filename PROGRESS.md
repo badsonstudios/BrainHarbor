@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. **Autopilot M4 ended at the WI-401 boundary** — WI-402 + WI-403 shipped on `auto/M4` (PR #6, draft). Everything left in M4 needs Azure. |
+| **In progress** | **WI-401 — the repo half is done and on `main`; the Azure half is Dan's.** Deploy workflow + `--migrate` + runbook are committed. Nothing has been provisioned, no meter running. Next action is Dan working through `docs/deploy-azure.md`. |
 | **Next up** | **M4.** First item **WI-401 is `[user]`+assisted** (Dan provisions Azure App Service + Postgres, brainharbor.org DNS + TLS). BUT **WI-402 (trials fetcher) + WI-403 (/trials browse) are code, buildable now WITHOUT Azure** (WI-402 depends only on WI-304). So the assistant can autopilot the trials feature while Dan does the cloud setup. Digest (WI-404/405) and maintenance (WI-406) need prod/ESP → after WI-401. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -33,10 +33,19 @@
   built, there is no ESP account, and `/digest` honestly says sign-up opens
   soon.)
 
-### Next up — everything left in M4 needs Dan
-- **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Before that: **review and merge PR #6** (`auto/M4`), which holds WI-402 + WI-403.
-- Nothing else in M4 is buildable without cloud, which is why the autopilot run stopped here.
+### Next up — WI-401's cloud half, which only Dan can do
+**Follow [`docs/deploy-azure.md`](docs/deploy-azure.md) start to finish.** It is
+written as copy-pasteable `az` commands: resource group → Postgres B1ms →
+App Service B1 (Always On) → app settings → GitHub OIDC → first deploy →
+point the pipeline at prod → DNS + managed TLS for brainharbor.org.
+Roughly **$30/month** once the resources exist. `az` is already authenticated
+against the Badson Studios subscription.
+
+Dan chose **"pipeline only, I'll run the provisioning"** (2026-08-01), so the
+assistant deliberately created nothing in Azure.
+
+After that unblocks: WI-404/405 (digest — also needs an ESP account),
+WI-406 (maintenance run), WI-407 (pre-launch hardening), WI-408 (soft launch).
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
@@ -85,6 +94,26 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-01** — **M4 part 1 MERGED**: PR #6 squash-merged to `main`
+  (`ccb5e66`), `auto/M4` deleted, CI green. WI-402 + WI-403 are live on `main`.
+- **2026-08-01** — **WI-401 (repo half) done — deploy pipeline, no cloud**.
+  Dan's call: the assistant builds everything that lands in the repo and hands
+  over the provisioning commands rather than spending on his subscription.
+  Shipped: `.github/workflows/deploy.yml` (runs only after CI passes on `main`,
+  **migrates before deploying** so new code never starts against an old schema
+  and a bad migration fails the deploy instead of crash-looping a live site);
+  a `--migrate` flag on the Web app, since the SQL scripts are embedded in that
+  assembly and a separate tool would need its own copy — verified against a real
+  fresh database, all 7 scripts applied, re-run is a clean no-op, exit 0;
+  OIDC auth so **no password or publish profile lives in this public repo**;
+  the runner's IP is opened on the Postgres firewall for the migration step only
+  and removed with `if: always()`; and a smoke test on `/`, `/get-help-now`,
+  `/research`, `/trials` because a deploy that "succeeds" onto a broken site is
+  worse than one that fails.
+  `docs/deploy-azure.md` is the runbook (costs, exact commands, DNS/TLS,
+  rollback, how to turn the meter off). Prod settings documented in
+  `.env.example` + `api-keys-config.md`. **Nothing provisioned; no meter running.**
 
 - **2026-08-01** — **WI-403 done — the trial finder; M4 autopilot run ENDS
   here** (everything left needs Azure). `/trials` browse over `trials_cache`

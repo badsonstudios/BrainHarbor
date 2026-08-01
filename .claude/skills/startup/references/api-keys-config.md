@@ -25,3 +25,28 @@ Notes:
 - ClinicalTrials.gov v2, NCI RSS, ScienceDaily RSS, medRxiv/bioRxiv: no keys.
 - When adding a variable: placeholder line in `.claude/.env.example`, row in
   this table, and tell Dan to set the real value.
+
+## Production (WI-401)
+
+The live site reads its configuration from **App Service configuration**, not
+from `.claude/.env` and not from `dotnet user-secrets`. Setting them is a step
+in [`docs/deploy-azure.md`](../../../../docs/deploy-azure.md); this is just the
+list.
+
+| Setting | What it is |
+|---|---|
+| `ASPNETCORE_ENVIRONMENT` | `Production` |
+| `ConnectionStrings__BrainHarbor` | Postgres Flexible Server, `SslMode=Require` |
+| `SYNC_API_KEY` | The pipeline's key. **Must differ from the dev one** — otherwise a dev pipeline run could write to the live site |
+| `Admin__Email` / `Admin__Password` | Seeds the single admin account. 2FA is enrolled separately, per environment |
+| `Publishing__Mode` | `Auto` (default) or `Review` |
+
+GitHub Actions deploys with **OIDC**: `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
+`AZURE_SUBSCRIPTION_ID` and `PROD_DB_CONNECTION_STRING` are secrets on the
+`production` environment; the app/resource-group/server names are variables.
+There is no publish profile or stored password — the repository is public.
+
+Migrations do **not** run at startup in production. The deploy workflow runs
+`dotnet BrainHarbor.Web.dll --migrate` first, so the schema is in place before
+the new code serves and a bad migration fails the deploy instead of
+crash-looping a live site.
