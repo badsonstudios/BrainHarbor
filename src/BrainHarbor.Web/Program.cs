@@ -92,6 +92,38 @@ builder.Services.Configure<PublishingOptions>(
     builder.Configuration.GetSection(PublishingOptions.SectionName));
 builder.Services.AddScoped<BrainHarbor.Web.Feed.FeedRepository>();
 builder.Services.AddSingleton<BrainHarbor.Web.Feed.CardImages>();
+
+// Trial finder (WI-403). The ZIP table is read-only reference data, loaded once.
+builder.Services.AddScoped<BrainHarbor.Web.Trials.TrialsRepository>();
+builder.Services.AddSingleton(provider =>
+    BrainHarbor.Web.Trials.ZctaCentroids.Load(Path.Combine(
+        provider.GetRequiredService<IWebHostEnvironment>().ContentRootPath, "Content")));
+
+// "Near me" is a LIVE call to ClinicalTrials.gov inside a page request, so it
+// gets a short timeout: a slow registry must not hold a reader's page open.
+// The client itself degrades to "we could not reach it" rather than throwing.
+builder.Services.AddHttpClient<BrainHarbor.Web.Trials.NearbyTrialsClient>(client =>
+{
+    client.BaseAddress = new Uri("https://clinicaltrials.gov/api/v2/");
+    client.Timeout = TimeSpan.FromSeconds(8);
+    client.DefaultRequestHeaders.UserAgent.Add(
+        new System.Net.Http.Headers.ProductInfoHeaderValue("BrainHarbor", "1.0"));
+})
+.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+{
+    // A page request must not be able to open unbounded sockets to one host.
+    // On a small App Service, exhausting outbound ports would take the DATABASE
+    // down with it, not just this feature.
+    MaxConnectionsPerServer = 20,
+    PooledConnectionLifetime = TimeSpan.FromMinutes(5),
+})
+// **Privacy, not noise reduction.** The default HttpClient logging writes the
+// full request URI at Information, and this URI contains
+// `filter.geo=distance(<lat>,<lon>,50mi)` — the reader's location, on a brain
+// tumor site, in stdout and (from M4) App Insights. The ZIP box promises "we do
+// not store it" and /privacy says nothing about location; logging it would make
+// both untrue. Removing the handler's loggers is what keeps that promise.
+.RemoveAllLoggers();
 // AddEndpointFilter<T> resolves once from the ROOT provider at endpoint build
 // time, so a scoped registration would be a captive-dependency trap later.
 builder.Services.AddSingleton<SyncApiKeyFilter>();

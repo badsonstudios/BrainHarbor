@@ -343,7 +343,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   tests with recorded responses.
   Refs: PLAN.md §5, data-model.md. Depends on: WI-304.
 
-- [ ] **WI-403 /trials browse + near-me**
+- [x] **WI-403 /trials browse + near-me**
   Goal: the trial finder.
   Acceptance: /trials browse (condition/phase/status filters); near-me via
   browser geolocation with ZIP fallback → ZCTA centroid table → live

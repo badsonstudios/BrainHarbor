@@ -22,6 +22,13 @@ and we do not build a profile of you.
 **When you change text size:** a small cookie remembers your choice for a
 year. It holds one word, large or standard, and nothing else.
 
+**When you search for trials near you:** you can type a ZIP code, or let your
+browser share your location. We turn it into a point on the map and send that
+point to ClinicalTrials.gov to ask which trials have a site nearby. We do not
+save it, and we do not write it to our logs. It is gone when the page finishes
+loading. You never have to share your location: typing a ZIP works just as
+well, and browsing the list works without either.
+
 **When the digest opens:** we will ask for your email address, and nothing
 else. Sign-up is not open yet, so we hold no addresses today.
 

@@ -72,6 +72,21 @@ public sealed class A11ySmokeTests : IClassFixture<KestrelWebApplicationFactory>
     }
 
     [Fact]
+    public async Task TrialFinderHasNoSeriousOrCriticalAxeViolations()
+    {
+        // WI-403: a page of form controls, filters and lists — the shape most
+        // likely to strand a keyboard or screen-reader user, and the page a
+        // frightened reader is most likely to be on.
+        var page = await _browser!.NewPageAsync();
+        var response = await page.GotoAsync(_factory.ServerAddress + "/trials");
+
+        Assert.True(response!.Ok, $"Expected 2xx from /trials, got {response.Status}");
+        Assert.True(await page.Locator("#zip").CountAsync() > 0);
+
+        await AssertNoSeriousViolations(page, "/trials");
+    }
+
+    [Fact]
     public async Task StyleGuideWithAllBadgeKindsHasNoSeriousOrCriticalAxeViolations()
     {
         // Every stage badge + card renders here — this is the a11y gate for

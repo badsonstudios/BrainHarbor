@@ -1,0 +1,254 @@
+@page "/trials"
+@model BrainHarbor.Web.Pages.Trials.IndexModel
+@{
+    ViewData["Title"] = "Find a clinical trial";
+}
+
+@* WI-403: the trial finder. Every control is a plain form that works with
+   JavaScript off; the "use my location" button is added by script only when
+   the browser can actually do it. *@
+
+<h1>Find a clinical trial</h1>
+<p>
+    A clinical trial is a research study that people can join. Some test a new
+    treatment. Some test a new way to use a treatment we already have.
+    Joining one is always your choice.
+</p>
+
+<div class="disclaimer" role="note">
+    <p>
+        <strong>Talk to your care team before you contact a trial.</strong>
+        They know your history and can tell you whether a trial is worth your
+        time. Nothing on this page is medical advice, and we are not part of
+        any trial.
+    </p>
+</div>
+
+<h2 id="near-me">Trials near you</h2>
+<p>
+    Enter your ZIP code to see open trials with a site within
+    @Model.RadiusMiles miles. We use your ZIP only to run that search. We do
+    not store it.
+</p>
+
+<form method="get" action="/trials" class="trial-near" id="near-form">
+    @if (Model.TumorType is not null)
+    {
+        <input type="hidden" name="tumorType" value="@Model.TumorType" />
+    }
+    @if (Model.Phase is not null)
+    {
+        <input type="hidden" name="phase" value="@Model.Phase" />
+    }
+    @if (Model.IncludeClosed)
+    {
+        <input type="hidden" name="includeClosed" value="true" />
+    }
+    <label for="zip">ZIP code</label>
+    <input type="text" id="zip" name="zip" value="@Model.Zip" inputmode="numeric"
+           autocomplete="postal-code" maxlength="10" size="8" />
+    <button type="submit">Search near me</button>
+</form>
+
+@if (Model.LocationUnusable)
+{
+    <p role="status" class="trial-note">
+        We could not use that location. Please type your ZIP code instead.
+    </p>
+}
+
+@if (Model.ZipNotFound)
+{
+    <p role="status" class="trial-note">
+        We could not find that ZIP code. Check the digits, or browse the list below.
+    </p>
+}
+
+@if (Model.Nearby is { RegistryUnavailable: true })
+{
+    <p role="status" class="trial-note">
+        We could not reach ClinicalTrials.gov just now, so the "near you" search
+        did not run. Please try again in a few minutes. The list below still works.
+    </p>
+}
+else if (Model.Nearby is { } nearby)
+{
+    <h3>
+        @if (nearby.Truncated)
+        {
+            @:Showing @nearby.Trials.Count of @nearby.TotalCount open trials within @Model.RadiusMiles miles
+        }
+        else
+        {
+            @:@nearby.Trials.Count open trial@(nearby.Trials.Count == 1 ? "" : "s") within @Model.RadiusMiles miles
+        }
+    </h3>
+
+    @if (nearby.Trials.Count == 0)
+    {
+        <p class="trial-note">
+            No open trials matched within @Model.RadiusMiles miles. That is
+            common. Many people travel for a trial, so it is worth looking at
+            the full list below too.
+        </p>
+    }
+    else
+    {
+        <ul class="trial-list">
+            @foreach (var trial in nearby.Trials)
+            {
+                <li class="trial-list__item">
+                    @* Straight to the registry, not to /trials/{id}: this search
+                       covers the whole registry, including trials our own window
+                       never fetched, so most of these have no page here. *@
+                    <h4><a href="https://clinicaltrials.gov/study/@trial.NctId">@trial.Title</a></h4>
+                    <p class="trial-list__meta">
+                        @if (trial.Status is not null) { <span class="tag">@trial.Status</span> }
+                        @if (trial.Phase is not null) { <span class="tag">@trial.Phase</span> }
+                        @if (trial.NearestSite is not null) { <span>Nearest site: @trial.NearestSite</span> }
+                    </p>
+                </li>
+            }
+        </ul>
+        <p class="trial-note">
+            These come straight from ClinicalTrials.gov, so they have not been
+            put into plain language, and the links go to the trial's own page
+            there.
+        </p>
+    }
+}
+
+<h2 id="browse">Browse trials</h2>
+
+<form method="get" action="/trials" class="feed-filters">
+    <label for="tumorType">Tumor type</label>
+    <select id="tumorType" name="tumorType">
+        <option value="">All types</option>
+        @foreach (var type in Model.TumorTypes)
+        {
+            <option value="@type.Slug" selected="@(Model.TumorType == type.Slug)">@type.Label</option>
+        }
+    </select>
+
+    <label for="phase">Stage of testing</label>
+    <select id="phase" name="phase">
+        <option value="">Any stage</option>
+        @foreach (var phase in Model.Phases)
+        {
+            <option value="@phase" selected="@(Model.Phase == phase)">@phase</option>
+        }
+    </select>
+
+    <label class="checkbox">
+        <input type="checkbox" name="includeClosed" value="true" checked="@Model.IncludeClosed" />
+        Include trials that are not taking new patients
+    </label>
+
+    <button type="submit">Show trials</button>
+</form>
+
+<p class="trial-note">
+    Showing @Model.Results.TotalCount trial@(Model.Results.TotalCount == 1 ? "" : "s").
+    @if (!Model.IncludeClosed)
+    {
+        @:Trials we know are closed are left out.
+    }
+    This list is the brain tumor trials we track, not every trial on
+    ClinicalTrials.gov. The search above looks at all of them.
+</p>
+
+@if (Model.Results.Items.Count == 0)
+{
+    <p>
+        No trials match what you picked. Try a broader tumor type, or clear the
+        stage filter.
+    </p>
+}
+else
+{
+    <ul class="trial-list">
+        @foreach (var trial in Model.Results.Items)
+        {
+            <li class="trial-list__item">
+                <h3><a href="/trials/@trial.NctId">@trial.Heading</a></h3>
+                <p class="trial-list__meta">
+                    <span class="tag">@(trial.OverallStatus ?? "Status unknown")</span>
+                    @if (trial.Phase is not null) { <span class="tag">@trial.Phase</span> }
+                    @if (trial.StateSummary.Count > 0)
+                    {
+                        <span>@string.Join(", ", trial.StateSummary.Take(4))@(trial.StateSummary.Count > 4 ? ", and more" : "")</span>
+                    }
+                </p>
+                @if (trial.HasClosed)
+                {
+                    <p>This trial is not taking new patients.</p>
+                }
+                else if (trial.PlainSummary is not null)
+                {
+                    <p>@trial.PlainSummary</p>
+                }
+            </li>
+        }
+    </ul>
+
+    <nav class="pager" aria-label="More trials">
+        @if (Model.Results.Query.Page > 0)
+        {
+            <a href="@Model.PageUrl(Model.Results.Query.Page - 1)">Previous</a>
+        }
+        @if (Model.Results.HasMore)
+        {
+            <a href="@Model.PageUrl(Model.Results.Query.Page + 1)">Next</a>
+        }
+    </nav>
+}
+
+<p class="provenance">
+    Trial information comes from
+    <a href="https://clinicaltrials.gov/">ClinicalTrials.gov</a>, a service of
+    the U.S. National Library of Medicine. We copy it as it is published there
+    and do not change it. Always check the trial's own page for the latest.
+</p>
+
+@section Scripts {
+    <script>
+        // Progressive enhancement only: the ZIP form above already works. This
+        // adds a "use my location" button for browsers that can do it, and
+        // never runs if the API is missing or blocked.
+        (function () {
+            if (!navigator.geolocation) { return; }
+            var form = document.getElementById('near-form');
+            if (!form) { return; }
+
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'button-secondary';
+            button.textContent = 'Use my location';
+            button.addEventListener('click', function () {
+                button.disabled = true;
+                button.textContent = 'Finding you...';
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        var url = new URL(window.location.href);
+                        url.searchParams.set('lat', position.coords.latitude.toFixed(4));
+                        url.searchParams.set('lon', position.coords.longitude.toFixed(4));
+                        url.searchParams.delete('zip');
+                        url.hash = 'near-me';
+                        window.location.assign(url.toString());
+                    },
+                    function () {
+                        button.disabled = false;
+                        button.textContent = 'Use my location';
+                        var note = document.createElement('p');
+                        note.className = 'trial-note';
+                        note.setAttribute('role', 'status');
+                        note.textContent = 'We could not get your location. Please type your ZIP code instead.';
+                        form.insertAdjacentElement('afterend', note);
+                    },
+                    { timeout: 10000 });
+            });
+
+            form.appendChild(button);
+        })();
+    </script>
+}

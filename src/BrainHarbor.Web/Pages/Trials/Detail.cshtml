@@ -1,0 +1,144 @@
+@page "/trials/{nctId}"
+@model BrainHarbor.Web.Pages.Trials.DetailModel
+@{
+    ViewData["Title"] = Model.Trial.Heading;
+}
+
+@section Head {
+    @* Self-canonical on purpose. This page is NOT a duplicate of the registry's:
+       when the trial has a published item it carries our plain-language summary,
+       which is the whole reason the site exists. The registry is still credited
+       and linked prominently in the body. *@
+    <meta name="description" content="@(Model.Trial.PlainSummary ?? Model.Trial.Heading)" />
+}
+
+<article class="container--read">
+    <p class="breadcrumb"><a href="/trials">&larr; All trials</a></p>
+
+    <h1>@Model.Trial.Heading</h1>
+    @if (Model.Trial.PlainTitle is not null)
+    {
+        <p class="original-title">Official title: @Model.Trial.Title</p>
+    }
+
+    @* Three states, not two. "We do not know" must never be rendered as
+       "this trial is closed" — that would be a made-up claim sitting directly
+       above a sentence admitting we cannot tell. *@
+    <div class="trial-status @(Model.Trial.HasClosed ? "trial-status--closed" : "")" role="status">
+        <p>
+            <strong>
+                @(Model.Trial.HasClosed
+                    ? "This trial is not taking new patients."
+                    : Model.Trial.OverallStatus is null
+                        ? "We do not have a status for this trial."
+                        : $"Status: {Model.Trial.OverallStatus}.")
+            </strong>
+            @Model.StatusExplanation
+        </p>
+        @if (Model.Trial.LastUpdatePosted is { } updated)
+        {
+            <p class="trial-status__checked">
+                The trial team last updated this record on
+                <time datetime="@updated.ToString("yyyy-MM-dd")">@updated.ToString("MMMM d, yyyy")</time>.
+            </p>
+        }
+    </div>
+
+    @if (Model.Trial.PlainSummary is not null)
+    {
+        <h2>The short version</h2>
+        <p class="hook">@Model.Summary(Model.Trial.PlainSummary)</p>
+        @if (Model.Trial.Slug is not null)
+        {
+            <p><a href="/research/@Model.Trial.Slug">Read our full plain-language summary</a></p>
+        }
+    }
+
+    <h2>What the trial team says</h2>
+    @if (Model.Trial.Summary is not null)
+    {
+        @* The registry's own words, marked as such. We do not edit them, and we
+           do not present them as our plain-language writing. *@
+        <blockquote class="registry-text">
+            <p>@Model.Trial.Summary</p>
+            <footer>From the trial's own listing on ClinicalTrials.gov.</footer>
+        </blockquote>
+    }
+    else
+    {
+        <p>This trial has no description on ClinicalTrials.gov.</p>
+    }
+
+    <h2>Key facts</h2>
+    <dl class="trial-facts">
+        <dt>Registry number</dt>
+        <dd>@Model.Trial.NctId</dd>
+
+        @if (Model.Trial.Phase is not null)
+        {
+            <dt>Stage of testing</dt>
+            <dd>@Model.Trial.Phase</dd>
+        }
+
+        @if (Model.Trial.Conditions.Length > 0)
+        {
+            <dt>Conditions studied</dt>
+            <dd>@string.Join(", ", Model.Trial.Conditions)</dd>
+        }
+    </dl>
+
+    <h2>Where it is running</h2>
+    @if (Model.SitesByState.Count == 0)
+    {
+        <p>No locations are listed for this trial. The trial's own page may have more.</p>
+    }
+    else
+    {
+        <p>This trial lists @Model.ListedSiteCount site@(Model.ListedSiteCount == 1 ? "" : "s").</p>
+        <ul class="trial-sites">
+            @foreach (var state in Model.SitesByState)
+            {
+                <li>
+                    <strong>@state.Key</strong>
+                    <ul>
+                        @foreach (var site in state.Take(12))
+                        {
+                            <li>@(site.Facility ?? site.Where)@(site.Facility is not null && site.City is not null ? $" ({site.City})" : "")</li>
+                        }
+                        @if (state.Count() > 12)
+                        {
+                            <li>and @(state.Count() - 12) more in @state.Key</li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    }
+
+    <div class="means-block">
+        <div class="means-block__head">
+            <span class="means-block__icon" aria-hidden="true">i</span>
+            <h2>How to use this</h2>
+        </div>
+        <p>
+            <strong>Talk to your care team first.</strong> They know your
+            history and can tell you whether this trial is worth your time.
+        </p>
+        <p>
+            <strong>Joining a trial is always your choice.</strong> A trial is a
+            test, not a proven treatment. Being in one is not a promise that it
+            will help you.
+        </p>
+        <p>
+            <a class="button" href="@Model.RegistryUrl">See the full listing on ClinicalTrials.gov</a>
+        </p>
+    </div>
+
+    <p class="provenance">
+        This page is built from the trial's listing on
+        <a href="@Model.RegistryUrl">ClinicalTrials.gov</a>, a service of the
+        U.S. National Library of Medicine. That listing is the authority, and it
+        may have changed since we last read it. We do not run this trial and we
+        cannot enroll you in it.
+    </p>
+</article>

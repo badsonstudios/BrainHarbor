@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **Autopilot M4 running** (branch `auto/M4`). WI-402 done; WI-403 next. |
+| **In progress** | nothing mid-flight. **Autopilot M4 ended at the WI-401 boundary** — WI-402 + WI-403 shipped on `auto/M4` (PR #6, draft). Everything left in M4 needs Azure. |
 | **Next up** | **M4.** First item **WI-401 is `[user]`+assisted** (Dan provisions Azure App Service + Postgres, brainharbor.org DNS + TLS). BUT **WI-402 (trials fetcher) + WI-403 (/trials browse) are code, buildable now WITHOUT Azure** (WI-402 depends only on WI-304). So the assistant can autopilot the trials feature while Dan does the cloud setup. Digest (WI-404/405) and maintenance (WI-406) need prod/ESP → after WI-401. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -19,12 +19,12 @@
 
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
-**Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. Occasional flake: `A11ySmokeTests` sometimes fails to start its Kestrel host ("The server has not been started"); passes on re-run, unrelated to any change — worth a look if it gets more frequent.
+**Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
 
-### Next up (M4, but buildable locally without Azure)
-- **WI-403 /trials browse + near-me** — the browse page over `trials_cache`, plus near-me via geolocation/ZIP → live `filter.geo` query. WI-402 landed its supply line. **Recommended next.**
-  Note for WI-403: `trials_cache` has no `tumor_tags` — filtering by tumor type will have to match the registry's raw `conditions` strings or join `aggregated_items` for the taxonomy slugs. Decide which before building.
-- Azure provisioning (WI-401) is `[user]` + real money — do when ready to go public; not required to keep building.
+### Next up — everything left in M4 needs Dan
+- **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
+- Before that: **review and merge PR #6** (`auto/M4`), which holds WI-402 + WI-403.
+- Nothing else in M4 is buildable without cloud, which is why the autopilot run stopped here.
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
@@ -57,8 +57,8 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   sitemap.md (/get-help, /start-here) do NOT override the sitemap
   (/get-help-now, /start). The handoff folder is not yet committed — it goes
   in with WI-108's branch.
-- **Remaining dead links**: only `/trials` (M4). `/research` went live in
-  WI-209.
+- **Remaining dead links**: only `/digest` (M4, needs an ESP → WI-404).
+  `/research` went live in WI-209, `/trials` in WI-403.
   `/get-help-now`, `/digest`, `/glossary`, `/about`, `/how-we-write`,
   `/start`, `/privacy`, `/terms` are all live, and a `ShellPagesTests` link
   check fails the build if any *other* internal link 404s. Custom 404/500
@@ -73,6 +73,53 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-01** — **WI-403 done — the trial finder; M4 autopilot run ENDS
+  here** (everything left needs Azure). `/trials` browse over `trials_cache`
+  with tumor-type and phase filters, and `/trials/{nct-id}` pages.
+  **Near me is a live, keyless `filter.geo` query to ClinicalTrials.gov at
+  request time** (architecture.md §7), from either a typed ZIP or browser
+  geolocation. The ZIP form is the PRIMARY path and geolocation is progressive
+  enhancement on top: this audience should not have to grant a permission
+  prompt (or run JavaScript) to find a trial. ZIP → point uses the Census ZCTA
+  gazetteer shipped as a file (33,791 rows, public domain); the ZIP is used for
+  the outgoing query only, never stored or logged. The live call **fails soft**
+  by design — a slow registry degrades to "we could not reach ClinicalTrials.gov
+  just now, here is the browse list", never an error page.
+  Tumor-type filtering matches the registry's own condition strings against the
+  taxonomy's labels and aliases (walking the tree, so "glioma" finds
+  glioblastoma), because `trials_cache` holds trials that were never classified
+  and so have no tumor_tags — that was the open question WI-402 left.
+  Two safety rules pinned by tests: **only a PUBLISHED item may lend its
+  plain-language text to a trial page** (the join must not become a side door
+  around the review gate), and the registry's own words are always labelled as
+  the registry's, never as our plain-language writing. Attribution + link back
+  on every trial page (PLAN.md §5 licence requirement).
+  Live-verified: 25 open brain-tumor trials within 50 miles of Columbus, 14 for
+  glioblastoma, nearest sites resolved correctly. `/trials` added to the axe
+  scan and to sitemap.xml.
+  **Review caught four blockers, three of them the same shape as WI-402's:**
+  (1) the live call did NOT fail soft on the case it was built for —
+  `HttpClient.Timeout` throws `TaskCanceledException`, which IS an
+  `OperationCanceledException`, so the exception filter meant to let real
+  cancellation through was letting the 8-second timeout through too, giving the
+  reader a 500. (2) an unknown status was rendered as "this trial is not taking
+  new patients" — a fabricated claim directly above a sentence admitting we
+  cannot tell (the exact rule `FeedRow.TrialHasClosed` exists to enforce; now
+  three states, not two). (3) the outgoing near-me URL contains the reader's
+  coordinates, and `IHttpClientFactory` logs request URIs at Information — so
+  every search wrote a location to the logs while the page promised "we do not
+  store it" (`RemoveAllLoggers`, plus `no-store`/`no-referrer` on those
+  responses, and `/privacy` now says plainly what happens to a ZIP).
+  (4) near-me searches the WHOLE registry but linked to `/trials/{id}`, which
+  404s for anything outside our fetch window — on a fresh database nearly every
+  result. Those rows now link to the registry.
+  Also: registry count instead of our page size in the heading, closed trials
+  don't show their frozen hook, deep `?page=` clamped, unknown-status trials no
+  longer vanish from browse, the tumor menu drops slugs that match nothing, and
+  near-me/browse now share one definition of a tumor type (with the label
+  quoted — "DIPG (pontine)" carries live Essie grouping characters).
+  635 tests.
 
 - **2026-08-01** — **WI-402 done — trials fetcher** (autopilot M4):
   ClinicalTrials.gov v2 fetcher, `trials_cache` (migration 0007), a
