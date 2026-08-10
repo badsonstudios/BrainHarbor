@@ -14,8 +14,14 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
 
     /// <summary>Remembers the "show early-stage research" choice across visits
     /// (WI-307), so a reader who opted in doesn't have to re-tick it every time.
-    /// A functional preference cookie, not tracking.</summary>
-    private const string EarlyCookie = "bh_show_early";
+    /// A functional preference cookie, not tracking. Home reads it too (WI-409),
+    /// so the choice follows the reader everywhere the feed appears.</summary>
+    internal const string EarlyCookie = "bh_show_early";
+
+    /// <summary>The remembered choice, as every page that renders feed cards
+    /// must read it — one parse, so the pages can't drift apart.</summary>
+    internal static bool ReadEarlyChoice(IRequestCookieCollection cookies) =>
+        cookies.TryGetValue(EarlyCookie, out var saved) && saved == "1";
 
     public async Task OnGetAsync(
         string? tumor = null,
@@ -43,7 +49,7 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
         }
         else
         {
-            includeEarly = Request.Cookies.TryGetValue(EarlyCookie, out var saved) && saved == "1";
+            includeEarly = ReadEarlyChoice(Request.Cookies);
         }
 
         Query = new FeedQuery(tumor, kind, includeEarly, page);

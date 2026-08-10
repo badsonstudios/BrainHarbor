@@ -380,7 +380,10 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   rehearsed once.
   Refs: roadmap M4. Depends on: WI-401, WI-403, WI-405.
 
-- [ ] **WI-409 Home page leads with the feed** ⚠ pre-launch blocker
+- [x] **WI-409 Home page leads with the feed** (done 2026-08-10 — cards render
+  *below* the three doors per the design handoff, not above as written here:
+  the crisis-help door must not scroll away behind research cards; Dan
+  approved the deviation at the plan gate)
   Goal: the front door stops saying the front door is closed.
   Problem (found 2026-08-01, Dan): home renders a static Entry Hub and a
   paragraph reading "The daily research feed and the weekly digest are coming
@@ -409,6 +412,22 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   not a ranking, so decide the within-group order (newest first) explicitly.
   Consider whether `/trials` wants the same control.
   Refs: docs/sitemap.md (feed anatomy), content-pipeline.md §9 (readiness).
+  Depends on: nothing.
+
+- [ ] **WI-411 Dedicated test database**
+  Goal: stop database tests from sharing the live dev DB, so seeds stop
+  competing with real pipeline rows.
+  Problem (found 2026-08-10, WI-409 review): `TestDatabase` defaults to the
+  dev `brainharbor` DB @5433, so tests seed rows into the same tables the
+  pipeline fills. Three test classes now use `DATE '2999-01-01'` seeds to stay
+  on page 1 of a dirty DB, and a crashed run leaves far-future test rows at
+  the top of the real dev home page/feed until the next cleanup.
+  Acceptance: tests run against a dedicated `brainharbor_test` database (the
+  `BRAINHARBOR_TEST_DB` env var + `DatabaseFixture` guard already exist);
+  local + CI both use it; the far-future-date idiom removed or reduced to a
+  documented note in one place (`testing.md` or `DatabaseFixture`), not
+  repeated per test class.
+  Refs: tests/BrainHarbor.Tests/TestDatabase.cs, WI-402 log entry.
   Depends on: nothing.
 
 - [ ] **WI-408 `[user]` Soft launch**

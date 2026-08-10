@@ -4,10 +4,10 @@
     ViewData["Title"] = "Brain tumor research in plain language";
 }
 
-@* Entry Hub home per docs/design/entry-hub-handoff/index.html. The feed grid
-   and digest signup arrive with M2 data and WI-107 copy; until then the hub
-   is the whole page. Door targets are sitemap.md URLs (dead until their
-   items land — same policy as the nav). *@
+@* Entry Hub home per docs/design/entry-hub-handoff/index.html: the hub with
+   its three doors first (the crisis-help door must not scroll away behind
+   research cards), then the latest-updates feed (WI-409). Door targets are
+   sitemap.md URLs. *@
 <section class="hub" aria-labelledby="hub-title">
     <h1 id="hub-title">Brain tumor research, in plain language.</h1>
     <p>
@@ -35,11 +35,28 @@
     </div>
 </section>
 
-@* The feed and digest signup land with M2/M4 data; until then the hub and
-   these honest pointers are the page. *@
+@if (Model.Latest.Count > 0)
+{
+    <section aria-labelledby="latest-title">
+        <div class="section-head">
+            <h2 id="latest-title">Latest updates</h2>
+            <a href="/research">See all →</a>
+        </div>
+        <p class="text-muted">
+            The marks on each item show how far along the evidence is. More
+            marks mean it has been tested more.
+        </p>
+        <ul class="feed-grid">
+            @foreach (var row in Model.Latest)
+            {
+                <partial name="_FeedCard" model="Model.ToCard(row)" />
+            }
+        </ul>
+    </section>
+}
+
 <p>
-    The daily research feed and the weekly digest are coming soon. In the
-    meantime, you can read
+    The weekly digest is coming soon. You can also read
     <a href="/how-we-write">how we write these summaries</a>, look up a word
     in the <a href="/glossary">glossary</a>, or read more about brain tumors
     at the
