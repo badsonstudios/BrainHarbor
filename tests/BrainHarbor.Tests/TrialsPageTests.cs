@@ -74,12 +74,16 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         string locations = "[]") =>
         _connection.ExecuteAsync(
             """
+            -- Far-future date: browse sorts by last_update_posted DESC and
+            -- shows 20 per page, and the dev database holds real trials from
+            -- live runs. A dated-in-the-past seed row silently falls off page
+            -- 1 on any database the pipeline has touched (the WI-402 lesson).
             INSERT INTO trials_cache
                 (nct_id, title, conditions, phase, overall_status, summary,
                  last_update_posted, locations)
             VALUES (@nctId, @title, @conditions, @phase, @status,
                     'The trial team describes the study here.',
-                    DATE '2026-07-20', @locations::jsonb)
+                    DATE '2999-01-01', @locations::jsonb)
             """,
             new
             {
@@ -264,8 +268,10 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         // being treated as closed and dropping out of the list entirely.
         await _connection.ExecuteAsync(
             """
-            INSERT INTO trials_cache (nct_id, title, conditions, overall_status)
-            VALUES ('NCT77770022', 'A trial', ARRAY['Glioblastoma'], NULL)
+            INSERT INTO trials_cache
+                (nct_id, title, conditions, overall_status, last_update_posted)
+            VALUES ('NCT77770022', 'A trial', ARRAY['Glioblastoma'], NULL,
+                    DATE '2999-01-01') -- dated to stay on page 1 of a dirty DB
             """);
 
         var page = await _trials.BrowseAsync(new TrialQuery(), CancellationToken.None);
