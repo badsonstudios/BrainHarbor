@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-409 done 2026-08-10 (PR pending Dan's merge). PR #6 (WI-402+403 trials) is MERGED to `main` (ccb5e66). |
+| **In progress** | nothing mid-flight. WI-409 merged to `main` 2026-08-10 (PR #8, f3167b0). |
 | **Next up** | **WI-410 (feed sorting)** is the last no-dependency code item. Everything else in M4 waits on **WI-401 `[user]`** (Dan provisions Azure); then WI-404/405 (digest, needs ESP), WI-406, WI-407, WI-408. New: **WI-411** (dedicated test DB) — code, no dependencies, do whenever. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -85,7 +85,8 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
-- **2026-08-10** — **WI-409 done — home page leads with the feed** (/next-item).
+- **2026-08-10** — **WI-409 done — home page leads with the feed** (/next-item,
+  PR [#8](https://github.com/badsonstudios/BrainHarbor/pull/8) squash-merged).
   Home now renders the newest 4 published items ("Latest updates", same
   `_FeedCard` partial and safety rules as /research: published-only, closed
   trials excluded, early-stage hidden unless the reader's persisted WI-307
