@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. **Autopilot M4 ended at the WI-401 boundary** — WI-402 + WI-403 shipped on `auto/M4` (PR #6, draft). Everything left in M4 needs Azure. |
-| **Next up** | **M4.** First item **WI-401 is `[user]`+assisted** (Dan provisions Azure App Service + Postgres, brainharbor.org DNS + TLS). BUT **WI-402 (trials fetcher) + WI-403 (/trials browse) are code, buildable now WITHOUT Azure** (WI-402 depends only on WI-304). So the assistant can autopilot the trials feature while Dan does the cloud setup. Digest (WI-404/405) and maintenance (WI-406) need prod/ESP → after WI-401. |
+| **In progress** | nothing mid-flight. WI-409 done 2026-08-10 (PR pending Dan's merge). PR #6 (WI-402+403 trials) is MERGED to `main` (ccb5e66). |
+| **Next up** | **WI-410 (feed sorting)** is the last no-dependency code item. Everything else in M4 waits on **WI-401 `[user]`** (Dan provisions Azure); then WI-404/405 (digest, needs ESP), WI-406, WI-407, WI-408. New: **WI-411** (dedicated test DB) — code, no dependencies, do whenever. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
@@ -35,8 +35,7 @@
 
 ### Next up — everything left in M4 needs Dan
 - **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Before that: **review and merge PR #6** (`auto/M4`), which holds WI-402 + WI-403.
-- Nothing else in M4 is buildable without cloud, which is why the autopilot run stopped here.
+- Still buildable without cloud: **WI-410** (feed sorting) and **WI-411** (dedicated test DB).
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
@@ -85,6 +84,21 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-10** — **WI-409 done — home page leads with the feed** (/next-item).
+  Home now renders the newest 4 published items ("Latest updates", same
+  `_FeedCard` partial and safety rules as /research: published-only, closed
+  trials excluded, early-stage hidden unless the reader's persisted WI-307
+  cookie opts in — parse shared via `Research.IndexModel.ReadEarlyChoice` so
+  the pages can't drift). Cards sit BELOW the three doors (deviation from the
+  backlog's "above", approved: the crisis-help door must not scroll away).
+  The false "research feed … coming soon" sentence now refers only to the
+  digest, and a test fails if home ever claims the feed is coming while
+  published items exist. Section omitted entirely at zero published items.
+  Also fixed 4 **pre-existing** TrialsPageTests failures on `main` (Dan's 8/1
+  live near-me testing put 20+ real trials in trials_cache and the 7/20-dated
+  seeds fell off browse page 1) with far-future seed dates, and filed
+  **WI-411** (dedicated test DB) so that idiom stops spreading. 640 tests.
 
 - **2026-08-01** — **WI-403 done — the trial finder; M4 autopilot run ENDS
   here** (everything left needs Azure). `/trials` browse over `trials_cache`
