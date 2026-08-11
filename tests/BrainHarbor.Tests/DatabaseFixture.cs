@@ -12,6 +12,15 @@ namespace BrainHarbor.Tests;
 /// `WithTransactionPerScript` takes no cross-process lock, so the losers fail
 /// with "relation already exists". Serializing them behind one collection
 /// removes the race for good.
+///
+/// <para><b>Dirty-database rule (the WI-402 lesson, one home for it):</b>
+/// tests may not assume the tables hold only their own rows. The default
+/// <c>brainharbor_test</c> database is usually clean, but a crashed run
+/// leaves seeds behind (cleanup runs per-class), and BRAINHARBOR_TEST_DB may
+/// deliberately point somewhere dirty. So a test that needs its rows on page
+/// one of a DESC-sorted surface seeds far-future dates (2999-01-01), and a
+/// test that cares about ORDER pages until it finds its own rows rather than
+/// reading page 0 — see FeedTests.MyRowsInFeedOrderAsync.</para>
 /// </summary>
 public sealed class DatabaseFixture
 {

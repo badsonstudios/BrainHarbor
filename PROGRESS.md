@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-410 done 2026-08-11 (PR pending Dan's merge). |
-| **Next up** | **WI-411** (dedicated test DB) is the only no-dependency code item left. Everything else in M4 waits on **WI-401 `[user]`** (Dan provisions Azure); then WI-404/405 (digest, needs ESP), WI-406, WI-407, WI-408 (launch). |
+| **In progress** | nothing mid-flight. WI-411 done 2026-08-11 (PR pending). |
+| **Next up** | **WI-401 `[user]`** (Dan provisions Azure) gates everything left in M4: WI-404/405 (digest, needs ESP), WI-406 (maintenance), WI-407 (hardening), WI-408 (launch). No assistant-buildable items remain until then. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
@@ -35,7 +35,7 @@
 
 ### Next up — everything left in M4 needs Dan
 - **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Still buildable without cloud: **WI-411** (dedicated test DB).
+- Nothing left is buildable without cloud — **WI-401 is the gate.**
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
@@ -84,6 +84,17 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-11** — **WI-411 done — dedicated test database** (/next-item).
+  DB tests now default to **`brainharbor_test`** in the same local/CI Postgres
+  server — one word changed in `TestDatabase.cs`; DbUp's EnsureDatabase
+  creates it on first run, so no compose/CI changes. Verified live: suite run
+  created it (650/650), second run idempotent, dev-DB row counts identical
+  before/after; dev DB had zero leftover test rows. The dirty-database rule
+  (far-future seeds, page-until-found) now has ONE canonical home on
+  `DatabaseFixture`'s doc comment; per-class comments point there. Dates kept
+  as insurance. Deferred (review nit): the fixture guard accepts a REMOTE
+  db named *test* — tighten when WI-401 makes remote DBs real.
 
 - **2026-08-11** — **WI-410 done — sort the research feed** (/next-item).
   /research sortable by date (default, unchanged), readiness (highest first,
