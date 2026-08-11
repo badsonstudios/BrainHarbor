@@ -12,7 +12,7 @@
 param(
     [Parameter(Mandatory)][string]$Title,
     [string]$Body = '',
-    [string]$Base = 'main',
+    [string]$Base = 'develop',
     [string]$Branch,
     [switch]$All
 )
