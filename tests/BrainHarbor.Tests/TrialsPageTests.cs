@@ -74,10 +74,9 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         string locations = "[]") =>
         _connection.ExecuteAsync(
             """
-            -- Far-future date: browse sorts by last_update_posted DESC and
-            -- shows 20 per page, and the dev database holds real trials from
-            -- live runs. A dated-in-the-past seed row silently falls off page
-            -- 1 on any database the pipeline has touched (the WI-402 lesson).
+            -- Far-future date: browse sorts by last_update_posted DESC, so a
+            -- past-dated seed falls off page 1 of a dirty database — the
+            -- dirty-database rule on DatabaseFixture.
             INSERT INTO trials_cache
                 (nct_id, title, conditions, phase, overall_status, summary,
                  last_update_posted, locations)

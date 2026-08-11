@@ -8,6 +8,18 @@ dotnet test                  # xUnit, tests/ — must be green before Gate 2
 docker compose up -d         # local Postgres 16 @ 5433 (needed for DB tests)
 ```
 
+## The test database (WI-411)
+
+DB tests run against **`brainharbor_test`** — a separate database in the same
+Postgres server (local container and CI alike), so test seeds never mix with
+the rows the pipeline puts in the dev `brainharbor` database. It is created
+and migrated automatically on first run (`DatabaseFixture` → MigrationRunner's
+EnsureDatabase); there is no setup step. `BRAINHARBOR_TEST_DB` overrides the
+full connection string, but the fixture refuses any target that is not local
+or obviously a test database. Even so, tests must follow the **dirty-database
+rule** documented on `DatabaseFixture` (never assume the tables hold only your
+own rows).
+
 Run the affected app to verify behavior for anything with a runtime surface —
 tests passing is necessary, not sufficient:
 

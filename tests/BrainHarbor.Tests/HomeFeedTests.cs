@@ -16,10 +16,8 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
 {
     private const string TestSource = "test_home";
 
-    // Home shows only the newest few and cannot page, and the dev database
-    // holds ~1,400 real rows from live pipeline runs. A far-future date is the
-    // only way to guarantee our rows sort into that window on ANY database
-    // (the same dirty-DB rule FeedTests learned in WI-402).
+    // Home shows only the newest few and cannot page, so seeds must sort into
+    // that window on any database — the dirty-database rule on DatabaseFixture.
     private static readonly DateOnly FarFuture = new(2999, 1, 1);
 
     private readonly WebApplicationFactory<Program> _factory;

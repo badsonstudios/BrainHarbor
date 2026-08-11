@@ -105,12 +105,10 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     /// <summary>
     /// The feed's own rows, in feed order, found by walking the pages.
     ///
-    /// The dev database holds real fetched items (the WI-211 shakedown left
-    /// 1,360, and later pipeline runs added more), and the feed pages at 20 —
-    /// so a test that reads page 0 and expects to see its own two rows is
-    /// really asserting "nothing else is in the table". Paging until the rows
-    /// turn up tests the ORDER, which is the part that matters, against any
-    /// database.
+    /// Reading page 0 and expecting to see our own rows is really asserting
+    /// "nothing else is in the table" — the dirty-database rule on
+    /// DatabaseFixture. Paging until the rows turn up tests the ORDER, which
+    /// is the part that matters, against any database.
     /// </summary>
     private async Task<IReadOnlyList<FeedRow>> MyRowsInFeedOrderAsync(
         FeedQuery query, params string[] slugs)

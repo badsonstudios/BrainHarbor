@@ -416,7 +416,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/sitemap.md (feed anatomy), content-pipeline.md §9 (readiness).
   Depends on: nothing.
 
-- [ ] **WI-411 Dedicated test database**
+- [x] **WI-411 Dedicated test database** (done 2026-08-11)
   Goal: stop database tests from sharing the live dev DB, so seeds stop
   competing with real pipeline rows.
   Problem (found 2026-08-10, WI-409 review): `TestDatabase` defaults to the
