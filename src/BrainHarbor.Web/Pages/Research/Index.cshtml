@@ -38,6 +38,16 @@
         <option value="preprint" selected="@(Model.Query.Kind == "preprint")">Preprints</option>
     </select>
 
+    @* Impersonal on purpose: "helping you" would promise this reader an
+       outcome (anti-hype rules). "Kind" matches the filter above — one word
+       per concept. Group order mirrors FeedRepository.OrderByFor. *@
+    <label for="sort">Sort by</label>
+    <select id="sort" name="sort">
+        <option value="">Newest first</option>
+        <option value="readiness" selected="@(Model.Query.Sort == "readiness")">Most ready to use</option>
+        <option value="type" selected="@(Model.Query.Sort == "type")">By kind</option>
+    </select>
+
     <label>
         <input type="checkbox" name="early" value="true" checked="@Model.Query.IncludeEarlyStage" />
         Show early-stage research (animal and lab studies)

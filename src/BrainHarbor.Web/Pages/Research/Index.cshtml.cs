@@ -29,6 +29,7 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
         bool early = false,
         int page = 0,
         bool applied = false,
+        string? sort = null,
         CancellationToken cancellationToken = default)
     {
         // When the filter form is submitted (`applied`), the checkbox is
@@ -52,7 +53,9 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
             includeEarly = ReadEarlyChoice(Request.Cookies);
         }
 
-        Query = new FeedQuery(tumor, kind, includeEarly, page);
+        // Normalized here as well as in the repository, so the URL the view
+        // echoes back (selected option, Show more) is always a canonical one.
+        Query = new FeedQuery(tumor, kind, includeEarly, page, FeedRepository.NormalizeSort(sort));
         Result = await feed.GetAsync(Query, cancellationToken);
     }
 
@@ -75,6 +78,10 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
             if (Query.IncludeEarlyStage)
             {
                 parts.Add("early=true");
+            }
+            if (!string.IsNullOrEmpty(Query.Sort))
+            {
+                parts.Add($"sort={Uri.EscapeDataString(Query.Sort)}");
             }
             return "/research?" + string.Join("&", parts);
         }

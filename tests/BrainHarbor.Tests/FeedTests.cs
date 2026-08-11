@@ -24,6 +24,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     private readonly DatabaseFixture _database;
     private NpgsqlConnection _connection = null!;
     private FeedRepository _feed = null!;
+    private TaxonomyStore _taxonomy = null!;
 
     public FeedTests(WebApplicationFactory<Program> factory, DatabaseFixture database)
     {
@@ -40,9 +41,9 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
 
         var taxonomyPath = Path.Combine(
             FindRepoRoot(), "src", "BrainHarbor.Web", "Content", "taxonomy.yml");
+        _taxonomy = new TaxonomyStore(File.ReadAllText(taxonomyPath));
         _feed = new FeedRepository(
-            new TestConnectionFactory(_database.ConnectionString),
-            new TaxonomyStore(File.ReadAllText(taxonomyPath)));
+            new TestConnectionFactory(_database.ConnectionString), _taxonomy);
     }
 
     public async Task DisposeAsync()
@@ -74,15 +75,18 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         string sourceKind = "research",
         string[]? tags = null,
         string? slug = null,
-        DateOnly? publishedAt = null) =>
+        DateOnly? publishedAt = null,
+        int? readiness = null) =>
         _connection.ExecuteAsync(
             """
             INSERT INTO aggregated_items
                 (source, source_kind, external_id, title, url, status, relevance,
-                 tumor_tags, slug, published_at, research_stage, plain_title)
+                 tumor_tags, slug, published_at, research_stage, plain_title,
+                 readiness_score)
             VALUES
                 (@TestSource, @sourceKind, @externalId, @title, 'https://example.org',
-                 @status, @relevance, @tags, @slug, @publishedAt, 'human_trial', @title)
+                 @status, @relevance, @tags, @slug, @publishedAt, 'human_trial', @title,
+                 @readiness)
             """,
             new
             {
@@ -95,6 +99,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                 tags = tags ?? ["glioblastoma"],
                 slug = slug ?? $"study-{externalId}",
                 publishedAt = publishedAt ?? new DateOnly(2026, 6, 12),
+                readiness,
             });
 
     /// <summary>
@@ -706,6 +711,91 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         Assert.False(await _feed.ReportProblemAsync("no-such-slug", null, CancellationToken.None));
         Assert.False(await _feed.ReportProblemAsync(
             "study-f-pending-report", null, CancellationToken.None));
+    }
+
+    // ---------- WI-410: sorting ----------
+
+    [Fact]
+    public async Task ReadinessSortPutsHighestFirstAndUnscoredLast()
+    {
+        // "What is closest to helping me?" — and an UNSCORED item must sort
+        // last, not first: readiness_score is nullable, and a bare DESC would
+        // put NULLs on top (the same trap published_at already guards).
+        await InsertAsync("s-low", readiness: 3, slug: "study-s-low");
+        await InsertAsync("s-high", readiness: 9, slug: "study-s-high");
+        await InsertAsync("s-unscored", readiness: null, slug: "study-s-unscored");
+
+        var rows = await MyRowsInFeedOrderAsync(
+            new FeedQuery(Sort: "readiness"),
+            "study-s-low", "study-s-high", "study-s-unscored");
+
+        Assert.Equal(
+            ["study-s-high", "study-s-low", "study-s-unscored"],
+            rows.Select(r => r.Slug).ToArray());
+    }
+
+    [Fact]
+    public async Task TypeSortGroupsKindsAndStaysNewestFirstWithinAGroup()
+    {
+        // Type is a grouping, not a ranking: research → news → preprint in the
+        // menu's order, and inside a group the order is still newest first —
+        // decided explicitly, not left to whatever the index returns.
+        await InsertAsync("s-res-old", publishedAt: new DateOnly(2026, 6, 1), slug: "study-s-res-old");
+        await InsertAsync("s-res-new", publishedAt: new DateOnly(2026, 6, 12), slug: "study-s-res-new");
+        await InsertAsync("s-news", sourceKind: "news", slug: "study-s-news");
+        // A preprint can never be patient_relevant (DB rule); pending is shown.
+        await InsertAsync("s-pre", sourceKind: "preprint", relevance: "pending", slug: "study-s-pre");
+
+        var rows = await MyRowsInFeedOrderAsync(
+            new FeedQuery(Sort: "type"),
+            "study-s-res-old", "study-s-res-new", "study-s-news", "study-s-pre");
+
+        Assert.Equal(
+            ["study-s-res-new", "study-s-res-old", "study-s-news", "study-s-pre"],
+            rows.Select(r => r.Slug).ToArray());
+    }
+
+    [Theory]
+    [InlineData("readiness", "readiness")]
+    [InlineData("type", "type")]
+    [InlineData(null, null)]
+    [InlineData("", null)]
+    [InlineData("date", null)]        // date is the default, kept canonical as null
+    [InlineData("DROP TABLE", null)]  // garbage never reaches the ORDER BY switch
+    public void OnlyDocumentedSortsAreAccepted(string? input, string? expected) =>
+        Assert.Equal(expected, FeedRepository.NormalizeSort(input));
+
+    [Fact]
+    public async Task ShowMoreKeepsTheChosenSortAndFilters()
+    {
+        // A shared or bookmarked sorted view must survive paging — the sort
+        // and every filter ride the Show more URL together.
+        var model = new BrainHarbor.Web.Pages.Research.IndexModel(_feed, _taxonomy)
+        {
+            PageContext = new Microsoft.AspNetCore.Mvc.RazorPages.PageContext
+            {
+                HttpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext(),
+            },
+        };
+
+        await model.OnGetAsync(
+            tumor: "glioma", early: true, page: 1, applied: true, sort: "readiness");
+
+        Assert.Contains("page=2", model.NextPageUrl);
+        Assert.Contains("tumor=glioma", model.NextPageUrl);
+        Assert.Contains("early=true", model.NextPageUrl);
+        Assert.Contains("sort=readiness", model.NextPageUrl);
+    }
+
+    [Fact]
+    public async Task TheSortControlRendersAndTheChosenSortSticks()
+    {
+        var html = await _factory.CreateClient()
+            .GetStringAsync("/research?sort=readiness");
+
+        Assert.Contains("for=\"sort\"", html);
+        Assert.Contains("id=\"sort\"", html);
+        Assert.Contains("<option value=\"readiness\" selected", html);
     }
 
     // ---------- WI-309: search ----------

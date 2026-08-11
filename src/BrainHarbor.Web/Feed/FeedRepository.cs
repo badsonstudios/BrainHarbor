@@ -77,7 +77,8 @@ public sealed record FeedQuery(
     string? TumorType = null,
     string? Kind = null,
     bool IncludeEarlyStage = false,
-    int Page = 0)
+    int Page = 0,
+    string? Sort = null)
 {
     public const int PageSize = 20;
 
@@ -211,7 +212,7 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
             FROM aggregated_items a
             {TrialJoin}
             WHERE {whereClause}
-            ORDER BY a.published_at DESC NULLS LAST, a.id DESC
+            ORDER BY {OrderByFor(NormalizeSort(query.Sort))}
             LIMIT @limit OFFSET @offset
             """,
             parameters,
@@ -421,6 +422,44 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
     {
         "research" or "news" or "preprint" or "trial_update" => kind,
         _ => null,
+    };
+
+    /// <summary>Only the documented sorts; anything else means "newest first"
+    /// (WI-410). Date is null rather than a name so old URLs stay canonical.</summary>
+    internal static string? NormalizeSort(string? sort) => sort switch
+    {
+        "readiness" or "type" => sort,
+        _ => null,
+    };
+
+    /// <summary>
+    /// The ORDER BY for each sort a reader can ask for (WI-410). Chosen by
+    /// this fixed switch over a normalized value — reader input never reaches
+    /// the SQL text.
+    ///
+    /// Readiness answers "what is closest to helping me?" — highest score
+    /// first, and UNSCORED items last, not first (nullable score, the same
+    /// NULLS LAST trap as published_at). Type is a grouping, not a ranking:
+    /// groups in the order readers see in the filter menu, and within a group
+    /// the order stays newest-first, decided here explicitly.
+    /// </summary>
+    private static string OrderByFor(string? sort) => sort switch
+    {
+        "readiness" => """
+            a.readiness_score DESC NULLS LAST,
+            a.published_at DESC NULLS LAST, a.id DESC
+            """,
+        "type" => """
+            CASE a.source_kind
+                WHEN 'research' THEN 1
+                WHEN 'news' THEN 2
+                WHEN 'trial_update' THEN 3
+                WHEN 'preprint' THEN 4
+                ELSE 5
+            END,
+            a.published_at DESC NULLS LAST, a.id DESC
+            """,
+        _ => "a.published_at DESC NULLS LAST, a.id DESC",
     };
 
     /// <summary>

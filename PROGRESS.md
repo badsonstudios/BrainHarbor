@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-409 merged to `main` 2026-08-10 (PR #8, f3167b0). |
-| **Next up** | **WI-410 (feed sorting)** is the last no-dependency code item. Everything else in M4 waits on **WI-401 `[user]`** (Dan provisions Azure); then WI-404/405 (digest, needs ESP), WI-406, WI-407, WI-408. New: **WI-411** (dedicated test DB) — code, no dependencies, do whenever. |
+| **In progress** | nothing mid-flight. WI-410 done 2026-08-11 (PR pending Dan's merge). |
+| **Next up** | **WI-411** (dedicated test DB) is the only no-dependency code item left. Everything else in M4 waits on **WI-401 `[user]`** (Dan provisions Azure); then WI-404/405 (digest, needs ESP), WI-406, WI-407, WI-408 (launch). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
@@ -35,7 +35,7 @@
 
 ### Next up — everything left in M4 needs Dan
 - **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Still buildable without cloud: **WI-410** (feed sorting) and **WI-411** (dedicated test DB).
+- Still buildable without cloud: **WI-411** (dedicated test DB).
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 
 ### M3 shipped (all on `auto/M3`, PR #5)
@@ -84,6 +84,20 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-11** — **WI-410 done — sort the research feed** (/next-item).
+  /research sortable by date (default, unchanged), readiness (highest first,
+  **unscored last** — nullable score, the published_at NULLS LAST trap), and
+  kind (research → news → trials → preprint grouping, newest first within a
+  group, decided explicitly in SQL). Plain select in the existing GET filter
+  form (no-JS + htmx for free), composes with tumor/early filters, canonical
+  `?sort=` in the URL (garbage normalized away; input never reaches SQL —
+  a whitelist switch picks among fixed ORDER BY strings). Review's two copy
+  catches applied: "Closest to helping you" was a personal promise the
+  anti-hype rules forbid → "Most ready to use"; "By type" → "By kind" (one
+  word per concept). **/trials does not get the control** (no readiness score
+  there; update recency already meaningful). Live-verified descending dials.
+  650 tests.
 
 - **2026-08-10** — **WI-409 done — home page leads with the feed** (/next-item,
   PR [#8](https://github.com/badsonstudios/BrainHarbor/pull/8) squash-merged).
