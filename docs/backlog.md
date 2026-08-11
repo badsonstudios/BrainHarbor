@@ -399,7 +399,9 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: PLAN.md §3, sitemap.md, docs/design/entry-hub-handoff/.
   Depends on: nothing. **Do before WI-408.**
 
-- [ ] **WI-410 Sort the research feed**
+- [x] **WI-410 Sort the research feed** (done 2026-08-11 — /trials does NOT
+  get the control: trials carry no readiness score and registry-update
+  recency is already the meaningful order there)
   Goal: let a reader ask "what is closest to helping me?" not just "what is
   newest?" (Dan's ask, 2026-08-01.)
   Acceptance: `/research` sortable by **date** (default, current behaviour),

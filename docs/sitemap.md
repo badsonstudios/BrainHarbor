@@ -16,7 +16,8 @@ Companion to [PLAN.md](../PLAN.md). Scope: **aggregation-first v1** (feed + plai
                                 + "Just diagnosed? Start here" secondary entry
 
 /research/                      THE FEED — filter by tumor type, kind (research/news/trials),
-                                date; "show early-stage research" toggle (default: human-relevant only)
+                                date; "show early-stage research" toggle (default: human-relevant only);
+                                sort by date (default), readiness (unscored last), or kind (?sort=)
 /research/{slug}                Item page: plain-language summary, stage badge, provenance,
                                 link to original, "report a problem" affordance
 /trials/                        Trial browse + "near me" search
