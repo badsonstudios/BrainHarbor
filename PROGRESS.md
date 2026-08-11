@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-411 done 2026-08-11 (PR pending). |
+| **In progress** | **WI-401 — Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). 7 DbUp migrations applied via new `Database:MigrateOnStartup` flag (advisory-locked; chosen over CI-step so DB creds stay in Azure — Program.cs change on `feature/wi-401-deploy`, uncommitted). Deploy = zip deploy (NOTE: PowerShell Compress-Archive breaks Kudu — backslash zip entries; use .NET ZipFile with UseBackslash=false). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **Remaining:** GH Actions deploy workflow (+ commit the flag change), brainharbor.org DNS+TLS (Dan at registrar), admin 2FA in prod, pipeline → prod + backfill. |
 | **Next up** | **WI-401 `[user]`+assisted** (Azure provisioning — Dan says ready, 2026-08-11) is the gate for WI-404–408. Also buildable anytime: **WI-412** (/tumors plain-English tumor-type descriptions, Dan's ask 2026-08-11). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 

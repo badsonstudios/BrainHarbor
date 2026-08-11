@@ -104,7 +104,7 @@ Security: single long random API key in a header, HTTPS only, rate-limited, endp
 |---|---|
 | Local dev | .NET 10 SDK ✓, Docker Postgres 16 on **5433** (compose file, named volume), `dotnet user-secrets` (NCBI key, sync API key), DbUp runs migrations on Web start in dev |
 | Repo | **Private GitHub** (`badsonstudios`); GitHub Actions: build + tests from commit one; deploy step added at M4 |
-| CI/CD (from M4) | Actions → App Service; DbUp migration step; content gates (readability, axe smoke) |
+| CI/CD (from M4) | Actions → App Service (publish-profile deploy on merge to `main`, then a smoke check); migrations run on app **start** via `Database:MigrateOnStartup` (advisory-locked, so DB credentials never leave Azure — chosen at WI-401 over a CI migration step); content gates (readability, axe smoke) |
 | Monitoring | App Insights + free uptime ping on `/` and `/get-help-now`; admin source-health page driven by `source_sync_state` (shows "PubMed last synced N days ago" — visible staleness) |
 | Analytics | **No Google Analytics** — privacy-first counter (GoatCounter/Plausible). "We don't track you" is a feature for this audience |
 | Caching | Feed pages: 5–15 min response cache; item permalinks: cache hard, bust on edit; static pages: cache until deploy |
@@ -113,15 +113,21 @@ Security: single long random API key in a header, HTTPS only, rate-limited, endp
 
 ## 9. Cost
 
-**$0 until M4** (everything local). From launch:
+**$0 until M4** (everything local). From launch — **WI-401 (2026-08-11) chose
+shared infrastructure**: BrainHarbor runs as a second web app on Moodathon's
+existing B1 plan (`asp-shamoody-prod-eus2`) and as a second database (own
+role, isolated) on Moodathon's existing Postgres Flexible B1ms
+(`db-shamoody-prod-eus`, PG17), so the two line items below cost **$0
+incremental**. Escape hatch if the shared B1 runs hot (~77–81% memory with
+both apps): scale the plan to B2 (+~$13/mo).
 
 | Item | Monthly |
 |---|---|
-| App Service B1 (Always On) | ~$13 |
-| PostgreSQL Flexible B1ms | ~$12–16 |
+| App Service (shared Moodathon B1 plan) | **$0 incremental** (was budgeted ~$13) |
+| PostgreSQL (shared Moodathon Flexible B1ms) | **$0 incremental** (was budgeted ~$12–16) |
 | Claude usage | **$0** (existing Claude Code subscription) |
 | ESP (Buttondown/Kit free tier to start) | $0 → ~$9 as list grows |
 | Domain (brainharbor.org), App Insights, uptime ping | ~$1–3 amortized |
-| **Total** | **~$26–32/mo** |
+| **Total** | **~$1–3/mo** (worst case ~$14–16 with the B2 escape hatch) |
 
 Phase 3 (stories) adds Blob storage + a few dollars. No topology change — story submissions post to the site directly and moderate through the same admin.

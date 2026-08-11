@@ -49,3 +49,45 @@ jobs:
       # page and glossary term must pass the Flesch-Kincaid gate.
       - name: ContentCheck
         run: dotnet run --project tools/BrainHarbor.ContentCheck --configuration Release --no-build
+
+  # WI-401: merging to main deploys to production. Migrations run on app
+  # start (Database:MigrateOnStartup, advisory-locked), so the deploy needs no
+  # database access — the only secret here is the publish profile.
+  deploy:
+    needs: build-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish
+        run: dotnet publish src/BrainHarbor.Web --configuration Release --output publish
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: app-brainharbor-prod-eus2
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: publish
+
+      # Migrations run on app START, not in this workflow — so a bad migration
+      # would otherwise show as a green deploy and a dead site. This step makes
+      # the run honest: the site must actually answer before we call it done.
+      - name: Smoke check
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 \
+              https://app-brainharbor-prod-eus2.azurewebsites.net/) && \
+              [ "$code" = "200" ] && echo "site up (attempt $i)" && exit 0
+            echo "attempt $i: $code — retrying in 10s"; sleep 10
+          done
+          echo "site never answered 200 after deploy" && exit 1

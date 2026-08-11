@@ -162,8 +162,12 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
-// DbUp runs on startup in dev; in prod (M4) migrations become a CI step.
-if (app.Environment.IsDevelopment())
+// DbUp runs on startup in dev, and in any environment that opts in via
+// Database:MigrateOnStartup (prod does — WI-401). Chosen over a CI migration
+// step so the database credentials never leave Azure: the runner already
+// holds an advisory lock, so overlapping starts can't race the journal.
+if (app.Environment.IsDevelopment()
+    || app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 {
     MigrationRunner.Run(connectionStringSetting);
 }
