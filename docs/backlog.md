@@ -432,6 +432,26 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tests/BrainHarbor.Tests/TestDatabase.cs, WI-402 log entry.
   Depends on: nothing.
 
+- [ ] **WI-412 Tumor-type descriptions (/tumors)**
+  Goal: every tumor type a reader can pick in the /research filter has a
+  plain-English "what is this?" explanation (Dan's ask, 2026-08-11 — an early
+  slice of P2c; sitemap.md already reserves `/tumors/`).
+  Acceptance: a `/tumors` page driven by the SAME `taxonomy.yml` the feed
+  filter uses (the list and the descriptions can never drift apart); a reader
+  picks a type (select or A–Z list, works with JS off) and gets a hand-written
+  plain-language description **targeting ~6th grade** (site gate stays ≤8.5,
+  aim lower); each type deep-linkable (`/tumors#low-grade-glioma`) so the
+  /research tumor filter can link "What is this?"; descriptions are curated
+  content through the ContentCheck reading-level gate; glossary tooltips
+  active; a type whose description is not yet written says so honestly
+  ("we are still writing this one") rather than rendering blank; medical
+  naming follows the WI-201 lesson (WHO CNS5 — e.g. "grade 4 glioma" ≠
+  glioblastoma, DIPG ⊂ diffuse midline glioma); no AHFS/MedlinePlus text
+  (licensing, PLAN.md §5). Write the most common types first; finishing all
+  22 may split into a follow-up item.
+  Refs: docs/sitemap.md (`/tumors/`), content-pipeline.md §2/§5,
+  Content/taxonomy.yml. Depends on: nothing.
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest
