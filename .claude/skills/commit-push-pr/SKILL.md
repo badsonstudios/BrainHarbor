@@ -79,7 +79,7 @@ changes, pushes, opens the PR):
 
 ```bash
 # bash
-.claude/scripts/new-pr.sh -t "WI-<n>: <title>" -b "<body>" -B main
+.claude/scripts/new-pr.sh -t "WI-<n>: <title>" -b "<body>" -B develop
 ```
 ```powershell
 # PowerShell
@@ -90,11 +90,11 @@ Or by hand:
 
 ```bash
 git push -u origin <branch>
-gh pr create --base main --fill
+gh pr create --base develop --fill
 ```
 
 Report the PR URL. Dan self-merges (prefer squash). After merge:
-`git checkout main && git pull` before the next item.
+`git checkout develop && git pull` before the next item.
 
 ## Notes
 

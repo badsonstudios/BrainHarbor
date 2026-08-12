@@ -452,6 +452,30 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/sitemap.md (`/tumors/`), content-pipeline.md §2/§5,
   Content/taxonomy.yml. Depends on: nothing.
 
+- [ ] **WI-413 Tell "the CLI is down" apart from "this item is odd"**
+  Goal: close the last hole in the WI-401 fail-fast work — the pipeline
+  currently infers an outage from a STREAK of failures, because a classifier
+  failure carries no cause.
+  Problem (found 2026-08-12 in review): if an outage begins inside the last
+  one or two items of a small window, the streak never reaches the threshold
+  and those items upload as permanently unclassified — the state that needed
+  532 rows hand-deleted from prod. Treating an all-failed window as an outage
+  instead would stall a source forever on one item that can never be
+  classified, so counting is the wrong signal in both directions.
+  Acceptance: `ClaudeCli` distinguishes "the CLI never answered" (non-zero
+  exit, timeout, spawn failure — infrastructure) from "it answered but the
+  output was unusable" (validation) and carries that on `ClaudeResult`;
+  `IItemClassifier` surfaces it (e.g. a `ClassifyDecision.Unavailable`), and
+  `Classifier` also returns it when the taxonomy call failed; `PipelineRunner`
+  stops on the FIRST unavailable rather than on a streak, and keeps uploading
+  genuinely-unclassifiable items for a person; the streak counter and the
+  known-residual comment/test in `PipelineRunnerTests` are removed as
+  obsolete; a test proves a single unavailable result stops the source without
+  uploading it, and that a persistently-odd item still reaches the queue and
+  does NOT stall the cursor.
+  Refs: PipelineRunner.MaxConsecutiveClassifyFailures, Claude/ClaudeCli.cs,
+  Classify/Classifier.cs. Depends on: nothing.
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest

@@ -1,10 +1,12 @@
 name: CI
 
+# Branch model (2026-08-11): feature branches PR into `develop`; a
+# develop → main PR is a RELEASE — merging it deploys to Azure.
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   build-test:

@@ -102,8 +102,11 @@ All tokens, API keys, and passwords live in **`.claude/.env`**.
 
 - **Host:** private GitHub repo at `badsonstudios/BrainHarbor` (created at
   WI-002). No GitHub Issues — the backlog file is the tracker.
-- **Branches:** `main` is always-working; one `feature/wi-<n>-<slug>` branch per
-  work item; PR → self-merge. Commit/push only when Dan approves (Gate 2).
+- **Branches (since 2026-08-11):** `develop` (default) is the integration
+  branch — one `feature/wi-<n>-<slug>` branch per work item, PR'd into
+  `develop` → self-merge. **`main` is the release branch: merging a
+  develop → main PR deploys to Azure.** Commit/push only when Dan approves
+  (Gate 2).
 - Details: `skills/startup/references/git-workflow.md`.
 
 ---

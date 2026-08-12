@@ -5,12 +5,12 @@
 # Usage: ./new-pr.sh -t "Title" [-b "Body"] [-B base] [-n branch] [-a]
 #   -t  PR title / commit subject (required)
 #   -b  PR body / commit body
-#   -B  base branch (default: main)
+#   -B  base branch (default: develop)
 #   -n  branch name (default: derived from title if on base branch)
 #   -a  stage all changes (git add -A) before committing
 set -euo pipefail
 
-title=""; body=""; base="main"; branch=""; stage_all=0
+title=""; body=""; base="develop"; branch=""; stage_all=0
 while getopts ":t:b:B:n:a" opt; do
   case "$opt" in
     t) title="$OPTARG" ;;

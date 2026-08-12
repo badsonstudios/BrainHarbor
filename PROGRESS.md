@@ -11,9 +11,11 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-401 — Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **Remaining:** brainharbor.org DNS+TLS (Dan at registrar; verifyId + IP in log below), admin 2FA in prod, pipeline → prod + backfill. |
+| **In progress** | **WI-401 — Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **Backfill: 43 trials published live + 2 in the queue; the rest still to run** — two attempts died on the Claude usage limit and on hidden 30s HTTP caps, costing 532 hand-deleted rows and 3h20m of wasted LLM work; both causes fixed on `feature/wi-401-pipeline-failfast` (see log). Prod is clean (45 real rows, cursors reset) and ready for the next attempt when the limit allows. |
 | **Next up** | **WI-401 `[user]`+assisted** (Azure provisioning — Dan says ready, 2026-08-11) is the gate for WI-404–408. Also buildable anytime: **WI-412** (/tumors plain-English tumor-type descriptions, Dan's ask 2026-08-11). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
+
+**Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
 
 **Publishing mode: AUTO, fully automatic.** Site publishes summaries that pass the automated safety checks; **no human-review claims anywhere in reader-facing copy** (deliberate — scrubbed 2026-07-31). The review queue still exists in code for flagged/reported items but is never promised to readers. Default model claude-opus-5.
 
@@ -84,6 +86,27 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-12** — **WI-401 backfill: two failed attempts, both root-caused and
+  fixed.** (1) **Hidden HTTP caps:** `AddStandardResilienceHandler()` replaces
+  `HttpClient.Timeout` with an infinite one and applies its OWN 30s-total /
+  10s-attempt defaults — so the `client.Timeout = 60s` line sitting right above
+  it was decoration. It killed PubMed's catch-up fetch, then killed the sync
+  UPLOAD after 3h20m of finished classify+summarize work (0 rows landed).
+  Fixed with a shared `AllowLongRequests` helper on every resilient client, the
+  inert `client.Timeout` lines deleted, and — because no test had ever touched
+  `Program.cs`'s DI graph, which is how this reached prod — a new
+  `PipelineHttpTimeoutTests` that asserts the timeouts the handler ACTUALLY
+  runs with. (2) **Usage-limit death:** when the limit expires every item comes
+  back Unclassified, and uploading those made the server *know* them, so no
+  later run would ever classify them (532 rows hand-deleted across two
+  attempts). Now a streak of 3 stops the source — processed items still upload,
+  the cursor is HELD, the next run resumes the window — and because the
+  classifier is shared infrastructure, the first source to prove it dead
+  **latches the whole run** (small sources would never reach the streak alone).
+  One-off failures still go up for a person, unchanged. Known residual filed as
+  **WI-413** (counting is the wrong signal; the CLI should say *why* it failed).
+  661 tests.
 
 - **2026-08-11** — **WI-411 done — dedicated test database** (/next-item).
   DB tests now default to **`brainharbor_test`** in the same local/CI Postgres
