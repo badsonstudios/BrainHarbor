@@ -187,6 +187,188 @@ public class PipelineRunnerTests
         Assert.Equal(1, result.TotalNew);
     }
 
+    // ---------- WI-401: surviving a dead Claude usage limit ----------
+
+    /// <summary>
+    /// The failure that cost a production backfill: once the usage limit dies,
+    /// every remaining item fails identically. Uploading them as pending would
+    /// make the server "know" them, so no later run would ever classify them —
+    /// the rows had to be deleted by hand. The source must stop instead.
+    /// </summary>
+    [Fact]
+    public async Task AStreakOfClassificationFailuresStopsTheSourceAndUploadsNothing()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        var items = new List<FetchedItem>();
+        for (var i = 1; i <= 8; i++)
+        {
+            items.Add(Item("pubmed", $"dead-{i}"));
+            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+        }
+
+        var fetcher = new StubFetcher("pubmed", items, cursor: "2026-08-12");
+        var result = await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        Assert.Empty(api.Uploads);
+        Assert.Empty(api.CursorAdvances);
+        Assert.Equal(
+            PipelineRunner.MaxConsecutiveClassifyFailures,
+            classifier.Classified.Count); // stopped, did not grind through all 8
+        Assert.Single(result.Failures);
+
+        // The admin health page is driven by reported failures, not by the
+        // console — a silent stop would look like a quiet day.
+        Assert.Single(api.ReportedFailures);
+    }
+
+    /// <summary>
+    /// The classifier is shared infrastructure: when it dies, small sources
+    /// (an RSS feed with two new items) would never reach the streak threshold
+    /// on their own, and would each upload a couple of permanently
+    /// unclassified rows and advance past them.
+    /// </summary>
+    [Fact]
+    public async Task OnceTheClassifierIsProvenDeadTheRestOfTheRunIsSkipped()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        var dead = new List<FetchedItem>();
+        for (var i = 1; i <= 4; i++)
+        {
+            dead.Add(Item("pubmed", $"dead-{i}"));
+            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+        }
+
+        var first = new StubFetcher("pubmed", dead, cursor: "2026-08-12");
+        var second = new StubFetcher("nci_rss", [Item("nci_rss", "later-1")], cursor: "2026-08-12");
+
+        var result = await Runner(api, classifier, first, second).RunAsync(CancellationToken.None);
+
+        Assert.Equal(0, second.FetchCount); // not even fetched
+        Assert.Empty(api.Uploads);
+        Assert.Empty(api.CursorAdvances);
+        Assert.Equal(2, result.Failures.Count);
+        Assert.Equal(2, api.ReportedFailures.Count);
+    }
+
+    /// <summary>
+    /// Documents the KNOWN RESIDUAL (WI-413), so it is a decision rather than a
+    /// surprise: a window too small to reach the streak threshold still uploads
+    /// its failures as permanently unclassified. Treating an all-failed window
+    /// as an outage instead would stall a source forever on one item that can
+    /// never be classified, which is worse. The latch keeps this to the first
+    /// source that meets an outage.
+    /// </summary>
+    [Fact]
+    public async Task ATinyWindowThatWhollyFailsStillUploadsForAPerson()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnclassifiableExternalIds.Add("dead-1");
+        classifier.UnclassifiableExternalIds.Add("dead-2");
+        var fetcher = new StubFetcher(
+            "nci_rss",
+            [Item("nci_rss", "dead-1"), Item("nci_rss", "dead-2")],
+            cursor: "2026-08-12");
+
+        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(2, upload.Items.Count);
+        Assert.Equal("2026-08-12", upload.Cursor);
+    }
+
+    /// <summary>An off-topic verdict is a working classifier, so it clears the
+    /// streak and releases anything held back.</summary>
+    [Fact]
+    public async Task AnExcludeVerdictProvesTheClassifierIsAliveAndReleasesHeldItems()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnclassifiableExternalIds.Add("odd-1");
+        classifier.UnclassifiableExternalIds.Add("odd-2");
+        classifier.ExcludeExternalIds.Add("off-topic");
+        var fetcher = new StubFetcher(
+            "pubmed",
+            [Item("pubmed", "odd-1"), Item("pubmed", "odd-2"), Item("pubmed", "off-topic"),
+             Item("pubmed", "odd-3"), Item("pubmed", "ok-1")],
+            cursor: "2026-08-12");
+
+        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        // The two held items are released by the exclude; the streak restarts
+        // after it, so odd-3 never reaches the threshold either.
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(
+            ["odd-1", "odd-2", "odd-3", "ok-1"],
+            upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Equal("2026-08-12", upload.Cursor);
+    }
+
+    [Fact]
+    public async Task WorkDoneBeforeTheOutageIsKeptButTheCursorIsHeldBack()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        var items = new List<FetchedItem> { Item("pubmed", "ok-1"), Item("pubmed", "ok-2") };
+        for (var i = 1; i <= 5; i++)
+        {
+            items.Add(Item("pubmed", $"dead-{i}"));
+            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+        }
+
+        var fetcher = new StubFetcher("pubmed", items, cursor: "2026-08-12");
+        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["ok-1", "ok-2"], upload.Items.Select(i => i.ExternalId).ToArray());
+
+        // The whole point: the unprocessed remainder of this window must be
+        // fetched again next run, so the cursor may not move.
+        Assert.Null(upload.Cursor);
+        Assert.Empty(api.CursorAdvances);
+    }
+
+    [Fact]
+    public async Task AOneOffClassificationFailureStillGoesUpForAPerson()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnclassifiableExternalIds.Add("odd-1");
+        var fetcher = new StubFetcher(
+            "pubmed",
+            [Item("pubmed", "ok-1"), Item("pubmed", "odd-1"), Item("pubmed", "ok-2")],
+            cursor: "2026-08-12");
+
+        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["ok-1", "odd-1", "ok-2"], upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Equal("2026-08-12", upload.Cursor); // a healthy run still advances
+    }
+
+    /// <summary>A short streak at the very end is still just odd items — they
+    /// must not be silently dropped along with the cursor.</summary>
+    [Fact]
+    public async Task AShortFailureStreakAtTheEndOfAWindowStillUploads()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnclassifiableExternalIds.Add("odd-1");
+        classifier.UnclassifiableExternalIds.Add("odd-2");
+        var fetcher = new StubFetcher(
+            "pubmed",
+            [Item("pubmed", "ok-1"), Item("pubmed", "odd-1"), Item("pubmed", "odd-2")],
+            cursor: "2026-08-12");
+
+        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["ok-1", "odd-1", "odd-2"], upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Equal("2026-08-12", upload.Cursor);
+    }
+
     // ---------- WI-402: facts and feed items are on separate tracks ----------
 
     [Fact]
