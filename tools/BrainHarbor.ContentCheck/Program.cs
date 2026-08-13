@@ -13,9 +13,11 @@ public static class Cli
             : Path.Combine("src", "BrainHarbor.Web", "Content", "pages");
         var glossaryRoot = args.Length > 1 ? args[1]
             : Path.Combine("src", "BrainHarbor.Web", "Content", "glossary");
+        var razorRoot = args.Length > 2 ? args[2]
+            : Path.Combine("src", "BrainHarbor.Web", "Pages");
 
         var findings = ContentChecker.CheckAll(
-            pagesRoot, glossaryRoot, DateOnly.FromDateTime(DateTime.UtcNow));
+            pagesRoot, glossaryRoot, DateOnly.FromDateTime(DateTime.UtcNow), razorRoot);
 
         var failures = 0;
         foreach (var finding in findings)
