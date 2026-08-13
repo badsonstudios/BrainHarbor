@@ -114,6 +114,25 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Contains("class=\"feed-grid\"", html);
     }
 
+    /// <summary>
+    /// The home page must say, up front, that the summaries are written by AI
+    /// AND that the underlying research is not — the two halves have to travel
+    /// together, or "written by AI" reads as though AI did the science.
+    /// Rewording is fine; dropping either half is not, so change this test
+    /// deliberately rather than to make a build pass.
+    /// </summary>
+    [Fact]
+    public async Task HomeSaysAiWroteTheSummariesAndScientistsDidTheResearch()
+    {
+        var html = await GetHomeAsync();
+
+        Assert.Contains("Scientists do the research", html);
+        Assert.Contains("AI puts what they found into plain words", html);
+
+        // And that nobody is promised a human reviewer (Publishing:Mode Auto).
+        Assert.Contains("A person does not check every one", html);
+    }
+
     [Fact]
     public async Task PendingItemsDoNotAppearOnHome()
     {

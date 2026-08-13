@@ -139,12 +139,13 @@ else if (Model.Nearby is { } nearby)
         }
     </select>
 
+    <button type="submit">Show trials</button>
+
+    @* Same shape as /research: the long toggle sits under the controls. *@
     <label class="checkbox">
         <input type="checkbox" name="includeClosed" value="true" checked="@Model.IncludeClosed" />
         Include trials that are not taking new patients
     </label>
-
-    <button type="submit">Show trials</button>
 </form>
 
 <p class="trial-note">

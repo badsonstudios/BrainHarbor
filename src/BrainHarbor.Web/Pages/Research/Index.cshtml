@@ -48,12 +48,14 @@
         <option value="type" selected="@(Model.Query.Sort == "type")">By kind</option>
     </select>
 
-    <label>
+    <button type="submit">Apply</button>
+
+    @* Below the controls, not among them: it changes which items appear, and
+       the sentence is too long to sit in the control row. *@
+    <label class="checkbox">
         <input type="checkbox" name="early" value="true" checked="@Model.Query.IncludeEarlyStage" />
         Show early-stage research (animal and lab studies)
     </label>
-
-    <button type="submit">Apply</button>
 </form>
 
 <div id="feed-results">
