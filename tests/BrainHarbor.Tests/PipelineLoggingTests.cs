@@ -306,7 +306,9 @@ public class PipelineLoggingTests : IDisposable
     public void TwoRunsStartingInTheSameSecondBothGetALog()
     {
         // Named to the second, so a manual run colliding with the scheduled one
-        // would otherwise find the name taken and get no log at all.
+        // would otherwise find the name taken and get no log at all — or, on a
+        // platform where FileShare is advisory, silently interleave into one
+        // file. Both runs must end up with their own.
         var startedAt = DateTimeOffset.Now;
         using var first = FileLogSink.Create(Options(), new LogRedactor([]), startedAt)!;
         using var second = FileLogSink.Create(Options(), new LogRedactor([]), startedAt)!;

@@ -92,6 +92,12 @@ public sealed class FileLogSink : IDisposable
 
             try
             {
+                // CreateNew, not Append: it fails atomically if the name is
+                // already taken, on every platform. Relying on the sharing
+                // violation instead would work on Windows and quietly do the
+                // wrong thing on Linux, where FileShare is advisory — the two
+                // runs would interleave into one file.
+                //
                 // FileShare.Read so the file can be tailed WHILE the run is
                 // going — a two-hour backfill you cannot watch is only half an
                 // improvement. (A reader must in turn share writes, since this
@@ -101,12 +107,13 @@ public sealed class FileLogSink : IDisposable
                 // under a live run, which on Windows succeeds silently and loses
                 // the whole log.
                 return (
-                    new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read),
+                    new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read),
                     path);
             }
             catch (IOException) when (attempt < 8)
             {
-                // Another process holds that exact name. Try the next suffix.
+                // That name is taken — by a run in the same second, or by one
+                // that already finished. Try the next suffix.
             }
         }
     }
