@@ -21,7 +21,7 @@ Reality throughout: one person (Dan), no clinician on staff (yet).
 3. DRAFT       AI rewrite with a hard rule: "Use ONLY the supplied source text.
                If the sources don't cover something, write [GAP], don't fill it in."
 4. VERIFY      Claim-by-claim pass against sources. Every sentence must trace.
-5. READABILITY Automated gate (§5). Fails the build if grade level > 8.5.
+5. READABILITY Automated gate (§5). Fails the build if grade level > 6.0.
 6. HUMAN READ  Read aloud once. Would a scared person at 2am understand this?
 7. PUBLISH     Merge to main → CI deploys. Git history = editorial audit trail.
 8. (LATER)     Friend reviews pages nearest his experience (benefits, LGG, seizures);
@@ -63,11 +63,23 @@ A CI script walks all pages and reports: overdue reviews, missing sources, `vola
 
 | Gate | Tool | Threshold |
 |---|---|---|
-| Reading level | Flesch-Kincaid script | ≤ 8.5 grade, warn ≥ 7.5 |
+| Reading level | Flesch-Kincaid script | ≤ 6.0 grade, warn ≥ 5.5 — curated pages AND reader-facing Razor pages (WI-414) |
 | Glossary coverage | medical terms used but not in glossary → warn | — |
 | Link rot | outbound checker (monthly job) | 0 broken |
 | A11y smoke | Playwright + axe-core | 0 serious/critical |
 | Review freshness | `review_due` past → report | — |
+
+**Why AI summaries are still gated at 8.5, not 6.0** (measured 2026-08-13 over
+the 1,038 published summaries): at 6.0 **73.5%** of them would be flagged, and
+the feed would stop publishing rather than get easier to read. Two things have
+to happen first, in this order: (1) the summarize prompt has to *ask* for 6th
+grade — today it does not, and the median lands at 6.7; (2) the guardrail's own
+grader has to become block-aware like the page grader, because it joins the
+plain title and the six blocks with newlines and no terminators, so a title
+runs into the hook and inflates every score (block-aware, the same 1,038
+summaries measure a median of **6.0** rather than 6.7, and the flag rate at 6.0
+falls from 73.5% to 50.3%). Lower the gate after the prompt change and a golden
+-set re-run, not before. Tracked as WI-415.
 
 ## 6. Inline definitions (tooltips)
 

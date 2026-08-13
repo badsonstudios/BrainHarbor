@@ -3,8 +3,10 @@ using BrainHarbor.ContentCheck;
 namespace BrainHarbor.Tests;
 
 /// <summary>
-/// WI-106: the readability gate. Grade thresholds are the promise from
-/// content-pipeline.md §5 — fail &gt; 8.5, warn ≥ 7.5.
+/// WI-106 + WI-414: the readability gate. Grade thresholds are the promise
+/// from content-pipeline.md §5 — fail &gt; 6.0, warn ≥ 5.5 — and since WI-414
+/// they cover the Razor pages people actually land on, not just the curated
+/// Markdown.
 /// </summary>
 public class ContentCheckTests
 {
@@ -146,10 +148,11 @@ public class ContentCheckTests
     [Fact]
     public void MidBandGradeWarnsWithoutFailing()
     {
-        // A sample inside the 7.5–8.5 warn band (grade 8.4 by this analyzer).
-        var text = "The doctor talked with the family about the treatment plan for winter. " +
-                   "The nurses answered many simple questions during the visit. " +
-                   "Everyone felt better after the meeting ended that day.";
+        // A sample inside the 5.5–6.0 warn band (WI-414 lowered the gate to
+        // 6th grade; this sample was retuned from the old 7.5–8.5 band).
+        var text = "The nurse called the family about the visit. " +
+                   "She answered their questions about the plan. " +
+                   "They felt better after they talked.";
         var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
         Assert.True(grade >= ContentChecker.WarnGrade && grade <= ContentChecker.FailGrade,
             $"sample must sit in the warn band, got {grade}");
@@ -214,6 +217,154 @@ public class ContentCheckTests
 
         Assert.NotEmpty(findings);
         Assert.DoesNotContain(findings, f => f.Level == FindingLevel.Fail);
+    }
+
+    // ---------- WI-414: reader-facing Razor prose ----------
+
+    [Fact]
+    public void RazorMarkupAndCodeAreNotGradedAsProse()
+    {
+        // The words a reader sees are the only words that count. Everything
+        // else here (an attribute, an expression, a comment, a script) would
+        // drag the grade around while saying nothing about the writing.
+        var razor = """
+            @model IndexModel
+            @* An internal note about implementation subtleties. *@
+            <section class="hub" aria-label="Overwhelmingly complicated description">
+                <h1>We help you</h1>
+                @if (Model.Items.Count > 0)
+                {
+                    <p>Scientists do the research. AI puts it into plain words.</p>
+                }
+                <script>var complicatedInitialization = configureEverything();</script>
+            </section>
+            """;
+
+        var text = RazorTextExtractor.ExtractSentences(razor);
+
+        Assert.Contains("We help you.", text);
+        Assert.Contains("Scientists do the research.", text);
+        Assert.DoesNotContain("Overwhelmingly", text);      // attribute value
+        Assert.DoesNotContain("Model", text);               // razor expression
+        Assert.DoesNotContain("implementation", text);      // razor comment
+        Assert.DoesNotContain("configureEverything", text); // script body
+    }
+
+    /// <summary>
+    /// The regression that made this tool trustworthy: `@if (x)` with a space
+    /// before the bracket left the whole condition behind as "prose", grading
+    /// a partial with no reader-facing words at all at grade 18. Nonsense
+    /// findings are how a gate gets ignored.
+    /// </summary>
+    [Fact]
+    public void AConditionIsNeverMistakenForProse()
+    {
+        var razor = """
+            <span>
+                @if (Model.Kind is BadgeKind.Result or BadgeKind.Unverified)
+                {
+                    <span class="meter"></span>
+                }
+                else if (Model.Kind == BadgeKind.Progress)
+                {
+                    <span>@Model.Label</span>
+                }
+            </span>
+            """;
+
+        var text = RazorTextExtractor.ExtractSentences(razor);
+
+        Assert.DoesNotContain("BadgeKind", text);
+        Assert.DoesNotContain("Unverified", text);
+        Assert.True(
+            text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length < 3,
+            $"expected almost no prose, got: {text}");
+    }
+
+    [Fact]
+    public void OrdinaryWordsThatLookLikeKeywordsSurvive()
+    {
+        // "if" and "for" are also English. Only a keyword followed by a
+        // bracket is control flow.
+        var text = RazorTextExtractor.ExtractSentences(
+            "<p>Call us if you need help, or ask for a ride.</p>");
+
+        Assert.Equal("Call us if you need help, or ask for a ride. ", text);
+    }
+
+    [Fact]
+    public void HeadingsDoNotRunIntoTheParagraphBelowThem()
+    {
+        // The WI-106 lesson, carried over: merging a heading into the next
+        // sentence inflates the grade and punishes exactly the structure that
+        // helps an impaired reader.
+        Assert.Equal(
+            "Where to start. Ask your care team first. ",
+            RazorTextExtractor.ExtractSentences(
+                "<h2>Where to start</h2><p>Ask your care team first.</p>"));
+    }
+
+    [Fact]
+    public void APageWithTooLittleProseIsNotGraded()
+    {
+        // A badge partial's words come from the model at runtime; grading six
+        // stray words would produce a number nobody should act on.
+        var findings = ContentChecker.CheckRazorPage(
+            "<span class=\"badge\">@Model.Label</span>", "Shared/_StageBadge.cshtml");
+
+        Assert.Equal(FindingLevel.Info, Assert.Single(findings).Level);
+        Assert.Contains("too little to grade", findings[0].Message);
+    }
+
+    [Fact]
+    public void HardRazorProseFailsTheGate()
+    {
+        var razor = """
+            <p>
+                Notwithstanding the aforementioned considerations regarding
+                methodological heterogeneity, the investigators subsequently
+                determined that stratification of participants necessitated
+                additional multivariable adjustment procedures.
+            </p>
+            <p>
+                Consequently, generalizability remains substantially constrained
+                by unmeasured confounding variables inherent to observational
+                epidemiological investigations of this particular nature.
+            </p>
+            """;
+
+        var finding = Assert.Single(ContentChecker.CheckRazorPage(razor, "Hard.cshtml"));
+
+        Assert.Equal(FindingLevel.Fail, finding.Level);
+        Assert.Contains("simplify the language", finding.Message);
+    }
+
+    [Fact]
+    public void AdminAndDevPagesAreNotHeldToThePatientReadingLevel()
+    {
+        // Staff tools legitimately use words like "classification" and
+        // "authorization". Failing the build over them would only teach
+        // people to ignore the gate.
+        var root = Path.Combine(Path.GetTempPath(), $"bh-razor-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(Path.Combine(root, "Admin"));
+        Directory.CreateDirectory(Path.Combine(root, "Dev"));
+        try
+        {
+            const string Hard =
+                "<p>Reviewers reconcile classification discrepancies before publication " +
+                "authorization, documenting justification within the audit infrastructure.</p>";
+            File.WriteAllText(Path.Combine(root, "Admin", "Queue.cshtml"), Hard);
+            File.WriteAllText(Path.Combine(root, "Dev", "StyleGuide.cshtml"), Hard);
+
+            var findings = ContentChecker.CheckAll(root, null, Today, root);
+
+            Assert.DoesNotContain(findings, f => f.File.Contains("Admin", StringComparison.Ordinal));
+            Assert.DoesNotContain(findings, f => f.File.Contains("Dev", StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
     }
 
     private static string FindRepoRoot()
