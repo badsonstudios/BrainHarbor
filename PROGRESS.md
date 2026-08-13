@@ -84,6 +84,20 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-13** — **The feed now runs itself, and the new prompts are proven
+  in production.** Daily scheduled task registered ('BrainHarbor Pipeline',
+  06:00, runs as Dan, StartWhenAvailable so a sleeping PC catches up rather
+  than skipping; `-Unregister` reverses it). Triggered once to prove the chain
+  rather than trust it: **exit code 0**, all six sources, ~51 new items.
+  First production numbers for WI-415's prompts: `summarize-v4` flagged
+  **2 of 42 (4.8%)** and `summarize-trial-v2` **0 of 9**, against 9.8% for the
+  old `summarize-v3` at the OLD looser 8.5 gate — a stricter ceiling that
+  rejects LESS, because the writing improved rather than the bar dropping.
+  Prod now 1,179 published / 137 pending. **Task Scheduler captures no console
+  output**, so the flag REASONS are lost (the DB stores only a boolean) —
+  filed as **WI-417** (Dan's ask): per-run log files with rotation, secrets
+  never logged.
+
 - **2026-08-13** — **WI-415 done — AI summaries now written for 6th grade.**
   Three parts. (1) **The grader was measuring wrong**: `AllProse` joins the
   plain title and six blocks with newlines and a title has no full stop, so

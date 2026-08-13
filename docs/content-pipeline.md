@@ -78,8 +78,14 @@ mechanism; the guardrail is only the backstop.
   `summarize-v4` (8 research items) median **4.7**, max **6.5**;
   `summarize-trial-v2` (3 trial items) median **3.4**, max **3.6**. (The previous prompt measured a median of 6.0 block-aware across the
   1,038 published items — a different population, so read it as a direction,
-  not a like-for-like delta. Nobody has yet measured the flag rate at 7.0 over
-  a real `summarize-v4` pipeline run; that number arrives with the next run.)
+  not a like-for-like delta.)
+- **First real pipeline run on the new prompts** (2026-08-13, 51 items):
+  `summarize-v4` flagged **2 of 42 (4.8%)**, `summarize-trial-v2` **0 of 9** —
+  against 9.8% for `summarize-v3` at the OLD, looser 8.5 gate. A stricter
+  ceiling that rejects less, because the writing got simpler rather than the
+  bar getting lower. Note the DB stores only a flagged boolean, not the reason,
+  so this rate covers all guardrails (numerals, hype, reading level) — see
+  WI-417 for run logs that would separate them.
 - `Guardrails.MaxGradeLevel` is **7.0**, not 6.0. A flagged summary does not
   publish, so setting the gate *at* the target would flag ordinary variation
   around it and drain the feed into the review queue instead of making it
