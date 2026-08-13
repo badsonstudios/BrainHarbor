@@ -11,8 +11,9 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-401 — Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
-| **Next up** | **WI-401 `[user]`+assisted** (Azure provisioning — Dan says ready, 2026-08-11) is the gate for WI-404–408. Also buildable anytime: **WI-412** (/tumors plain-English tumor-type descriptions, Dan's ask 2026-08-11). |
+| **In progress** | nothing mid-flight. **WI-401 DONE 2026-08-13** (details below). Open PR: #16 (WI-414 reading-level gate). |
+| **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
+| **Next up** | Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-412** (/tumors plain-English descriptions), **WI-415** (summaries to 6th grade — do before launch), **WI-413** (classifier unavailable vs odd item), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -23,22 +24,13 @@
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
 
-### Found 2026-08-01 while Dan was testing the local site
-- **WI-409 home page leads with the feed** — ⚠ **pre-launch blocker**. Home
-  still reads "The daily research feed and the weekly digest are coming soon"
-  and renders no items at all, but `/research` went live back in WI-209. Half
-  that sentence is false, and PLAN.md §3 says the feed IS the front door, not a
-  brochure. Small fix; it is also the first thing a stranger sees.
-- **WI-410 sort the research feed** — date / readiness / type. Dan's ask: let a
-  reader sort by how close something is to helping them, not just by date.
-  (The digest half of that home-page sentence is TRUE — WI-404/405 are not
-  built, there is no ESP account, and `/digest` honestly says sign-up opens
-  soon.)
-
-### Next up — everything left in M4 needs Dan
-- **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Nothing left is buildable without cloud — **WI-401 is the gate.**
+### Open threads (2026-08-13)
+- **WI-409 and WI-410 shipped** (home leads with the feed; feed sorting) — both live.
+- **Dan's review queue holds 134 items** (106 guardrail-flagged, 20 unclassified
+  one-offs). A first pass would show whether Auto mode's bar is right before WI-408.
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
+- Namecheap still has a conflicting `@` URL-Redirect record — harmless now that
+  the A record answers, but worth deleting.
 
 ### M3 shipped (all on `auto/M3`, PR #5)
 - **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
@@ -86,6 +78,35 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-13** — **WI-401 DONE — the backfill finished; brainharbor.org is a
+  real site.** All 6 sources green, 0 classification failures. **1,130 items
+  published**, 134 pending (20 of them one-off classify failures for a human),
+  106 held by the guardrails. `/trials` shows 207 trials, the feed 185 trial
+  items. **The self-healing resume proved itself**: ctgov's cursor had been
+  held back by the WI-401 fail-fast, so this run refetched that window,
+  classified the 74 it had not reached, and advanced the cursor — no cleanup,
+  no lost work, exactly what the last two attempts needed and did not have.
+  WI-401 acceptance fully met: shared App Service + Postgres (~$1–3/mo
+  incremental vs the ~$30 budgeted), DNS + managed TLS, deploy-on-merge with a
+  smoke check, admin 2FA in prod, pipeline pointed at prod, feed backfilled.
+
+- **2026-08-13** — **Home page now says who wrote what; filter bars fixed**
+  (PR #14, released via #15, live on brainharbor.org). Dan's catches from the
+  live site. (1) The hero read "we read new research and news, then explain
+  it" — sounding like people — while AI was named only in the footer and on
+  item pages. It now leads **"Scientists do the research. AI puts what they
+  found into plain words"**; naming AI *without* that first sentence invites
+  the worse misreading, that AI did the science. Also states plainly that
+  summaries publish on their own and that a person does not check every one.
+  Short sentences deliberately: the same content as one paragraph measures
+  reading grade 8.3, this measures ~4.8. **Note: ContentCheck does NOT gate
+  the home page** (it scans `Content/pages/*.md`; home is a Razor view), so
+  reading level there is measured by hand. Title + social description match;
+  a test pins both halves of the disclosure. (2) `.feed-filters` had no CSS
+  rule at all, so the submit button wrapped alone while the long toggle sat
+  among the dropdowns — now one control row ending in the button, toggle
+  beneath, on /research and /trials alike. 662 tests.
 
 - **2026-08-12** — **brainharbor.org has real content.** First release through
   the new `develop → main` flow (PR #13) deployed itself and passed the smoke

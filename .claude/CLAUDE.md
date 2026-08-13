@@ -192,8 +192,9 @@ Configured in `.claude/settings.json`:
   - Test: `dotnet test` (xUnit, `tests/`)
   - Local DB: `docker compose up -d` (Postgres 16 @ localhost:5433)
 - **DbUp** migrations (plain SQL in the repo) run on Web start in dev.
-- **The medical-content rules are non-negotiable:** reading level ≤ 8.5 grade
-  (CI-gated for static pages), sources-only summarization, stage badges,
+- **The medical-content rules are non-negotiable:** reading level ≤ 6.0 grade
+  (CI-gated for curated pages AND reader-facing Razor pages; AI summaries are
+  still gated at 8.5 — see content-pipeline §5), sources-only summarization, stage badges,
   banned hype phrases, and the automated safety checks that gate auto-publish.
   Human review is a *mode* (default Auto = optional; Review = mandatory), but
   the automated guardrails are not optional — they run in both modes. See

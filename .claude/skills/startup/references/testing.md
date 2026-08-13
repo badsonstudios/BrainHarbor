@@ -38,7 +38,8 @@ dotnet run --project src/BrainHarbor.Pipeline -- --once   # single pipeline run
   `claude` CLI — mark them as an explicit category (not run in cloud CI).
 - **Sync API integration tests:** state/check/items against the local Postgres
   (idempotency: uploading the same batch twice must be a no-op).
-- **Content gates (CI):** readability (FK ≤ 8.5) + front-matter validation via
+- **Content gates (CI):** readability (FK ≤ 6.0, curated Markdown AND reader-facing
+  Razor pages) + front-matter validation via
   `tools/BrainHarbor.ContentCheck`; axe-core smoke on key pages (Playwright)
   once pages exist.
 

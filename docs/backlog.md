@@ -328,7 +328,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M4 — Azure + trials + digest → v1 launch
 
-- [ ] **WI-401 `[user]`+assisted Provision Azure**
+- [x] **WI-401 `[user]`+assisted Provision Azure** (done 2026-08-13 — shared Moodathon infra, ~$1-3/mo incremental instead of ~$30; brainharbor.org live with managed TLS; deploy on merge to `main`; feed backfilled)
   Goal: the site exists on the internet (meter starts, ~$30/mo).
   Acceptance: App Service B1 (Always On) + Postgres Flexible B1ms; deploy +
   DbUp migration steps in GitHub Actions; brainharbor.org DNS + managed TLS;
@@ -475,6 +475,46 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   does NOT stall the cursor.
   Refs: PipelineRunner.MaxConsecutiveClassifyFailures, Claude/ClaudeCli.cs,
   Classify/Classifier.cs. Depends on: nothing.
+
+- [ ] **WI-414 Hold Razor page copy to the reading-level gate too**
+  Goal: the front page is held to the same automatic standard as the curated
+  Markdown pages.
+  Problem (found 2026-08-13 writing the home AI-disclosure copy): ContentCheck
+  scans `Content/pages/*.md` and `Content/glossary/*.md`, so the ≤ 8.5 gate
+  covers /about, /privacy and friends — but NOT the home page, /research,
+  /trials or /search, whose copy lives in `.cshtml`. The most-read text on the
+  site is the only text no tool checks. Today's home copy measures ~4.8 by
+  hand; nothing stops the next edit from landing at 12.
+  Acceptance: ContentCheck extracts reader-facing prose from the Razor pages
+  (headings, paragraphs and list text — not markup, attributes, or code) and
+  applies the same Flesch-Kincaid gate; a deliberately hard sentence in a
+  `.cshtml` fails CI; the existing per-page warnings still work; document in
+  `content-pipeline.md` §5 that both content types are gated.
+  Notes: block-aware sentence extraction already exists (WI-106) — the work is
+  a Razor-aware text extractor, not a new grader. Watch for false positives
+  from things like the ABTA phone number and NCT ids.
+  Refs: tools/BrainHarbor.ContentCheck, content-pipeline.md §5. Depends on: nothing.
+
+- [ ] **WI-415 Get AI summaries to a 6th-grade reading level**
+  Goal: the summaries meet the same bar the pages now do (WI-414) — without
+  emptying the feed to get there.
+  Measured 2026-08-13 over the 1,038 published summaries: median grade **6.7**,
+  and a 6.0 gate would flag **73.5%** of them. Flipping the threshold alone
+  would stop auto-publishing, not improve reading level.
+  Acceptance, in order: (1) **fix the grader** — `Guardrails.GradeLevel` joins
+  the plain title and six blocks with newlines and no terminators, so the title
+  runs into the hook and inflates every score; make it block-aware like
+  `ContentChecker.ExtractSentences` (the same summaries then measure median
+  **6.0**, flag rate 50.3%); (2) **change the prompt** to ask for 6th grade
+  explicitly, and re-run the golden set — a versioned prompt change requires it;
+  (3) re-measure the distribution and only then lower `Guardrails.MaxGradeLevel`
+  toward 6.0, choosing the number from the new data; (4) decide what happens to
+  already-published summaries above the new bar (leave, re-summarize, or flag).
+  Note: the two graders differ — the summarizer exempts a medical-terms list
+  and skips the vowel-hiatus rule that `ReadabilityAnalyzer` applies. Consider
+  making both call one implementation so "6th grade" means one thing.
+  Refs: Summarize/Guardrails.cs, content-pipeline.md §5/§9, WI-414.
+  Depends on: nothing (but do it before WI-408 soft launch).
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
