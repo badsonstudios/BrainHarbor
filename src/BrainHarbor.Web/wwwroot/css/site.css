@@ -808,6 +808,28 @@ main {
   gap: var(--space-2);
 }
 
+/* Filter bars (/research, /trials, /search). Without a layout rule these are
+   plain inline flow, so the submit button lands wherever the previous control
+   happens to end — on /research it wrapped alone onto its own line while the
+   long "show early-stage research" sentence sat up in the control row.
+   One row of controls ending in the button, and any long checkbox on its own
+   row beneath: the toggle changes WHICH items appear, so it reads better as a
+   statement under the controls than as another control among them. */
+.feed-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+/* A full-width basis is what puts it on its own row; it comes after the button
+   in the markup too, so what a keyboard tabs through matches what the eye
+   reads. */
+.feed-filters .checkbox {
+  flex-basis: 100%;
+}
+
 /* The registry's own words, visibly not ours. */
 .registry-text {
   margin-inline: 0;
