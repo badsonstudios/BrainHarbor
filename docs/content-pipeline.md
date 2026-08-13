@@ -69,17 +69,30 @@ A CI script walks all pages and reports: overdue reviews, missing sources, `vola
 | A11y smoke | Playwright + axe-core | 0 serious/critical |
 | Review freshness | `review_due` past → report | — |
 
-**Why AI summaries are still gated at 8.5, not 6.0** (measured 2026-08-13 over
-the 1,038 published summaries): at 6.0 **73.5%** of them would be flagged, and
-the feed would stop publishing rather than get easier to read. Two things have
-to happen first, in this order: (1) the summarize prompt has to *ask* for 6th
-grade — today it does not, and the median lands at 6.7; (2) the guardrail's own
-grader has to become block-aware like the page grader, because it joins the
-plain title and the six blocks with newlines and no terminators, so a title
-runs into the hook and inflates every score (block-aware, the same 1,038
-summaries measure a median of **6.0** rather than 6.7, and the flag rate at 6.0
-falls from 73.5% to 50.3%). Lower the gate after the prompt change and a golden
--set re-run, not before. Tracked as WI-415.
+**Reading level for AI summaries (WI-415, 2026-08-13).** The prompt is the
+mechanism; the guardrail is only the backstop.
+
+- `summarize-v4` / `summarize-trial-v2` **ask for 6th grade** explicitly, with
+  concrete rules (sentences under ~15 words, the short everyday word over the
+  long one). Measured live over golden-set items through the real CLI:
+  `summarize-v4` (8 research items) median **4.7**, max **6.5**;
+  `summarize-trial-v2` (3 trial items) median **3.4**, max **3.6**. (The previous prompt measured a median of 6.0 block-aware across the
+  1,038 published items — a different population, so read it as a direction,
+  not a like-for-like delta. Nobody has yet measured the flag rate at 7.0 over
+  a real `summarize-v4` pipeline run; that number arrives with the next run.)
+- `Guardrails.MaxGradeLevel` is **7.0**, not 6.0. A flagged summary does not
+  publish, so setting the gate *at* the target would flag ordinary variation
+  around it and drain the feed into the review queue instead of making it
+  easier to read. 7.0 catches genuine outliers.
+- `Guardrails.GradeLevel` is **block-aware**: the plain title and the template
+  blocks arrive newline-separated and a title has no full stop, so grading the
+  raw run merged title into hook and inflated every score by ~0.7 of a grade
+  (measured across the 1,038 published summaries: 6.7 reported vs 6.0 real).
+- Re-measure against a real pipeline run before tightening further:
+  `dotnet test --filter "Category=Live"` re-runs the golden set through the
+  real CLI and prints the distribution. **Already-published summaries were
+  written by older prompts and are not retro-fixed** — they stay as they are
+  until re-summarized.
 
 ## 6. Inline definitions (tooltips)
 

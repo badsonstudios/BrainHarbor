@@ -44,8 +44,11 @@ jobs:
       - name: Install Playwright browsers
         run: pwsh tests/BrainHarbor.Tests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
 
+      # Category=Live drives the real Claude CLI (WI-415's reading-level
+      # measurement). It is not installed on the runner, and it costs
+      # subscription usage — an opt-in local tool, never CI.
       - name: Test
-        run: dotnet test --no-build --configuration Release
+        run: dotnet test --no-build --configuration Release --filter "Category!=Live"
 
       # WI-106: the readability promise is machine-enforced — every curated
       # page and glossary term must pass the Flesch-Kincaid gate.

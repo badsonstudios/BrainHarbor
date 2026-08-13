@@ -26,7 +26,9 @@ applications:
   **No Anthropic API key** — the local `claude` CLI does the LLM work.
 
 The audience may be cognitively impaired (tumor/seizures/treatment): reading
-level ≤ 8th grade, WCAG AA, and anti-hype framing are **hard requirements**,
+level ≤ 6th grade for page copy (CI-gated) and asked of every AI summary by
+prompt, with a 7.0 automated backstop (WI-414/415),
+WCAG AA, and anti-hype framing are **hard requirements**,
 not preferences. The anti-hype guardrails (numeral post-check, banned-phrase
 scan, reading-level check, stage badges, the means/doesn't-mean block) are
 **automated**, so they hold whether or not a person reviews an item — which is

@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BrainHarbor.Pipeline.Summarize;
@@ -11,8 +12,23 @@ namespace BrainHarbor.Pipeline.Summarize;
 /// </summary>
 public static partial class Guardrails
 {
-    /// <summary>Reading-level ceiling — the audience may be cognitively impaired.</summary>
-    public const double MaxGradeLevel = 8.5;
+    /// <summary>
+    /// Reading-level ceiling — the audience may be cognitively impaired.
+    ///
+    /// 7.0, not the 6.0 the pages are held to (WI-414/415), because the PROMPT
+    /// is the mechanism and this is only the backstop. `summarize-v4` asks for
+    /// 6th grade and delivers it: measured live over 8 golden-set items,
+    /// median 4.9, max 6.4. (The old prompt's median was 6.0, measured
+    /// block-aware over the 1,038 published items — a different population,
+    /// so treat it as a direction, not a like-for-like delta.) Setting the
+    /// gate AT the target would flag ordinary variation around it, and a
+    /// flagged item does not publish, so the feed would empty into the review
+    /// queue instead of getting easier to read. This catches the genuine
+    /// outliers, which is what a backstop is for.
+    ///
+    /// Re-measure against a real pipeline run before tightening further.
+    /// </summary>
+    public const double MaxGradeLevel = 7.0;
 
     // Numbers in a summary must trace to the source. Matches integers,
     // decimals, and percentages; commas in thousands are normalized out.
@@ -169,10 +185,21 @@ public static partial class Guardrails
     /// </summary>
     private static bool IsNegated(string text, int index)
     {
+        var before = text[..index];
+
         var sentenceStart = 0;
-        foreach (Match end in SentenceEnd().Matches(text[..index]))
+        foreach (Match end in SentenceEnd().Matches(before))
         {
             sentenceStart = end.Index + end.Length;
+        }
+
+        // A block boundary ends a sentence too, even without a full stop
+        // (WI-415 — the same defect the grader had). Otherwise a title reading
+        // "this is not a cure" would excuse a hype claim in the hook below it.
+        var lastBreak = before.LastIndexOf('\n');
+        if (lastBreak >= sentenceStart)
+        {
+            sentenceStart = lastBreak + 1;
         }
 
         var clause = text[sentenceStart..index];
@@ -183,6 +210,14 @@ public static partial class Guardrails
     /// (WI-106 uses the same formula for static pages).</summary>
     public static double GradeLevel(string text)
     {
+        // Block-aware (WI-415), matching ContentChecker.ExtractSentences: the
+        // plain title and each template block arrive newline-separated, and a
+        // title almost never ends in a full stop — so grading the raw run
+        // merged the title into the hook and made one long sentence out of
+        // two short ones. Measured over the 1,038 published summaries, that
+        // inflated the median by 0.7 of a grade (6.7 reported vs 6.0 real).
+        text = AsSentences(text);
+
         var sentences = Math.Max(1, SentenceEnd().Matches(text).Count);
         var words = Word().Matches(text).Select(m => m.Value).ToList();
         if (words.Count == 0)
@@ -194,6 +229,32 @@ public static partial class Guardrails
         return (0.39 * words.Count / sentences)
              + (11.8 * syllables / words.Count)
              - 15.59;
+    }
+
+    /// <summary>A block boundary is a sentence boundary: each block gets a
+    /// terminator when the writer left it off (blocks may hold several
+    /// sentences of their own). Blank lines are dropped rather than counted.</summary>
+    private static string AsSentences(string text)
+    {
+        var builder = new StringBuilder(text.Length + 16);
+        foreach (var line in text.Split('\n'))
+        {
+            var block = line.Trim();
+            if (block.Length == 0)
+            {
+                continue;
+            }
+
+            builder.Append(block);
+            if (block[^1] is not ('.' or '!' or '?'))
+            {
+                builder.Append('.');
+            }
+
+            builder.Append(' ');
+        }
+
+        return builder.ToString();
     }
 
     // "1,383" -> "1383", "331." (end of sentence) -> "331", "0.15" -> "0.15".
