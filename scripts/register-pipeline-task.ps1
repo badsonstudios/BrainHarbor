@@ -18,6 +18,10 @@
     Exit codes surface in the task history: 0 all sources ok, 1 some sources
     failed, 2 cancelled, 3 bad config, 4 the run itself blew up.
 
+    Task Scheduler captures no console output, so the pipeline writes its own
+    per-run log file (WI-417) — nothing to wire up here, it is on by default.
+    See the path printed at the end of this script.
+
 .EXAMPLE
     ./scripts/register-pipeline-task.ps1 -At 06:30
 
@@ -85,3 +89,13 @@ Write-Host "  dotnet user-secrets set `"Pipeline:NcbiApiKey`" `"...`" --project 
 Write-Host ""
 Write-Host "Run it once now:  Start-ScheduledTask -TaskName '$TaskName'"
 Write-Host "Check history:    Get-ScheduledTaskInfo -TaskName '$TaskName'"
+Write-Host ""
+
+# Task Scheduler records only the exit code, so the run log is the only place
+# the detail survives: what was excluded, what was flagged and why. The path is
+# this user's LOCALAPPDATA, which is right because the principal above is this
+# same user; change the principal and the logs move with it.
+$logDir = Join-Path $env:LOCALAPPDATA 'BrainHarbor\logs'
+Write-Host "Run logs:         $logDir"
+Write-Host "                  one file per run, kept 30 days, then pruned."
+Write-Host "Read the newest:  Get-ChildItem '$logDir' | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Tail 40"

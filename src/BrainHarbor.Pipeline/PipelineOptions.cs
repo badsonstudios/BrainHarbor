@@ -10,6 +10,22 @@ public sealed class PipelineOptions
 {
     public const string SectionName = "Pipeline";
 
+    /// <summary>
+    /// The flat configuration names the keys are ALSO stored under
+    /// (api-keys-config.md documents them this way, and that is how they sit in
+    /// user-secrets and .env). Named here rather than typed out at each use,
+    /// because the second reader of this list is the log redactor (WI-417): a
+    /// name that binds a key but is missing from the list is a key nothing
+    /// scrubs. Add a name here and both the binding and the scrubbing get it.
+    /// </summary>
+    public const string SyncApiKeyFlatName = "SYNC_API_KEY";
+
+    /// <inheritdoc cref="SyncApiKeyFlatName"/>
+    public const string NcbiApiKeyFlatName = "NCBI_API_KEY";
+
+    /// <summary>Every flat name that can hold a secret.</summary>
+    public static readonly string[] FlatKeyNames = [SyncApiKeyFlatName, NcbiApiKeyFlatName];
+
     /// <summary>Base URL of the site's sync API, e.g. https://brainharbor.org.</summary>
     [Required]
     [Url]

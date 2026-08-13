@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself. |
+| **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-412** (/tumors plain-English descriptions), **WI-415** (summaries to 6th grade — do before launch), **WI-413** (classifier unavailable vs odd item), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -27,9 +27,11 @@
 ### Open threads (2026-08-13)
 - **Daily pipeline is scheduled** ('BrainHarbor Pipeline', 06:00 daily, published
   to `artifacts/pipeline`). Reversible:
-  `./scripts/register-pipeline-task.ps1 -Unregister`. Task Scheduler captures no
-  console output — check `Get-ScheduledTaskInfo` for the exit code (0 all ok,
-  1 some sources failed) and the admin health page for per-source detail.
+  `./scripts/register-pipeline-task.ps1 -Unregister`. Task Scheduler still
+  captures no console output, but since WI-417 the run writes its own log to
+  `%LOCALAPPDATA%\BrainHarbor\logs` (newest file = last run; path printed at the
+  end of every run). Exit code (`Get-ScheduledTaskInfo`) and the admin health
+  page are still the quick check; the log is where the per-item detail lives.
 - **WI-409 and WI-410 shipped** (home leads with the feed; feed sorting) — both live.
 - **Dan's review queue holds 134 items** (106 guardrail-flagged, 20 unclassified
   one-offs). A first pass would show whether Auto mode's bar is right before WI-408.
@@ -83,6 +85,53 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-13** — **WI-417 done — the daily run leaves evidence behind.**
+  Everything the pipeline printed already said what was wanted (which item was
+  excluded and why, which summary was flagged and by which check); Task
+  Scheduler simply threw it away. Now a per-run file lands in
+  `%LOCALAPPDATA%\BrainHarbor\logs\pipeline-<date>-<time>.log` — **outside the
+  repo deliberately**, since `artifacts/pipeline` is rewritten by every
+  re-publish. Named to the second, not the day, so a manual run cannot clobber
+  the 06:00 one; AutoFlush on, because the run whose log matters most is the
+  one Task Scheduler kills at the 2-hour limit. Hand-rolled ~150-line provider
+  rather than a Serilog dependency: retention, redaction and the printed path
+  were all going to be custom anyway. **Retention is three limits, not one** —
+  30 days, 100 files, 32 MB per run: the age limit alone cannot bound a task
+  re-triggered in a loop, and neither bounds a runaway loop *inside* one run.
+  **Secrets**: the `HttpClient → Warning` filter (the NCBI key rides in the
+  query string) is unchanged but now **pinned by a test** that builds the real
+  logging graph — nothing would have noticed the line being deleted, and the
+  URIs now go to a file, not a console that scrolls away; on top of it a
+  redactor scrubs configured key values and key-shaped text on the way to disk.
+  Also **the reason the item was really asked for**: guardrail reasons carry a
+  `FlagKind` now, so a run ends with "flagged because: reading level 1,
+  invented numbers 1" instead of a bare count — the thing the DB cannot answer,
+  because it stores a `summary_flagged` boolean and no reason. Verified with a
+  real run against a dead endpoint (exit 4, 162 lines, stack trace, path
+  printed last, neither configured key present in the file). **Known limit,
+  documented not papered over**: a crash before the host builds writes no file;
+  there the exit code is still the only signal.
+  **Review caught six, three of them real bugs:** (1) the tally was declared
+  INSIDE the try, so the catch-all zeroed it — and the likeliest exception is
+  the upload at the very end, meaning the run that did two hours of LLM work
+  and then failed to upload would report "summarized 0"; (2) the size cap
+  measured UTF-16 chars against a byte limit, and these log lines are full of
+  em dashes, so the file could run past its own ceiling (now the stream's
+  position); (3) pruning could delete another RUN's live log — on Windows that
+  delete succeeds against an open handle and the other process writes into
+  nothing (now: never touch a file written in the last 10 minutes, and the
+  writer no longer shares Delete). Also: the sink was never disposed in
+  production (a provider added as an instance is disposed by neither the
+  container nor LoggerFactory — harmless only because AutoFlush is on, which
+  the next performance tweak would have quietly broken), the truncation write
+  sat outside the try so a full disk could throw out of `ILogger.Log` and
+  replace the exit code with a crash, and two runs starting in the same second
+  left one with no log at all (now suffixed). Added a directory-wide 256 MB
+  ceiling: 100 files x 32 MB is 3.2 GB, which is not what "pruned for you"
+  should mean. Follow-up **WI-418** filed for putting the reason in the
+  database, where the review queue can show it and the 137 already-pending
+  items can be explained. 703 tests.
 
 - **2026-08-13** — **The feed now runs itself, and the new prompts are proven
   in production.** Daily scheduled task registered ('BrainHarbor Pipeline',

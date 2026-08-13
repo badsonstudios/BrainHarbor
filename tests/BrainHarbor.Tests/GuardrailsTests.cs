@@ -233,7 +233,40 @@ public class GuardrailsTests
         var result = Guardrails.Check(summary, Source);
 
         Assert.False(result.Passed);
-        Assert.Contains(result.Reasons, r => r.Contains("99"));            // untraceable number
-        Assert.Contains(result.Reasons, r => r.Contains("breakthrough")); // hype
+        Assert.Contains(result.Reasons, r => r.Message.Contains("99"));            // untraceable number
+        Assert.Contains(result.Reasons, r => r.Message.Contains("breakthrough")); // hype
+    }
+
+    /// <summary>
+    /// WI-417: each reason carries WHICH check tripped, so a run can be counted
+    /// by cause. The database stores only a summary_flagged boolean, so "4.8%
+    /// were flagged" was answerable and "flagged for what" was not.
+    /// </summary>
+    [Fact]
+    public void EveryReasonSaysWhichCheckTrippedNotJustThatOneDid()
+    {
+        var result = Guardrails.Check("This breakthrough cured 99% of patients.", Source);
+
+        Assert.Contains(Guardrails.FlagKind.InventedNumbers, result.Reasons.Select(r => r.Kind));
+        Assert.Contains(Guardrails.FlagKind.BannedHype, result.Reasons.Select(r => r.Kind));
+        Assert.DoesNotContain(Guardrails.FlagKind.ReadingLevel, result.Reasons.Select(r => r.Kind));
+
+        // The kind is for counting; the message still reads for a human.
+        Assert.All(result.Reasons, r => Assert.False(string.IsNullOrWhiteSpace(r.Message)));
+    }
+
+    [Fact]
+    public void ATooHardSummaryIsFlaggedAsAReadingLevelProblemSpecifically()
+    {
+        var dense =
+            "Multimodal immunomodulatory microenvironmental reconfiguration demonstrated " +
+            "statistically significant amelioration of progression-free survival among the " +
+            "intervention cohort participants receiving concomitant chemoradiotherapy.";
+
+        var result = Guardrails.Check(dense, dense);
+
+        Assert.False(result.Passed);
+        var reason = Assert.Single(result.Reasons);
+        Assert.Equal(Guardrails.FlagKind.ReadingLevel, reason.Kind);
     }
 }

@@ -87,6 +87,7 @@ Security: single long random API key in a header, HTTPS only, rate-limited, endp
 ## 6. Scheduling (local)
 
 - **Windows Task Scheduler**, daily, with "run task as soon as possible after a scheduled start is missed" — so an off/asleep PC just catches up next boot. The run: fetch → check → process → upload → desktop notification "N items awaiting review."
+- **Run logs (WI-417):** Task Scheduler captures no console output, so the pipeline writes one log file per run to `%LOCALAPPDATA%\BrainHarbor\logs`, path printed at the end of every run. Holds the per-item detail the exit code cannot carry (what was excluded, what was flagged and by which check) plus a flags-by-cause tally. Self-pruning (30 days / 100 files / 32 MB a run) and scrubbed of anything key-shaped on the way to disk — the NCBI key rides in a query string. See `docs/run-local.md`.
 - **Review:** admin queue on the site (any device): approve / edit / reject; approve publishes. Aim for a 5-minute daily habit.
 - **Weekly digest run:** assembles the week's best *approved* items into a draft issue, uploads it as a pending digest for review in admin; sending goes through the ESP's API on approval. (ESP: Buttondown/Kit — deliverability and CAN-SPAM are their problem.)
 - **Monthly run:** outbound link check + PubMed retraction check for summarized PMIDs → flags into the admin queue.
