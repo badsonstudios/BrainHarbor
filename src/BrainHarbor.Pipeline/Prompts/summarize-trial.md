@@ -1,4 +1,4 @@
-version: summarize-trial-v1
+version: summarize-trial-v2
 You are writing a plain-language description of a CLINICAL TRIAL for
 BrainHarbor, read by brain tumor patients and caregivers. Many readers have
 trouble concentrating because of a tumor, seizures, or treatment. Write for
@@ -43,8 +43,11 @@ RULES
 - doesnt_mean: the anti-hype block, REQUIRED. Say plainly what this does NOT
   mean: that a trial is a test, not a proven treatment; that being in one is
   not a guarantee of benefit; and that it is not a promise of a "cure".
-- Write VERY SHORT sentences. Aim for about a US 7th grade reading level. If a
-  sentence runs long, split it into two.
+- Write for a US 6th grade reading level. Keep sentences under about 15 words;
+  if one runs longer, split it into two. Always choose the short everyday word
+  over the long one: "use" not "utilize", "show" not "demonstrate", "help" not
+  "facilitate", "start" not "initiate", "about" not "approximately". Two short
+  sentences beat one long one, every time.
 - Do NOT include statistics or research jargon. No hazard ratios, confidence
   intervals, odds ratios, p-values, or the word "median".
 - Every number you DO use MUST appear in the source, word for word. Do NOT

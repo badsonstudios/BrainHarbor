@@ -495,7 +495,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   from things like the ABTA phone number and NCT ids.
   Refs: tools/BrainHarbor.ContentCheck, content-pipeline.md §5. Depends on: nothing.
 
-- [ ] **WI-415 Get AI summaries to a 6th-grade reading level**
+- [x] **WI-415 Get AI summaries to a 6th-grade reading level** (done 2026-08-13 — prompt asks for 6th grade and delivers median 4.7; gate set to 7.0 as a backstop, not the target)
   Goal: the summaries meet the same bar the pages now do (WI-414) — without
   emptying the feed to get there.
   Measured 2026-08-13 over the 1,038 published summaries: median grade **6.7**,
@@ -515,6 +515,22 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   making both call one implementation so "6th grade" means one thing.
   Refs: Summarize/Guardrails.cs, content-pipeline.md §5/§9, WI-414.
   Depends on: nothing (but do it before WI-408 soft launch).
+
+- [ ] **WI-416 One reading-level grader, not two**
+  Goal: "6th grade" should mean one thing.
+  Problem (found 2026-08-13 in the WI-415 review): `ReadabilityAnalyzer`
+  (pages) and `Guardrails.GradeLevel` (summaries) implement Flesch-Kincaid
+  differently — the summary grader exempts a medical-terms list at 2 syllables
+  and skips the vowel-hiatus rule, and its word pattern is `[A-Za-z]+` vs
+  `[A-Za-z']+`, so "doesn't" counts as two words. The same text scores
+  differently depending on which one measures it, which makes the page limit
+  (6.0) and the summary backstop (7.0) not directly comparable.
+  Acceptance: one implementation both call, with the medical-term allowance as
+  an explicit option rather than a fork; the existing thresholds re-measured
+  against it and adjusted if the numbers move; tests that pin the shared
+  behaviour; content-pipeline §5 states which allowance applies where.
+  Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
+  Summarize/Guardrails.cs. Depends on: nothing.
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
