@@ -476,6 +476,25 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: PipelineRunner.MaxConsecutiveClassifyFailures, Claude/ClaudeCli.cs,
   Classify/Classifier.cs. Depends on: nothing.
 
+- [ ] **WI-414 Hold Razor page copy to the reading-level gate too**
+  Goal: the front page is held to the same automatic standard as the curated
+  Markdown pages.
+  Problem (found 2026-08-13 writing the home AI-disclosure copy): ContentCheck
+  scans `Content/pages/*.md` and `Content/glossary/*.md`, so the ≤ 8.5 gate
+  covers /about, /privacy and friends — but NOT the home page, /research,
+  /trials or /search, whose copy lives in `.cshtml`. The most-read text on the
+  site is the only text no tool checks. Today's home copy measures ~4.8 by
+  hand; nothing stops the next edit from landing at 12.
+  Acceptance: ContentCheck extracts reader-facing prose from the Razor pages
+  (headings, paragraphs and list text — not markup, attributes, or code) and
+  applies the same Flesch-Kincaid gate; a deliberately hard sentence in a
+  `.cshtml` fails CI; the existing per-page warnings still work; document in
+  `content-pipeline.md` §5 that both content types are gated.
+  Notes: block-aware sentence extraction already exists (WI-106) — the work is
+  a Razor-aware text extractor, not a new grader. Watch for false positives
+  from things like the ABTA phone number and NCT ids.
+  Refs: tools/BrainHarbor.ContentCheck, content-pipeline.md §5. Depends on: nothing.
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest
