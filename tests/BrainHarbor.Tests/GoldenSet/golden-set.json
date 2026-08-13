@@ -199,8 +199,8 @@
       "note": "Meta-analysis, 3241 patients, fluorescence-guided glioma surgery safety. Human evidence review.",
       "ideal_summary": {
         "plain_title": "A glowing dye helped surgeons remove glioma without more nerve damage",
-        "what_studied": "Researchers combined 27 studies with 3241 people. They compared brain surgery using a fluorescent dye that makes tumor tissue glow against surgery under normal white light.",
-        "what_found": "The rate of nerve problems after surgery was about the same for both methods (RR 1.02). The dye helped surgeons see and remove the tumor without adding to that risk.",
+        "what_studied": "Researchers pooled 27 studies with 3241 people. They compared two kinds of brain surgery. In one, a dye made the tumor glow. In the other, surgeons used normal white light.",
+        "what_found": "Nerve problems after surgery happened about as often with both kinds. The dye helped surgeons see and remove the tumor. It did not add to that risk.",
         "means": "Using the dye looks like a safe way to help surgeons see a glioma during an operation.",
         "doesnt_mean": "The evidence was rated low certainty. This does not prove the dye helps people live longer.",
         "stage_label": "Review of existing research",

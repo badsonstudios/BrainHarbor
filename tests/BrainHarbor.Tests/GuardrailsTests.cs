@@ -133,6 +133,75 @@ public class GuardrailsTests
             $"grade was {Guardrails.GradeLevel(plain):0.0}");
     }
 
+    /// <summary>
+    /// WI-415: the summary arrives as a plain title plus template blocks joined
+    /// by newlines, and a title has no full stop. Grading that as one run made
+    /// the title and the hook a single long sentence and inflated every score —
+    /// measured at 0.7 of a grade across the 1,038 published summaries. The
+    /// blocks must be graded as the separate sentences they are.
+    /// </summary>
+    [Fact]
+    public void ATitleIsNotRunIntoTheHookBelowIt()
+    {
+        const string Title = "A pill slowed tumor growth";
+        const string Hook = "People with this gene change went longer before their tumor grew.";
+
+        var blocks = Guardrails.GradeLevel($"{Title}\n{Hook}");
+
+        // Supplying the missing stop must not change the verdict: the grader
+        // is expected to do it itself.
+        Assert.Equal(Guardrails.GradeLevel($"{Title}.\n{Hook}"), blocks, 3);
+
+        // And it must genuinely treat them as two sentences — merely stripping
+        // terminators would also satisfy the assertion above.
+        Assert.True(
+            blocks < Guardrails.GradeLevel($"{Title} {Hook}"),
+            "two blocks must grade easier than the same words as one run-on sentence");
+    }
+
+    [Fact]
+    public void WindowsLineEndingsSplitBlocksToo()
+    {
+        // The repo checks out CRLF; a stray \r would ride along on the last
+        // word of every block.
+        Assert.Equal(
+            Guardrails.GradeLevel("The pill slowed the tumor.\nSide effects were mild."),
+            Guardrails.GradeLevel("The pill slowed the tumor.\r\nSide effects were mild."),
+            3);
+    }
+
+    [Theory]
+    [InlineData("The pill slowed the tumor. People took it each day.", false)]
+    [InlineData(
+        "Investigators subsequently determined that stratification necessitated " +
+        "additional multivariable adjustment procedures across heterogeneous cohorts.",
+        true)]
+    public void TheCeilingFlagsDenseProseAndPassesPlainProse(string text, bool shouldFlag)
+    {
+        Assert.Equal(shouldFlag, Guardrails.GradeLevel(text) > Guardrails.MaxGradeLevel);
+    }
+
+    /// <summary>
+    /// The same block-boundary rule as the grader (WI-415): a negation in the
+    /// plain title must not excuse a hype claim in the block below it.
+    /// </summary>
+    [Fact]
+    public void ANegationInTheTitleDoesNotExcuseCureInTheHook()
+    {
+        var banned = Guardrails.BannedWordsIn("This drug is not a cure\nDoctors are calling it a cure.");
+
+        Assert.Contains("cure", banned);
+    }
+
+    [Fact]
+    public void BlankLinesBetweenBlocksAreNotCountedAsSentences()
+    {
+        var withBlanks = Guardrails.GradeLevel("The pill slowed the tumor.\n\n\nSide effects were mild.");
+        var without = Guardrails.GradeLevel("The pill slowed the tumor.\nSide effects were mild.");
+
+        Assert.Equal(without, withBlanks, 3);
+    }
+
     [Fact]
     public void DenseAcademicProseReadsAboveTheCeiling()
     {

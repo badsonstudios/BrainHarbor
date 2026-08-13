@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. **WI-401 DONE 2026-08-13** (details below). Open PR: #16 (WI-414 reading-level gate). |
+| **In progress** | nothing mid-flight. **WI-415 done 2026-08-13** (PR open). WI-401 + WI-414 done and released. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-412** (/tumors plain-English descriptions), **WI-415** (summaries to 6th grade — do before launch), **WI-413** (classifier unavailable vs odd item), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -78,6 +78,30 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-13** — **WI-415 done — AI summaries now written for 6th grade.**
+  Three parts. (1) **The grader was measuring wrong**: `AllProse` joins the
+  plain title and six blocks with newlines and a title has no full stop, so
+  title ran into hook and every score was inflated ~0.7 of a grade (6.7
+  reported vs 6.0 real across the 1,038 published items). Now block-aware, like
+  the page grader. The SAME defect existed in the hype check — a negation in
+  the title could excuse a "cure" claim in the hook — fixed and tested.
+  (2) **The prompts now ask for 6th grade** with concrete rules (sentences
+  under ~15 words, short everyday word over long): `summarize-v3→v4`,
+  `summarize-trial-v1→v2`. Measured live through the real CLI: research median
+  **4.7** (max 6.5), trials median **3.4** (max 3.6). (3) **Gate set to 7.0**,
+  not 6.0 — deliberately: the prompt is the mechanism, the gate is a backstop,
+  and gating AT the target would flag ordinary variation and drain the feed
+  into the review queue (a flagged item does not publish). Was 8.5.
+  New opt-in `Category=Live` test re-runs the golden set through the real CLI
+  and prints the distribution — **CI now filters `Category!=Live`** and the
+  body no-ops without `BRAINHARBOR_LIVE_TESTS=1`, because a [Trait] alone
+  excludes nothing and it would otherwise have failed every PR build. One
+  golden "ideal summary" was itself at 7.1 and got simplified — the yardstick
+  has to meet the bar. **Published summaries are NOT retro-fixed**; they keep
+  their older prompts' wording until re-summarized. Follow-up **WI-416**: the
+  two graders still differ (medical-term allowance, hiatus rule), so the page
+  6.0 and summary 7.0 are not strictly comparable. 675 tests.
 
 - **2026-08-13** — **WI-401 DONE — the backfill finished; brainharbor.org is a
   real site.** All 6 sources green, 0 classification failures. **1,130 items
