@@ -24,22 +24,13 @@
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
 
-### Found 2026-08-01 while Dan was testing the local site
-- **WI-409 home page leads with the feed** — ⚠ **pre-launch blocker**. Home
-  still reads "The daily research feed and the weekly digest are coming soon"
-  and renders no items at all, but `/research` went live back in WI-209. Half
-  that sentence is false, and PLAN.md §3 says the feed IS the front door, not a
-  brochure. Small fix; it is also the first thing a stranger sees.
-- **WI-410 sort the research feed** — date / readiness / type. Dan's ask: let a
-  reader sort by how close something is to helping them, not just by date.
-  (The digest half of that home-page sentence is TRUE — WI-404/405 are not
-  built, there is no ESP account, and `/digest` honestly says sign-up opens
-  soon.)
-
-### Next up — everything left in M4 needs Dan
-- **WI-401 Provision Azure** `[user]`+assisted — App Service + Postgres, DNS, TLS, prod secrets. **This is the gate.** WI-404/405 (digest, needs an ESP account), WI-406 (maintenance run) and WI-407 (pre-launch hardening) all depend on it, and WI-408 is the soft launch.
-- Nothing left is buildable without cloud — **WI-401 is the gate.**
+### Open threads (2026-08-13)
+- **WI-409 and WI-410 shipped** (home leads with the feed; feed sorting) — both live.
+- **Dan's review queue holds 134 items** (106 guardrail-flagged, 20 unclassified
+  one-offs). A first pass would show whether Auto mode's bar is right before WI-408.
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
+- Namecheap still has a conflicting `@` URL-Redirect record — harmless now that
+  the A record answers, but worth deleting.
 
 ### M3 shipped (all on `auto/M3`, PR #5)
 - **WI-301–304** golden set, CLIwrapper, classify, summarize+guardrails (numeral/banned/reading-level); connection-pool infra fix.
