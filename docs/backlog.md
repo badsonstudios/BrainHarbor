@@ -439,8 +439,9 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Acceptance: a `/tumors` page driven by the SAME `taxonomy.yml` the feed
   filter uses (the list and the descriptions can never drift apart); a reader
   picks a type (select or A–Z list, works with JS off) and gets a hand-written
-  plain-language description **targeting ~6th grade** (site gate stays ≤8.5,
-  aim lower); each type deep-linkable (`/tumors#low-grade-glioma`) so the
+  plain-language description **targeting ~6th grade** (curated pages are
+  CI-gated at 6.0 since WI-414, so this is the bar, not a stretch); each type
+  deep-linkable (`/tumors#low-grade-glioma`) so the
   /research tumor filter can link "What is this?"; descriptions are curated
   content through the ContentCheck reading-level gate; glossary tooltips
   active; a type whose description is not yet written says so honestly
@@ -532,7 +533,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
 
-- [ ] **WI-417 Real logs for the scheduled pipeline runs**
+- [x] **WI-417 Real logs for the scheduled pipeline runs** (done 2026-08-13 — per-run file in `%LOCALAPPDATA%\BrainHarbor\logs`, self-pruning, key-scrubbed, plus a flags-by-cause tally)
   Goal: a daily run that fails at 06:00 leaves evidence Dan can read (Dan's
   ask, 2026-08-13).
   Problem: Task Scheduler captures no console output, so the nightly runs are
@@ -555,6 +556,26 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   shows last-run status and counts, not just per-source errors.
   Refs: scripts/register-pipeline-task.ps1, architecture.md §6,
   Program.cs logging setup. Depends on: nothing.
+
+- [ ] **WI-418 Store WHY a summary was flagged, not just that it was**
+  Goal: the review queue and the health page can say which check held an item
+  back (Dan's ask, 2026-08-13 — split out of WI-417).
+  Problem: `aggregated_items.summary_flagged` is a boolean with no reason, so
+  the site can report a flag RATE ("4.8% of summarize-v4 items") and never a
+  cause. WI-417 fixed this for runs going forward — the run log names the check
+  per item and totals the flags by kind — but the log is per-run and local to
+  Dan's PC: it cannot say why one of the 137 items already in the queue is
+  there, and a reviewer opening an item still has to re-read it and guess what
+  tripped.
+  Acceptance: the flag reasons travel with the item (sync contract + a column
+  or small table — they are already structured as `Guardrails.FlagKind` plus a
+  message, so nothing needs parsing); the review queue shows them on the item
+  it is judging; the admin health page can total them; and a decision recorded
+  for the rows already flagged (backfill by re-running the checks over the
+  STORED summary, or leave them blank and say so honestly in the UI —
+  re-summarizing is not on the table, it would rewrite published wording).
+  Refs: Summarize\Guardrails.cs (FlagKind), PipelineRunner.RunResult.FlagKinds,
+  Publishing\SyncContracts.cs, data-model.md. Depends on: WI-417.
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.

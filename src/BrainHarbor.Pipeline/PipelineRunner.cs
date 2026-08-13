@@ -14,13 +14,40 @@ public sealed record SourceRunResult(
     string? Error)
 {
     public bool Failed => Error is not null;
+
+    /// <summary>Dropped as off-topic by the classifier. Also counted inside
+    /// <see cref="Rejected"/>, which lumps every not-uploaded reason together;
+    /// this one is separate so the run summary can name it.</summary>
+    public int Excluded { get; init; }
+
+    /// <summary>Items that came back with a usable summary.</summary>
+    public int Summarized { get; init; }
+
+    /// <summary>Of those, how many the automated checks held back (WI-417).</summary>
+    public int Flagged { get; init; }
+
+    /// <summary>Why they were held back. One item can trip several checks, so
+    /// these sum to at least <see cref="Flagged"/>.</summary>
+    public IReadOnlyDictionary<Summarize.Guardrails.FlagKind, int> FlagKinds { get; init; }
+        = new Dictionary<Summarize.Guardrails.FlagKind, int>();
 }
 
 public sealed record RunResult(IReadOnlyList<SourceRunResult> Sources)
 {
     public int TotalUploaded => Sources.Sum(s => s.Uploaded);
     public int TotalNew => Sources.Sum(s => s.New);
+    public int TotalExcluded => Sources.Sum(s => s.Excluded);
+    public int TotalSummarized => Sources.Sum(s => s.Summarized);
+    public int TotalFlagged => Sources.Sum(s => s.Flagged);
     public IReadOnlyList<SourceRunResult> Failures => [.. Sources.Where(s => s.Failed)];
+
+    /// <summary>Flag reasons across the whole run — the number Dan could not get
+    /// from the database, which stores only a summary_flagged boolean.</summary>
+    public IReadOnlyDictionary<Summarize.Guardrails.FlagKind, int> FlagKinds =>
+        Sources
+            .SelectMany(s => s.FlagKinds)
+            .GroupBy(pair => pair.Key)
+            .ToDictionary(group => group.Key, group => group.Sum(pair => pair.Value));
 }
 
 /// <summary>
@@ -116,6 +143,17 @@ public sealed class PipelineRunner(
         logger.LogInformation("[{Source}] starting (cursor: {Cursor}).",
             fetcher.Source, cursor ?? "none — first run");
 
+        // WI-417: counted per source so the end-of-run summary can say WHY items
+        // were held, not just how many. Declared OUT here, not inside the try,
+        // because the likeliest exception is the UPLOAD at the end — after every
+        // item in the window has been classified and summarized. Reporting
+        // "summarized 0" for that run would be a lie about the most expensive
+        // failure there is, and that is exactly the run whose log gets read.
+        var excluded = 0;
+        var summarized = 0;
+        var flagged = 0;
+        var flagKinds = new Dictionary<Summarize.Guardrails.FlagKind, int>();
+
         try
         {
             var fetched = await fetcher.FetchAsync(cursor, cancellationToken);
@@ -186,7 +224,6 @@ public sealed class PipelineRunner(
             // 'pending', so a human sorts them — never silently lost.
             // Summarization (WI-304) fills the plain-language fields next.
             var toUpload = new List<SyncItem>();
-            var excluded = 0;
 
             // A run that outlives the Claude usage limit fails EVERY remaining
             // item the same way. Uploading those as pending would bury the
@@ -256,6 +293,16 @@ public sealed class PipelineRunner(
                     var summary = await summarizer.SummarizeAsync(item, cancellationToken);
                     if (summary.Output is { } s)
                     {
+                        summarized++;
+                        if (summary.Flagged)
+                        {
+                            flagged++;
+                            foreach (var reason in summary.FlagReasons)
+                            {
+                                flagKinds[reason.Kind] = flagKinds.GetValueOrDefault(reason.Kind) + 1;
+                            }
+                        }
+
                         // Cap the readiness score by the stage we just classified:
                         // a mouse study can never read as "near the clinic", no
                         // matter what the model proposed (Readiness.Clamp).
@@ -320,7 +367,13 @@ public sealed class PipelineRunner(
                     partial is null ? 0 : partial.Inserted + partial.Updated,
                     partial?.Frozen ?? 0,
                     (partial?.Rejected ?? 0) + excluded + factsRejected,
-                    message);
+                    message)
+                {
+                    Excluded = excluded,
+                    Summarized = summarized,
+                    Flagged = flagged,
+                    FlagKinds = flagKinds,
+                };
             }
 
             // A short streak that never reached the threshold: those items are
@@ -343,7 +396,13 @@ public sealed class PipelineRunner(
                 await AdvanceCursorIfAnyAsync(fetcher.Source, fetched.Cursor, cancellationToken);
                 return new SourceRunResult(
                     fetcher.Source, fetched.Items.Count, newItems.Count, 0, 0,
-                    excluded + factsRejected, null);
+                    excluded + factsRejected, null)
+                {
+                    Excluded = excluded,
+                    Summarized = summarized,
+                    Flagged = flagged,
+                    FlagKinds = flagKinds,
+                };
             }
 
             var upload = await syncApi.UploadAsync(toUpload, fetched.Cursor, cancellationToken);
@@ -361,7 +420,13 @@ public sealed class PipelineRunner(
                 upload.Inserted + upload.Updated,
                 upload.Frozen,
                 upload.Rejected + excluded + factsRejected,
-                null);
+                null)
+            {
+                Excluded = excluded,
+                Summarized = summarized,
+                Flagged = flagged,
+                FlagKinds = flagKinds,
+            };
         }
         catch (OperationCanceledException)
         {
@@ -375,7 +440,16 @@ public sealed class PipelineRunner(
             logger.LogError(exception, "[{Source}] failed — continuing with other sources.",
                 fetcher.Source);
             await syncApi.ReportFailureAsync(fetcher.Source, exception.Message, cancellationToken);
-            return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, exception.Message);
+            return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, exception.Message)
+            {
+                // Whatever was done before it fell over still happened, and the
+                // work (and the LLM spend) was real. A failed upload must not
+                // erase the record of what it was carrying.
+                Excluded = excluded,
+                Summarized = summarized,
+                Flagged = flagged,
+                FlagKinds = flagKinds,
+            };
         }
     }
 
@@ -431,11 +505,26 @@ public sealed class PipelineRunner(
 
     private void LogSummary(IReadOnlyList<SourceRunResult> results)
     {
-        var uploaded = results.Sum(r => r.Uploaded);
-        var failures = results.Where(r => r.Failed).ToList();
+        var run = new RunResult(results);
+        var failures = run.Failures;
 
-        logger.LogInformation("Run complete: {Uploaded} item(s) awaiting review from {Ok}/{Total} source(s).",
-            uploaded, results.Count - failures.Count, results.Count);
+        logger.LogInformation("Run complete: {Uploaded} item(s) uploaded from {Ok}/{Total} source(s).",
+            run.TotalUploaded, results.Count - failures.Count, results.Count);
+
+        // WI-417: the counts that used to exist only as scrolled-past console
+        // lines. The database records a summary_flagged boolean and no reason,
+        // so without this the flag RATE is knowable and the CAUSE is not.
+        logger.LogInformation(
+            "  summarized {Summarized}, flagged {Flagged}, excluded as off-topic {Excluded}.",
+            run.TotalSummarized, run.TotalFlagged, run.TotalExcluded);
+
+        if (run.FlagKinds.Count > 0)
+        {
+            logger.LogInformation("  flagged because: {Reasons}", string.Join(", ",
+                run.FlagKinds
+                    .OrderByDescending(pair => pair.Value)
+                    .Select(pair => $"{Summarize.Guardrails.Describe(pair.Key)} {pair.Value}")));
+        }
 
         foreach (var failure in failures)
         {

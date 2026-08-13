@@ -72,7 +72,7 @@ public sealed record SummaryResult(
     string PromptVersion,
     string? Model,
     bool Flagged,
-    IReadOnlyList<string> FlagReasons);
+    IReadOnlyList<Guardrails.Flag> FlagReasons);
 
 public interface ISummarizer
 {

@@ -83,30 +83,65 @@ public static partial class Guardrails
         "progression", "recurrence", "diagnosis", "diagnosed", "biomarker", "molecular",
     };
 
-    public sealed record Result(bool Passed, IReadOnlyList<string> Reasons);
+    /// <summary>
+    /// Which check flagged an item (WI-417). The reason text has always been
+    /// logged per item, but nothing counted the kinds — so a run could report
+    /// "4.8% flagged" without saying whether that was reading level, invented
+    /// numbers, or hype. An enum rather than string-matching the message,
+    /// because the tally must not break the next time the wording is improved.
+    /// </summary>
+    public enum FlagKind
+    {
+        InventedNumbers,
+        BannedHype,
+        ReadingLevel,
+    }
+
+    /// <summary>One tripped check: the kind for counting, the message for reading.</summary>
+    public sealed record Flag(FlagKind Kind, string Message)
+    {
+        public override string ToString() => Message;
+    }
+
+    public sealed record Result(bool Passed, IReadOnlyList<Flag> Reasons);
+
+    /// <summary>Plain-language name for a run summary line.</summary>
+    public static string Describe(FlagKind kind) => kind switch
+    {
+        FlagKind.InventedNumbers => "invented numbers",
+        FlagKind.BannedHype => "hype phrases",
+        FlagKind.ReadingLevel => "reading level",
+        _ => kind.ToString(),
+    };
 
     /// <summary>Runs every check. summaryText = assembled summary,
     /// sourceText = original title + abstract.</summary>
     public static Result Check(string summaryText, string sourceText)
     {
-        var reasons = new List<string>();
+        var reasons = new List<Flag>();
 
         var untraceable = UntraceableNumbers(summaryText, sourceText);
         if (untraceable.Count > 0)
         {
-            reasons.Add($"numbers not found in the source: {string.Join(", ", untraceable)}");
+            reasons.Add(new Flag(
+                FlagKind.InventedNumbers,
+                $"numbers not found in the source: {string.Join(", ", untraceable)}"));
         }
 
         var banned = BannedWordsIn(summaryText);
         if (banned.Count > 0)
         {
-            reasons.Add($"banned hype phrase(s): {string.Join(", ", banned)}");
+            reasons.Add(new Flag(
+                FlagKind.BannedHype,
+                $"banned hype phrase(s): {string.Join(", ", banned)}"));
         }
 
         var grade = GradeLevel(summaryText);
         if (grade > MaxGradeLevel)
         {
-            reasons.Add($"reading level {grade:0.0} is above {MaxGradeLevel}");
+            reasons.Add(new Flag(
+                FlagKind.ReadingLevel,
+                $"reading level {grade:0.0} is above {MaxGradeLevel}"));
         }
 
         return new Result(reasons.Count == 0, reasons);

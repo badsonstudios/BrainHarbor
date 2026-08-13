@@ -30,7 +30,7 @@ public class PipelineRunnerTests
         }
     }
 
-    private sealed class StubSyncApi : ISyncApiClient
+    private class StubSyncApi : ISyncApiClient
     {
         public Dictionary<string, SourceState> State { get; } = new(StringComparer.Ordinal);
         public HashSet<string> AlreadyKnown { get; } = new(StringComparer.Ordinal);
@@ -48,7 +48,7 @@ public class PipelineRunnerTests
 
         public List<(string Source, string Cursor)> CursorAdvances { get; } = [];
 
-        public Task<UploadResponse> UploadAsync(
+        public virtual Task<UploadResponse> UploadAsync(
             IReadOnlyList<SyncItem> items, string? cursor, CancellationToken ct)
         {
             // Mirror the real client: an empty upload is a bug, not a no-op.
@@ -152,10 +152,14 @@ public class PipelineRunnerTests
     {
         public bool Flagged { get; init; }
 
+        /// <summary>Which checks tripped, for the WI-417 run tally.</summary>
+        public IReadOnlyList<BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind> Kinds { get; init; } = [];
+
         public Task<BrainHarbor.Pipeline.Summarize.SummaryResult> SummarizeAsync(
             FetchedItem item, CancellationToken ct) =>
             Task.FromResult(new BrainHarbor.Pipeline.Summarize.SummaryResult(
-                output, "summarize-v1", output is null ? null : "claude-opus-5", Flagged, []));
+                output, "summarize-v1", output is null ? null : "claude-opus-5", Flagged,
+                [.. Kinds.Select(k => new BrainHarbor.Pipeline.Summarize.Guardrails.Flag(k, k.ToString()))]));
     }
 
     private static PipelineRunner Runner(ISyncApiClient api, params ISourceFetcher[] fetchers) =>
@@ -633,6 +637,110 @@ public class PipelineRunnerTests
         Assert.Equal("What it doesn't mean.", uploaded.PlainDoesntMean);
         Assert.True(uploaded.SummaryFlagged);
         Assert.Contains("summarize-v1", uploaded.SummaryModel);
+    }
+
+    // ---------- WI-417: a run says WHY, not just how many ----------
+
+    /// <summary>
+    /// The gap Dan hit reading the first summarize-v4 run: the pipeline could
+    /// say 4.8% of summaries were flagged, but not whether that was reading
+    /// level, invented numerals, or hype — the database stores a boolean and no
+    /// reason. The run result now carries the breakdown.
+    /// </summary>
+    [Fact]
+    public async Task AFlaggedRunReportsWhichCheckDidTheFlagging()
+    {
+        var api = new StubSyncApi();
+        var summary = new BrainHarbor.Pipeline.Summarize.SummarizeOutput
+        {
+            PlainTitle = "A plain title",
+            Hook = "A one-line hook.",
+            WhatStudied = "What was studied.",
+            WhatFound = "What they found.",
+            Means = "What it means.",
+            DoesntMean = "What it doesn't mean.",
+        };
+        var summarizer = new StubSummarizer(summary)
+        {
+            Flagged = true,
+            Kinds =
+            [
+                BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel,
+                BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.InventedNumbers,
+            ],
+        };
+
+        var result = await Runner(api, summarizer,
+                new StubFetcher("pubmed", [Item("pubmed", "a"), Item("pubmed", "b")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Equal(2, result.TotalSummarized);
+        Assert.Equal(2, result.TotalFlagged);
+        // One item can trip several checks, so the kinds sum higher than the
+        // item count — that is the point of counting them separately.
+        Assert.Equal(2, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel]);
+        Assert.Equal(2, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.InventedNumbers]);
+        Assert.False(result.FlagKinds.ContainsKey(
+            BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.BannedHype));
+    }
+
+    /// <summary>
+    /// The most expensive failure there is: a window is fetched, classified and
+    /// summarized — hours of LLM work — and then the UPLOAD throws. That run's
+    /// log is the one that gets read, and it must not report "summarized 0".
+    /// </summary>
+    [Fact]
+    public async Task WorkAlreadyDoneIsStillCountedWhenTheUploadFails()
+    {
+        var api = new ThrowingUploadSyncApi();
+        var summarizer = new StubSummarizer(new BrainHarbor.Pipeline.Summarize.SummarizeOutput
+        {
+            PlainTitle = "t", Hook = "h", WhatStudied = "s",
+            WhatFound = "f", Means = "m", DoesntMean = "d",
+        })
+        {
+            Flagged = true,
+            Kinds = [BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel],
+        };
+
+        var result = await Runner(api, summarizer, new StubFetcher("pubmed", [Item("pubmed", "a")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Single(result.Failures);
+        Assert.Equal(1, result.TotalSummarized);
+        Assert.Equal(1, result.TotalFlagged);
+        Assert.Equal(1, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel]);
+    }
+
+    private sealed class ThrowingUploadSyncApi : StubSyncApi
+    {
+        public override Task<UploadResponse> UploadAsync(
+            IReadOnlyList<SyncItem> items, string? cursor, CancellationToken ct) =>
+            Task.FromException<UploadResponse>(new HttpRequestException("the site is down"));
+    }
+
+    [Fact]
+    public async Task ACleanRunCountsSummariesWithoutFlaggingAnything()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.ExcludeExternalIds.Add("off-topic");
+        var summarizer = new StubSummarizer(new BrainHarbor.Pipeline.Summarize.SummarizeOutput
+        {
+            PlainTitle = "t", Hook = "h", WhatStudied = "s",
+            WhatFound = "f", Means = "m", DoesntMean = "d",
+        });
+
+        var runner = new PipelineRunner(
+            [new StubFetcher("pubmed", [Item("pubmed", "keep"), Item("pubmed", "off-topic")])],
+            api, classifier, summarizer, NullLogger<PipelineRunner>.Instance);
+        var result = await runner.RunAsync(CancellationToken.None);
+
+        Assert.Equal(1, result.TotalSummarized);
+        Assert.Equal(0, result.TotalFlagged);
+        Assert.Empty(result.FlagKinds);
+        // Excluded is reported on its own now, not folded into Rejected only.
+        Assert.Equal(1, result.TotalExcluded);
     }
 
     [Fact]

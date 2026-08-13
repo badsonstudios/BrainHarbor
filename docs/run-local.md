@@ -59,6 +59,47 @@ Notes:
   new items (it asks the site what's new first).
 - No Anthropic API key is involved; it uses your local `claude` login.
 
+## Where the run logs go
+
+Every pipeline run writes its own log file (WI-417), because the scheduled
+daily run has no console anyone can see:
+
+```
+%LOCALAPPDATA%\BrainHarbor\logs\pipeline-<date>-<time>.log
+```
+
+The path is printed as the last line of every run, including a failed one. To
+read the end of the newest one:
+
+```powershell
+Get-ChildItem $env:LOCALAPPDATA\BrainHarbor\logs |
+    Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Tail 40
+```
+
+What is in there: every source's fetch/upload counts, every item excluded as
+off-topic (with its id and title), every summary the safety checks flagged
+**and which check flagged it**, and a run summary that totals the flags by
+cause. That last part is the answer to "4.8% were flagged — for what?", which
+the database cannot give you: it stores a `summary_flagged` boolean and no
+reason.
+
+- **One file per run**, named to the second, so a manual run never overwrites
+  the 06:00 scheduled one. Readable with `Get-Content` while the run is going.
+- **Retention**: pruned at the start of the next run — 30 days, 100 files,
+  256 MB across the directory, and 32 MB within any one run. Nothing to prune
+  by hand. A file another run is still writing to is never a candidate.
+- **Secrets never land in it**: `HttpClient` request URIs are filtered out (the
+  NCBI key travels in the query string because E-utilities requires it there),
+  and anything key-shaped that reaches a log line is scrubbed on the way to
+  disk. Both are pinned by tests in `PipelineLoggingTests`.
+- **Limit**: a crash *before* the app starts (a broken publish, a missing
+  runtime) writes no file — there the task's exit code is still the only
+  signal. Check `Get-ScheduledTaskInfo -TaskName 'BrainHarbor Pipeline'`.
+
+Settings live under `Pipeline:Logging` (`Enabled`, `Directory`,
+`RetentionDays`, `MaxFiles`, `MaxFileMegabytes`, `MaxDirectoryMegabytes`) if
+you ever need to move or shrink them.
+
 ## Stopping / resetting
 
 - Stop Web/Pipeline with `Ctrl+C` in their terminals.
