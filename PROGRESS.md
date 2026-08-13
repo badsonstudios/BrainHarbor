@@ -87,6 +87,23 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-13** — **Home page now says who wrote what; filter bars fixed**
+  (PR #14, released via #15, live on brainharbor.org). Dan's catches from the
+  live site. (1) The hero read "we read new research and news, then explain
+  it" — sounding like people — while AI was named only in the footer and on
+  item pages. It now leads **"Scientists do the research. AI puts what they
+  found into plain words"**; naming AI *without* that first sentence invites
+  the worse misreading, that AI did the science. Also states plainly that
+  summaries publish on their own and that a person does not check every one.
+  Short sentences deliberately: the same content as one paragraph measures
+  reading grade 8.3, this measures ~4.8. **Note: ContentCheck does NOT gate
+  the home page** (it scans `Content/pages/*.md`; home is a Razor view), so
+  reading level there is measured by hand. Title + social description match;
+  a test pins both halves of the disclosure. (2) `.feed-filters` had no CSS
+  rule at all, so the submit button wrapped alone while the long toggle sat
+  among the dropdowns — now one control row ending in the button, toggle
+  beneath, on /research and /trials alike. 662 tests.
+
 - **2026-08-12** — **brainharbor.org has real content.** First release through
   the new `develop → main` flow (PR #13) deployed itself and passed the smoke
   check, then the backfill ran with the WI-401 resilience fixes: **1,038 items
