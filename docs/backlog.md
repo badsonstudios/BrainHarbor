@@ -532,6 +532,30 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
 
+- [ ] **WI-417 Real logs for the scheduled pipeline runs**
+  Goal: a daily run that fails at 06:00 leaves evidence Dan can read (Dan's
+  ask, 2026-08-13).
+  Problem: Task Scheduler captures no console output, so the nightly runs are
+  invisible. Today the only signals are the task's exit code
+  (`Get-ScheduledTaskInfo`: 0 all ok, 1 some sources failed, 2 cancelled,
+  3 bad config, 4 blew up), a desktop notification nobody sees at 6am, and the
+  admin health page's per-source last-error. Everything the console prints —
+  which item was excluded and why, which summaries were flagged and for what,
+  the classify/summarize failures — is lost. That is exactly the detail the
+  last three production incidents were diagnosed from.
+  Acceptance: pipeline writes a per-run log file (a file logging provider or
+  the scheduled action redirecting stdout/stderr); one file per run, named by
+  date so runs do not overwrite each other; **rotation/retention** so it cannot
+  fill the disk (keep ~30 days); the path is documented in
+  `docs/run-local.md` and printed at the end of a run; the registration script
+  wires it up so a fresh registration gets logging without extra steps; the
+  log NEVER contains the sync API key or the NCBI key (they are already
+  filtered from HttpClient logging — keep it that way and test it).
+  Consider: also POST a run summary to the sync API so the admin health page
+  shows last-run status and counts, not just per-source errors.
+  Refs: scripts/register-pipeline-task.ps1, architecture.md §6,
+  Program.cs logging setup. Depends on: nothing.
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest
