@@ -1,7 +1,10 @@
 @page
 @model IndexModel
 @{
-    ViewData["Title"] = "Brain tumor research in plain language";
+    ViewData["Title"] = "Real brain tumor research in plain language";
+    ViewData["Description"] =
+        "Real brain tumor research and news, put into plain words by AI and checked " +
+        "automatically before it publishes. For patients and caregivers.";
 }
 
 @* Entry Hub home per docs/design/entry-hub-handoff/index.html: the hub with
@@ -9,12 +12,21 @@
    research cards), then the latest-updates feed (WI-409). Door targets are
    sitemap.md URLs. *@
 <section class="hub" aria-labelledby="hub-title">
-    <h1 id="hub-title">Brain tumor research, in plain language.</h1>
+    @* The first thing anyone reads has to answer "who wrote this?" honestly.
+       "Scientists do the research" is load-bearing: without it, saying AI
+       wrote the summaries reads as though AI did the science. Kept to short
+       sentences deliberately — this measures about a 5th-grade reading level
+       (the same sentences as one paragraph measure 8.3). *@
+    <h1 id="hub-title">Real brain tumor research, in plain language.</h1>
     <p>
-        Every day we read new brain tumor research and news, then explain it
-        in words anyone can understand. Every summary must pass our automatic
-        safety checks, and we always tell you how early a finding is, and
-        what it does <em>not</em> mean.
+        Scientists do the research. AI puts what they found into plain words.
+        Each summary must pass our safety checks, then it publishes on its
+        own. A person does not check every one, so we always link to the
+        study itself.
+    </p>
+    <p>
+        We also tell you how early a finding is, and what it does
+        <em>not</em> mean. <a href="/how-we-write">See how we write.</a>
     </p>
     <div class="hub__doors">
         <a class="door door--primary" href="/start">
