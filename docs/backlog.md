@@ -328,7 +328,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 
 ## Phase M4 — Azure + trials + digest → v1 launch
 
-- [ ] **WI-401 `[user]`+assisted Provision Azure**
+- [x] **WI-401 `[user]`+assisted Provision Azure** (done 2026-08-13 — shared Moodathon infra, ~$1-3/mo incremental instead of ~$30; brainharbor.org live with managed TLS; deploy on merge to `main`; feed backfilled)
   Goal: the site exists on the internet (meter starts, ~$30/mo).
   Acceptance: App Service B1 (Always On) + Postgres Flexible B1ms; deploy +
   DbUp migration steps in GitHub Actions; brainharbor.org DNS + managed TLS;
