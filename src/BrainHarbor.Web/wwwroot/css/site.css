@@ -976,6 +976,38 @@ main {
 
 .disclaimer p:last-child { margin-block-end: 0; }
 
+/* ---------- AI caution (WI-422, home) ---------- */
+
+/* Deliberately louder than .disclaimer: Dan's ask was that this be noticeable,
+   and it sits between the hero and the first AI-written summary. Bigger than
+   body text, the notice fill so it separates from the hub panel above it, and
+   a thick left rule. Still the calm warm palette, not a red alarm — this
+   audience is frightened enough without the site shouting. */
+.ai-caution {
+  background: var(--color-notice);
+  border: 1px solid var(--color-notice-border);
+  border-inline-start: 8px solid var(--color-notice-edge);
+  border-radius: var(--radius, 12px);
+  padding: var(--space-5) var(--space-6);
+  margin-block: var(--space-6);
+}
+
+.ai-caution p {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading);
+  max-width: 46rem;   /* the site's reading measure — long lines lose people */
+}
+
+.ai-caution strong {
+  /* The meaning is in the words, not the colour: this reads first whether or
+     not the fill renders (high-contrast mode, printing, a stylesheet that
+     failed to load). */
+  display: block;
+  font-size: var(--text-xl);
+  margin-block-end: var(--space-2);
+}
+
 /* ---------- Digest signup ---------- */
 
 .digest-signup {

@@ -477,7 +477,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: PipelineRunner.MaxConsecutiveClassifyFailures, Claude/ClaudeCli.cs,
   Classify/Classifier.cs. Depends on: nothing.
 
-- [ ] **WI-414 Hold Razor page copy to the reading-level gate too**
+- [x] **WI-414 Hold Razor page copy to the reading-level gate too** (done 2026-08-13, released in PR #19 — `RazorTextExtractor` + a 6.0 fail gate over reader-facing `.cshtml`; checkbox was missed at the time)
   Goal: the front page is held to the same automatic standard as the curated
   Markdown pages.
   Problem (found 2026-08-13 writing the home AI-disclosure copy): ContentCheck
@@ -629,6 +629,24 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Known trade, accepted: the h1 now wraps to two lines above the breakpoint,
   because the logo takes a third of the row.
   Refs: `docs/design/entry-hub-handoff/brand/README.md`. Depends on: WI-419.
+
+- [x] **WI-422 Say plainly that AI can be wrong, on the home page** (done
+  2026-08-14 — Dan's ask, reviewed locally and approved)
+  Goal: a reader meets the admission that AI makes mistakes before they meet
+  their first AI-written summary, and it is noticeable rather than tucked away.
+  Delivered: an `.ai-caution` block between the hub and "Latest updates" —
+  "AI can make mistakes. AI writes every summary here. Our safety checks catch
+  many mistakes, but they miss some. Always read the study we link to, and talk
+  with your care team before you act on what you read."
+  Styled with the palette's existing attention treatment (`--color-notice*`,
+  the closed-trial fill) rather than a red alarm: the audience is frightened
+  enough, and the point is to be read, not to startle. Larger than body text,
+  lead sentence on its own line, meaning carried by the words so it survives
+  high-contrast mode, a failed stylesheet, and print.
+  **Placement is the safety property:** above the feed, never below it. Pinned
+  by a test, along with the sentence and both actions.
+  Measured at reading grade **4.1** by ContentCheck (the real 6.0 CI gate for
+  Razor pages since WI-414). Depends on: nothing.
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.

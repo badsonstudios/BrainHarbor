@@ -133,6 +133,36 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Contains("A person does not check every one", html);
     }
 
+    /// <summary>
+    /// WI-422 (Dan's ask): the home page says plainly that AI gets things
+    /// wrong, and says what to do about it. The hub copy above already names
+    /// AI as the writer; this is the part that admits the writer is fallible,
+    /// and it sits between the hero and the first summary on purpose.
+    ///
+    /// Same rule as the disclosure test above: rewording is fine, dropping it
+    /// is not. Change this test deliberately, never to make a build pass.
+    /// </summary>
+    [Fact]
+    public async Task HomeWarnsThatAiCanBeWrongAndSaysWhatToDo()
+    {
+        var html = await GetHomeAsync();
+
+        Assert.Contains("AI can make mistakes", html);
+
+        // The admission on its own is not much use — it has to land with the
+        // two actions that make it actionable.
+        Assert.Contains("read the study we link to", html);
+        Assert.Contains("care team", html);
+
+        // Above the feed, not buried under it: a caution a reader meets AFTER
+        // the summaries has already failed.
+        var caution = html.IndexOf("ai-caution", StringComparison.Ordinal);
+        var feed = html.IndexOf("feed-grid", StringComparison.Ordinal);
+        Assert.True(caution > 0, "the AI caution is missing from the home page");
+        Assert.True(feed < 0 || caution < feed,
+            "the AI caution must come before the feed, not after it");
+    }
+
     [Fact]
     public async Task PendingItemsDoNotAppearOnHome()
     {
