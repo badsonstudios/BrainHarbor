@@ -13,7 +13,7 @@
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
 | **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
-| **Next up** | Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
+| **Next up** | **WI-425** (prominent "See all" button under the home feed — Dan's ask 2026-08-14, agreed to do next), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -89,6 +89,32 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-14** — **WI-426 done — the hype check was flagging summaries for
+  DENYING hype.** Dan found it within minutes of WI-418 making the reasons
+  visible, which is the best argument for WI-418 there is. The negation
+  exemption had been wired to "cure" alone (WI-401); every other banned phrase
+  was a bare keyword match. So "this is not a breakthrough" and "this is not a
+  game-changer" were flagged AS hype — and the block they live in, "what this
+  doesn't mean", exists precisely to write sentences like that. **The guardrail
+  was punishing summaries for obeying the anti-hype rule**, holding them out of
+  Auto publish and filling the review queue. Verified live before fixing: 5 of
+  6 negated samples flagged, only "cure" clean.
+  Fixed by applying the existing sentence-scoped negation check to every phrase.
+  A real "this IS a breakthrough" is still caught, and a denial in one sentence
+  does not license a claim in the next or in the next block.
+  **Plus bulk approve in the queue** (Dan asked to "approve all ~137"). It
+  approves every pending item that no check flags — exactly what Auto mode
+  publishes by itself. It deliberately does NOT approve everything: an item
+  flagged for an untraceable number stays for a person (that is the site's
+  central factual promise, and where a model may have invented a survival
+  figure), and so does an item with no summary (approving it publishes an empty
+  page to a patient — the ~20 classify failures are exactly this). The audit row
+  records who clicked and that it was a bulk action.
+  **Note: I could not do the approving myself** — prod Postgres refuses
+  connections from here (firewall admits Azure services only) and the admin UI
+  needs Dan's TOTP. The button puts the action behind his login, which is where
+  it belongs anyway. 761 tests.
 
 - **2026-08-14** — **WI-418 done — the review queue says WHICH check flagged an
   item** (Dan's ask: he opened the queue, found 137 items marked "read this one

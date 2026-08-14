@@ -188,19 +188,35 @@ public static partial class Guardrails
     public static IReadOnlyList<string> BannedWordsIn(string text)
     {
         var found = new List<string>();
+
+        // Every phrase gets the negation test, not just "cure".
+        //
+        // It used to be a bare keyword match for all of them, and only "cure"
+        // was allowed to be negated. That punished summaries for doing exactly
+        // what the anti-hype design asks: every summary ends with a "what this
+        // doesn't mean" block, and the natural sentence to write there is "this
+        // is not a breakthrough" or "this is not a game-changer". Those were
+        // flagged as hype, held out of Auto publish, and piled into the review
+        // queue for a person to approve one at a time (found 2026-08-14, Dan
+        // reading his own queue). A genuine "this is a breakthrough" is still
+        // caught — the negation check is scoped to the sentence.
         foreach (var phrase in BannedPhrases)
         {
-            if (Regex.IsMatch(text, $@"\b{Regex.Escape(phrase)}\b", RegexOptions.IgnoreCase))
+            foreach (Match match in Regex.Matches(
+                text, $@"\b{Regex.Escape(phrase)}\b", RegexOptions.IgnoreCase))
             {
-                found.Add(phrase);
+                if (!IsNegated(text, match.Index))
+                {
+                    found.Add(phrase);
+                    break;   // one un-negated use is enough to flag the summary
+                }
             }
         }
 
-        // "cure" only when it is NOT negated — a plain "a cure for glioma" is
-        // hype; "this is not a cure" is the anti-hype block doing its job.
-        foreach (Match m in Regex.Matches(text, @"\bcures?\b", RegexOptions.IgnoreCase))
+        // "cure" keeps its own pass for the plural: "cures" must be caught too.
+        foreach (Match match in Regex.Matches(text, @"\bcures?\b", RegexOptions.IgnoreCase))
         {
-            if (!IsNegated(text, m.Index))
+            if (!IsNegated(text, match.Index))
             {
                 found.Add("cure");
             }

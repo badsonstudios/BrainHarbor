@@ -590,6 +590,47 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: src/BrainHarbor.Safety, Admin\ReviewRepository.ReviewItem.FlagReasons,
   Pages\Shared\_ReviewRow.cshtml. Depends on: WI-417.
 
+- [x] **WI-426 Stop flagging summaries for DENYING hype, and clear the backlog
+  it caused** (done 2026-08-14 — Dan found it reading his own queue)
+  Bug: the negation exemption was wired to "cure" alone. Every other banned
+  phrase was a bare keyword match, so "this is not a breakthrough" and "this is
+  not a game-changer" were flagged AS hype — in the "what this doesn't mean"
+  block that ends every summary, whose entire purpose is to write sentences
+  like that. The guardrail was punishing summaries for obeying the anti-hype
+  rule, holding them out of Auto publish and piling them into the review queue.
+  Fixed: the sentence-scoped negation check now applies to every banned phrase.
+  A genuine "this IS a breakthrough" is still caught, and a denial in one
+  sentence still does not license a claim in the next (or in the next block).
+  Plus **bulk approve** in the queue: one action for every pending item that no
+  check flags — which is exactly what Auto mode publishes by itself, so
+  clearing them one click at a time was work the design never intended.
+  **Deliberately not "approve everything":** an item flagged for an untraceable
+  number stays (that is the site's central factual promise, and where a model
+  may have invented a survival figure), and so does an item with no summary
+  (approving it publishes an empty page to a patient). The audit row records
+  who clicked AND that it was a bulk action — "reviewed by" must never imply
+  someone read that particular summary.
+  Refs: BrainHarbor.Safety\Guardrails.BannedWordsIn,
+  Admin\ReviewRepository.GetPendingWithNoFailingCheckAsync, Pages\Admin\Queue.
+
+- [ ] **WI-425 A prominent "See all" button under the home feed**
+  Goal: the way out of the home page's four cards is obvious (Dan's ask,
+  2026-08-14: "the See all link next to Latest updates is way too small").
+  Acceptance: **keep** the existing small "See all →" link beside the heading —
+  Dan's call, it serves someone already scanning the heading row — and ADD a
+  prominent button BELOW the four cards, where a reader who has just finished
+  reading them is actually looking. Full-width or centred, real button styling
+  (the `.nav-cta` pill or the door treatment, not a text link), a tap target
+  comfortably over 44px, and wording that says where it goes ("See all research"
+  beats "See all", which begs "all what?"). Same anti-hype, plain-language
+  rules; it is reader-facing copy so it rides the 6.0 ContentCheck gate.
+  Watch: it must not compete with the crisis-help door above it for attention —
+  the hierarchy is help first, browse second.
+  Notes: the home feed renders 4 cards (WI-409) and the section already has a
+  heading-row link in `Pages/Index.cshtml`; `HomeFeedTests` covers this section.
+  Refs: Pages\Index.cshtml, wwwroot\css\site.css (.door, .nav-cta).
+  Depends on: nothing.
+
 - [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**
   Goal: an audit trail of what the checks said WHEN they said it (the other
   half of WI-418, deliberately deferred).

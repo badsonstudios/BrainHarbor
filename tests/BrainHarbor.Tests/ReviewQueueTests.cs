@@ -162,6 +162,119 @@ public sealed class ReviewQueueTests : IAsyncLifetime
         }
     }
 
+    // ---------- WI-426: bulk approve, and what it refuses to touch ----------
+
+    private async Task<long> InsertSummarizedAsync(
+        string externalId,
+        string whatFound = "People went 27 months before the tumor grew.",
+        string doesntMean = "This is not a promise for everyone.",
+        bool flagged = true) =>
+        await _connection.ExecuteScalarAsync<long>(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, raw_summary, status,
+                 relevance, research_stage, summary_flagged, plain_title, plain_summary,
+                 plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean,
+                 readiness_reason)
+            VALUES
+                (@TestSource, 'research', @externalId, 'A trial of a pill',
+                 'https://example.org',
+                 'In a trial of 331 people, survival was 27 months versus 11 months.',
+                 'pending', 'patient_relevant', 'human_trial', @flagged,
+                 'A pill slowed growth', 'A daily pill helped people.',
+                 'Researchers gave a pill to 331 people.', @whatFound,
+                 'It may add time before stronger care is needed.', @doesntMean,
+                 'Being tested in people.')
+            RETURNING id
+            """,
+            new { TestSource, externalId, whatFound, doesntMean, flagged });
+
+    /// <summary>
+    /// The load-bearing behaviour: bulk approve publishes the items no check is
+    /// flagging, and leaves the two kinds that need a person. An item whose
+    /// summary contains a number absent from the source is the one guardrail
+    /// worth reading every time — "every number traces to the source" is the
+    /// site's central factual promise.
+    /// </summary>
+    [Fact]
+    public async Task BulkApproveTakesTheCleanOnesAndLeavesTheRest()
+    {
+        var clean = await InsertSummarizedAsync("bulk-clean");
+        var invented = await InsertSummarizedAsync(
+            "bulk-invented", whatFound: "The pill worked for 88% of people.");
+        var hype = await InsertSummarizedAsync(
+            "bulk-hype", whatFound: "This breakthrough changed everything.");
+        var unsummarized = await InsertPendingAsync("bulk-nosummary", flagged: true);
+
+        var candidates = await _reviews.GetPendingWithNoFailingCheckAsync(200, CancellationToken.None);
+
+        Assert.Contains(candidates, i => i.Id == clean);
+        Assert.DoesNotContain(candidates, i => i.Id == invented);
+        Assert.DoesNotContain(candidates, i => i.Id == hype);
+        Assert.DoesNotContain(candidates, i => i.Id == unsummarized);
+    }
+
+    /// <summary>
+    /// An item with no summary can never be "clean". There is nothing to check,
+    /// and approving it publishes a page with no plain-language content on it —
+    /// the 20 classify failures in the real queue are exactly this.
+    /// </summary>
+    [Fact]
+    public async Task AnItemWithNoSummaryIsNeverBulkApproved()
+    {
+        var id = await InsertPendingAsync("bulk-empty", flagged: false);
+
+        var candidates = await _reviews.GetPendingWithNoFailingCheckAsync(200, CancellationToken.None);
+
+        Assert.DoesNotContain(candidates, i => i.Id == id);
+    }
+
+    /// <summary>
+    /// The negation fix in action, end to end: a summary whose anti-hype block
+    /// says "this is not a breakthrough" is clean, and so becomes eligible for
+    /// bulk approval rather than sitting in the queue forever. This is the case
+    /// that filled Dan's queue.
+    /// </summary>
+    [Fact]
+    public async Task ASummaryThatDeniesHypeCountsAsClean()
+    {
+        var id = await InsertSummarizedAsync(
+            "bulk-denies-hype",
+            doesntMean: "This is not a breakthrough, and it is not a cure.");
+
+        var candidates = await _reviews.GetPendingWithNoFailingCheckAsync(200, CancellationToken.None);
+
+        Assert.Contains(candidates, i => i.Id == id);
+    }
+
+    [Fact]
+    public async Task BulkApprovedItemsArePublishedWithAnHonestAuditTrail()
+    {
+        var id = await InsertSummarizedAsync("bulk-audit");
+
+        var applied = await _reviews.ApplyAsync(
+            id, ReviewAction.Approved, "dan@example.org",
+            "Approved in bulk: no automated check was failing.", CancellationToken.None);
+
+        Assert.True(applied);
+
+        var row = await _connection.QuerySingleAsync<(string Status, string? Slug)>(
+            "SELECT status, slug FROM aggregated_items WHERE id = @id", new { id });
+        Assert.Equal("published", row.Status);
+        Assert.False(string.IsNullOrWhiteSpace(row.Slug));   // a real page, not a 404
+
+        var note = await _connection.ExecuteScalarAsync<string>(
+            """
+            SELECT note FROM review_events
+            WHERE item_id = @id AND action = 'approved'
+            ORDER BY id DESC LIMIT 1
+            """,
+            new { id });
+
+        // "Reviewed by" must never imply someone read this particular summary.
+        Assert.Contains("in bulk", note, StringComparison.OrdinalIgnoreCase);
+    }
+
     // ---------- the gate ----------
 
     [Fact]
