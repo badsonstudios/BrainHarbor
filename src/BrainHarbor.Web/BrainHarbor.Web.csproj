@@ -26,6 +26,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Re-runs the pipeline's own safety checks over a stored summary, so the
+         review queue can say WHICH check flagged an item instead of "read this
+         one closely" (WI-418). Same code, not a copy. -->
+    <ProjectReference Include="..\BrainHarbor.Safety\BrainHarbor.Safety.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="dbup-postgresql" Version="7.0.1" />
     <PackageReference Include="Htmx" Version="1.12.0" />

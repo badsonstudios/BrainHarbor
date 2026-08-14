@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using BrainHarbor.Pipeline.Claude;
 using BrainHarbor.Pipeline.Sources;
+using BrainHarbor.Safety;
 using Microsoft.Extensions.Logging;
 
 namespace BrainHarbor.Pipeline.Summarize;
@@ -57,9 +58,14 @@ public sealed record SummarizeOutput
         ReadinessScore is >= Readiness.Min and <= Readiness.Max &&
         !string.IsNullOrWhiteSpace(ReadinessReason);
 
+    /// <summary>The blocks as the checks see them. Assembly lives in
+    /// <see cref="SummaryText"/> so the site's re-check cannot drift from
+    /// this one (WI-418).</summary>
+    public SummaryText AsSummaryText() =>
+        new(PlainTitle, Hook, WhatStudied, WhatFound, Means, DoesntMean, ReadinessReason);
+
     /// <summary>All prose, for the guardrail checks (numerals, hype, reading level).</summary>
-    public string AllProse =>
-        string.Join("\n", PlainTitle, Hook, WhatStudied, WhatFound, Means, DoesntMean, ReadinessReason);
+    public string AllProse => AsSummaryText().AllProse;
 }
 
 /// <summary>
@@ -113,13 +119,9 @@ public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<
     /// "Phase 2" legitimately appears in the output and would otherwise trip
     /// the numeral post-check as an invented figure.
     /// </summary>
-    internal static string SourceTextFor(FetchedItem item)
-    {
-        var source = $"{item.Title}\n{item.RawSummary}";
-        return item.Trial is { } trial
-            ? $"{source}\n{trial.Phase}\n{trial.OverallStatus}"
-            : source;
-    }
+    internal static string SourceTextFor(FetchedItem item) =>
+        SummaryText.SourceFor(
+            item.Title, item.RawSummary, item.Trial?.Phase, item.Trial?.OverallStatus);
 
     public async Task<SummaryResult> SummarizeAsync(FetchedItem item, CancellationToken cancellationToken)
     {

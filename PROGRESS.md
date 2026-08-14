@@ -90,6 +90,39 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-14** — **WI-418 done — the review queue says WHICH check flagged an
+  item** (Dan's ask: he opened the queue, found 137 items marked "read this one
+  closely", and could not tell why any of them was there).
+  **Solved by re-checking, not by a migration.** The checks are pure text
+  analysis and every summary is already stored, so the reason was *recoverable*:
+  the queue re-runs them over the stored blocks at render time. That means the
+  whole existing backlog is explained the moment this deploys — a
+  store-it-going-forward design would have left those 137 exactly as opaque as
+  they were.
+  `Guardrails` moved out of the Pipeline into a new shared **`BrainHarbor.Safety`**
+  project both apps reference. Copying the rules into the site was the obvious
+  shortcut and the wrong one: a second implementation of the same rule is
+  precisely the defect WI-415 spent a day fixing and WI-416 still exists to
+  finish. `SummaryText` now owns the block assembly for the same reason — a
+  title has no full stop, and joining it into the hook is what inflated every
+  reading grade by ~0.7.
+  The re-check **joins `trials_cache`**: the summarize-trial prompt scores
+  readiness BY phase, so "Phase 2" legitimately appears in a trial summary and
+  without the join every trial would report its own phase as an invented number
+  and send Dan chasing a ghost.
+  **Two limits stated in the UI rather than hidden:** it reflects TODAY's rules
+  (the reading ceiling moved 8.5 → 7.0 on 2026-08-13, so an item flagged then
+  may pass now), and a reader-reported item has no automated reason — that case
+  now says so out loud instead of rendering an empty box.
+  Verified through the repository against the real SQL including the new join,
+  plus unit tests over invented numbers, hype, the trial phase, the
+  no-summary case, and that the queue assembles blocks identically to the
+  pipeline. **Not verified in the browser**: `Admin:Email`/`Admin:Password` were
+  never set in this machine's Web user-secrets, so the LOCAL admin area has
+  never been reachable here (prod is unaffected). Follow-up **WI-424** filed for
+  recording the reason at flag time — the queue answers "what fails today", not
+  "what failed that night". 750 tests.
+
 - **2026-08-14** — **WI-422 done — the home page says plainly that AI can be
   wrong** (Dan's ask; reviewed locally and approved). An `.ai-caution` block
   between the hub and "Latest updates": *"AI can make mistakes. AI writes every
