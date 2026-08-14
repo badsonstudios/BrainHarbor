@@ -57,6 +57,27 @@
     </div>
 </section>
 
+@* AI-mistake caution (Dan's ask, WI-422). Directly under the hub and ABOVE the
+   feed on purpose: it is the last thing a reader passes before the first AI
+   summary, which is the moment it means something. The hub already says AI
+   writes the summaries and that a person does not check every one; what was
+   missing is the plain sentence that AI gets things wrong, and what to do
+   about it.
+
+   Uses the palette's sanctioned attention treatment (--color-notice*, the same
+   fill as the "this trial has closed" panel) rather than a red alarm: the
+   audience may be frightened already, and the point is to be READ, not to
+   startle. The bold lead sentence carries the meaning, so color is never the
+   only cue. *@
+<div class="ai-caution">
+    <p>
+        <strong>AI can make mistakes.</strong>
+        AI writes every summary here. Our safety checks catch many mistakes,
+        but they miss some. Always read the study we link to, and talk with
+        your care team before you act on what you read.
+    </p>
+</div>
+
 @if (Model.Latest.Count > 0)
 {
     <section aria-labelledby="latest-title">

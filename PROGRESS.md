@@ -90,6 +90,28 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-14** — **WI-422 done — the home page says plainly that AI can be
+  wrong** (Dan's ask; reviewed locally and approved). An `.ai-caution` block
+  between the hub and "Latest updates": *"AI can make mistakes. AI writes every
+  summary here. Our safety checks catch many mistakes, but they miss some.
+  Always read the study we link to, and talk with your care team before you act
+  on what you read."* The hub already named AI as the writer and said a person
+  does not check every one; what was missing was the admission that the writer
+  is FALLIBLE, plus what to do about it — an admission with no action is not
+  much use. **Above the feed, never below it** — a caution a reader meets after
+  the summaries has already failed — and a test pins that ordering along with
+  the sentence and both actions. Styled with the palette's existing attention
+  treatment (`--color-notice*`, the closed-trial fill), NOT a red alarm: the
+  palette's own rule is no reds outside true warnings, and this audience is
+  frightened enough. Larger than body text, lead sentence on its own line,
+  meaning carried by the words so it survives high-contrast mode, a failed
+  stylesheet and print. **Measured grade 4.1 by ContentCheck** — which is a
+  real gate, not a courtesy: Razor pages have been failed above 6.0 since
+  WI-414. Checked at desktop and 390px. 742 tests.
+  **Two stale records fixed while here:** WI-414's backlog checkbox was never
+  ticked though it shipped in PR #19, and the note above claiming ContentCheck
+  does not gate the home page was wrong from that same date.
+
 - **2026-08-14** — **WI-421 done — the brand owns the top-right of the home
   hero** (Dan's ask, with a screenshot; he reviewed the rendered result and
   approved the size). `.hub` is now a two-column grid: copy left,
@@ -276,9 +298,11 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   the worse misreading, that AI did the science. Also states plainly that
   summaries publish on their own and that a person does not check every one.
   Short sentences deliberately: the same content as one paragraph measures
-  reading grade 8.3, this measures ~4.8. **Note: ContentCheck does NOT gate
-  the home page** (it scans `Content/pages/*.md`; home is a Razor view), so
-  reading level there is measured by hand. Title + social description match;
+  reading grade 8.3, this measures ~4.8. **Note, SUPERSEDED the next day by
+  WI-414: ContentCheck did not gate the home page then** (it scanned only
+  `Content/pages/*.md`; home is a Razor view), so reading level here was
+  measured by hand. It gates reader-facing `.cshtml` now, failing above 6.0.
+  Title + social description match;
   a test pins both halves of the disclosure. (2) `.feed-filters` had no CSS
   rule at all, so the submit button wrapped alone while the long toggle sat
   among the dropdowns — now one control row ending in the button, toggle
