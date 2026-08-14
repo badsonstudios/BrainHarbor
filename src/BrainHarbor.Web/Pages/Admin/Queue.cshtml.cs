@@ -20,6 +20,23 @@ public class QueueModel(
     public bool HasMore => (Page + 1) * PageSize < PendingCount;
     public bool TwoFactorEnabled { get; private set; }
 
+    /// <summary>
+    /// How many pending items no automated check flags (WI-426). Offered as one
+    /// action because these are exactly what Auto mode would have published on
+    /// its own — clearing them by hand, one click each, is work the design never
+    /// intended anyone to do.
+    /// </summary>
+    public int CleanCount { get; private set; }
+
+    /// <summary>Result of the last bulk approve, shown once after the redirect.</summary>
+    [TempData]
+    public string? BulkMessage { get; set; }
+
+    /// <summary>A single click must not be able to publish an unbounded number
+    /// of pages. 200 is far above the real backlog and still a number a person
+    /// can picture.</summary>
+    private const int BulkApproveLimit = 200;
+
     public async Task OnGetAsync(int page = 0, CancellationToken cancellationToken = default)
     {
         Page = Math.Max(0, page);
@@ -34,8 +51,59 @@ public class QueueModel(
             Reported = await reviews.GetReportedAsync(PageSize, cancellationToken);
         }
 
+        CleanCount = PendingCount == 0
+            ? 0
+            : (await reviews.GetPendingWithNoFailingCheckAsync(
+                BulkApproveLimit, cancellationToken)).Count;
+
         var user = await userManager.GetUserAsync(User);
         TwoFactorEnabled = user is not null && await userManager.GetTwoFactorEnabledAsync(user);
+    }
+
+    /// <summary>
+    /// Approve every pending item that no automated check flags (WI-426).
+    ///
+    /// Deliberately NOT "approve everything". Two kinds stay behind for a
+    /// person: an item flagged for an untraceable number, because "every number
+    /// traces to the source" is the site's central factual promise and those
+    /// are exactly where a model may have invented a survival figure; and an
+    /// item with no summary at all, because approving it publishes a page with
+    /// nothing on it for a reader.
+    ///
+    /// The audit trail records who clicked and that it was a bulk action —
+    /// "reviewed by" must never imply someone read this particular summary when
+    /// they did not.
+    /// </summary>
+    public async Task<IActionResult> OnPostApproveCleanAsync(CancellationToken cancellationToken)
+    {
+        var actor = User.Identity?.Name ?? "unknown";
+        var clean = await reviews.GetPendingWithNoFailingCheckAsync(BulkApproveLimit, cancellationToken);
+
+        var approved = 0;
+        foreach (var item in clean)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Through the same path a single approval takes: it generates the
+            // slug, guards the status transition, and writes the audit row.
+            if (await reviews.ApplyAsync(
+                    item.Id, ReviewAction.Approved, actor,
+                    "Approved in bulk: no automated check was failing.", cancellationToken))
+            {
+                approved++;
+            }
+        }
+
+        logger.LogInformation(
+            "Bulk approve by {Actor}: {Approved} of {Candidates} item(s) published.",
+            actor, approved, clean.Count);
+
+        BulkMessage = approved == 0
+            ? "Nothing to approve — every pending item has a failing check or no summary."
+            : $"Published {approved} item(s) that no check was flagging. " +
+              "Anything left below needs a person.";
+
+        return RedirectToPage("/Admin/Queue");
     }
 
     /// <summary>Pull a reader-reported page from the site, or dismiss the flag
