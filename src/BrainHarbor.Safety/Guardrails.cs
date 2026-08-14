@@ -51,8 +51,28 @@ public static partial class Guardrails
     private static readonly string[] BannedPhrases =
         ["breakthrough", "miracle", "game-changer", "game changer", "miraculous", "wonder drug"];
 
-    private static readonly string[] Negations =
-        ["not", "no", "never", "without", "isn't", "isnt", "aren't", "arent", "doesn't", "doesnt", "don't", "dont", "n't"];
+    /// <summary>
+    /// Negation, including contractions.
+    ///
+    /// This was a word LIST, matched against `[A-Za-z]+` tokens — which strip
+    /// the apostrophe. So "doesn't" tokenized to "doesn" + "t" and the list's
+    /// "doesn't" / "isn't" / "n't" entries could never match anything, ever.
+    /// Every contraction therefore read as un-negated: "it isn't a cure" was
+    /// flagged as a cure claim, and "this doesn't mean it is a breakthrough" as
+    /// hype. The block those sentences live in is *called* "what this doesn't
+    /// mean", so that phrasing is about the commonest in the corpus (found
+    /// 2026-08-14, Dan reading the queue after the first negation fix).
+    ///
+    /// A regex, not a token list, because the apostrophe is part of the word.
+    /// The suffix branch REQUIRES the apostrophe: bare "\w+nt" would match
+    /// "important" and quietly negate "this is an important breakthrough".
+    /// Both apostrophes are accepted — a model emits the curly one freely.
+    /// </summary>
+    [GeneratedRegex(
+        @"\b(?:not|no|never|without|nor|neither|cannot|isnt|arent|doesnt|dont|didnt|cant|wont|wasnt|werent|hasnt|havent)\b"
+        + @"|\w+n['’]t\b",
+        RegexOptions.IgnoreCase)]
+    private static partial Regex Negation();
 
     /// <summary>Number words → digits, so "Ten studies" (source) matches "10"
     /// (summary), and a spelled-out invented number is still caught.</summary>
@@ -253,8 +273,7 @@ public static partial class Guardrails
             sentenceStart = lastBreak + 1;
         }
 
-        var clause = text[sentenceStart..index];
-        return Word().Matches(clause).Any(m => Negations.Contains(m.Value, StringComparer.OrdinalIgnoreCase));
+        return Negation().IsMatch(text[sentenceStart..index]);
     }
 
     /// <summary>Flesch-Kincaid grade level, with a medical-vocabulary allowance

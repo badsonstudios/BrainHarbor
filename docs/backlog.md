@@ -613,6 +613,21 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: BrainHarbor.Safety\Guardrails.BannedWordsIn,
   Admin\ReviewRepository.GetPendingWithNoFailingCheckAsync, Pages\Admin\Queue.
 
+- [x] **WI-427 Negation never worked for contractions** (done 2026-08-14 — Dan
+  saw hype flags still coming through after WI-426 shipped)
+  Bug, and the bigger half of the queue: negation was a word LIST matched
+  against `[A-Za-z]+` tokens, which strip the apostrophe. "doesn't" tokenized
+  to "doesn" + "t", so the list's `doesn't` / `isn't` / `n't` entries could
+  never match anything. Every contraction read as un-negated — and the block
+  these sentences live in is *called* "what this doesn't mean", so that is
+  about the commonest phrasing in the corpus. It hit `cure` too, so this had
+  been mis-flagging since WI-401, not since WI-426.
+  Fixed with a negation REGEX (the apostrophe is part of the word), accepting
+  straight and curly apostrophes. The `n't` branch requires the apostrophe: a
+  bare `\w+nt` would match "importa-n-t" and quietly excuse "this is an
+  important breakthrough". Pinned by tests in both directions.
+  Refs: BrainHarbor.Safety\Guardrails.Negation/IsNegated.
+
 - [ ] **WI-425 A prominent "See all" button under the home feed**
   Goal: the way out of the home page's four cards is obvious (Dan's ask,
   2026-08-14: "the See all link next to Latest updates is way too small").

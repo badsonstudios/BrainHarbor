@@ -90,6 +90,25 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-14** — **WI-427 done — negation never worked for contractions, and
+  that was the bigger half of the queue.** Dan shipped WI-426, reloaded, and
+  still saw hype flags. Cause: negation was a word LIST matched against
+  `[A-Za-z]+` tokens, which strip the apostrophe — so "doesn't" became
+  "doesn" + "t" and the list's `doesn't` / `isn't` / `n't` entries could never
+  match anything at all. **Every contraction read as un-negated**, and the block
+  those sentences live in is CALLED "what this doesn't mean", so it is about the
+  commonest phrasing in the corpus. It hit `cure` as well, which means this had
+  been silently mis-flagging since WI-401 — WI-426 fixed which phrases got the
+  negation test, this fixed whether the test ever worked.
+  Measured before: `doesn't`, `isn't`, `won't`, `can't` all flagged. After: all
+  clean, while "this is an **important** breakthrough" and "Doctors call this a
+  breakthrough" stay flagged, which is correct.
+  Fixed with a negation REGEX rather than a token list, since the apostrophe is
+  part of the word; straight and curly both accepted. **The `n't` branch
+  requires the apostrophe** — a bare `\w+nt` matches "importa-n-t" and would
+  have quietly excused hype sitting right after it. Both directions pinned by
+  tests. 771 tests.
+
 - **2026-08-14** — **WI-426 done — the hype check was flagging summaries for
   DENYING hype.** Dan found it within minutes of WI-418 making the reasons
   visible, which is the best argument for WI-418 there is. The negation
