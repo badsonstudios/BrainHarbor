@@ -52,6 +52,11 @@
     </section>
 }
 
+@if (Model.BulkMessage is { } bulkMessage)
+{
+    <p class="disclaimer" role="status">@bulkMessage</p>
+}
+
 <p>
     <strong>@Model.PendingCount</strong> item(s) waiting.
     @if (Model.PendingCount > 0)
@@ -59,6 +64,28 @@
         <text>Flagged items are listed first.</text>
     }
 </p>
+
+@* WI-426: clear the items no check is flagging in one action. These are what
+   Auto mode would have published by itself — approving them one click at a
+   time is work the design never intended. What it deliberately leaves behind
+   is spelled out, because a bulk publish should never be a mystery: an
+   untraceable number is the one guardrail worth reading every time, and an
+   item with no summary would publish an empty page to a patient. *@
+@if (Model.CleanCount > 0)
+{
+    <form method="post" asp-page-handler="ApproveClean" class="bulk-approve">
+        <p>
+            <strong>@Model.CleanCount</strong> of these have no failing check.
+            They are what publishes on its own in Auto mode.
+        </p>
+        <button type="submit">Approve those @Model.CleanCount now</button>
+        <p class="text-muted">
+            Leaves behind anything flagged for an untraceable number, hype, or
+            reading level, and anything with no summary yet. Records your name
+            and that it was a bulk approval.
+        </p>
+    </form>
+}
 
 @if (Model.PendingCount > 0)
 {

@@ -90,6 +90,32 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-14** — **WI-426 done — the hype check was flagging summaries for
+  DENYING hype.** Dan found it within minutes of WI-418 making the reasons
+  visible, which is the best argument for WI-418 there is. The negation
+  exemption had been wired to "cure" alone (WI-401); every other banned phrase
+  was a bare keyword match. So "this is not a breakthrough" and "this is not a
+  game-changer" were flagged AS hype — and the block they live in, "what this
+  doesn't mean", exists precisely to write sentences like that. **The guardrail
+  was punishing summaries for obeying the anti-hype rule**, holding them out of
+  Auto publish and filling the review queue. Verified live before fixing: 5 of
+  6 negated samples flagged, only "cure" clean.
+  Fixed by applying the existing sentence-scoped negation check to every phrase.
+  A real "this IS a breakthrough" is still caught, and a denial in one sentence
+  does not license a claim in the next or in the next block.
+  **Plus bulk approve in the queue** (Dan asked to "approve all ~137"). It
+  approves every pending item that no check flags — exactly what Auto mode
+  publishes by itself. It deliberately does NOT approve everything: an item
+  flagged for an untraceable number stays for a person (that is the site's
+  central factual promise, and where a model may have invented a survival
+  figure), and so does an item with no summary (approving it publishes an empty
+  page to a patient — the ~20 classify failures are exactly this). The audit row
+  records who clicked and that it was a bulk action.
+  **Note: I could not do the approving myself** — prod Postgres refuses
+  connections from here (firewall admits Azure services only) and the admin UI
+  needs Dan's TOTP. The button puts the action behind his login, which is where
+  it belongs anyway. 761 tests.
+
 - **2026-08-14** — **WI-418 done — the review queue says WHICH check flagged an
   item** (Dan's ask: he opened the queue, found 137 items marked "read this one
   closely", and could not tell why any of them was there).

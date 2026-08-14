@@ -939,6 +939,18 @@ main {
 
 .report-problem textarea { width: 100%; }
 
+/* Bulk approve (WI-426). Admin-only. Bordered rather than loud: it publishes
+   real pages, so it should read as a considered action, not a convenience. */
+.bulk-approve {
+  border: 1px solid var(--color-border);
+  border-radius: var(--card-radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block: var(--space-5);
+}
+
+.bulk-approve p { margin-block: 0 var(--space-3); }
+.bulk-approve p.text-muted { margin-block: var(--space-3) 0; font-size: var(--text-sm); }
+
 /* Why an item was flagged, in the queue (WI-418). Admin-only, so this is
    plainer than the reader-facing surfaces — the job is to be scannable down a
    column of 20 items, not calm. */

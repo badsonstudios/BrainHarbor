@@ -55,6 +55,43 @@ public class GuardrailsTests
         Assert.Contains(expected, Guardrails.BannedWordsIn(text));
     }
 
+    /// <summary>
+    /// The false positive that filled the review queue (found 2026-08-14, Dan
+    /// reading his own queue). Negation was honoured for "cure" alone, so every
+    /// other banned phrase tripped a bare keyword match — including in the
+    /// "what this doesn't mean" block that ends every summary, whose whole
+    /// purpose is to write sentences exactly like these. The guardrail was
+    /// punishing summaries for obeying the anti-hype rule.
+    /// </summary>
+    [Theory]
+    [InlineData("This is not a breakthrough.")]
+    [InlineData("This is not a game-changer.")]
+    [InlineData("It is not a miracle.")]
+    [InlineData("It is not a wonder drug.")]
+    [InlineData("This does not mean it is a game changer for people with glioma.")]
+    [InlineData("It is not a cure.")]
+    public void ADeniedHypeWordIsTheAntiHypeBlockDoingItsJob(string text)
+    {
+        Assert.Empty(Guardrails.BannedWordsIn(text));
+    }
+
+    /// <summary>
+    /// The other half: negation is scoped to its own sentence, so denying hype
+    /// once does not license claiming it in the next breath.
+    /// </summary>
+    [Fact]
+    public void ADenialInOneSentenceDoesNotExcuseAClaimInTheNext()
+    {
+        Assert.Contains(
+            "breakthrough",
+            Guardrails.BannedWordsIn("This is not a cure. It is a breakthrough."));
+
+        // Same across a block boundary, which is a sentence end too (WI-415).
+        Assert.Contains(
+            "miracle",
+            Guardrails.BannedWordsIn("This is not a game-changer.\nA miracle drug is here."));
+    }
+
     [Theory]
     [InlineData("This is not a cure.")]
     [InlineData("The pill does not cure the tumor.")]

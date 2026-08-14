@@ -173,6 +173,43 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         return [.. rows];
     }
 
+    /// <summary>
+    /// Pending items that no automated check flags — the ones Auto mode would
+    /// have published by itself (WI-426).
+    ///
+    /// The test is deliberately in C# rather than SQL: "clean" means the same
+    /// guardrails the pipeline runs, re-checked against the stored summary, and
+    /// there is no honest way to express that in a WHERE clause. `summary_flagged`
+    /// cannot be trusted for it — that is the boolean the pipeline set on the
+    /// night, under whatever rules were in force then, and the hype check was
+    /// producing false positives until 2026-08-14.
+    ///
+    /// An item with no summary is never clean. It has nothing to check, and
+    /// approving it would publish a page with no plain-language content on it.
+    /// </summary>
+    public async Task<IReadOnlyList<ReviewItem>> GetPendingWithNoFailingCheckAsync(
+        int max, CancellationToken cancellationToken)
+    {
+        var clean = new List<ReviewItem>();
+        var offset = 0;
+
+        // Paged rather than one unbounded SELECT: the queue is ~140 items today
+        // but this runs against whatever the backlog grows to.
+        while (clean.Count < max)
+        {
+            var batch = await GetPendingAsync(200, offset, cancellationToken);
+            if (batch.Count == 0)
+            {
+                break;
+            }
+
+            clean.AddRange(batch.Where(i => i.HasSummary && i.FlagReasons.Count == 0));
+            offset += batch.Count;
+        }
+
+        return clean.Count > max ? [.. clean.Take(max)] : clean;
+    }
+
     public async Task<int> CountPendingAsync(CancellationToken cancellationToken)
     {
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
