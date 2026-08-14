@@ -72,7 +72,17 @@ public sealed record SummaryResult(
     string PromptVersion,
     string? Model,
     bool Flagged,
-    IReadOnlyList<Guardrails.Flag> FlagReasons);
+    IReadOnlyList<Guardrails.Flag> FlagReasons)
+{
+    /// <summary>
+    /// WI-413: the CLI never answered, so this is about the run and not the
+    /// item. It matters here as well as in the classifier because an item
+    /// uploaded classified-but-unsummarized is never summarized again — a
+    /// known item costs no model call on later runs — so it would sit in the
+    /// review queue without a summary permanently.
+    /// </summary>
+    public bool Unavailable { get; init; }
+}
 
 public interface ISummarizer
 {
@@ -137,6 +147,17 @@ public sealed class Summarizer(ClaudeCli claude, PromptLibrary prompts, ILogger<
 
         if (!result.Success)
         {
+            if (result.Unavailable)
+            {
+                logger.LogWarning(
+                    "[{Source}/{Id}] the summarizer is not answering ({Reason}) — stopping this source.",
+                    item.Source, item.ExternalId, result.FailureReason);
+                return new SummaryResult(null, template.Version, null, Flagged: false, [])
+                {
+                    Unavailable = true,
+                };
+            }
+
             logger.LogWarning("[{Source}/{Id}] summarization failed ({Reason}) — leaving it unsummarized.",
                 item.Source, item.ExternalId, result.FailureReason);
             return new SummaryResult(null, template.Version, null, Flagged: false, []);

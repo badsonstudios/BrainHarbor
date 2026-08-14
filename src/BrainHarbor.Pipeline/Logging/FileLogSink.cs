@@ -52,7 +52,13 @@ public sealed class FileLogSink : IDisposable
             // AutoFlush because Task Scheduler kills a run that hits its
             // ExecutionTimeLimit, and that is precisely the run whose log
             // matters most. Buffered writes would die with the process.
-            var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))
+            //
+            // WITH a BOM, deliberately: Windows PowerShell 5.1's Get-Content
+            // assumes the ANSI codepage unless it finds one, and it is the
+            // reader run-local.md and the registration script both tell you to
+            // use. Without the BOM every em dash in these messages — and they
+            // are everywhere — reads back as "â€”".
+            var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true))
             {
                 AutoFlush = true,
             };

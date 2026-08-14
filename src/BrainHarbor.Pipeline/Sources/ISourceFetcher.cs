@@ -90,4 +90,17 @@ public interface ISourceFetcher
     /// cursor means "first run": fetch a sensible recent window, not history.
     /// </summary>
     Task<FetchResult> FetchAsync(string? cursor, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Whether this fetcher produces <see cref="FetchedItem.Trial"/> records —
+    /// facts that need no model call and must stay fresh even when the Claude
+    /// CLI is down (WI-413), because a stale cache is what advertises a closed
+    /// trial as open.
+    ///
+    /// Only ClinicalTrials.gov does today. It is a property rather than "fetch
+    /// and see" because finding out costs a full paged fetch: measured live, a
+    /// facts pass over every source during an outage took four minutes, nearly
+    /// all of it fetching sources that have no facts at all.
+    /// </summary>
+    bool ProducesTrialFacts => false;
 }
