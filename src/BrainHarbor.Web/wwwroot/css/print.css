@@ -109,6 +109,12 @@ body {
   width: auto;
 }
 
+/* The hero's decorative brand repeat is ink nobody asked for — the masthead
+   above already identifies the page. */
+.hub__brand {
+  display: none;
+}
+
 h1, h2, h3, h4 {
   break-after: avoid;
   color: #000;

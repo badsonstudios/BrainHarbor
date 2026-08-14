@@ -12,6 +12,16 @@
    research cards), then the latest-updates feed (WI-409). Door targets are
    sitemap.md URLs. *@
 <section class="hub" aria-labelledby="hub-title">
+    @* Brand in the top-right of the hero (Dan's ask, WI-421). The NO-TAGLINE
+       lockup on purpose: lockup-horizontal.svg carries the tagline "Real brain
+       tumor research, in plain language." as artwork, which is word for word
+       the h1 right beside it.
+       alt="" + aria-hidden: this is a decorative repeat of the header logo, and
+       the brand README asks for exactly that. A screen reader announcing
+       "Brain Harbor" a second time on the same screen learns the listener
+       nothing. *@
+    <img class="hub__brand" src="~/img/brand/lockup-no-tagline.svg"
+         alt="" aria-hidden="true" width="920" height="210" />
     @* The first thing anyone reads has to answer "who wrote this?" honestly.
        "Scientists do the research" is load-bearing: without it, saying AI
        wrote the summaries reads as though AI did the science. Kept to short

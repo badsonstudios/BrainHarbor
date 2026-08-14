@@ -365,16 +365,52 @@ main {
   border-radius: 20px;
   padding: var(--space-6);
   margin-block-end: var(--space-6);
+  /* Two columns: the copy, and the brand in the top-right corner. The brand
+     column is sized in rem so it grows with large-text mode like everything
+     else, and minmax(0,…) lets it shrink rather than force a scrollbar. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+  column-gap: var(--space-6);
 }
 
 .hub h1 {
   margin-block-start: 0;
 }
 
+/* The copy stays in column one; the doors run the full width beneath both. */
+.hub > h1,
+.hub > p {
+  grid-column: 1;
+}
+
+.hub__brand {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+  width: 100%;
+  height: auto;
+}
+
 .hub__doors {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: var(--space-4);
+}
+
+/* Below this the hero is one column and the brand goes away rather than
+   pushing the three doors down — the "talk to someone now" door must not
+   scroll off a phone screen to make room for a logo the header already
+   shows. */
+@media (max-width: 60rem) {
+  .hub {
+    grid-template-columns: 1fr;
+  }
+
+  .hub__brand {
+    display: none;
+  }
 }
 
 /* A door is one whole-card link. */
