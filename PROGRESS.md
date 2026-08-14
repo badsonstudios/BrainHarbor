@@ -90,6 +90,27 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-14** — **WI-421 done — the brand owns the top-right of the home
+  hero** (Dan's ask, with a screenshot; he reviewed the rendered result and
+  approved the size). `.hub` is now a two-column grid: copy left,
+  `lockup-no-tagline.svg` in a 24rem column top-right, three doors spanning
+  both columns beneath. **The no-tagline lockup deliberately** —
+  `lockup-horizontal.svg` carries the tagline "Real brain tumor research, in
+  plain language." *as artwork*, which is word for word the h1 next to it, so
+  the full lockup would print that sentence twice side by side. `alt=""` +
+  `aria-hidden`: a decorative repeat, per the brand README, since the header
+  already announces the name. Sized in rem so it grows with large-text mode;
+  hidden in print (the masthead already identifies the page). **Collapses to
+  one column below 60rem and the logo disappears** — note that media-query
+  `rem` is the browser's 16px, NOT the site's 18px base, so that is 960px —
+  because the "talk to someone now" door must not be pushed down a phone
+  screen for a logo the header shows two inches above. Accepted trade: the h1
+  wraps to two lines above the breakpoint. Verified at 1440/1100/900 px and in
+  large-text mode. 741 tests, axe clean.
+  **Session note:** the tool-approval queue went unavailable mid-item, so this
+  sat written-but-unbuilt for a while; PROGRESS carried the exact resume steps
+  until it cleared.
+
 - **2026-08-14** — **WI-419 done — the site wears the real logo** (Dan's ask;
   he supplied a finished logo kit). Header lockup (`lockup-no-tagline.svg`,
   `alt="Brain Harbor"` — the kit is explicit that the alt is the NAME, never
