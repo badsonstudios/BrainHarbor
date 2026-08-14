@@ -603,7 +603,14 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   user-visible (layout title/og tags, footer, curated pages, RSS/sitemap titles,
   the manifest's `name`/`short_name`, and the logo alt text) with a test pinning
   the choice. The domain does not change either way.
-  Depends on: nothing (but do it before WI-408 soft launch).
+  **Dan's call 2026-08-14: leave the mismatch as it stands for now** — it ships
+  live in both spellings and that is accepted, so this is NOT a soft-launch
+  blocker. Pick it up when the name is worth settling, not before.
+  Note for whoever does it: the alt text is the accessibility half of this, so
+  changing the spelling means changing the artwork or accepting that the alt no
+  longer matches the picture. Cheapest moment to decide is before anyone links
+  to the site in quantity.
+  Depends on: nothing.
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.

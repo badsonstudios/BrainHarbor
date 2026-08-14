@@ -35,6 +35,10 @@
 - **WI-409 and WI-410 shipped** (home leads with the feed; feed sorting) — both live.
 - **Dan's review queue holds 134 items** (106 guardrail-flagged, 20 unclassified
   one-offs). A first pass would show whether Auto mode's bar is right before WI-408.
+- **Brand name mismatch is a known, accepted state** (WI-420): the logo says
+  "Brain Harbor", the title/og:site_name/RSS/domain say "BrainHarbor". Dan's
+  call 2026-08-14 — leave it; not a soft-launch blocker. Don't "fix" it in
+  passing.
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 - Namecheap still has a conflicting `@` URL-Redirect record — harmless now that
   the A record answers, but worth deleting.
