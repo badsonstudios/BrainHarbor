@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-413 — implemented, reviewed, tests green (733), awaiting commit approval** on `feature/wi-413-classifier-unavailable`. Prior state below unchanged. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -85,6 +85,65 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-14** — **WI-419 done — the site wears the real logo** (Dan's ask;
+  he supplied a finished logo kit). Header lockup (`lockup-no-tagline.svg`,
+  `alt="Brain Harbor"` — the kit is explicit that the alt is the NAME, never
+  "logo"), favicon SVG + 32px PNG, apple-touch icon, PWA manifest at the web
+  root, `theme-color`, and **`og:image`, which the site did not have at all** —
+  every shared link was unfurling as a grey box. Absolute URL, because
+  `og:image` silently ignores a relative one. Logo height in **rem** so it
+  rides the large-text scale (checked in both modes); print sized in points so
+  a printed page gets a masthead, not a banner. The kit's teal is byte-identical
+  to the existing `--color-accent` (#0d6a86), so nothing needed recoloring.
+  **Verified the kit's opacity claim rather than trusting it**: iOS paints alpha
+  in an apple-touch-icon BLACK, the files are colour-type RGBA (so the channel
+  proves nothing), and a wrong icon is invisible until it reaches a phone home
+  screen — so the test decodes the top scanline and asserts every pixel is
+  opaque. One existing test broke legitimately:
+  `MarkdownLinksAndImagesInSummaryBlocksAreNeutralized` asserted the WHOLE page
+  had no `<img>` as a proxy for "injected markdown did not render"; the header
+  logo is now a legitimate one, so it is scoped to `<main>` and additionally
+  proves the payload survives as inert TEXT (a reviewer has to see what the
+  model produced) without ever becoming a `src`. **NOTE: the download folder
+  also holds an UPDATED full design bundle** (README/index/research-item/CSS all
+  differ from `docs/design/entry-hub-handoff/`) — deliberately NOT applied; it
+  is a separate, larger piece of work. Filed **WI-420**: the wordmark says
+  "Brain Harbor" and the site title/og:site_name/RSS/domain say "BrainHarbor",
+  so a screen reader and a sighted reader get different names on one page —
+  Dan's call which wins. 741 tests.
+
+- **2026-08-13** — **WI-413 done — the CLI says WHY it failed, so an outage and
+  an odd item stop looking alike** (PR
+  [#21](https://github.com/badsonstudios/BrainHarbor/pull/21), merged to
+  `develop`). `ClaudeCli` now returns `Unavailable` (never answered: spawn
+  failure, timeout, non-zero exit, or stdout that is not its documented
+  envelope) vs `UnusableOutput` (answered; answer unusable). **The envelope is
+  the CLI's own output — a garbled MODEL answer still arrives inside a
+  well-formed one — which is what makes that the right line to draw.**
+  `ClassifyDecision.Unavailable` covers a failed taxonomy fetch too (the site
+  being unreachable is identical for every item), `SummaryResult` carries the
+  same flag, and the runner stops on the FIRST unavailable. **The streak
+  counter and the whole `deferred` list are deleted** — net fewer lines.
+  **Where the signal is genuinely ambiguous, it now asks instead of guessing:**
+  a timeout looks exactly like a dead CLI, and stopping on one would hold the
+  cursor so the same slow item leads the window tomorrow, forever — so an
+  `Unavailable` verdict triggers one trivial health prompt. Alive means the
+  item is merely odd (queue it, advance the cursor); no answer means stop.
+  **Review caught three real defects, two of them introduced by this change:**
+  envelope failures were tagged `UnusableOutput`, which would have let a CLI
+  printing a banner mark a whole window unclassifiable with NO bound (worse
+  than the streak it replaced); the timeout stall above, which violated this
+  item's own acceptance criteria; and the skip path froze trial facts for a
+  day, though facts need no model call. **Live testing caught a fourth:** the
+  facts-only pass fetched every source during an outage — four minutes, almost
+  all of it on sources with no facts — now gated by
+  `ISourceFetcher.ProducesTrialFacts`, eleven seconds. Verified live with a
+  nonexistent `claude`: stopped on item 1, cursor held, nothing uploaded,
+  exit 1. Also fixed WI-417's log encoding (UTF-8 **with** BOM — PowerShell
+  5.1's `Get-Content` assumes ANSI without one, so every em dash read back as
+  mojibake in the reader `run-local.md` hands you). `artifacts/pipeline`
+  republished so tonight's 06:00 run uses this code. 733 tests.
 
 - **2026-08-13** — **WI-417 done — the daily run leaves evidence behind.**
   Everything the pipeline printed already said what was wanted (which item was

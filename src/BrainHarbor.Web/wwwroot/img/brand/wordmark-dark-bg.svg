@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 198" width="640" height="198" role="img" aria-label="Brain Harbor">
+  <text x="0" y="86" font-family="Georgia, &#39;Iowan Old Style&#39;, &#39;Palatino Linotype&#39;, Palatino, &#39;Times New Roman&#39;, &#39;Liberation Serif&#39;, &#39;DejaVu Serif&#39;, serif" font-size="92" fill="#ffffff" letter-spacing="-1" textLength="500" lengthAdjust="spacingAndGlyphs">Brain Harbor</text>
+    <path d="M2 122 C96 108 156 140 258 130 C360 121 452 140 520 128" fill="none" stroke="#2e9ab5" stroke-width="6" stroke-linecap="round" opacity=".6"></path>
+    <path d="M2 118 C88 102 158 132 248 122 C344 112 466 128 534 110 C580 98 614 74 620 48 C626 26 606 12 580 20 C560 26 546 40 538 58 C552 48 568 42 584 46 C602 50 610 62 606 78 C588 96 552 104 518 110 C440 122 344 134 248 132 C158 130 88 128 2 118 Z" fill="#5ec5dd"></path>
+  <text x="2" y="178" font-family="system-ui, -apple-system, &#39;Segoe UI&#39;, Roboto, Helvetica, Arial, sans-serif" font-size="31" fill="#bcd9e4" textLength="516" lengthAdjust="spacingAndGlyphs">Real brain tumor research, in plain language.</text>
+</svg>
