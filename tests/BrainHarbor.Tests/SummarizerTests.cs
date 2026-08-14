@@ -143,6 +143,29 @@ public class SummarizerTests
         Assert.Null(result.Output);
     }
 
+    /// <summary>
+    /// WI-413: a dead CLI is not the same as a summary that came back wrong.
+    /// The runner stops the source on the first, and uploads the item for a
+    /// person on the second — an item uploaded classified-but-unsummarized is
+    /// never summarized again, so a half-processed item must not go up.
+    /// </summary>
+    [Fact]
+    public async Task ADeadCliIsUnavailableWhileAnUnusableSummaryIsNot()
+    {
+        var dead = new ScriptedRunner(new ProcessResult(1, "", "claude: usage limit reached", false));
+        var garbled = Envelope("not json at all");
+
+        var outage = await Build(dead).SummarizeAsync(Item(), CancellationToken.None);
+        var unusable = await Build(new ScriptedRunner(garbled, garbled))
+            .SummarizeAsync(Item(), CancellationToken.None);
+
+        Assert.Null(outage.Output);
+        Assert.True(outage.Unavailable);
+
+        Assert.Null(unusable.Output);
+        Assert.False(unusable.Unavailable);
+    }
+
     [Fact]
     public async Task EmDashesAreStrippedFromEveryBlockBeforeUpload()
     {

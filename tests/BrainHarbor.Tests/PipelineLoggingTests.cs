@@ -112,6 +112,23 @@ public class PipelineLoggingTests : IDisposable
     }
 
     [Fact]
+    public void TheLogReadsCorrectlyInWindowsPowerShellsDefaultEncoding()
+    {
+        // Found by reading a real run's log: PowerShell 5.1's Get-Content
+        // assumes the ANSI codepage unless the file carries a BOM, and it is
+        // the reader run-local.md and register-pipeline-task.ps1 both hand you.
+        // These messages are full of em dashes; without the BOM every one of
+        // them comes back as "â€”".
+        var sink = Sink(Options());
+        sink.Write("[nci_rss] skipped — the Claude CLI stopped answering earlier in this run");
+        sink.Dispose();
+
+        var bytes = File.ReadAllBytes(sink.Path);
+        Assert.Equal<byte>([0xEF, 0xBB, 0xBF], bytes[..3]);
+        Assert.Contains("skipped — the Claude CLI", File.ReadAllText(sink.Path), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void AnExceptionIsWrittenOutNotSwallowed()
     {
         var sink = Sink(Options());

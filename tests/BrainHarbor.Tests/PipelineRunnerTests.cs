@@ -17,6 +17,9 @@ public class PipelineRunnerTests
         string? cursor = null, Exception? throws = null, string? stalledReason = null) : ISourceFetcher
     {
         public string Source { get; } = source;
+
+        /// <summary>Mirrors the real registration: only ctgov has facts.</summary>
+        public bool ProducesTrialFacts => source == "ctgov";
         public int FetchCount { get; private set; }
         public string? SeenCursor { get; private set; }
 
@@ -93,7 +96,13 @@ public class PipelineRunnerTests
     private sealed class StubClassifier : BrainHarbor.Pipeline.Classify.IItemClassifier
     {
         public HashSet<string> ExcludeExternalIds { get; } = new(StringComparer.Ordinal);
+
+        /// <summary>The CLI answered; this item's output was unusable. Goes to a person.</summary>
         public HashSet<string> UnclassifiableExternalIds { get; } = new(StringComparer.Ordinal);
+
+        /// <summary>The CLI never answered. Stops the source (WI-413).</summary>
+        public HashSet<string> UnavailableExternalIds { get; } = new(StringComparer.Ordinal);
+
         public List<string> Classified { get; } = [];
 
         public Task<BrainHarbor.Pipeline.Classify.Classification> ClassifyAsync(
@@ -105,6 +114,12 @@ public class PipelineRunnerTests
             {
                 return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
                     BrainHarbor.Pipeline.Classify.ClassifyDecision.Exclude, [], "excluded", "news_other", "classify-v1"));
+            }
+
+            if (UnavailableExternalIds.Contains(item.ExternalId))
+            {
+                return Task.FromResult(new BrainHarbor.Pipeline.Classify.Classification(
+                    BrainHarbor.Pipeline.Classify.ClassifyDecision.Unavailable, [], null, null, "classify-unavailable"));
             }
 
             if (UnclassifiableExternalIds.Contains(item.ExternalId))
@@ -162,18 +177,45 @@ public class PipelineRunnerTests
                 [.. Kinds.Select(k => new BrainHarbor.Pipeline.Summarize.Guardrails.Flag(k, k.ToString()))]));
     }
 
+    /// <summary>
+    /// The WI-413 health probe. Defaults to "dead", so an Unavailable verdict
+    /// in these tests means a genuine outage unless a test says otherwise.
+    /// </summary>
+    private sealed class StubHealthProbe(bool alive = false)
+        : BrainHarbor.Pipeline.Claude.IClaudeHealthProbe
+    {
+        public int Probes { get; private set; }
+
+        public Task<bool> IsAliveAsync(CancellationToken ct)
+        {
+            Probes++;
+            return Task.FromResult(alive);
+        }
+    }
+
     private static PipelineRunner Runner(ISyncApiClient api, params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, new StubClassifier(), new StubSummarizer(), NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, new StubClassifier(), new StubSummarizer(), new StubHealthProbe(),
+            NullLogger<PipelineRunner>.Instance);
 
     private static PipelineRunner Runner(
         ISyncApiClient api, BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
         params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, classifier, new StubSummarizer(), NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, classifier, new StubSummarizer(), new StubHealthProbe(),
+            NullLogger<PipelineRunner>.Instance);
 
     private static PipelineRunner Runner(
         ISyncApiClient api, BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
         params ISourceFetcher[] fetchers) =>
-        new(fetchers, api, new StubClassifier(), summarizer, NullLogger<PipelineRunner>.Instance);
+        new(fetchers, api, new StubClassifier(), summarizer, new StubHealthProbe(),
+            NullLogger<PipelineRunner>.Instance);
+
+    private static PipelineRunner Runner(
+        ISyncApiClient api,
+        BrainHarbor.Pipeline.Claude.IClaudeHealthProbe health,
+        BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
+        BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
+        params ISourceFetcher[] fetchers) =>
+        new(fetchers, api, classifier, summarizer, health, NullLogger<PipelineRunner>.Instance);
 
     [Fact]
     public async Task UploadsOnlyTheItemsTheServerSaysAreNew()
@@ -191,16 +233,20 @@ public class PipelineRunnerTests
         Assert.Equal(1, result.TotalNew);
     }
 
-    // ---------- WI-401: surviving a dead Claude usage limit ----------
+    // ---------- WI-401 / WI-413: surviving a dead Claude CLI ----------
 
     /// <summary>
     /// The failure that cost a production backfill: once the usage limit dies,
     /// every remaining item fails identically. Uploading them as pending would
     /// make the server "know" them, so no later run would ever classify them —
-    /// the rows had to be deleted by hand. The source must stop instead.
+    /// the rows had to be deleted by hand.
+    ///
+    /// WI-413: ONE unavailable verdict is enough now. Waiting for a streak of
+    /// three meant an outage beginning near the end of a small window was never
+    /// noticed at all, and the items it touched uploaded unclassifiable.
     /// </summary>
     [Fact]
-    public async Task AStreakOfClassificationFailuresStopsTheSourceAndUploadsNothing()
+    public async Task TheFirstUnavailableVerdictStopsTheSourceAndUploadsNothing()
     {
         var api = new StubSyncApi();
         var classifier = new StubClassifier();
@@ -208,7 +254,7 @@ public class PipelineRunnerTests
         for (var i = 1; i <= 8; i++)
         {
             items.Add(Item("pubmed", $"dead-{i}"));
-            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+            classifier.UnavailableExternalIds.Add($"dead-{i}");
         }
 
         var fetcher = new StubFetcher("pubmed", items, cursor: "2026-08-12");
@@ -216,9 +262,7 @@ public class PipelineRunnerTests
 
         Assert.Empty(api.Uploads);
         Assert.Empty(api.CursorAdvances);
-        Assert.Equal(
-            PipelineRunner.MaxConsecutiveClassifyFailures,
-            classifier.Classified.Count); // stopped, did not grind through all 8
+        Assert.Single(classifier.Classified);   // stopped on the first, not the third
         Assert.Single(result.Failures);
 
         // The admin health page is driven by reported failures, not by the
@@ -227,13 +271,40 @@ public class PipelineRunnerTests
     }
 
     /// <summary>
-    /// The classifier is shared infrastructure: when it dies, small sources
-    /// (an RSS feed with two new items) would never reach the streak threshold
-    /// on their own, and would each upload a couple of permanently
-    /// unclassified rows and advance past them.
+    /// The exact hole WI-413 closes: an outage that begins on the LAST item of
+    /// a small window. Under the streak rule nothing reached the threshold, so
+    /// that item uploaded as permanently unclassified — unrecoverable without
+    /// deleting the row by hand.
     /// </summary>
     [Fact]
-    public async Task OnceTheClassifierIsProvenDeadTheRestOfTheRunIsSkipped()
+    public async Task AnOutageStartingOnTheLastItemOfATinyWindowStillStopsTheSource()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnavailableExternalIds.Add("dead-1");
+        var fetcher = new StubFetcher(
+            "nci_rss",
+            [Item("nci_rss", "ok-1"), Item("nci_rss", "dead-1")],
+            cursor: "2026-08-12");
+
+        var result = await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+
+        // The good item still goes up; the dead one stays unknown to the server
+        // so the next run can do it properly, and the cursor does not move.
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["ok-1"], upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Null(upload.Cursor);
+        Assert.Empty(api.CursorAdvances);
+        Assert.Single(result.Failures);
+    }
+
+    /// <summary>
+    /// The CLI is shared infrastructure: when it dies, small sources (an RSS
+    /// feed with two new items) would each burn their own items discovering the
+    /// same outage.
+    /// </summary>
+    [Fact]
+    public async Task OnceTheCliIsProvenDeadTheRestOfTheRunIsSkipped()
     {
         var api = new StubSyncApi();
         var classifier = new StubClassifier();
@@ -241,7 +312,7 @@ public class PipelineRunnerTests
         for (var i = 1; i <= 4; i++)
         {
             dead.Add(Item("pubmed", $"dead-{i}"));
-            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+            classifier.UnavailableExternalIds.Add($"dead-{i}");
         }
 
         var first = new StubFetcher("pubmed", dead, cursor: "2026-08-12");
@@ -249,7 +320,9 @@ public class PipelineRunnerTests
 
         var result = await Runner(api, classifier, first, second).RunAsync(CancellationToken.None);
 
-        Assert.Equal(0, second.FetchCount); // not even fetched
+        // An RSS feed has no facts to refresh, so it is not even fetched —
+        // finding that out would cost a full paged fetch for no gain.
+        Assert.Equal(0, second.FetchCount);
         Assert.Empty(api.Uploads);
         Assert.Empty(api.CursorAdvances);
         Assert.Equal(2, result.Failures.Count);
@@ -257,36 +330,38 @@ public class PipelineRunnerTests
     }
 
     /// <summary>
-    /// Documents the KNOWN RESIDUAL (WI-413), so it is a decision rather than a
-    /// surprise: a window too small to reach the streak threshold still uploads
-    /// its failures as permanently unclassified. Treating an all-failed window
-    /// as an outage instead would stall a source forever on one item that can
-    /// never be classified, which is worse. The latch keeps this to the first
-    /// source that meets an outage.
+    /// The other half of the WI-413 split, and why counting was the wrong
+    /// signal in BOTH directions: a window of genuinely odd items must reach a
+    /// person AND advance the cursor. Treating an all-failed window as an
+    /// outage would stall the source forever on items that can never be
+    /// classified.
     /// </summary>
     [Fact]
-    public async Task ATinyWindowThatWhollyFailsStillUploadsForAPerson()
+    public async Task AWindowOfOddItemsStillReachesAPersonAndDoesNotStallTheCursor()
     {
         var api = new StubSyncApi();
         var classifier = new StubClassifier();
-        classifier.UnclassifiableExternalIds.Add("dead-1");
-        classifier.UnclassifiableExternalIds.Add("dead-2");
+        classifier.UnclassifiableExternalIds.Add("odd-1");
+        classifier.UnclassifiableExternalIds.Add("odd-2");
         var fetcher = new StubFetcher(
             "nci_rss",
-            [Item("nci_rss", "dead-1"), Item("nci_rss", "dead-2")],
+            [Item("nci_rss", "odd-1"), Item("nci_rss", "odd-2")],
             cursor: "2026-08-12");
 
-        await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
+        var result = await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
 
         var upload = Assert.Single(api.Uploads);
         Assert.Equal(2, upload.Items.Count);
         Assert.Equal("2026-08-12", upload.Cursor);
+        Assert.Empty(result.Failures);          // odd items are not a source failure
     }
 
-    /// <summary>An off-topic verdict is a working classifier, so it clears the
-    /// streak and releases anything held back.</summary>
+    /// <summary>
+    /// Odd items no longer wait to find out whether they were part of an
+    /// outage: they upload in place, in order, alongside everything else.
+    /// </summary>
     [Fact]
-    public async Task AnExcludeVerdictProvesTheClassifierIsAliveAndReleasesHeldItems()
+    public async Task OddItemsUploadInPlaceWithoutBeingHeldBack()
     {
         var api = new StubSyncApi();
         var classifier = new StubClassifier();
@@ -301,8 +376,6 @@ public class PipelineRunnerTests
 
         await Runner(api, classifier, fetcher).RunAsync(CancellationToken.None);
 
-        // The two held items are released by the exclude; the streak restarts
-        // after it, so odd-3 never reaches the threshold either.
         var upload = Assert.Single(api.Uploads);
         Assert.Equal(
             ["odd-1", "odd-2", "odd-3", "ok-1"],
@@ -319,7 +392,7 @@ public class PipelineRunnerTests
         for (var i = 1; i <= 5; i++)
         {
             items.Add(Item("pubmed", $"dead-{i}"));
-            classifier.UnclassifiableExternalIds.Add($"dead-{i}");
+            classifier.UnavailableExternalIds.Add($"dead-{i}");
         }
 
         var fetcher = new StubFetcher("pubmed", items, cursor: "2026-08-12");
@@ -352,10 +425,11 @@ public class PipelineRunnerTests
         Assert.Equal("2026-08-12", upload.Cursor); // a healthy run still advances
     }
 
-    /// <summary>A short streak at the very end is still just odd items — they
-    /// must not be silently dropped along with the cursor.</summary>
+    /// <summary>Odd items at the very END of a window must still be uploaded
+    /// and the cursor still advanced — nothing is waiting to see what comes
+    /// after them any more.</summary>
     [Fact]
-    public async Task AShortFailureStreakAtTheEndOfAWindowStillUploads()
+    public async Task OddItemsAtTheEndOfAWindowStillUpload()
     {
         var api = new StubSyncApi();
         var classifier = new StubClassifier();
@@ -371,6 +445,170 @@ public class PipelineRunnerTests
         var upload = Assert.Single(api.Uploads);
         Assert.Equal(["ok-1", "odd-1", "odd-2"], upload.Items.Select(i => i.ExternalId).ToArray());
         Assert.Equal("2026-08-12", upload.Cursor);
+    }
+
+    /// <summary>
+    /// The summarizer half of WI-413. An item uploaded classified-but-
+    /// unsummarized is never summarized again — a known item costs no model
+    /// call on later runs — so it would sit in the review queue with no summary
+    /// permanently. It has to stay unknown to the server instead.
+    ///
+    /// Two items, not one: this also pins that the item which broke mid-way
+    /// through is counted in NEITHER New nor Summarized, while the one finished
+    /// before it survives intact.
+    /// </summary>
+    [Fact]
+    public async Task AnOutageDuringSummarizationDropsThatItemRatherThanHalfUploadingIt()
+    {
+        var api = new StubSyncApi();
+        var summarizer = new SummarizerThatDiesAfter(1);
+
+        var result = await Runner(api, summarizer,
+                new StubFetcher("pubmed",
+                    [Item("pubmed", "done"), Item("pubmed", "half-done")], cursor: "2026-08-12"))
+            .RunAsync(CancellationToken.None);
+
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["done"], upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Null(upload.Cursor);                  // window still outstanding
+        Assert.Empty(api.CursorAdvances);
+        Assert.Single(result.Failures);
+
+        // The half-processed item counts as neither new nor summarized.
+        Assert.Equal(1, result.TotalNew);
+        Assert.Equal(1, result.TotalSummarized);
+    }
+
+    /// <summary>The latch belongs to the CLI, not to the classifier: an outage
+    /// found while SUMMARIZING must skip the remaining sources too.</summary>
+    [Fact]
+    public async Task AnOutageFoundWhileSummarizingAlsoSkipsTheRestOfTheRun()
+    {
+        var api = new StubSyncApi();
+
+        var result = await Runner(api, new SummarizerThatDiesAfter(0),
+                new StubFetcher("pubmed", [Item("pubmed", "a")]),
+                new StubFetcher("nci_rss", [Item("nci_rss", "b")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Equal(2, result.Failures.Count);
+        Assert.Empty(api.Uploads);
+    }
+
+    /// <summary>
+    /// The stall WI-413 must not introduce. A single slow abstract times out,
+    /// which looks exactly like a dead CLI — and stopping on it would hold the
+    /// cursor so the SAME item leads the window tomorrow, forever. Asking the
+    /// CLI settles it: alive means the item is merely odd.
+    /// </summary>
+    [Fact]
+    public async Task AnUnavailableVerdictFromALiveCliIsTreatedAsAnOddItemNotAnOutage()
+    {
+        var api = new StubSyncApi();
+        var health = new StubHealthProbe(alive: true);
+        var classifier = new StubClassifier();
+        classifier.UnavailableExternalIds.Add("slow-1");
+
+        var result = await Runner(api, health, classifier, new StubSummarizer(),
+                new StubFetcher("pubmed",
+                    [Item("pubmed", "slow-1"), Item("pubmed", "ok-1")], cursor: "2026-08-12"))
+            .RunAsync(CancellationToken.None);
+
+        // Both go up, and — the point — the cursor MOVES, so the slow item is
+        // behind us instead of leading the window again tomorrow.
+        var upload = Assert.Single(api.Uploads);
+        Assert.Equal(["slow-1", "ok-1"], upload.Items.Select(i => i.ExternalId).ToArray());
+        Assert.Equal("2026-08-12", upload.Cursor);
+        Assert.Empty(result.Failures);
+        Assert.Equal(1, health.Probes);
+    }
+
+    [Fact]
+    public async Task AnUnavailableSummaryFromALiveCliLeavesTheItemUnsummarizedForAPerson()
+    {
+        var api = new StubSyncApi();
+        var health = new StubHealthProbe(alive: true);
+
+        var result = await Runner(api, health, new StubClassifier(), new SummarizerThatDiesAfter(0),
+                new StubFetcher("pubmed", [Item("pubmed", "hard-1")], cursor: "2026-08-12"))
+            .RunAsync(CancellationToken.None);
+
+        var uploaded = Assert.Single(Assert.Single(api.Uploads).Items);
+        Assert.Equal("hard-1", uploaded.ExternalId);
+        Assert.Null(uploaded.PlainSummary);          // no summary, but not lost
+        Assert.Equal("2026-08-12", Assert.Single(api.Uploads).Cursor);
+        Assert.Empty(result.Failures);
+    }
+
+    /// <summary>
+    /// Trial facts need no model call, so an outage elsewhere in the run must
+    /// not freeze them: a stale cache is what advertises a closed trial as open
+    /// on a page a patient reads.
+    /// </summary>
+    [Fact]
+    public async Task ASkippedSourceStillRefreshesItsTrialFacts()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnavailableExternalIds.Add("dead-1");
+
+        var result = await Runner(api, classifier,
+                new StubFetcher("pubmed", [Item("pubmed", "dead-1")]),
+                new StubFetcher("ctgov", [Trial("NCT00000009", status: "Completed")]))
+            .RunAsync(CancellationToken.None);
+
+        Assert.Equal("NCT00000009", Assert.Single(api.TrialRefreshes).NctId);
+        Assert.Empty(api.Uploads);                   // no feed item, no LLM work
+        Assert.Empty(api.CursorAdvances);
+        Assert.Equal(2, result.Failures.Count);      // still reported as skipped
+    }
+
+    /// <summary>
+    /// The other half of that: a source with no facts is not fetched at all
+    /// while the CLI is down. Measured live, fetching every source during an
+    /// outage cost four minutes, almost all of it on sources with nothing to
+    /// refresh.
+    /// </summary>
+    [Fact]
+    public async Task ASkippedSourceWithNoFactsIsNotFetchedAtAll()
+    {
+        var api = new StubSyncApi();
+        var classifier = new StubClassifier();
+        classifier.UnavailableExternalIds.Add("dead-1");
+        var rss = new StubFetcher("nci_rss", [Item("nci_rss", "later-1")]);
+
+        await Runner(api, classifier,
+                new StubFetcher("pubmed", [Item("pubmed", "dead-1")]), rss)
+            .RunAsync(CancellationToken.None);
+
+        Assert.Equal(0, rss.FetchCount);
+        Assert.Empty(api.TrialRefreshes);
+    }
+
+    /// <summary>A summarizer that works for the first N items, then reports the
+    /// CLI as unavailable.</summary>
+    private sealed class SummarizerThatDiesAfter(int workingItems)
+        : BrainHarbor.Pipeline.Summarize.ISummarizer
+    {
+        private int _calls;
+
+        public Task<BrainHarbor.Pipeline.Summarize.SummaryResult> SummarizeAsync(
+            FetchedItem item, CancellationToken ct)
+        {
+            if (_calls++ < workingItems)
+            {
+                return Task.FromResult(new BrainHarbor.Pipeline.Summarize.SummaryResult(
+                    new BrainHarbor.Pipeline.Summarize.SummarizeOutput
+                    {
+                        PlainTitle = "t", Hook = "h", WhatStudied = "s",
+                        WhatFound = "f", Means = "m", DoesntMean = "d",
+                    },
+                    "summarize-v4", "claude-opus-5", Flagged: false, []));
+            }
+
+            return Task.FromResult(new BrainHarbor.Pipeline.Summarize.SummaryResult(
+                null, "summarize-v4", null, Flagged: false, []) { Unavailable = true });
+        }
     }
 
     // ---------- WI-402: facts and feed items are on separate tracks ----------
@@ -731,10 +969,9 @@ public class PipelineRunnerTests
             WhatFound = "f", Means = "m", DoesntMean = "d",
         });
 
-        var runner = new PipelineRunner(
-            [new StubFetcher("pubmed", [Item("pubmed", "keep"), Item("pubmed", "off-topic")])],
-            api, classifier, summarizer, NullLogger<PipelineRunner>.Instance);
-        var result = await runner.RunAsync(CancellationToken.None);
+        var result = await Runner(api, new StubHealthProbe(), classifier, summarizer,
+                new StubFetcher("pubmed", [Item("pubmed", "keep"), Item("pubmed", "off-topic")]))
+            .RunAsync(CancellationToken.None);
 
         Assert.Equal(1, result.TotalSummarized);
         Assert.Equal(0, result.TotalFlagged);

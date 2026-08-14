@@ -310,6 +310,10 @@ public static class PipelineHost
             .ValidateDataAnnotations();
         builder.Services.AddSingleton<Claude.IProcessRunner, Claude.ClaudeProcessRunner>();
         builder.Services.AddSingleton<Claude.ClaudeCli>();
+        // The same instance behind both roles: the health probe (WI-413) has to
+        // be the CLI the rest of the run is actually using.
+        builder.Services.AddSingleton<Claude.IClaudeHealthProbe>(
+            sp => sp.GetRequiredService<Claude.ClaudeCli>());
         builder.Services.AddSingleton<Claude.PromptLibrary>();
 
         // Classify + summarize steps (WI-303/304).

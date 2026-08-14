@@ -453,7 +453,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/sitemap.md (`/tumors/`), content-pipeline.md §2/§5,
   Content/taxonomy.yml. Depends on: nothing.
 
-- [ ] **WI-413 Tell "the CLI is down" apart from "this item is odd"**
+- [x] **WI-413 Tell "the CLI is down" apart from "this item is odd"** (done 2026-08-13 — the CLI now says which; a health probe settles the ambiguous cases so an odd item can never stall a source)
   Goal: close the last hole in the WI-401 fail-fast work — the pipeline
   currently infers an outage from a STREAK of failures, because a classifier
   failure carries no cause.

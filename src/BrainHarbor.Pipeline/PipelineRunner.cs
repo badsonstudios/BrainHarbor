@@ -64,32 +64,23 @@ public sealed class PipelineRunner(
     ISyncApiClient syncApi,
     BrainHarbor.Pipeline.Classify.IItemClassifier classifier,
     BrainHarbor.Pipeline.Summarize.ISummarizer summarizer,
+    BrainHarbor.Pipeline.Claude.IClaudeHealthProbe claudeHealth,
     ILogger<PipelineRunner> logger)
 {
     /// <summary>
-    /// How many classification failures in a row mean "the CLI is down", not
-    /// "this item is odd". Three lets a single garbled abstract pass through to
-    /// a human without stopping the source, while a dead usage limit is caught
-    /// within about a minute instead of burning a whole window.
-    /// </summary>
-    internal const int MaxConsecutiveClassifyFailures = 3;
-
-    /// <summary>
-    /// Set when a source gives up on the classifier. The classifier is SHARED
+    /// Set when a source finds the Claude CLI unavailable. The CLI is SHARED
     /// infrastructure, not a source: when it is down it is down for everything,
-    /// and small windows (an RSS feed with two new items) would never reach the
-    /// streak threshold on their own — they would upload two permanently
-    /// unclassified rows each and advance their cursors past them. So the first
-    /// source to prove the classifier dead stops the rest of the run.
+    /// so the first source to meet it stops the rest of the run rather than
+    /// letting each remaining source discover the same outage item by item.
     ///
     /// Per-source isolation is unchanged: a dead SOURCE still only fails itself.
     /// </summary>
-    private bool classifierDown;
+    private bool claudeDown;
 
     public async Task<RunResult> RunAsync(CancellationToken cancellationToken)
     {
         var results = new List<SourceRunResult>();
-        classifierDown = false;
+        claudeDown = false;
 
         IReadOnlyDictionary<string, SourceState> state;
         try
@@ -115,15 +106,20 @@ public sealed class PipelineRunner(
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (classifierDown)
+            if (claudeDown)
             {
-                // Nothing to gain by fetching: every item would fail the same
-                // way, and uploading them is what makes them unrecoverable.
+                // No classification or summarization: every item would fail the
+                // same way, and uploading them is what makes them unrecoverable.
+                //
+                // Trial FACTS are a different matter and still refresh — they
+                // need no model call at all, and a stale cache is what
+                // advertises a closed trial as open on a page a patient reads.
+                // Before WI-413 this needed three consecutive failures to
+                // trigger; on one it would freeze the registry for a whole day.
                 const string message =
-                    "skipped — the classifier stopped answering earlier in this run";
+                    "skipped — the Claude CLI stopped answering earlier in this run";
                 logger.LogWarning("[{Source}] {Message}.", fetcher.Source, message);
-                await syncApi.ReportFailureAsync(fetcher.Source, message, cancellationToken);
-                results.Add(new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, message));
+                results.Add(await RefreshFactsOnlyAsync(fetcher, message, cancellationToken));
                 continue;
             }
 
@@ -132,6 +128,48 @@ public sealed class PipelineRunner(
 
         LogSummary(results);
         return new RunResult(results);
+    }
+
+    /// <summary>
+    /// The Claude-free half of a source run, for when the CLI is down: fetch,
+    /// store whatever factual records came back, report the source as failed,
+    /// and touch nothing else. The cursor deliberately does not move — no feed
+    /// item was processed, so the window is still outstanding.
+    ///
+    /// A fetch failure here is swallowed into the same reported failure: the
+    /// source is already being reported as failed, and a second error about a
+    /// source we were skipping anyway would only crowd the log.
+    /// </summary>
+    private async Task<SourceRunResult> RefreshFactsOnlyAsync(
+        ISourceFetcher fetcher, string message, CancellationToken cancellationToken)
+    {
+        var rejected = 0;
+
+        if (!fetcher.ProducesTrialFacts)
+        {
+            // Nothing here needs refreshing, and finding that out would cost a
+            // full paged fetch for no gain.
+            await syncApi.ReportFailureAsync(fetcher.Source, message, cancellationToken);
+            return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, 0, message);
+        }
+
+        try
+        {
+            var fetched = await fetcher.FetchAsync(null, cancellationToken);
+            rejected = await RefreshFactsAsync(fetcher.Source, fetched.Items, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception,
+                "[{Source}] could not refresh facts while skipping the source.", fetcher.Source);
+        }
+
+        await syncApi.ReportFailureAsync(fetcher.Source, message, cancellationToken);
+        return new SourceRunResult(fetcher.Source, 0, 0, 0, 0, rejected, message);
     }
 
     private async Task<SourceRunResult> RunSourceAsync(
@@ -229,40 +267,40 @@ public sealed class PipelineRunner(
             // item the same way. Uploading those as pending would bury the
             // window in the review queue, and — because the server then knows
             // them — no later run would ever classify them: the work would have
-            // to be undone by hand in the database. So a STREAK of failures
-            // stops the source instead. What was processed still uploads, the
-            // cursor stays put, and the next run refetches the window and
-            // resumes where this one gave out (known items cost nothing).
-            var consecutiveFailures = 0;
-            var deferred = new List<SyncItem>();
+            // to be undone by hand in the database (532 rows, twice, during the
+            // WI-401 backfill). So the FIRST unavailable verdict stops the
+            // source (WI-413). What was processed still uploads, the cursor
+            // stays put, and the next run refetches the window and resumes
+            // where this one gave out (known items cost nothing).
             var stoppedEarly = false;
 
             foreach (var item in newItems)
             {
                 var classification = await classifier.ClassifyAsync(item, cancellationToken);
 
-                if (classification.Decision == Classify.ClassifyDecision.Unclassified)
+                if (classification.Decision == Classify.ClassifyDecision.Unavailable)
                 {
-                    consecutiveFailures++;
-                    if (consecutiveFailures >= MaxConsecutiveClassifyFailures)
+                    // Before writing off the window, ask the CLI whether it is
+                    // actually down. A timeout is the case that needs this: one
+                    // slow abstract looks exactly like a dead CLI, and stopping
+                    // on it would hold the cursor so the SAME item leads the
+                    // window tomorrow and stalls the source forever.
+                    if (await claudeHealth.IsAliveAsync(cancellationToken))
                     {
-                        stoppedEarly = true;
-                        break;
+                        logger.LogWarning(
+                            "[{Source}] {Id} could not be classified, but the CLI answers a trivial " +
+                            "prompt — treating it as an odd item and sending it to the queue.",
+                            fetcher.Source, item.ExternalId);
+                        toUpload.Add(item.ToSyncItem());
+                        continue;
                     }
 
-                    // Held back rather than uploaded: if the CLI answers again
-                    // this was a one-off and the item goes up for a person; if
-                    // it doesn't, this item is part of the outage and must stay
-                    // unknown to the server so the next run can retry it.
-                    deferred.Add(item.ToSyncItem());
-                    continue;
+                    // Genuinely down. Not this item's fault and not recoverable
+                    // by trying the next one, so leave it unknown to the server
+                    // and let the next run fetch and classify it properly.
+                    stoppedEarly = true;
+                    break;
                 }
-
-                // A real verdict means the CLI is alive, so anything held back
-                // was genuinely about those items — upload them for a human.
-                consecutiveFailures = 0;
-                toUpload.AddRange(deferred);
-                deferred.Clear();
 
                 if (classification.Decision == Classify.ClassifyDecision.Exclude)
                 {
@@ -291,6 +329,22 @@ public sealed class PipelineRunner(
                     // automated checks doesn't block upload — the item goes up
                     // (flagged if checks failed) and the review queue handles it.
                     var summary = await summarizer.SummarizeAsync(item, cancellationToken);
+
+                    // Same outage, one step later in the same item (WI-413) —
+                    // and the same question, so the same answer: ask the CLI
+                    // before writing off the window. If it is alive, this item
+                    // is merely hard to summarize and goes up unsummarized for
+                    // a person, exactly as a failed summary always has.
+                    if (summary.Unavailable && !await claudeHealth.IsAliveAsync(cancellationToken))
+                    {
+                        // Uploading it now would be worse than dropping it: a
+                        // known item is never re-summarized, so it would sit in
+                        // the queue without a summary permanently. Leave it
+                        // unknown and let the next run do the whole item.
+                        stoppedEarly = true;
+                        break;
+                    }
+
                     if (summary.Output is { } s)
                     {
                         summarized++;
@@ -338,16 +392,15 @@ public sealed class PipelineRunner(
 
             if (stoppedEarly)
             {
-                // Everything still held back belongs to the outage — dropping
-                // it is what lets the next run fetch and classify it properly.
-                classifierDown = true;
+                // The CLI is shared, so the rest of the run is over too.
+                claudeDown = true;
 
                 var message =
-                    "the classifier stopped answering (a dead Claude usage limit and a failed " +
-                    "taxonomy call both look like this); cursor held so the next run resumes " +
-                    "this window";
+                    "the Claude CLI stopped answering (a dead usage limit, a CLI that will not " +
+                    "start, and a failed taxonomy call all look like this); cursor held so the " +
+                    "next run resumes this window";
                 logger.LogWarning("[{Source}] {Message}. {Done} item(s) processed before that.",
-                    fetcher.Source, message, toUpload.Count);
+                    fetcher.Source, message, toUpload.Count + excluded);
 
                 // Cursor deliberately null: the unprocessed remainder of this
                 // window must be fetched again.
@@ -375,19 +428,6 @@ public sealed class PipelineRunner(
                     FlagKinds = flagKinds,
                 };
             }
-
-            // A short streak that never reached the threshold: those items are
-            // genuinely odd, not an outage, so a person sorts them.
-            //
-            // Known residual (WI-413): if an outage begins inside the last one
-            // or two items of a SMALL window, the streak never reaches the
-            // threshold and those items upload as permanently unclassified.
-            // Bounded and rare — the latch above means only the first source to
-            // meet the outage can do it — and the alternative (treating an
-            // all-failed window as an outage) would stall a source forever on a
-            // single item that can never be classified. The real fix is for the
-            // classifier to say whether the CLI answered at all.
-            toUpload.AddRange(deferred);
 
             if (toUpload.Count == 0)
             {
@@ -453,12 +493,6 @@ public sealed class PipelineRunner(
         }
     }
 
-    /// <summary>
-    /// Uploads the factual half of whatever this source produced (WI-402 —
-    /// today only ClinicalTrials.gov). Runs before dedupe, classification and
-    /// summarization, so a trial's status refreshes even when its feed item is
-    /// old news, off-topic, or frozen by a reviewer.
-    /// </summary>
     /// <summary>
     /// Uploads the factual half of whatever this source produced. Returns how
     /// many the server rejected, so a systematic validation failure (a registry
