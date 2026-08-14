@@ -76,6 +76,44 @@ public class GuardrailsTests
     }
 
     /// <summary>
+    /// Contractions, which never worked at all. Negation was a word list
+    /// matched against `[A-Za-z]+` tokens, and those strip the apostrophe — so
+    /// "doesn't" became "doesn" + "t" and the list's "doesn't"/"isn't"/"n't"
+    /// entries could not match anything. Every contraction read as un-negated.
+    ///
+    /// This was the bigger half of the queue: the block these sentences live in
+    /// is CALLED "what this doesn't mean", so the contraction is about the
+    /// commonest phrasing in the corpus. It also affected "cure", which means
+    /// it had been mis-flagging since WI-401 rather than since today.
+    /// </summary>
+    [Theory]
+    [InlineData("This doesn't mean it is a breakthrough.")]
+    [InlineData("It isn't a cure.")]
+    [InlineData("It isn't a miracle.")]
+    [InlineData("This doesn't make it a game-changer.")]
+    [InlineData("It won't be a cure for everyone.")]
+    [InlineData("It can't be called a breakthrough yet.")]
+    [InlineData("It doesn’t mean this is a cure.")]          // curly apostrophe
+    public void AContractedDenialCountsAsADenial(string text)
+    {
+        Assert.Empty(Guardrails.BannedWordsIn(text));
+    }
+
+    /// <summary>
+    /// The trap in fixing the above: matching a bare "n't"-without-apostrophe
+    /// would make "importa-n-t" look like a negation and quietly excuse the
+    /// hype word right after it. The apostrophe is required.
+    /// </summary>
+    [Theory]
+    [InlineData("This is an important breakthrough.", "breakthrough")]
+    [InlineData("An excellent breakthrough for patients.", "breakthrough")]
+    [InlineData("Doctors call this a breakthrough.", "breakthrough")]
+    public void AWordThatMerelyContainsNTDoesNotExcuseHype(string text, string expected)
+    {
+        Assert.Contains(expected, Guardrails.BannedWordsIn(text));
+    }
+
+    /// <summary>
     /// The other half: negation is scoped to its own sentence, so denying hype
     /// once does not license claiming it in the next breath.
     /// </summary>
