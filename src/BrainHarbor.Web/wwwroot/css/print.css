@@ -101,6 +101,14 @@ body {
   text-decoration: none;
 }
 
+/* Fixed points, not rem: a patient printing this for an appointment should get
+   a masthead, not a banner. Browsers drop background images when "print
+   backgrounds" is off, but an <img> still prints, so the logo survives. */
+.site-name img {
+  height: 28pt;
+  width: auto;
+}
+
 h1, h2, h3, h4 {
   break-after: avoid;
   color: #000;

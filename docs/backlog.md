@@ -577,6 +577,34 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: Summarize\Guardrails.cs (FlagKind), PipelineRunner.RunResult.FlagKinds,
   Publishing\SyncContracts.cs, data-model.md. Depends on: WI-417.
 
+- [x] **WI-419 Put the real logo on the site** (done 2026-08-13 — Dan supplied a
+  finished logo kit; header lockup, favicons, app icons, PWA manifest, og:image)
+  Goal: the site stops wearing a text placeholder (Dan's ask, 2026-08-13).
+  Delivered: `brand/svg` + `brand/png` copied to `wwwroot/img/brand/`,
+  `site.webmanifest` at the web root, header shows `lockup-no-tagline.svg`
+  (alt "Brain Harbor", never "logo"), favicon SVG + 32px PNG + apple-touch icon
+  + manifest + theme-color wired in `_Layout`, and `og:image`/`twitter:image`
+  set to the lockup PNG with an ABSOLUTE url (a shared link previously
+  unfurled with no image at all). Logo height in rem so it rides the
+  large-text scale; print sized in points.
+  Kit spec kept at `docs/design/entry-hub-handoff/brand/README.md`.
+  Refs: that README (clear space, minimum sizes, don't-dos).
+  **Open:** the wordmark spells "Brain Harbor" while the site title, og:site_name
+  and domain are "BrainHarbor" — Dan's call which one is the brand (see WI-420).
+
+- [ ] **WI-420 Settle the brand name: "Brain Harbor" or "BrainHarbor"**
+  Goal: one spelling, everywhere (Dan's call — surfaced by WI-419).
+  Problem: the new logo's wordmark reads **Brain Harbor** (two words) and its
+  README specifies `alt="Brain Harbor"`, while the site title, `og:site_name`,
+  the footer copy, the RSS title and the domain all say **BrainHarbor**. A
+  screen-reader user hears one and a sighted user reads the other on the same
+  page. Neither is wrong; they just have to match.
+  Acceptance: Dan picks; then the losing spelling is replaced everywhere it is
+  user-visible (layout title/og tags, footer, curated pages, RSS/sitemap titles,
+  the manifest's `name`/`short_name`, and the logo alt text) with a test pinning
+  the choice. The domain does not change either way.
+  Depends on: nothing (but do it before WI-408 soft launch).
+
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
   Acceptance: shared in 2–3 communities (rules read first) with the honest

@@ -681,7 +681,21 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         var html = await _factory.CreateClient().GetStringAsync("/research/study-f-xss");
 
         Assert.DoesNotContain("href=\"javascript:", html);
-        Assert.DoesNotContain("<img", html);
+
+        // Scoped to <main>, not the whole document: the shell legitimately
+        // carries the brand lockup in its header. What must never happen is an
+        // <img> or a live link appearing in the summary CONTENT, which is where
+        // the injected markdown would land.
+        var main = html[html.IndexOf("<main", StringComparison.Ordinal)..
+                        html.IndexOf("</main>", StringComparison.Ordinal)];
+        Assert.DoesNotContain("<img", main);
+
+        // The markdown must still be VISIBLE as inert text, not silently
+        // dropped — a reviewer needs to see what the model actually produced.
+        // So the payload's URL does appear on the page; what matters is that it
+        // is text between the tags, never the src of an element.
+        Assert.Contains("evil/pixel.png", main, StringComparison.Ordinal);
+        Assert.DoesNotContain("src=\"http://evil", main, StringComparison.Ordinal);
     }
 
     [Fact]

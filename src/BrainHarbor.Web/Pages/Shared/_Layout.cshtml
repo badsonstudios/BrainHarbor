@@ -32,6 +32,23 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="@pageTitle" />
     <meta name="twitter:description" content="@metaDescription" />
+    @* A shared link with no image unfurls as a grey box. The lockup PNG, not
+       the SVG: the renderer belongs to the social network, not to us. Absolute
+       URL is required — og:image does not accept a relative path. *@
+    <meta property="og:image" content="@($"{request.Scheme}://{request.Host}/img/brand/lockup-1600.png")" />
+    <meta property="og:image:alt" content="Brain Harbor" />
+    <meta name="twitter:image" content="@($"{request.Scheme}://{request.Host}/img/brand/lockup-1600.png")" />
+
+    @* Brand icons (docs/design/entry-hub-handoff/brand/README.md). The SVG is
+       served first for browsers that take it, the 32px PNG covers the rest, and
+       favicon.ico stays for the ones that only ever ask for /favicon.ico. The
+       apple-touch icon is deliberately opaque and square — iOS paints alpha
+       BLACK, so a rounded transparent icon shows black corners. *@
+    <link rel="icon" href="/img/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/img/brand/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/img/brand/apple-touch-icon-180.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0d3b4a" />
 
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="alternate" type="application/rss+xml" title="BrainHarbor research" href="/feed.xml" />
@@ -53,7 +70,14 @@
     </aside>
     <header class="site-header">
         <div class="container">
-            <a class="site-name" asp-page="/Index">BrainHarbor</a>
+            @* alt is the NAME, never "logo" (brand README): a screen reader
+               should hear what a sighted reader sees. width/height are the
+               artwork's own ratio so the header cannot reflow while the SVG
+               loads; CSS sizes it in rem so it grows with large-text mode. *@
+            <a class="site-name" asp-page="/Index">
+                <img src="~/img/brand/lockup-no-tagline.svg" alt="Brain Harbor"
+                     width="920" height="210" />
+            </a>
             @* v1 nav per docs/sitemap.md. Targets land in WI-103 (/get-help-now),
                M2 (/research) and M4 (/trials). /digest is the last dead link. *@
             <nav class="site-nav" aria-label="Main">
