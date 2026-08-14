@@ -557,7 +557,9 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: scripts/register-pipeline-task.ps1, architecture.md §6,
   Program.cs logging setup. Depends on: nothing.
 
-- [ ] **WI-418 Store WHY a summary was flagged, not just that it was**
+- [x] **WI-418 Show WHY a summary was flagged, not just that it was** (done
+  2026-08-14 — the queue names the check; solved by re-checking rather than by
+  a migration, so all ~137 existing items are explained immediately)
   Goal: the review queue and the health page can say which check held an item
   back (Dan's ask, 2026-08-13 — split out of WI-417).
   Problem: `aggregated_items.summary_flagged` is a boolean with no reason, so
@@ -574,8 +576,35 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   for the rows already flagged (backfill by re-running the checks over the
   STORED summary, or leave them blank and say so honestly in the UI —
   re-summarizing is not on the table, it would rewrite published wording).
-  Refs: Summarize\Guardrails.cs (FlagKind), PipelineRunner.RunResult.FlagKinds,
-  Publishing\SyncContracts.cs, data-model.md. Depends on: WI-417.
+  **How it was actually done, and what was deliberately NOT done:** the checks
+  are pure text analysis and every summary is already stored, so the reason is
+  *recoverable* — no migration, no sync-contract change, and the whole existing
+  queue is explained the moment this deploys rather than only new items.
+  `Guardrails` moved to a shared `BrainHarbor.Safety` project that both apps
+  reference (a copy in the site would have been a second implementation of the
+  same rule — the WI-415 defect). The queue's re-check joins `trials_cache` so
+  a trial's phase is not reported as an invented number.
+  Two limits, both stated in the queue rather than hidden: it reflects TODAY's
+  rules (the reading ceiling moved 8.5 → 7.0 on 2026-08-13), and a
+  reader-reported item has no automated reason at all.
+  Refs: src/BrainHarbor.Safety, Admin\ReviewRepository.ReviewItem.FlagReasons,
+  Pages\Shared\_ReviewRow.cshtml. Depends on: WI-417.
+
+- [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**
+  Goal: an audit trail of what the checks said WHEN they said it (the other
+  half of WI-418, deliberately deferred).
+  Problem: the queue now re-checks a stored summary and names the check, which
+  is what a reviewer needs. But it answers "what fails today", not "what failed
+  then" — the reading ceiling moved 8.5 → 7.0 on 2026-08-13, and prompt and
+  check changes will keep moving it. For a site whose safety story is auditable
+  automation, "why did this item not publish on the night it arrived" should be
+  answerable from the record, not reconstructed.
+  Acceptance: the pipeline sends the reasons it actually computed (it already
+  has them — `SummaryResult.FlagReasons`) on the sync contract; a column or
+  small table stores them; the queue prefers the stored reason and falls back
+  to the re-check for older rows, labelled as such; the admin health page can
+  total flags by cause without reading a log file.
+  Refs: WI-418, Publishing\SyncContracts.cs, data-model.md. Depends on: WI-418.
 
 - [x] **WI-419 Put the real logo on the site** (done 2026-08-13 — Dan supplied a
   finished logo kit; header lockup, favicons, app icons, PWA manifest, og:image)

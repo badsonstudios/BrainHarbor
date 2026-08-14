@@ -168,13 +168,13 @@ public class PipelineRunnerTests
         public bool Flagged { get; init; }
 
         /// <summary>Which checks tripped, for the WI-417 run tally.</summary>
-        public IReadOnlyList<BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind> Kinds { get; init; } = [];
+        public IReadOnlyList<BrainHarbor.Safety.Guardrails.FlagKind> Kinds { get; init; } = [];
 
         public Task<BrainHarbor.Pipeline.Summarize.SummaryResult> SummarizeAsync(
             FetchedItem item, CancellationToken ct) =>
             Task.FromResult(new BrainHarbor.Pipeline.Summarize.SummaryResult(
                 output, "summarize-v1", output is null ? null : "claude-opus-5", Flagged,
-                [.. Kinds.Select(k => new BrainHarbor.Pipeline.Summarize.Guardrails.Flag(k, k.ToString()))]));
+                [.. Kinds.Select(k => new BrainHarbor.Safety.Guardrails.Flag(k, k.ToString()))]));
     }
 
     /// <summary>
@@ -903,8 +903,8 @@ public class PipelineRunnerTests
             Flagged = true,
             Kinds =
             [
-                BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel,
-                BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.InventedNumbers,
+                BrainHarbor.Safety.Guardrails.FlagKind.ReadingLevel,
+                BrainHarbor.Safety.Guardrails.FlagKind.InventedNumbers,
             ],
         };
 
@@ -916,10 +916,10 @@ public class PipelineRunnerTests
         Assert.Equal(2, result.TotalFlagged);
         // One item can trip several checks, so the kinds sum higher than the
         // item count — that is the point of counting them separately.
-        Assert.Equal(2, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel]);
-        Assert.Equal(2, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.InventedNumbers]);
+        Assert.Equal(2, result.FlagKinds[BrainHarbor.Safety.Guardrails.FlagKind.ReadingLevel]);
+        Assert.Equal(2, result.FlagKinds[BrainHarbor.Safety.Guardrails.FlagKind.InventedNumbers]);
         Assert.False(result.FlagKinds.ContainsKey(
-            BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.BannedHype));
+            BrainHarbor.Safety.Guardrails.FlagKind.BannedHype));
     }
 
     /// <summary>
@@ -938,7 +938,7 @@ public class PipelineRunnerTests
         })
         {
             Flagged = true,
-            Kinds = [BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel],
+            Kinds = [BrainHarbor.Safety.Guardrails.FlagKind.ReadingLevel],
         };
 
         var result = await Runner(api, summarizer, new StubFetcher("pubmed", [Item("pubmed", "a")]))
@@ -947,7 +947,7 @@ public class PipelineRunnerTests
         Assert.Single(result.Failures);
         Assert.Equal(1, result.TotalSummarized);
         Assert.Equal(1, result.TotalFlagged);
-        Assert.Equal(1, result.FlagKinds[BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.ReadingLevel]);
+        Assert.Equal(1, result.FlagKinds[BrainHarbor.Safety.Guardrails.FlagKind.ReadingLevel]);
     }
 
     private sealed class ThrowingUploadSyncApi : StubSyncApi

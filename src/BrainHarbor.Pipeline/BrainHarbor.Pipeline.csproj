@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The safety checks are shared with the Web app, which re-runs them over
+         a stored summary to explain a flag to the reviewer (WI-418). -->
+    <ProjectReference Include="..\BrainHarbor.Safety\BrainHarbor.Safety.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />

@@ -102,7 +102,7 @@ public class SummarizerTests
         Assert.Contains(result.FlagReasons, r => r.Message.Contains("88"));
         // WI-417: the run tally counts by kind, so the kind has to survive the
         // trip out of the summarizer.
-        Assert.Contains(BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.InventedNumbers,
+        Assert.Contains(BrainHarbor.Safety.Guardrails.FlagKind.InventedNumbers,
             result.FlagReasons.Select(r => r.Kind));
     }
 
@@ -115,7 +115,7 @@ public class SummarizerTests
 
         Assert.True(result.Flagged);
         Assert.Contains(result.FlagReasons, r => r.Message.Contains("breakthrough"));
-        Assert.Contains(BrainHarbor.Pipeline.Summarize.Guardrails.FlagKind.BannedHype,
+        Assert.Contains(BrainHarbor.Safety.Guardrails.FlagKind.BannedHype,
             result.FlagReasons.Select(r => r.Kind));
     }
 

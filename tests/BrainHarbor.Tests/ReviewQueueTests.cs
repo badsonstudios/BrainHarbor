@@ -71,6 +71,97 @@ public sealed class ReviewQueueTests : IAsyncLifetime
             """,
             new { TestSource, sourceKind, externalId, title, plainTitle, flagged, researchStage });
 
+    // ---------- WI-418: the queue explains its own flags ----------
+
+    /// <summary>
+    /// End to end through the real query: a flagged item comes back from the
+    /// repository already able to say WHICH check tripped. Unit tests cover the
+    /// checking; this covers the plumbing that feeds it — including the trials
+    /// join added for it, which a typo would break only at runtime.
+    /// </summary>
+    [Fact]
+    public async Task AFlaggedItemComesBackKnowingWhyItWasFlagged()
+    {
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, raw_summary, status,
+                 relevance, research_stage, summary_flagged, plain_title, plain_summary,
+                 plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean,
+                 readiness_reason)
+            VALUES
+                (@TestSource, 'research', 'rq-flagged', 'A trial of a pill',
+                 'https://example.org',
+                 'In a trial of 331 people, survival was 27 months.',
+                 'pending', 'patient_relevant', 'human_trial', true,
+                 'A pill slowed growth', 'A daily pill helped people.',
+                 'Researchers gave a pill to 331 people.',
+                 'The pill worked for 88% of people.',
+                 'It may add time.', 'It is not a cure.',
+                 'Being tested in people.')
+            """,
+            new { TestSource });
+
+        var pending = await _reviews.GetPendingAsync(50, 0, CancellationToken.None);
+        var item = Assert.Single(pending, i => i.ExternalId == "rq-flagged");
+
+        var reason = Assert.Single(item.FlagReasons);
+        Assert.Equal(BrainHarbor.Safety.Guardrails.FlagKind.InventedNumbers, reason.Kind);
+        Assert.Contains("88", reason.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The trials join specifically: a trial's phase lives in trials_cache, not
+    /// in the abstract, and the summarize-trial prompt scores readiness BY
+    /// phase — so without the join every trial summary reports its own phase as
+    /// an invented number and the reviewer chases a ghost.
+    /// </summary>
+    [Fact]
+    public async Task ATrialsPhaseComesBackFromTheCacheSoItIsNotCalledInvented()
+    {
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO trials_cache (nct_id, title, phase, overall_status)
+            VALUES ('NCT09999001', 'A trial', 'Phase 2', 'Recruiting')
+            ON CONFLICT (nct_id) DO UPDATE SET phase = excluded.phase
+            """);
+
+        await _connection.ExecuteAsync(
+            """
+            INSERT INTO aggregated_items
+                (source, source_kind, external_id, title, url, raw_summary, status,
+                 relevance, research_stage, summary_flagged, plain_title, plain_summary,
+                 plain_what_studied, plain_what_found, plain_means, plain_doesnt_mean,
+                 readiness_reason)
+            VALUES
+                (@TestSource, 'trial_update', 'NCT09999001', 'A trial of a drug',
+                 'https://clinicaltrials.gov/study/NCT09999001',
+                 'This study is testing a drug in people with glioma.',
+                 'pending', 'patient_relevant', 'human_trial', true,
+                 'A trial is testing a drug', 'Doctors are testing a drug.',
+                 'This is a Phase 2 trial.', 'It has not reported results yet.',
+                 'People may be able to join.', 'It does not mean the drug works.',
+                 'Still being tested in people.')
+            """,
+            new { TestSource });
+
+        try
+        {
+            var pending = await _reviews.GetPendingAsync(50, 0, CancellationToken.None);
+            var item = Assert.Single(pending, i => i.ExternalId == "NCT09999001");
+
+            Assert.Equal("Phase 2", item.TrialPhase);
+            Assert.DoesNotContain(
+                BrainHarbor.Safety.Guardrails.FlagKind.InventedNumbers,
+                item.FlagReasons.Select(r => r.Kind));
+        }
+        finally
+        {
+            await _connection.ExecuteAsync(
+                "DELETE FROM trials_cache WHERE nct_id = 'NCT09999001'");
+        }
+    }
+
     // ---------- the gate ----------
 
     [Fact]

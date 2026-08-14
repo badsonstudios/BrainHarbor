@@ -1,3 +1,4 @@
+using BrainHarbor.Safety;
 using BrainHarbor.Web.Models;
 using BrainHarbor.Web.Services;
 using Dapper;
@@ -36,6 +37,17 @@ public sealed class ReviewItem
     public string Status { get; set; } = "";
 
     /// <summary>
+    /// Trial phase and status, for trial items only (WI-418). Not shown to the
+    /// reviewer — they are here so the re-check below sees the same source text
+    /// the pipeline saw. The summarize-trial prompt scores readiness BY phase,
+    /// so "Phase 2" legitimately appears in the summary; without these two
+    /// fields the numeral check would report it as an invented figure and send
+    /// the reviewer hunting for a problem that isn't there.
+    /// </summary>
+    public string? TrialPhase { get; set; }
+    public string? TrialStatus { get; set; }
+
+    /// <summary>
     /// The badge a reader would see. Derived from the same mapper the public
     /// feed uses, so the reviewer judges what will actually be published.
     /// </summary>
@@ -46,6 +58,32 @@ public sealed class ReviewItem
 
     /// <summary>True once the summarizer has produced the plain-language body.</summary>
     public bool HasSummary => !string.IsNullOrWhiteSpace(PlainSummary);
+
+    private IReadOnlyList<Guardrails.Flag>? _flagReasons;
+
+    /// <summary>
+    /// WHY this item is flagged, re-checked from the stored summary (WI-418).
+    ///
+    /// The database records a `summary_flagged` boolean and no reason — the
+    /// pipeline knew which check tripped and never sent it — so "flagged" meant
+    /// "read this one closely" and nothing more, across a queue of 137 items.
+    /// The checks are pure text analysis and the summary is stored, so the
+    /// answer is recoverable: run them again here, through the SAME library the
+    /// pipeline uses (BrainHarbor.Safety), never a copy of the rules.
+    ///
+    /// Two honest limits, both surfaced in the queue rather than hidden:
+    /// this reflects TODAY's rules, not the rules in force when the item was
+    /// flagged (the reading-level ceiling moved from 8.5 to 7.0 on 2026-08-13),
+    /// and an item a READER reported carries no automated reason at all.
+    /// </summary>
+    public IReadOnlyList<Guardrails.Flag> FlagReasons =>
+        _flagReasons ??= HasSummary
+            ? Guardrails.Check(
+                new SummaryText(
+                    PlainTitle, PlainSummary, PlainWhatStudied, PlainWhatFound,
+                    PlainMeans, PlainDoesntMean, ReadinessReason).AllProse,
+                SummaryText.SourceFor(Title, RawSummary, TrialPhase, TrialStatus)).Reasons
+            : [];
 }
 
 /// <summary>
@@ -76,29 +114,41 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
     // parameters by name, and snake_case columns won't bind to a positional
     // record without this.
     private const string SelectColumns = """
-        id AS "Id",
-        slug AS "Slug",
-        source AS "Source",
-        source_kind AS "SourceKind",
-        external_id AS "ExternalId",
-        title AS "Title",
-        raw_summary AS "RawSummary",
-        url AS "Url",
-        published_at AS "PublishedAt",
-        fetched_at AS "FetchedAt",
-        tumor_tags AS "TumorTags",
-        research_stage AS "ResearchStage",
-        relevance AS "Relevance",
-        plain_title AS "PlainTitle",
-        plain_summary AS "PlainSummary",
-        plain_what_studied AS "PlainWhatStudied",
-        plain_what_found AS "PlainWhatFound",
-        plain_means AS "PlainMeans",
-        plain_doesnt_mean AS "PlainDoesntMean",
-        readiness_score AS "ReadinessScore",
-        readiness_reason AS "ReadinessReason",
-        summary_flagged AS "SummaryFlagged",
-        status AS "Status"
+        i.id AS "Id",
+        i.slug AS "Slug",
+        i.source AS "Source",
+        i.source_kind AS "SourceKind",
+        i.external_id AS "ExternalId",
+        i.title AS "Title",
+        i.raw_summary AS "RawSummary",
+        i.url AS "Url",
+        i.published_at AS "PublishedAt",
+        i.fetched_at AS "FetchedAt",
+        i.tumor_tags AS "TumorTags",
+        i.research_stage AS "ResearchStage",
+        i.relevance AS "Relevance",
+        i.plain_title AS "PlainTitle",
+        i.plain_summary AS "PlainSummary",
+        i.plain_what_studied AS "PlainWhatStudied",
+        i.plain_what_found AS "PlainWhatFound",
+        i.plain_means AS "PlainMeans",
+        i.plain_doesnt_mean AS "PlainDoesntMean",
+        i.readiness_score AS "ReadinessScore",
+        i.readiness_reason AS "ReadinessReason",
+        i.summary_flagged AS "SummaryFlagged",
+        i.status AS "Status",
+        t.phase AS "TrialPhase",
+        t.overall_status AS "TrialStatus"
+        """;
+
+    /// <summary>
+    /// The facts a trial summary was written from, so the queue's re-check
+    /// (WI-418) sees the same source text the pipeline did. LEFT JOIN: only
+    /// trial items match, everything else gets nulls and is unaffected.
+    /// </summary>
+    private const string FromClause = """
+        FROM aggregated_items i
+        LEFT JOIN trials_cache t ON t.nct_id = i.external_id AND i.source_kind = 'trial_update'
         """;
 
     /// <summary>
@@ -112,9 +162,9 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         var rows = await connection.QueryAsync<ReviewItem>(new CommandDefinition(
             $"""
             SELECT {SelectColumns}
-            FROM aggregated_items
-            WHERE status = 'pending'
-            ORDER BY summary_flagged DESC, fetched_at DESC, id DESC
+            {FromClause}
+            WHERE i.status = 'pending'
+            ORDER BY i.summary_flagged DESC, i.fetched_at DESC, i.id DESC
             LIMIT @limit OFFSET @offset
             """,
             new { limit, offset },
@@ -143,9 +193,9 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
         var rows = await connection.QueryAsync<ReviewItem>(new CommandDefinition(
             $"""
             SELECT {SelectColumns}
-            FROM aggregated_items
-            WHERE status = 'published' AND summary_flagged = true
-            ORDER BY fetched_at DESC, id DESC
+            {FromClause}
+            WHERE i.status = 'published' AND i.summary_flagged = true
+            ORDER BY i.fetched_at DESC, i.id DESC
             LIMIT @limit
             """,
             new { limit },
@@ -185,7 +235,7 @@ public sealed class ReviewRepository(IDbConnectionFactory connectionFactory)
     {
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
         return await connection.QuerySingleOrDefaultAsync<ReviewItem>(new CommandDefinition(
-            $"SELECT {SelectColumns} FROM aggregated_items WHERE id = @id",
+            $"SELECT {SelectColumns} {FromClause} WHERE i.id = @id",
             new { id },
             cancellationToken: cancellationToken));
     }
