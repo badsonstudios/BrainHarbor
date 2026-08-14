@@ -590,6 +590,24 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: src/BrainHarbor.Safety, Admin\ReviewRepository.ReviewItem.FlagReasons,
   Pages\Shared\_ReviewRow.cshtml. Depends on: WI-417.
 
+- [ ] **WI-425 A prominent "See all" button under the home feed**
+  Goal: the way out of the home page's four cards is obvious (Dan's ask,
+  2026-08-14: "the See all link next to Latest updates is way too small").
+  Acceptance: **keep** the existing small "See all →" link beside the heading —
+  Dan's call, it serves someone already scanning the heading row — and ADD a
+  prominent button BELOW the four cards, where a reader who has just finished
+  reading them is actually looking. Full-width or centred, real button styling
+  (the `.nav-cta` pill or the door treatment, not a text link), a tap target
+  comfortably over 44px, and wording that says where it goes ("See all research"
+  beats "See all", which begs "all what?"). Same anti-hype, plain-language
+  rules; it is reader-facing copy so it rides the 6.0 ContentCheck gate.
+  Watch: it must not compete with the crisis-help door above it for attention —
+  the hierarchy is help first, browse second.
+  Notes: the home feed renders 4 cards (WI-409) and the section already has a
+  heading-row link in `Pages/Index.cshtml`; `HomeFeedTests` covers this section.
+  Refs: Pages\Index.cshtml, wwwroot\css\site.css (.door, .nav-cta).
+  Depends on: nothing.
+
 - [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**
   Goal: an audit trail of what the checks said WHEN they said it (the other
   half of WI-418, deliberately deferred).
