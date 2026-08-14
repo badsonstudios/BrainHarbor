@@ -158,15 +158,40 @@ public class ClassifierTests
         Assert.Equal(["meningioma"], c.TumorTags);
     }
 
+    /// <summary>
+    /// WI-413: the taxonomy comes from the SITE, so failing to fetch it is the
+    /// site being unreachable — infrastructure, identical for every item. It
+    /// used to leave each item merely Unclassified, which meant a whole run's
+    /// worth of perfectly good items uploaded as unclassifiable and could never
+    /// be classified again.
+    /// </summary>
     [Fact]
-    public async Task IfTheTaxonomyCannotBeFetchedEverythingIsUnclassified()
+    public async Task IfTheTaxonomyCannotBeFetchedTheClassifierIsUnavailableNotJustStuck()
     {
-        // Degrade safely: no closed taxonomy → don't guess, leave for a human.
         var runner = new ScriptedRunner(Envelope("""{"tumor_tags":["glioblastoma"],"relevance":"patient_relevant","research_stage":"human_trial"}"""));
 
         var c = await Build(runner, taxonomy: null, taxonomyThrows: true).ClassifyAsync(Item(), CancellationToken.None);
 
-        Assert.Equal(ClassifyDecision.Unclassified, c.Decision);
+        Assert.Equal(ClassifyDecision.Unavailable, c.Decision);
+    }
+
+    /// <summary>
+    /// The other side of the WI-413 split: the CLI answered, this item's output
+    /// was unusable. That is about the item, so it goes to a person and the run
+    /// carries on.
+    /// </summary>
+    [Fact]
+    public async Task ADeadCliIsUnavailableWhileAnOddItemIsMerelyUnclassified()
+    {
+        var dead = new ScriptedRunner(new ProcessResult(1, "", "claude: usage limit reached", false));
+        var odd = Envelope("""{"tumor_tags":["dragonoma"],"relevance":"patient_relevant","research_stage":"human_trial"}""");
+
+        var outage = await Build(dead, Taxonomy).ClassifyAsync(Item(), CancellationToken.None);
+        var strange = await Build(new ScriptedRunner(odd, odd), Taxonomy)
+            .ClassifyAsync(Item(), CancellationToken.None);
+
+        Assert.Equal(ClassifyDecision.Unavailable, outage.Decision);
+        Assert.Equal(ClassifyDecision.Unclassified, strange.Decision);
     }
 
     private static string RepoRoot()

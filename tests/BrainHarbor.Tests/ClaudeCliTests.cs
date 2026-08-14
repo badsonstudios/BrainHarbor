@@ -122,6 +122,134 @@ public class ClaudeCliTests
         Assert.Contains("is_error", result.FailureReason);
     }
 
+    // ---------- WI-413: WHY the call failed ----------
+
+    /// <summary>
+    /// "The CLI never answered" — infrastructure. Every other item in the run
+    /// would fail identically, so the caller must stop rather than mark the
+    /// window unclassifiable. ClaudeProcessRunner reports a spawn failure and a
+    /// mid-call IO error as exit -1, so those ride this path too.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(UnavailableCases))]
+    public async Task InfrastructureFailuresAreReportedAsUnavailable(ProcessResult scripted)
+    {
+        var result = await Cli(new ScriptedRunner(scripted))
+            .RunJsonAsync<Extraction>("prompt", null, CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ClaudeFailure.Unavailable, result.Failure);
+        Assert.True(result.Unavailable);
+    }
+
+    public static TheoryData<ProcessResult> UnavailableCases() =>
+    [
+        new(-1, "", "", TimedOut: true),                                    // timed out
+        new(1, "", "claude: not logged in", false),                         // auth-style exit
+        new(-1, "", "could not start 'claude': file not found", false),     // spawn failure
+        new(0, """{"type":"result","is_error":true,"result":"limit"}""", "", false),
+
+        // Envelope-level, so also the CLI and not the model: exiting 0 while
+        // printing something that is not the documented --output-format json.
+        // A half-installed shim, or a banner ahead of the JSON.
+        new(0, "", "", false),                                              // said nothing at all
+        new(0, "Update available! Run npm i -g claude", "", false),         // not an envelope
+        new(0, """{"type":"result","is_error":false}""", "", false),        // envelope, no result
+    ];
+
+    /// <summary>
+    /// "It answered, and the answer was unusable" — about THIS item. It goes to
+    /// a person and the run carries on, because treating it as an outage would
+    /// stall the source forever on an item that can never be handled.
+    ///
+    /// Note the shape: a well-formed ENVELOPE carrying garbage in its `result`
+    /// string. That is the CLI working correctly and the model answering badly.
+    /// </summary>
+    [Fact]
+    public async Task GarbledModelOutputInsideAGoodEnvelopeIsUnusableRatherThanUnavailable()
+    {
+        var runner = new ScriptedRunner(Envelope("not json"), Envelope("still not json"));
+
+        var result = await Cli(runner).RunJsonAsync<Extraction>("prompt", null, CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ClaudeFailure.UnusableOutput, result.Failure);
+        Assert.False(result.Unavailable);
+    }
+
+    [Fact]
+    public async Task AnEmptyResultInsideAGoodEnvelopeIsAboutTheItemNotTheCli()
+    {
+        // The CLI produced its envelope, so it is alive and talking; the model
+        // simply returned nothing for this prompt.
+        var empty = new ProcessResult(0, """{"type":"result","is_error":false,"result":"  "}""", "", false);
+        var runner = new ScriptedRunner(empty, empty);
+
+        var result = await Cli(runner).RunJsonAsync<Extraction>("prompt", null, CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ClaudeFailure.UnusableOutput, result.Failure);
+    }
+
+    // ---------- WI-413: the health probe ----------
+
+    [Fact]
+    public async Task TheHealthProbeSaysAliveWhenTheCliAnswersATrivialPrompt()
+    {
+        var runner = new ScriptedRunner(Envelope("""{"ok":true}"""));
+
+        Assert.True(await Cli(runner).IsAliveAsync(CancellationToken.None));
+        Assert.Equal(1, runner.Calls);
+    }
+
+    [Theory]
+    [MemberData(nameof(UnavailableCases))]
+    public async Task TheHealthProbeSaysDeadForEveryInfrastructureFailure(ProcessResult scripted)
+    {
+        Assert.False(await Cli(new ScriptedRunner(scripted)).IsAliveAsync(CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task OutputThatFailsValidationIsUnusableRatherThanUnavailable()
+    {
+        var runner = new ScriptedRunner(Envelope("""{"tumor":"invented","count":1}"""));
+
+        var result = await Cli(runner).RunJsonAsync<Extraction>(
+            "prompt", value => value.Tumor == "glioblastoma", CancellationToken.None);
+
+        Assert.False(result.Success);
+        Assert.Equal(ClaudeFailure.UnusableOutput, result.Failure);
+    }
+
+    [Fact]
+    public async Task ASuccessfulCallCarriesNoFailureKind()
+    {
+        var runner = new ScriptedRunner(Envelope("""{"tumor":"glioma","count":3}"""));
+
+        var result = await Cli(runner).RunJsonAsync<Extraction>("prompt", null, CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(ClaudeFailure.None, result.Failure);
+        Assert.False(result.Unavailable);
+    }
+
+    /// <summary>
+    /// An is_error envelope is still retried once — a one-off refusal deserves
+    /// a second chance — and only a persistent one reports Unavailable.
+    /// </summary>
+    [Fact]
+    public async Task AnIsErrorEnvelopeIsRetriedBeforeItCountsAsAnOutage()
+    {
+        var runner = new ScriptedRunner(
+            new ProcessResult(0, """{"type":"result","is_error":true,"result":"blip"}""", "", false),
+            Envelope("""{"tumor":"glioma","count":3}"""));
+
+        var result = await Cli(runner).RunJsonAsync<Extraction>("prompt", null, CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Equal(2, runner.Calls);
+    }
+
     [Fact]
     public async Task OutputThatParsesButFailsValidationIsRejected()
     {

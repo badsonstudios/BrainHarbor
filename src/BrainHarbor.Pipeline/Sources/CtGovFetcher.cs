@@ -106,6 +106,11 @@ public sealed class CtGovFetcher(
 
     public string Source => SourceName;
 
+    /// <summary>The only source with facts worth refreshing without the CLI
+    /// (WI-413): trial status, phase and sites go stale into a false claim on a
+    /// page a patient reads.</summary>
+    public bool ProducesTrialFacts => true;
+
     public async Task<FetchResult> FetchAsync(string? cursor, CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(_time.GetUtcNow().UtcDateTime);

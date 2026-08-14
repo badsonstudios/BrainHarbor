@@ -439,8 +439,9 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Acceptance: a `/tumors` page driven by the SAME `taxonomy.yml` the feed
   filter uses (the list and the descriptions can never drift apart); a reader
   picks a type (select or A–Z list, works with JS off) and gets a hand-written
-  plain-language description **targeting ~6th grade** (site gate stays ≤8.5,
-  aim lower); each type deep-linkable (`/tumors#low-grade-glioma`) so the
+  plain-language description **targeting ~6th grade** (curated pages are
+  CI-gated at 6.0 since WI-414, so this is the bar, not a stretch); each type
+  deep-linkable (`/tumors#low-grade-glioma`) so the
   /research tumor filter can link "What is this?"; descriptions are curated
   content through the ContentCheck reading-level gate; glossary tooltips
   active; a type whose description is not yet written says so honestly
@@ -452,7 +453,7 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/sitemap.md (`/tumors/`), content-pipeline.md §2/§5,
   Content/taxonomy.yml. Depends on: nothing.
 
-- [ ] **WI-413 Tell "the CLI is down" apart from "this item is odd"**
+- [x] **WI-413 Tell "the CLI is down" apart from "this item is odd"** (done 2026-08-13 — the CLI now says which; a health probe settles the ambiguous cases so an odd item can never stall a source)
   Goal: close the last hole in the WI-401 fail-fast work — the pipeline
   currently infers an outage from a STREAK of failures, because a classifier
   failure carries no cause.
@@ -531,6 +532,78 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   behaviour; content-pipeline §5 states which allowance applies where.
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
+
+- [x] **WI-417 Real logs for the scheduled pipeline runs** (done 2026-08-13 — per-run file in `%LOCALAPPDATA%\BrainHarbor\logs`, self-pruning, key-scrubbed, plus a flags-by-cause tally)
+  Goal: a daily run that fails at 06:00 leaves evidence Dan can read (Dan's
+  ask, 2026-08-13).
+  Problem: Task Scheduler captures no console output, so the nightly runs are
+  invisible. Today the only signals are the task's exit code
+  (`Get-ScheduledTaskInfo`: 0 all ok, 1 some sources failed, 2 cancelled,
+  3 bad config, 4 blew up), a desktop notification nobody sees at 6am, and the
+  admin health page's per-source last-error. Everything the console prints —
+  which item was excluded and why, which summaries were flagged and for what,
+  the classify/summarize failures — is lost. That is exactly the detail the
+  last three production incidents were diagnosed from.
+  Acceptance: pipeline writes a per-run log file (a file logging provider or
+  the scheduled action redirecting stdout/stderr); one file per run, named by
+  date so runs do not overwrite each other; **rotation/retention** so it cannot
+  fill the disk (keep ~30 days); the path is documented in
+  `docs/run-local.md` and printed at the end of a run; the registration script
+  wires it up so a fresh registration gets logging without extra steps; the
+  log NEVER contains the sync API key or the NCBI key (they are already
+  filtered from HttpClient logging — keep it that way and test it).
+  Consider: also POST a run summary to the sync API so the admin health page
+  shows last-run status and counts, not just per-source errors.
+  Refs: scripts/register-pipeline-task.ps1, architecture.md §6,
+  Program.cs logging setup. Depends on: nothing.
+
+- [ ] **WI-418 Store WHY a summary was flagged, not just that it was**
+  Goal: the review queue and the health page can say which check held an item
+  back (Dan's ask, 2026-08-13 — split out of WI-417).
+  Problem: `aggregated_items.summary_flagged` is a boolean with no reason, so
+  the site can report a flag RATE ("4.8% of summarize-v4 items") and never a
+  cause. WI-417 fixed this for runs going forward — the run log names the check
+  per item and totals the flags by kind — but the log is per-run and local to
+  Dan's PC: it cannot say why one of the 137 items already in the queue is
+  there, and a reviewer opening an item still has to re-read it and guess what
+  tripped.
+  Acceptance: the flag reasons travel with the item (sync contract + a column
+  or small table — they are already structured as `Guardrails.FlagKind` plus a
+  message, so nothing needs parsing); the review queue shows them on the item
+  it is judging; the admin health page can total them; and a decision recorded
+  for the rows already flagged (backfill by re-running the checks over the
+  STORED summary, or leave them blank and say so honestly in the UI —
+  re-summarizing is not on the table, it would rewrite published wording).
+  Refs: Summarize\Guardrails.cs (FlagKind), PipelineRunner.RunResult.FlagKinds,
+  Publishing\SyncContracts.cs, data-model.md. Depends on: WI-417.
+
+- [x] **WI-419 Put the real logo on the site** (done 2026-08-13 — Dan supplied a
+  finished logo kit; header lockup, favicons, app icons, PWA manifest, og:image)
+  Goal: the site stops wearing a text placeholder (Dan's ask, 2026-08-13).
+  Delivered: `brand/svg` + `brand/png` copied to `wwwroot/img/brand/`,
+  `site.webmanifest` at the web root, header shows `lockup-no-tagline.svg`
+  (alt "Brain Harbor", never "logo"), favicon SVG + 32px PNG + apple-touch icon
+  + manifest + theme-color wired in `_Layout`, and `og:image`/`twitter:image`
+  set to the lockup PNG with an ABSOLUTE url (a shared link previously
+  unfurled with no image at all). Logo height in rem so it rides the
+  large-text scale; print sized in points.
+  Kit spec kept at `docs/design/entry-hub-handoff/brand/README.md`.
+  Refs: that README (clear space, minimum sizes, don't-dos).
+  **Open:** the wordmark spells "Brain Harbor" while the site title, og:site_name
+  and domain are "BrainHarbor" — Dan's call which one is the brand (see WI-420).
+
+- [ ] **WI-420 Settle the brand name: "Brain Harbor" or "BrainHarbor"**
+  Goal: one spelling, everywhere (Dan's call — surfaced by WI-419).
+  Problem: the new logo's wordmark reads **Brain Harbor** (two words) and its
+  README specifies `alt="Brain Harbor"`, while the site title, `og:site_name`,
+  the footer copy, the RSS title and the domain all say **BrainHarbor**. A
+  screen-reader user hears one and a sighted user reads the other on the same
+  page. Neither is wrong; they just have to match.
+  Acceptance: Dan picks; then the losing spelling is replaced everywhere it is
+  user-visible (layout title/og tags, footer, curated pages, RSS/sitemap titles,
+  the manifest's `name`/`short_name`, and the logo alt text) with a test pinning
+  the choice. The domain does not change either way.
+  Depends on: nothing (but do it before WI-408 soft launch).
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.

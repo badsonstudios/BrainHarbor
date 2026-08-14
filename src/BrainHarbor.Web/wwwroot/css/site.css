@@ -270,11 +270,26 @@ textarea {
   font-weight: 800;
   color: var(--color-ink);
   text-decoration: none;
+  display: inline-flex;   /* kills the inline-image baseline gap */
+  align-items: center;
 }
 
+/* The lockup. Height in rem, not px, so it rides the large-text scale like
+   everything else (WI-102) — 2.5rem is 45px normally, 55px in large-text mode,
+   both above the brand README's 180px-wide minimum for the no-tagline lockup.
+   width:auto keeps the artwork's ratio whatever the height resolves to. */
+.site-name img {
+  height: 2.5rem;
+  width: auto;
+  display: block;
+}
+
+/* No underline on hover here: the target is a picture, and a rule under a
+   logo reads as a rendering fault rather than a link cue. The link is still
+   keyboard-focusable and gets the global :focus-visible outline. */
 .site-name:hover {
   color: var(--color-ink);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .site-nav {

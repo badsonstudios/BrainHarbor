@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="64" height="64" role="img" aria-label="Brain Harbor">
+  <rect width="200" height="200" rx="40" fill="#14294d"></rect>
+  <g>
+    <path d="M84 154 L116 154 L112 86 L88 86 Z" fill="#ffffff"></path>
+    <rect x="81" y="80" width="38" height="8" rx="2" fill="#ffffff"></rect>
+    <rect x="88" y="54" width="24" height="26" fill="#f2d492"></rect>
+    <rect x="84" y="48" width="32" height="7" rx="2" fill="#ffffff"></rect>
+    <path d="M85 48 L100 28 L115 48 Z" fill="#ffffff"></path>
+    <path d="M0 156 C36 140 60 172 96 158 C132 144 158 176 200 154 L200 200 L0 200 Z" fill="#3fa3bd"></path>
+    <path d="M0 176 C40 160 64 190 100 176 C136 162 164 188 200 170 L200 200 L0 200 Z" fill="#0d6a86"></path>
+  </g>
+</svg>

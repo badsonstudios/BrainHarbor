@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using BrainHarbor.Pipeline.Logging;
 using BrainHarbor.Pipeline.Publishing;
 using BrainHarbor.Pipeline.Sources;
 using Microsoft.Extensions.Configuration;
@@ -49,17 +50,7 @@ public static class PipelineHost
         builder.Configuration.AddUserSecrets<PipelineMarker>(optional: true);
         builder.Configuration.AddEnvironmentVariables("BRAINHARBOR_");
 
-        builder.Logging.ClearProviders();
-        builder.Logging.AddSimpleConsole(options =>
-        {
-            options.SingleLine = true;
-            options.TimestampFormat = "HH:mm:ss ";
-        });
-
-        // HttpClient logs full request URIs at Information, and the NCBI key
-        // travels as a query parameter (E-utilities requires it there). Task
-        // Scheduler captures this console output, so turn it down.
-        builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+        var logFile = ConfigureLogging(builder);
 
         ConfigureServices(builder);
 
@@ -110,6 +101,77 @@ public static class PipelineHost
             logger.LogError(exception, "Run failed.");
             return 4;
         }
+        finally
+        {
+            // Last line of every run, including the failed ones — those are the
+            // runs whose log someone actually goes looking for. In the finally
+            // so the path is printed whichever exit code we leave on; before the
+            // host (and with it the file provider) is disposed.
+            if (logFile is not null)
+            {
+                logger.LogInformation("Log written to {Path}", logFile.Path);
+
+                // Closed explicitly: a provider added as an INSTANCE is not
+                // disposed by the container or by LoggerFactory, so nothing else
+                // would ever release the handle. AutoFlush means no lines are
+                // lost today either way — but that would stop being true the
+                // moment anyone buffers writes for speed.
+                logFile.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Console + per-run file logging (WI-417). Extracted from Main so a test
+    /// can build the SAME logging configuration — the HttpClient filter below
+    /// is a secrets-hygiene rule, and until now nothing would have noticed if
+    /// somebody deleted the line.
+    ///
+    /// Returns the run's log file, or null when file logging is off or the
+    /// directory cannot be written.
+    /// </summary>
+    internal static FileLogSink? ConfigureLogging(HostApplicationBuilder builder)
+    {
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSimpleConsole(options =>
+        {
+            options.SingleLine = true;
+            options.TimestampFormat = "HH:mm:ss ";
+        });
+
+        // HttpClient logs full request URIs at Information, and the NCBI key
+        // travels as a query parameter (E-utilities requires it there). This
+        // now keeps the key out of a FILE as well as off the console, which is
+        // the more durable exposure — pinned by PipelineLoggingTests.
+        builder.Logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
+
+        var options = builder.Configuration
+            .GetSection(FileLogOptions.SectionName)
+            .Get<FileLogOptions>() ?? new FileLogOptions();
+
+        if (!options.Enabled)
+        {
+            return null;
+        }
+
+        // The redactor is given the key values this process actually holds, so
+        // it can scrub them however they reach a log line. Read from
+        // configuration directly: the options graph is not built yet, and both
+        // the sectioned and flat names are in play (see ConfigureServices).
+        var redactor = new LogRedactor(
+        [
+            builder.Configuration[$"{PipelineOptions.SectionName}:{nameof(PipelineOptions.SyncApiKey)}"],
+            builder.Configuration[$"{PipelineOptions.SectionName}:{nameof(PipelineOptions.NcbiApiKey)}"],
+            .. PipelineOptions.FlatKeyNames.Select(name => builder.Configuration[name]),
+        ]);
+
+        var sink = FileLogSink.Create(options, redactor, DateTimeOffset.Now);
+        if (sink is not null)
+        {
+            builder.Logging.AddProvider(new FileLoggerProvider(sink));
+        }
+
+        return sink;
     }
 
     /// <summary>
@@ -130,12 +192,12 @@ public static class PipelineHost
                 // The Pipeline: section wins when both are present.
                 if (string.IsNullOrWhiteSpace(options.SyncApiKey))
                 {
-                    options.SyncApiKey = builder.Configuration["SYNC_API_KEY"] ?? "";
+                    options.SyncApiKey = builder.Configuration[PipelineOptions.SyncApiKeyFlatName] ?? "";
                 }
 
                 if (string.IsNullOrWhiteSpace(options.NcbiApiKey))
                 {
-                    options.NcbiApiKey = builder.Configuration["NCBI_API_KEY"];
+                    options.NcbiApiKey = builder.Configuration[PipelineOptions.NcbiApiKeyFlatName];
                 }
             })
             .ValidateDataAnnotations();
@@ -248,6 +310,10 @@ public static class PipelineHost
             .ValidateDataAnnotations();
         builder.Services.AddSingleton<Claude.IProcessRunner, Claude.ClaudeProcessRunner>();
         builder.Services.AddSingleton<Claude.ClaudeCli>();
+        // The same instance behind both roles: the health probe (WI-413) has to
+        // be the CLI the rest of the run is actually using.
+        builder.Services.AddSingleton<Claude.IClaudeHealthProbe>(
+            sp => sp.GetRequiredService<Claude.ClaudeCli>());
         builder.Services.AddSingleton<Claude.PromptLibrary>();
 
         // Classify + summarize steps (WI-303/304).

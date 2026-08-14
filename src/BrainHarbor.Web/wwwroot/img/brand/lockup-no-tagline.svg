@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 210" width="920" height="210" role="img" aria-label="Brain Harbor">
+  <defs>
+    <linearGradient id="beamL" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#f2d492" stop-opacity=".85"></stop><stop offset="1" stop-color="#f2d492" stop-opacity="0"></stop></linearGradient>
+    <linearGradient id="beamR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f2d492" stop-opacity=".85"></stop><stop offset="1" stop-color="#f2d492" stop-opacity="0"></stop></linearGradient>
+    <clipPath id="ring"><circle cx="100" cy="100" r="88"></circle></clipPath>
+  </defs>
+  <g transform="translate(0,6)"><g clip-path="url(#ring)">
+      <path d="M92 74 L18 52 L18 96 Z" fill="url(#beamL)"></path><path d="M108 74 L182 52 L182 96 Z" fill="url(#beamR)"></path>
+      <path d="M86 152 L114 152 L110 88 L90 88 Z" fill="#14294d"></path>
+      <rect x="88" y="112" width="24" height="4" fill="#0d6a86"></rect>
+      <rect x="96" y="96" width="8" height="11" rx="1.5" fill="#0d6a86"></rect>
+      <rect x="96" y="126" width="8" height="13" rx="1.5" fill="#0d6a86"></rect>
+      <rect x="83" y="84" width="34" height="7" rx="2" fill="#14294d"></rect>
+      <rect x="89" y="62" width="22" height="22" fill="#0d6a86"></rect>
+      <rect x="89" y="62" width="22" height="22" fill="none" stroke="#14294d" stroke-width="4"></rect>
+      <rect x="99" y="62" width="2" height="22" fill="#14294d"></rect>
+      <rect x="86" y="57" width="28" height="6" rx="2" fill="#14294d"></rect>
+      <path d="M87 57 L100 40 L113 57 Z" fill="#14294d"></path><circle cx="100" cy="35" r="4" fill="#14294d"></circle>
+      <path d="M4 150 C34 136 56 164 86 152 C116 140 140 166 172 152 C182 148 192 143 196 140 L196 200 L4 200 Z" fill="#0e5f78" opacity=".95"></path>
+      <path d="M4 168 C36 154 58 182 90 170 C122 158 146 184 196 162 L196 200 L4 200 Z" fill="#0d6a86"></path></g><circle cx="100" cy="100" r="88" fill="none" stroke="#14294d" stroke-width="8"></circle></g>
+  <g transform="translate(238,32)"><text x="0" y="86" font-family="Georgia, &#39;Iowan Old Style&#39;, &#39;Palatino Linotype&#39;, Palatino, &#39;Times New Roman&#39;, &#39;Liberation Serif&#39;, &#39;DejaVu Serif&#39;, serif" font-size="92" fill="#14294d" letter-spacing="-1" textLength="500" lengthAdjust="spacingAndGlyphs">Brain Harbor</text>
+    <path d="M2 122 C96 108 156 140 258 130 C360 121 452 140 520 128" fill="none" stroke="#0e5f78" stroke-width="6" stroke-linecap="round" opacity=".6"></path>
+    <path d="M2 118 C88 102 158 132 248 122 C344 112 466 128 534 110 C580 98 614 74 620 48 C626 26 606 12 580 20 C560 26 546 40 538 58 C552 48 568 42 584 46 C602 50 610 62 606 78 C588 96 552 104 518 110 C440 122 344 134 248 132 C158 130 88 128 2 118 Z" fill="#0d6a86"></path></g>
+</svg>
