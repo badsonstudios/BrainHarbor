@@ -10,7 +10,7 @@ namespace BrainHarbor.Tests;
 /// an accessibility rule the kit states explicitly ("Brain Harbor", never
 /// "logo"), which is exactly the sort of thing a later edit quietly undoes.
 /// </summary>
-[Collection("Database")]
+[Collection(DatabaseCollection.Name)]
 public class BrandAssetsTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
