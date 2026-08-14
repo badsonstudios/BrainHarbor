@@ -1,4 +1,4 @@
-using BrainHarbor.Pipeline.Summarize;
+using BrainHarbor.Safety;
 
 namespace BrainHarbor.Tests;
 

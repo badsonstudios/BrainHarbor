@@ -28,8 +28,8 @@ public sealed record SourceRunResult(
 
     /// <summary>Why they were held back. One item can trip several checks, so
     /// these sum to at least <see cref="Flagged"/>.</summary>
-    public IReadOnlyDictionary<Summarize.Guardrails.FlagKind, int> FlagKinds { get; init; }
-        = new Dictionary<Summarize.Guardrails.FlagKind, int>();
+    public IReadOnlyDictionary<Safety.Guardrails.FlagKind, int> FlagKinds { get; init; }
+        = new Dictionary<Safety.Guardrails.FlagKind, int>();
 }
 
 public sealed record RunResult(IReadOnlyList<SourceRunResult> Sources)
@@ -43,7 +43,7 @@ public sealed record RunResult(IReadOnlyList<SourceRunResult> Sources)
 
     /// <summary>Flag reasons across the whole run — the number Dan could not get
     /// from the database, which stores only a summary_flagged boolean.</summary>
-    public IReadOnlyDictionary<Summarize.Guardrails.FlagKind, int> FlagKinds =>
+    public IReadOnlyDictionary<Safety.Guardrails.FlagKind, int> FlagKinds =>
         Sources
             .SelectMany(s => s.FlagKinds)
             .GroupBy(pair => pair.Key)
@@ -190,7 +190,7 @@ public sealed class PipelineRunner(
         var excluded = 0;
         var summarized = 0;
         var flagged = 0;
-        var flagKinds = new Dictionary<Summarize.Guardrails.FlagKind, int>();
+        var flagKinds = new Dictionary<Safety.Guardrails.FlagKind, int>();
 
         try
         {
@@ -557,7 +557,7 @@ public sealed class PipelineRunner(
             logger.LogInformation("  flagged because: {Reasons}", string.Join(", ",
                 run.FlagKinds
                     .OrderByDescending(pair => pair.Value)
-                    .Select(pair => $"{Summarize.Guardrails.Describe(pair.Key)} {pair.Value}")));
+                    .Select(pair => $"{Safety.Guardrails.Describe(pair.Key)} {pair.Value}")));
         }
 
         foreach (var failure in failures)

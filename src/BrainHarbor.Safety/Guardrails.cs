@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace BrainHarbor.Pipeline.Summarize;
+namespace BrainHarbor.Safety;
 
 /// <summary>
 /// The automated safety checks that gate auto-publish (content-pipeline.md

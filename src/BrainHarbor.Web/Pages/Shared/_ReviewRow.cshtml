@@ -1,3 +1,4 @@
+@using BrainHarbor.Safety
 @using BrainHarbor.Web.Admin
 @model ReviewItem
 
@@ -16,12 +17,41 @@
         }
     </div>
 
+    @* WI-418: name the check that tripped. "Read this one closely" told a
+       reviewer nothing they did not already know from the item being in the
+       queue at all, and left them re-deriving the reason for every item by
+       hand. The reasons are re-checked from the stored summary at render time
+       (ReviewItem.FlagReasons) using the pipeline's own library — the database
+       kept a boolean and no reason, so this is recovered rather than recorded. *@
     @if (Model.SummaryFlagged)
     {
-        <p class="disclaimer" role="alert">
-            <strong>Flagged.</strong> A reader reported a problem, or an
-            automatic check failed. Read this one closely.
-        </p>
+        <div class="disclaimer review-flags" role="alert">
+            <p><strong>Flagged.</strong></p>
+            @if (Model.FlagReasons.Count > 0)
+            {
+                <ul class="review-flags__list">
+                    @foreach (var reason in Model.FlagReasons)
+                    {
+                        <li>
+                            <strong>@Guardrails.Describe(reason.Kind):</strong>
+                            @reason.Message
+                        </li>
+                    }
+                </ul>
+                <p class="review-flags__note">
+                    Checked against today's rules, not the rules in force when
+                    this was flagged.
+                </p>
+            }
+            else
+            {
+                <p class="review-flags__note">
+                    No automatic check fails under today's rules. Either a reader
+                    reported a problem, or it was flagged by an earlier version
+                    of the checks.
+                </p>
+            }
+        </div>
     }
 
     <div class="review-compare">

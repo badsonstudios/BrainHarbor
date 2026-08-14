@@ -151,7 +151,7 @@ public class GoldenSetTests
             var prose = string.Join("\n", s.PlainTitle, s.WhatStudied, s.WhatFound, s.Means, s.DoesntMean);
             var source = $"{item.Input.Title}\n{item.Input.RawSummary}";
 
-            var result = BrainHarbor.Pipeline.Summarize.Guardrails.Check(prose, source);
+            var result = BrainHarbor.Safety.Guardrails.Check(prose, source);
 
             Assert.True(result.Passed,
                 $"{item.Input.ExternalId} ideal summary tripped a guardrail: {string.Join("; ", result.Reasons)}");

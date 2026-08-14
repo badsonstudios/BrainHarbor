@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The automated content-safety checks, in a library both apps can use.
+
+       The Pipeline runs them when it writes a summary; the Web app re-runs them
+       over a STORED summary to tell a reviewer why an item was flagged
+       (WI-418). Copying the logic into the site instead would have created a
+       second implementation of the same rule, which is precisely the defect
+       WI-415 spent a day fixing and WI-416 still exists to finish.
+
+       Deliberately dependency-free: no Hosting, no HTTP, no database. It is
+       pure text analysis, which is what makes it safe to run inside a page
+       render. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BrainHarbor.Tests" />
+  </ItemGroup>
+
+</Project>

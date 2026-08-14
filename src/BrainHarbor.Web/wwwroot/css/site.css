@@ -939,6 +939,24 @@ main {
 
 .report-problem textarea { width: 100%; }
 
+/* Why an item was flagged, in the queue (WI-418). Admin-only, so this is
+   plainer than the reader-facing surfaces — the job is to be scannable down a
+   column of 20 items, not calm. */
+.review-flags p { margin-block: 0; }
+
+.review-flags__list {
+  margin-block: var(--space-2);
+  padding-inline-start: var(--space-5);
+}
+
+.review-flags__list li { margin-block-end: var(--space-1); }
+
+.review-flags__note {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  margin-block-start: var(--space-2) !important;
+}
+
 /* Reader-reported live pages, at the top of the admin queue (WI-306). */
 .reported-section {
   border: 1px solid var(--color-border);

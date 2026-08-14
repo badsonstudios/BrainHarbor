@@ -61,6 +61,14 @@ src/BrainHarbor.Pipeline/       The local console app (stateless)
   Publishing/                   Sync-API client (state/check/upload)
   Prompts/                      Versioned prompt templates (classify, summarize)
 
+src/BrainHarbor.Safety/         The automated content checks, shared by both apps (WI-418).
+                                Pipeline runs them when it writes a summary; Web re-runs them
+                                over a STORED summary to tell a reviewer WHICH check flagged an
+                                item. Dependency-free text analysis — no hosting, HTTP or DB —
+                                which is what makes it safe inside a page render. A copy in the
+                                site instead would be a second implementation of the same rule,
+                                the exact defect WI-415 fixed and WI-416 exists to finish.
+
 tools/BrainHarbor.ContentCheck/ CI gate for static pages (readability, front matter)
 tests/                          Web tests + pipeline tests + golden-set fixtures
 docker-compose.yml              Local Postgres 16 on port 5433 (beside the existing container)
