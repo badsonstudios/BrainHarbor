@@ -603,7 +603,32 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   user-visible (layout title/og tags, footer, curated pages, RSS/sitemap titles,
   the manifest's `name`/`short_name`, and the logo alt text) with a test pinning
   the choice. The domain does not change either way.
-  Depends on: nothing (but do it before WI-408 soft launch).
+  **Dan's call 2026-08-14: leave the mismatch as it stands for now** — it ships
+  live in both spellings and that is accepted, so this is NOT a soft-launch
+  blocker. Pick it up when the name is worth settling, not before.
+  Note for whoever does it: the alt text is the accessibility half of this, so
+  changing the spelling means changing the artwork or accepting that the alt no
+  longer matches the picture. Cheapest moment to decide is before anyone links
+  to the site in quantity.
+  Depends on: nothing.
+
+- [x] **WI-421 Brand the top-right of the home hero** (done 2026-08-14 — Dan
+  reviewed the screenshots and approved the size)
+  Goal: the branding carries more weight on the front page (Dan's ask,
+  2026-08-14, with a screenshot of the hub panel).
+  Delivered: `.hub` is a two-column grid — copy left, `lockup-no-tagline.svg`
+  top-right in a 24rem column, doors spanning both columns beneath. Collapses
+  to one column below 60rem (960px — media-query `rem` is the browser's 16px,
+  not the site's 18px base) with the logo hidden, so the "talk to someone now"
+  door is not pushed down a phone screen for a logo the header already shows.
+  Hidden in print too.
+  **The no-tagline lockup on purpose:** `lockup-horizontal.svg` carries the
+  tagline "Real brain tumor research, in plain language." as artwork, which is
+  word for word the h1 beside it.
+  `alt=""` + `aria-hidden` per the brand README's rule for decorative repeats.
+  Known trade, accepted: the h1 now wraps to two lines above the breakpoint,
+  because the logo takes a third of the row.
+  Refs: `docs/design/entry-hub-handoff/brand/README.md`. Depends on: WI-419.
 
 - [ ] **WI-408 `[user]` Soft launch**
   Goal: first real users.
