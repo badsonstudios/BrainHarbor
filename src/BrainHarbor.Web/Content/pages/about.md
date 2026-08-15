@@ -37,6 +37,13 @@ it does not sell your email or track you around the web.
 Found a summary that is wrong or confusing? Every summary has a link to
 report it. We fix errors and note what changed.
 
+Have an idea that would make this site better? Write to
+[support@brainharbor.org](mailto:support@brainharbor.org). We read every one.
+
+That inbox is for ideas about the website. It is not a way to get medical help.
+If you need to talk with someone now, call the free ABTA CareLine at
+800-886-2282, or see [get help now](/get-help-now).
+
 ## What to do next
 
 Read [how we write](/how-we-write) to see how the summaries are made. If you
