@@ -6,8 +6,12 @@ namespace BrainHarbor.Web.Pages;
 
 public class IndexModel(FeedRepository feed) : PageModel
 {
-    /// <summary>Newest few for the 2-up grid: two full rows.</summary>
-    public const int CardCount = 4;
+    /// <summary>
+    /// Eight, up from four (homepage handoff, 2026-08-15). Four was two rows of
+    /// a 2-up grid; with the hero band no longer burying the feed, the page can
+    /// show a real amount of what the site is actually for.
+    /// </summary>
+    public const int CardCount = 8;
 
     public IReadOnlyList<FeedRow> Latest { get; private set; } = [];
 

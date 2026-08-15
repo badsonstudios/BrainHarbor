@@ -7,101 +7,105 @@
         "automatically before it publishes. For patients and caregivers.";
 }
 
-@* Entry Hub home per docs/design/entry-hub-handoff/index.html: the hub with
-   its three doors first (the crisis-help door must not scroll away behind
-   research cards), then the latest-updates feed (WI-409). Door targets are
-   sitemap.md URLs. *@
-<section class="hub" aria-labelledby="hub-title">
-    @* Brand in the top-right of the hero (Dan's ask, WI-421). The NO-TAGLINE
-       lockup on purpose: lockup-horizontal.svg carries the tagline "Real brain
-       tumor research, in plain language." as artwork, which is word for word
-       the h1 right beside it.
-       alt="" + aria-hidden: this is a decorative repeat of the header logo, and
-       the brand README asks for exactly that. A screen reader announcing
-       "Brain Harbor" a second time on the same screen learns the listener
-       nothing. *@
-    <img class="hub__brand" src="~/img/brand/lockup-no-tagline.svg"
-         alt="" aria-hidden="true" width="920" height="210" />
-    @* The first thing anyone reads has to answer "who wrote this?" honestly.
-       "Scientists do the research" is load-bearing: without it, saying AI
-       wrote the summaries reads as though AI did the science. Kept to short
-       sentences deliberately — this measures about a 5th-grade reading level
-       (the same sentences as one paragraph measure 8.3). *@
-    <h1 id="hub-title">Real brain tumor research, in plain language.</h1>
-    <p>
-        Scientists do the research. AI puts what they found into plain words.
-        Each summary must pass our safety checks, then it publishes on its
-        own. A person does not check every one, so we always link to the
-        study itself.
-    </p>
-    <p>
-        We also tell you how early a finding is, and what it does
-        <em>not</em> mean. <a href="/how-we-write">See how we write.</a>
-    </p>
-    <div class="hub__doors">
-        <a class="door door--primary" href="/start">
-            <strong>Just diagnosed? Start here.</strong>
-            <span class="sub">Your diagnosis words, questions to ask, and where to find support.</span>
-            <span class="door__cta">Start here →</span>
-        </a>
-        <a class="door" href="/research">
-            <strong>Browse all research</strong>
-            <span class="sub">Every update, sorted by how well tested it is.</span>
-            <span class="door__cta">Browse →</span>
-        </a>
-        <a class="door" href="/get-help-now">
-            <strong>Talk to someone now</strong>
-            <span class="sub">The free ABTA CareLine: 800-886-2282.</span>
-            <span class="door__cta">More help →</span>
-        </a>
+@* Homepage per docs/design/homepage-handoff ("Harbor Banner"). The shape is the
+   point: one hero band, two doors, then updates. The previous layout stacked a
+   hero paragraph, three doors and a full-width AI panel, which pushed the first
+   real update about a screen and a half down the page. *@
+
+@section Banner {
+<section class="hero-band">
+    <img class="hero-band__watermark" src="~/img/brand/mark-mono-white.svg" alt="" aria-hidden="true" />
+    <div class="container hero-band__inner">
+        @* The lockup IS the h1. The visually-hidden text carries the heading —
+           alt text never appears in a screen reader's heading list, and heading
+           navigation is a primary way this audience moves around a page. The
+           image is decorative because the header logo already announces the
+           name; without that you get "Brain Harbor" twice in a row. *@
+        <h1>
+            <span class="visually-hidden">Real brain tumor research, in plain language.</span>
+            <img src="~/img/brand/lockup-horizontal-dark-bg.svg" alt="" aria-hidden="true"
+                 width="920" height="210" />
+        </h1>
+
+        <div class="doors">
+            <a class="door door--primary" href="/start">
+                <span class="door__icon" aria-hidden="true">1</span>
+                <span>
+                    <strong class="door__title">Just diagnosed?</strong>
+                    <span>Start here. Your words explained.</span>
+                </span>
+            </a>
+            <a class="door door--secondary" href="/get-help-now">
+                <span class="door__icon" aria-hidden="true">&#9990;</span>
+                <span>
+                    <strong class="door__title">Talk to someone</strong>
+                    <span>Free ABTA CareLine: 800-886-2282</span>
+                </span>
+            </a>
+        </div>
+
+        @* The AI notice proper sits at the foot of the page, so it stops
+           standing between the reader and the content. But nobody should get
+           through eight summaries before learning who wrote them, so the
+           admission leads here in one sentence. "Scientists do the research"
+           comes first on purpose: naming AI without it invites the worse
+           misreading, that AI did the science. *@
+        <p class="hero-band__disclosure">
+            Scientists do the research. AI puts what they found into plain words.
+            AI can make mistakes, so we always link to the study itself.
+            <a href="/how-we-write">See how we write.</a>
+        </p>
     </div>
+
+    <svg class="wave-edge" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M0 40 C160 8 300 66 460 44 C620 22 760 62 920 44 C1080 26 1240 8 1440 34 L1440 70 L0 70 Z" fill="#ffffff" />
+        <path d="M0 52 C160 26 300 74 460 54 C620 34 760 70 920 54 C1080 38 1240 22 1440 46 L1440 70 L0 70 Z" fill="#ffffff" opacity=".5" />
+    </svg>
 </section>
-
-@* AI-mistake caution (Dan's ask, WI-422). Directly under the hub and ABOVE the
-   feed on purpose: it is the last thing a reader passes before the first AI
-   summary, which is the moment it means something. The hub already says AI
-   writes the summaries and that a person does not check every one; what was
-   missing is the plain sentence that AI gets things wrong, and what to do
-   about it.
-
-   Uses the palette's sanctioned attention treatment (--color-notice*, the same
-   fill as the "this trial has closed" panel) rather than a red alarm: the
-   audience may be frightened already, and the point is to be READ, not to
-   startle. The bold lead sentence carries the meaning, so color is never the
-   only cue. *@
-<div class="ai-caution">
-    <p>
-        <strong>AI can make mistakes.</strong>
-        AI writes every summary here. Our safety checks catch many mistakes,
-        but they miss some. Always read the study we link to, and talk with
-        your care team before you act on what you read.
-    </p>
-</div>
+}
 
 @if (Model.Latest.Count > 0)
 {
     <section aria-labelledby="latest-title">
         <div class="section-head">
-            <h2 id="latest-title">Latest updates</h2>
-            <a href="/research">See all →</a>
+            <div class="section-head__title">
+                <img src="~/img/brand/mark-color.svg" alt="" aria-hidden="true" width="46" height="46" />
+                <h2 id="latest-title">Latest updates</h2>
+            </div>
+            <a class="button" href="/research">See all updates →</a>
         </div>
-        <p class="text-muted">
-            The marks on each item show how far along the evidence is. More
-            marks mean it has been tested more.
-        </p>
+
+        <svg class="wave-rule" viewBox="0 0 600 14" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path d="M0 8 C70 2 120 13 190 8 C260 3 310 12 380 8 C450 4 520 11 600 6"
+                  fill="none" stroke="#0d6a86" stroke-width="3" stroke-linecap="round" opacity=".55" />
+        </svg>
+
+        <p class="text-muted">More marks mean the finding has been tested more.</p>
+
         <ul class="feed-grid">
             @foreach (var row in Model.Latest)
             {
-                <partial name="_FeedCard" model="Model.ToCard(row)" />
+                <partial name="_FeedCard" model="Model.ToCard(row)"
+                         view-data='new ViewDataDictionary(ViewData) { ["PlainCard"] = true }' />
             }
         </ul>
+
+        @* A div, not a p: the global `p` rule caps at --measure (65ch), which
+           would centre this inside a ~630px box rather than the content width
+           and read as accidentally left-shifted. *@
+        <div class="see-all-row">
+            <a class="button button--outline button--lg" href="/research">See all research updates →</a>
+        </div>
     </section>
 }
 
-<p>
-    The weekly digest is coming soon. You can also read
-    <a href="/how-we-write">how we write these summaries</a>, look up a word
-    in the <a href="/glossary">glossary</a>, or read more about brain tumors
-    at the
-    <a href="https://www.cancer.gov/types/brain">National Cancer Institute</a>.
-</p>
+<section class="ai-notice" aria-labelledby="ai-notice-title">
+    <h2 id="ai-notice-title">AI writes these summaries</h2>
+    <p>
+        Scientists do the research. AI puts it into plain words, and safety
+        checks run before it publishes. A person does not check every one.
+        Those checks miss some mistakes, so always read the study we link to
+        and talk with your care team.
+        <a href="/how-we-write">See how we write →</a>
+    </p>
+</section>

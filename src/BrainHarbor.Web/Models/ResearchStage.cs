@@ -49,7 +49,21 @@ public sealed record StageBadge(
     string Label,
     int EvidenceStrength)
 {
-    public const int MeterSteps = 5;
+    /// <summary>
+    /// Four marks, not five (homepage handoff, 2026-08-15).
+    ///
+    /// Two reasons, both about how the meter is read rather than how it looks.
+    /// Ten steps — the readiness dial this replaces on the feed — is a finer
+    /// distinction than anyone can feel, and a fraction invites the reading
+    /// "my treatment is 60% done", which is exactly the false hope the whole
+    /// anti-hype design exists to avoid. Four rungs with a plain-word label is
+    /// a scale a frightened reader can take in at a glance.
+    ///
+    /// The old ladder also had a hole in it: 5, 4, 2, 1 with nothing at 3, so
+    /// the gap between "review of existing research" and "animal study" was
+    /// twice the gap anywhere else, for no reason a reader could infer.
+    /// </summary>
+    public const int MeterSteps = 4;
 
     public string CssClass => Kind switch
     {
@@ -67,9 +81,9 @@ public sealed record StageBadge(
     public static StageBadge For(ResearchStage stage) => stage switch
     {
         ResearchStage.TestedInPeople =>
-            new(stage, BadgeKind.Result, "Tested in people", 5),
+            new(stage, BadgeKind.Result, "Tested in people", 4),
         ResearchStage.ReviewOfExistingResearch =>
-            new(stage, BadgeKind.Result, "Review of existing research", 4),
+            new(stage, BadgeKind.Result, "Review of existing research", 3),
         ResearchStage.EarlyResearchAnimals =>
             new(stage, BadgeKind.Result, "Early research (animals)", 2),
         ResearchStage.EarlyResearchLabCells =>

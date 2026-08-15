@@ -44,11 +44,15 @@ public class LayoutRenderTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains("href=\"/digest\"", html);
         Assert.Contains("class=\"nav-cta\" href=\"/get-help-now\"", html);
 
-        // Clear & Kind shell (WI-108): Entry Hub home + footer trust cues
-        Assert.Contains("class=\"hub\"", html);
+        // Clear & Kind shell, "Harbor Banner" homepage (docs/design/homepage-handoff,
+        // 2026-08-15). The hero band replaced the Entry Hub panel, and three
+        // doors became two: "browse all research" was cut because the feed
+        // right underneath already does that job. The crisis door stays — it is
+        // the one that must never be hard to find.
+        Assert.Contains("class=\"hero-band\"", html);
         Assert.Contains("class=\"door door--primary\" href=\"/start\"", html);
-        Assert.Contains("class=\"door\" href=\"/research\"", html);
-        Assert.Contains("class=\"door\" href=\"/get-help-now\"", html);
+        Assert.Contains("class=\"door door--secondary\" href=\"/get-help-now\"", html);
+        Assert.DoesNotContain("class=\"hub\"", html);
         Assert.Contains("class=\"ai-note\"", html);
 
         // Both stylesheets, print.css scoped to print media.

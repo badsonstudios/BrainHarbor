@@ -1,17 +1,33 @@
 @using BrainHarbor.Web.Models
 @inject BrainHarbor.Web.Feed.CardImages CardImages
 @model FeedCard
+@*
+    The homepage handoff (2026-08-15) specifies a card with no photo and no
+    readiness dial: badge, title, hook, meta, and nothing else. The badge is the
+    one element that genuinely differs between cards and the one people need to
+    read, so nothing is allowed to compete with it.
 
-@* One feed card (WI-109). Anatomy: hero (content-matched photo + readiness
-   dial) → badge → title → hook → tags + date · source. The photo is picked
-   from a small human-vetted pool by CardImages; the dial is the item's own
-   readiness score. *@
+    /research is NOT in that handoff's scope and still has a "most ready to use"
+    sort (WI-410), which would then be sorting by a number the reader can no
+    longer see. So the plain card is opt-in per page until Dan decides what
+    happens to the readiness score there, rather than deleting a shipped
+    feature on an assumption.
+*@
+@{
+    var plain = ViewData["PlainCard"] as bool? ?? false;
+}
+
 <li class="card">
-    @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
+    @if (!plain)
+    {
+        @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
+    }
     <partial name="_StageBadge" model="StageBadge.For(Model.Stage)" />
     <h3><a href="@Model.Url">@Model.Title</a></h3>
     <p class="card__hook">@Model.Hook</p>
     <p class="card__meta">
+        @* Topic chips stay: tumor type is how a patient finds the item that is
+           actually about them. *@
         @foreach (var tag in Model.Tags)
         {
             <span class="tag">@tag</span>

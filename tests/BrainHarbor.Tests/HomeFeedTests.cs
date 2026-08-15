@@ -130,17 +130,25 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Contains("AI puts what they found into plain words", html);
 
         // And that nobody is promised a human reviewer (Publishing:Mode Auto).
+        // The 2026-08-15 redesign moved the full notice to the foot of the
+        // page; this sentence came with it rather than being dropped, because
+        // "checks run before it publishes" does not tell a reader that no
+        // person read theirs.
         Assert.Contains("A person does not check every one", html);
     }
 
     /// <summary>
     /// WI-422 (Dan's ask): the home page says plainly that AI gets things
-    /// wrong, and says what to do about it. The hub copy above already names
-    /// AI as the writer; this is the part that admits the writer is fallible,
-    /// and it sits between the hero and the first summary on purpose.
+    /// wrong, and says what to do about it.
     ///
-    /// Same rule as the disclosure test above: rewording is fine, dropping it
-    /// is not. Change this test deliberately, never to make a build pass.
+    /// The 2026-08-15 redesign moved the full notice to the foot of the page so
+    /// it stops standing between the reader and the content. The ADMISSION did
+    /// not move: it leads in the hero band, above the feed, because a reader
+    /// must not be able to get through eight summaries before learning the
+    /// writer is fallible. That ordering is the property under test.
+    ///
+    /// Rewording is fine, dropping it is not. Change this test deliberately,
+    /// never to make a build pass.
     /// </summary>
     [Fact]
     public async Task HomeWarnsThatAiCanBeWrongAndSaysWhatToDo()
@@ -154,13 +162,13 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Contains("read the study we link to", html);
         Assert.Contains("care team", html);
 
-        // Above the feed, not buried under it: a caution a reader meets AFTER
-        // the summaries has already failed.
-        var caution = html.IndexOf("ai-caution", StringComparison.Ordinal);
+        // Above the feed, not buried under it: a warning a reader meets AFTER
+        // the summaries has already failed at its job.
+        var admission = html.IndexOf("AI can make mistakes", StringComparison.Ordinal);
         var feed = html.IndexOf("feed-grid", StringComparison.Ordinal);
-        Assert.True(caution > 0, "the AI caution is missing from the home page");
-        Assert.True(feed < 0 || caution < feed,
-            "the AI caution must come before the feed, not after it");
+        Assert.True(admission > 0, "the AI admission is missing from the home page");
+        Assert.True(feed < 0 || admission < feed,
+            "the AI admission must come before the feed, not after it");
     }
 
     [Fact]

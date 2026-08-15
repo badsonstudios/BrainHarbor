@@ -36,8 +36,8 @@ public class StyleGuideTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains("badge badge--unverified", html);
 
         // Server-built accessibility contract.
-        Assert.Contains("aria-label=\"Tested in people. Evidence strength 5 of 5.\"", html);
-        Assert.Contains("aria-label=\"Early research (lab cells). Evidence strength 1 of 5.\"", html);
+        Assert.Contains("aria-label=\"Tested in people. Evidence strength 4 of 4.\"", html);
+        Assert.Contains("aria-label=\"Early research (lab cells). Evidence strength 1 of 4.\"", html);
         Assert.Contains("role=\"img\"", html);
 
         // Glossary tooltip is previewable here (no shipped page uses a term yet).
