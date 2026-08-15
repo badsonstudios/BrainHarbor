@@ -662,7 +662,32 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   link away. Pinned by a test.
   Reading grades: home 3.3, about 3.4, privacy 3.8.
 
-- [ ] **WI-428 Restyle the research item page to match the new homepage**
+- [x] **WI-428 Restyle the research item page to match the new homepage** (done
+  2026-08-15 — and it was very nearly already done)
+  Finding: every item-page style the 2026-08-15 handoff specifies —
+  `.means-block` and its head/icon, `.original-title`, `.term`, `.provenance`,
+  `.ai-note` — already matched it value for value, because the page was built
+  from the previous handoff and this one barely changed it. The real gap was
+  one thing: the handoff repeats the evidence badge under "How early is this?",
+  beside the words that explain it. Added. By that point the reader has passed
+  the whole summary, and asking them to scroll back up to count marks is asking
+  them to give up.
+  The badge itself already showed 4 marks there from WI-428a.
+  Kept deliberately, against the handoff: the readiness callout (the handoff's
+  item page has none, and Dan wants readiness MORE prominent, not less) and the
+  heading "What this means, and what it doesn't" (the handoff writes it with an
+  em dash, which the site's own copy rule forbids).
+
+- [x] **WI-429 Homepage cards match /research** (done 2026-08-15 — Dan's call,
+  the opposite of what the handoff specified)
+  The handoff's card is badge, title, hook, meta: no photo, no readiness dial.
+  Dan, after seeing both live: the `/research` card is the better one and the
+  homepage should match it. **The dial is the reason** — the badge says how well
+  TESTED a finding is; the dial says how close it is to something a patient can
+  actually get, and the homepage was missing that second answer entirely.
+  So the `PlainCard` flag is gone and one card renders on both pages, which
+  means they cannot drift apart again. Recorded as deviation 3 in
+  docs/design/README.md so nobody later "restores" the handoff version.
   Goal: finish the 2026-08-15 handoff — the homepage shipped, the item page did
   not.
   Acceptance: rebuild `Pages/Research/Item.cshtml` against
@@ -714,6 +739,26 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   heading-row link in `Pages/Index.cshtml`; `HomeFeedTests` covers this section.
   Refs: Pages\Index.cshtml, wwwroot\css\site.css (.door, .nav-cta).
   Depends on: nothing.
+
+- [ ] **WI-431 Harden the deploy smoke check**
+  Goal: a deploy that leaves the site half-broken fails loudly instead of going
+  green (observed six times on 2026-08-15).
+  Problem: every deploy that day served 500s on `/research`, `/get-help-now`,
+  `/trials` and `/search` for roughly a minute while `/` kept answering 200. The
+  smoke check hits ONLY `/`, on the azurewebsites.net hostname, and exits on the
+  FIRST 200 — which can come from the old instance during App Service's
+  overlap. So it answers "did something respond" when the question is "is the
+  site healthy". Invisible today; the moment the link is shared, a deploy during
+  traffic puts frightened people on error pages while they look for a helpline.
+  Acceptance: the check requests the five main routes, requires TWO consecutive
+  clean passes about ten seconds apart (one warm-instance hit must not pass it),
+  and checks `brainharbor.org` as well as the Azure hostname. The polling
+  doubles as a warm-up, which shrinks the window real visitors can hit.
+  **Known limit, state it in the workflow rather than implying otherwise:** this
+  reduces the window, it does not remove it. Zero-downtime needs a staging slot
+  and a swap, and slots require Standard tier — a real monthly cost on the
+  current B1 plan, not a code change.
+  Refs: .github/workflows/ci.yml (deploy job, "Smoke check"). Depends on: nothing.
 
 - [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**
   Goal: an audit trail of what the checks said WHEN they said it (the other

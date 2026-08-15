@@ -110,7 +110,13 @@
         </div>
     }
 
+    @* The meter repeats here, beside the words that explain it (2026-08-15
+       handoff). It appears at the top of the page too, but by this point the
+       reader has passed the whole summary, and "how early is this" is the
+       question the marks answer — asking someone to scroll back up to count
+       them is asking them to give up. *@
     <h2>How early is this?</h2>
+    <p><partial name="_StageBadge" model="Model.Badge" /></p>
     <p>@Model.StageExplanation</p>
 
     <div class="provenance">
