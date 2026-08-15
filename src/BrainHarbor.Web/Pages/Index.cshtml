@@ -85,8 +85,7 @@
         <ul class="feed-grid">
             @foreach (var row in Model.Latest)
             {
-                <partial name="_FeedCard" model="Model.ToCard(row)"
-                         view-data='new ViewDataDictionary(ViewData) { ["PlainCard"] = true }' />
+                <partial name="_FeedCard" model="Model.ToCard(row)" />
             }
         </ul>
 

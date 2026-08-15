@@ -1,27 +1,26 @@
 @using BrainHarbor.Web.Models
 @inject BrainHarbor.Web.Feed.CardImages CardImages
 @model FeedCard
+
 @*
-    The homepage handoff (2026-08-15) specifies a card with no photo and no
-    readiness dial: badge, title, hook, meta, and nothing else. The badge is the
-    one element that genuinely differs between cards and the one people need to
-    read, so nothing is allowed to compete with it.
+    One feed card (WI-109), identical on the homepage and /research.
 
-    /research is NOT in that handoff's scope and still has a "most ready to use"
-    sort (WI-410), which would then be sorting by a number the reader can no
-    longer see. So the plain card is opt-in per page until Dan decides what
-    happens to the readiness score there, rather than deleting a shipped
-    feature on an assumption.
+    Anatomy: hero (content-matched photo + the readiness dial) → badge → title
+    → hook → tags + date · source.
+
+    The 2026-08-15 homepage handoff specified a plainer card with neither the
+    photo nor the dial. Dan's call, 2026-08-15, after seeing both live: the
+    /research card is the better one, and the homepage should match it. The dial
+    is the reason — "how far along the ready scale a finding is" is information
+    the homepage was missing, and it is the thing the badge does NOT say. The
+    badge is about how well tested the evidence is; the dial is about how close
+    it is to something a patient can actually get.
+
+    See docs/design/README.md, which records this as a deliberate deviation so
+    nobody later "restores" the handoff version.
 *@
-@{
-    var plain = ViewData["PlainCard"] as bool? ?? false;
-}
-
 <li class="card">
-    @if (!plain)
-    {
-        @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
-    }
+    @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
     <partial name="_StageBadge" model="StageBadge.For(Model.Stage)" />
     <h3><a href="@Model.Url">@Model.Title</a></h3>
     <p class="card__hook">@Model.Hook</p>
