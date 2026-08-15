@@ -29,6 +29,10 @@ save it, and we do not write it to our logs. It is gone when the page finishes
 loading. You never have to share your location: typing a ZIP works just as
 well, and browsing the list works without either.
 
+**When you email us:** if you write to support@brainharbor.org, we keep your
+message so we can read it and act on it. We do not add you to any list, and we
+do not use your address for anything else.
+
 **When the digest opens:** we will ask for your email address, and nothing
 else. Sign-up is not open yet, so we hold no addresses today.
 

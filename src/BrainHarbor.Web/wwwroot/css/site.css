@@ -1122,6 +1122,36 @@ main {
 
 .disclaimer p:last-child { margin-block-end: 0; }
 
+/* ---------- Suggestions box (home, 2026-08-15) ----------
+
+   Quieter than the AI notice on purpose: it sits next to it at the foot of the
+   page, and two loud panels in a row means neither is read. The surface fill is
+   enough to mark it as its own thing. */
+.suggest {
+  background: var(--color-surface);
+  border-radius: var(--card-radius);
+  padding: var(--space-5) var(--space-6);
+  margin-block-start: var(--space-7);
+}
+
+.suggest h2 {
+  margin-block: 0 var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.suggest p { margin-block-end: var(--space-2); }
+.suggest p:last-child { margin-block-end: 0; }
+
+/* The "this is not how you get help" line. Muted, but not small: it is the
+   part that stops a frightened reader emailing a suggestions box and waiting. */
+.suggest__not {
+  color: var(--color-ink-muted);
+}
+
+.footer-suggest {
+  margin-block: var(--space-2) 0;
+}
+
 /* ---------- AI notice (homepage handoff; was .ai-caution, WI-422) ----------
 
    Moved to the foot of the page: it stays honest and findable without standing

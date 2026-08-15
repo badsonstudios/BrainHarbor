@@ -90,6 +90,21 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-15** — **WI-430 done — a suggestions address, with a steer attached.**
+  Dan wants `support@brainharbor.org` on the site before he shares it publicly,
+  for ideas on making the site better rather than for support. It now appears in
+  three places: a box at the foot of the home page, a line in the footer of
+  every page, and a section on `/about`; `/privacy` says what happens to an
+  email that arrives.
+  **The safety-relevant part is the copy, not the address.** The mailbox is
+  called support@ but is not a support line, and "support" is precisely what a
+  frightened reader would write to at 2am expecting help — then wait days for an
+  answer. So every prominent placement states that the inbox is not a way to get
+  medical or urgent help and prints the ABTA CareLine number inline, not as a
+  link away. A test pins that steer, not just the address, because the address
+  without the steer is the part that could hurt someone.
+  Reading grades: home 3.3, about 3.4, privacy 3.8. 773 tests.
+
 - **2026-08-15** — **Homepage redesign live — "Harbor Banner"** (WI-428a; Dan
   brought a finished handoff back from Claude Design, reviewed it locally and
   approved). The shape is the point: a hero paragraph, three doors and a
