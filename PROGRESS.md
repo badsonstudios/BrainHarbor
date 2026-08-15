@@ -13,7 +13,7 @@
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
 | **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
-| **Next up** | **WI-425** (prominent "See all" button under the home feed — Dan's ask 2026-08-14, agreed to do next), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
+| **Next up** | **WI-428** (restyle the research item page — finishes the 2026-08-15 handoff), **WI-429** (Dan's call: does `/research` adopt the homepage's plain card, and does the readiness sort go with it), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -89,6 +89,36 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-15** — **Homepage redesign live — "Harbor Banner"** (WI-428a; Dan
+  brought a finished handoff back from Claude Design, reviewed it locally and
+  approved). The shape is the point: a hero paragraph, three doors and a
+  full-width AI panel used to stack up and push the first real update about a
+  screen and a half down. Now one navy hero band (lockup as the `h1`, watermark,
+  wave edge), **two** doors instead of three ("browse all research" cut, because
+  the feed underneath already does that job; the crisis door stays), then
+  updates — **8 cards**, not 4 — with "See all" as a filled button in the
+  section head and a large outlined one beneath. **Absorbs WI-425.**
+  **Evidence badge is 4 marks now, on a ladder with no gaps.** The old one ran
+  5, 4, 2, 1 with nothing at 3, so the step from "review of existing research"
+  to "animal study" was twice the step anywhere else for no reason a reader
+  could infer; a test now fails if a gap reappears. Ten steps (the readiness
+  dial this replaces on the feed) is a finer distinction than anyone can feel,
+  and a fraction invites "my treatment is 60% done".
+  **Two deliberate deviations from the handoff, both safety copy, both pinned
+  by tests.** The handoff gives the hero no copy at all and drops "a person does
+  not check every one" from the notice. Kept both: the AI admission leads in the
+  band (a reader must not get through eight summaries before learning who wrote
+  them) and the non-review sentence went into the bottom notice, because "checks
+  run before it publishes" does not tell anyone that no person read theirs.
+  New `Banner` layout section so a full-bleed band can sit before `main`.
+  Reading grade **3.7** (was 4.1), axe clean, 772 tests.
+  **Left deliberately unfinished:** the research item page restyle (**WI-428**)
+  — the badge change already reaches it, so it is consistent, just not restyled.
+  And the homepage's plain card (no photo, no readiness dial) is NOT yet applied
+  to `/research`, which still has both plus a "Most ready to use" sort that
+  would otherwise sort by an invisible number (**WI-429** — Dan's call).
+  `docs/design/README.md` records which handoff governs what.
 
 - **2026-08-14** — **WI-427 done — negation never worked for contractions, and
   that was the bigger half of the queue.** Dan shipped WI-426, reloaded, and

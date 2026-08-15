@@ -5,13 +5,18 @@ namespace BrainHarbor.Tests;
 /// <summary>
 /// WI-109: the stage → badge mapping is the site's core trust device
 /// (content-pipeline.md). The evidence ranks and aria-labels here are spec,
-/// not style — docs/design/entry-hub-handoff/README.md §Stage badge.
+/// not style — docs/design/homepage-handoff/README.md §Stage badge.
+///
+/// Four rungs since 2026-08-15, not five, and with no gap in the ladder. The
+/// old scale ran 5, 4, 2, 1 with nothing at 3, so the step between "review of
+/// existing research" and "animal study" was twice the step anywhere else for
+/// no reason a reader could infer.
 /// </summary>
 public class StageBadgeTests
 {
     [Theory]
-    [InlineData(ResearchStage.TestedInPeople, BadgeKind.Result, "Tested in people", 5)]
-    [InlineData(ResearchStage.ReviewOfExistingResearch, BadgeKind.Result, "Review of existing research", 4)]
+    [InlineData(ResearchStage.TestedInPeople, BadgeKind.Result, "Tested in people", 4)]
+    [InlineData(ResearchStage.ReviewOfExistingResearch, BadgeKind.Result, "Review of existing research", 3)]
     [InlineData(ResearchStage.EarlyResearchAnimals, BadgeKind.Result, "Early research (animals)", 2)]
     [InlineData(ResearchStage.EarlyResearchLabCells, BadgeKind.Result, "Early research (lab cells)", 1)]
     [InlineData(ResearchStage.NewOrUpdatedTrial, BadgeKind.Progress, "New or updated trial", 0)]
@@ -30,10 +35,29 @@ public class StageBadgeTests
     [Fact]
     public void ResultBadgesAnnounceEvidenceStrength()
     {
-        Assert.Equal("Tested in people. Evidence strength 5 of 5.",
+        Assert.Equal("Tested in people. Evidence strength 4 of 4.",
             StageBadge.For(ResearchStage.TestedInPeople).AriaLabel);
-        Assert.Equal("Early research (lab cells). Evidence strength 1 of 5.",
+        Assert.Equal("Early research (lab cells). Evidence strength 1 of 4.",
             StageBadge.For(ResearchStage.EarlyResearchLabCells).AriaLabel);
+    }
+
+    /// <summary>
+    /// The ladder has a rung at every step. A gap is not a cosmetic detail: the
+    /// meter is the site's trust device, and a reader who counts four marks on
+    /// one card and two on the next is entitled to assume there is a three.
+    /// </summary>
+    [Fact]
+    public void TheEvidenceLadderHasNoGaps()
+    {
+        var ranks = Enum.GetValues<ResearchStage>()
+            .Select(StageBadge.For)
+            .Where(b => b.Kind == BadgeKind.Result)
+            .Select(b => b.EvidenceStrength)
+            .OrderBy(r => r)
+            .ToList();
+
+        Assert.Equal([1, 2, 3, 4], ranks);
+        Assert.All(ranks, r => Assert.InRange(r, 1, StageBadge.MeterSteps));
     }
 
     [Fact]

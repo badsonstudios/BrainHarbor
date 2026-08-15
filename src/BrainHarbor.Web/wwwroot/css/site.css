@@ -19,9 +19,16 @@
   --color-border-subtle: #dbe3ea;/* decorative hairlines only */
   --color-band: #0d3b4a;         /* helpline band + dark panels */
   --color-band-ink: #ffffff;     /* text on band — 11:1 */
+  /* Two attention palettes, deliberately distinct. NOTICE is a status fact
+     ("this trial has closed"); CAUTION is the AI warning from the homepage
+     handoff. They say different things, so they do not look identical — and
+     the handoff specifies the amber, with its contrast already measured. */
   --color-notice: #fdf3ef;       /* "this has closed / take care" panel fill */
   --color-notice-border: #f0d3c6;
   --color-notice-edge: #b4552b;  /* its left rule — 4.8:1 on the fill */
+  --color-caution: #fff6e0;      /* AI notice fill (homepage handoff) */
+  --color-caution-border: #e6d3a3;
+  --color-caution-edge: #8a6a12; /* its left rule — 5.9:1 on the fill */
 
   /* Type — 18px base, ~1.2 modular scale */
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -54,6 +61,7 @@
 
   /* Shape — rounded + soft shadow is the theme's signature */
   --radius: 14px;
+  --radius-lg: 18px;         /* doors in the hero band (homepage handoff) */
   --card-bg: #ffffff;
   --card-border: 1px solid #e6ecf1;
   --card-radius: 16px;
@@ -130,6 +138,22 @@ a:hover {
   color: var(--color-accent-strong);
 }
 
+/* Hidden on screen, still announced. The homepage h1 uses this: the lockup is
+   the heading visually, but alt text never appears in a screen reader's
+   heading list, and heading navigation is how much of this audience moves
+   around a page. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---------- Focus: always visible, never removed ---------- */
 
 :focus-visible {
@@ -179,6 +203,26 @@ button:hover,
 input[type="submit"]:hover {
   background: var(--color-accent-strong);
   border-color: var(--color-accent-strong);
+}
+
+/* Outlined and large variants (homepage handoff): the "See all research
+   updates" button under the feed is the page's main way onward, so it gets
+   size rather than colour to carry the emphasis. */
+.button--outline {
+  background: var(--color-paper);
+  color: var(--color-accent);
+}
+
+.button--outline:hover {
+  background: var(--color-surface);
+  color: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+}
+
+.button--lg {
+  min-block-size: 3.25rem;
+  padding: var(--space-3) var(--space-7);
+  font-size: var(--text-lg);
 }
 
 input[type="text"],
@@ -358,100 +402,135 @@ main {
   padding-block: var(--space-6) var(--space-8);
 }
 
-/* ---------- Entry Hub (home hero) ---------- */
+/* ---------- Hero band — the "Harbor Banner" (homepage handoff) ----------
 
-.hub {
-  background: var(--color-surface);
-  border-radius: 20px;
-  padding: var(--space-6);
-  margin-block-end: var(--space-6);
-  /* Two columns: the copy, and the brand in the top-right corner. The brand
-     column is sized in rem so it grows with large-text mode like everything
-     else, and minmax(0,…) lets it shrink rather than force a scrollbar. */
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
-  column-gap: var(--space-6);
+   The one branded moment on the page, and the reason the homepage stopped
+   burying its own content: what used to be a hero paragraph, three doors and
+   a full-width AI panel is now one band and two doors, so the first real
+   update sits near the top of the screen instead of a screen and a half down.
+   Branding appears here, in the header, and beside the section heading — all
+   space that was otherwise empty, never in front of content. */
+
+.hero-band {
+  position: relative;
+  background: var(--color-band);
+  color: var(--color-band-ink);
+  overflow: hidden;
+  padding-block-start: var(--space-6);
 }
 
-.hub h1 {
-  margin-block-start: 0;
+.hero-band__watermark {
+  position: absolute;
+  top: -70px;
+  inset-inline-end: -70px;
+  width: 400px;
+  height: 400px;
+  opacity: 0.07;
+  pointer-events: none;
 }
 
-/* The copy stays in column one; the doors run the full width beneath both. */
-.hub > h1,
-.hub > p {
-  grid-column: 1;
+.hero-band__inner {
+  position: relative;
+  padding-block-end: var(--space-7);
 }
 
-.hub__brand {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: start;
-  justify-self: end;
-  width: 100%;
+/* The lockup IS the h1: visually-hidden text carries the heading and the image
+   is decorative. Alt text is not a heading — it never appears in a screen
+   reader's heading list, and heading navigation is a primary strategy for this
+   audience. */
+.hero-band h1 {
+  margin: 0 0 var(--space-6);
+  max-width: none;
+}
+
+.hero-band h1 img {
+  display: block;
+  width: 640px;
+  max-width: 100%;
   height: auto;
 }
 
-.hub__doors {
-  grid-column: 1 / -1;
+/* One plain line of AI disclosure inside the band. The handoff puts the AI
+   notice at the foot of the page so it stops standing between the reader and
+   the content, which is right — but a reader should not be able to get through
+   eight summaries before learning who wrote them. So the admission leads here
+   in one sentence, and the full notice still closes the page. */
+.hero-band__disclosure {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--color-band-ink);
+}
+
+.hero-band__disclosure a {
+  color: var(--color-band-ink);
+  text-decoration: underline;
+}
+
+/* Wave edge where the band meets the page — lifted from the logo's waterline. */
+.wave-edge {
+  display: block;
+  width: 100%;
+  height: 52px;
+}
+
+/* ---------- Two doors ----------
+
+   Two, not three: three equal choices is three decisions before anyone has
+   read anything, and "browse all research" is what the feed underneath already
+   does. The crisis door stays — it is the one that must never be hard to find. */
+
+.doors {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-4);
+  margin-block-end: var(--space-5);
 }
 
-/* Below this the hero is one column and the brand goes away rather than
-   pushing the three doors down — the "talk to someone now" door must not
-   scroll off a phone screen to make room for a logo the header already
-   shows. */
-@media (max-width: 60rem) {
-  .hub {
-    grid-template-columns: 1fr;
-  }
-
-  .hub__brand {
-    display: none;
-  }
-}
-
-/* A door is one whole-card link. */
 .door {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  background: var(--card-bg);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: 16px;
+  align-items: center;
+  gap: var(--space-4);
+  border-radius: var(--radius-lg);
   padding: var(--space-5);
   text-decoration: none;
-  color: var(--color-ink);
   min-block-size: var(--tap-target);
 }
 
-.door strong {
-  font-size: var(--text-lg);
+.door__icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  font-size: 1.7rem;
 }
 
-.door span.sub {
-  color: var(--color-ink-muted);
-}
-
-.door__cta {
-  margin-block-start: auto;
-  font-weight: 700;
-  color: var(--color-accent);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+.door__title {
+  display: block;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
 }
 
 .door--primary {
   background: var(--color-accent);
   color: var(--color-band-ink);
-  border-color: var(--color-accent);
 }
 
-.door--primary span.sub,
-.door--primary .door__cta {
-  color: var(--color-band-ink);
+.door--primary .door__icon {
+  background: rgba(255, 255, 255, .2);
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+
+.door--secondary {
+  background: var(--color-paper);
+  color: var(--color-band);
+}
+
+.door--secondary .door__icon {
+  background: var(--color-surface);
 }
 
 /* ---------- Feed grid + cards ---------- */
@@ -459,14 +538,55 @@ main {
 .section-head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: var(--space-3);
+}
+
+/* The lighthouse mark beside the heading — a "new section starts here"
+   wayfinding cue. Deliberately not repeated on cards: it would be identical on
+   every one, so it cannot distinguish them, and it would compete with the
+   evidence badge, which is the element that genuinely differs. */
+.section-head__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-head__title img {
+  display: block;
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+
+.section-head h2 {
+  margin: 0;
+}
+
+/* The logo's wave, reused as a section rule. */
+.wave-rule {
+  display: block;
+  width: 100%;
+  height: 11px;
+  margin-block-end: var(--space-3);
+}
+
+/* The centred "See all" row. max-width:none is required: the global `p, ul, ol`
+   rule caps at --measure (65ch), which would centre the button inside a ~630px
+   box rather than the content width and read as accidentally left-shifted. */
+.see-all-row {
+  text-align: center;
+  max-width: none;
+  margin-block: var(--space-6);
 }
 
 .feed-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* two cards per row */
+  /* auto-fit rather than a fixed 2 columns: the cards decide when to wrap, so
+     one breakpoint stops being a thing that can be forgotten. Two-up on
+     desktop, one column on a phone, and it degrades gracefully in between. */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: var(--space-4);
   list-style: none;
   margin: 0;
@@ -474,10 +594,6 @@ main {
   max-width: none;
 }
 
-/* One card per row on narrow screens. */
-@media (max-width: 40rem) {
-  .feed-grid { grid-template-columns: 1fr; }
-}
 
 .card {
   display: flex;
@@ -1006,36 +1122,29 @@ main {
 
 .disclaimer p:last-child { margin-block-end: 0; }
 
-/* ---------- AI caution (WI-422, home) ---------- */
+/* ---------- AI notice (homepage handoff; was .ai-caution, WI-422) ----------
 
-/* Deliberately louder than .disclaimer: Dan's ask was that this be noticeable,
-   and it sits between the hero and the first AI-written summary. Bigger than
-   body text, the notice fill so it separates from the hub panel above it, and
-   a thick left rule. Still the calm warm palette, not a red alarm — this
-   audience is frightened enough without the site shouting. */
-.ai-caution {
-  background: var(--color-notice);
-  border: 1px solid var(--color-notice-border);
-  border-inline-start: 8px solid var(--color-notice-edge);
-  border-radius: var(--radius, 12px);
-  padding: var(--space-5) var(--space-6);
-  margin-block: var(--space-6);
+   Moved to the foot of the page: it stays honest and findable without standing
+   between the reader and the content. The admission itself has not been
+   demoted — one plain sentence now leads inside the hero band
+   (.hero-band__disclosure), so nobody can read a summary before learning AI
+   wrote it. This is the fuller version, and the last thing before the footer. */
+.ai-notice {
+  background: var(--color-caution);
+  border: 1px solid var(--color-caution-border);
+  border-inline-start: 6px solid var(--color-caution-edge);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+  margin-block: var(--space-7) var(--space-5);
 }
 
-.ai-caution p {
-  margin: 0;
+.ai-notice h2 {
+  margin: 0 0 var(--space-2);
   font-size: var(--text-lg);
-  line-height: var(--leading);
-  max-width: 46rem;   /* the site's reading measure — long lines lose people */
 }
 
-.ai-caution strong {
-  /* The meaning is in the words, not the colour: this reads first whether or
-     not the fill renders (high-contrast mode, printing, a stylesheet that
-     failed to load). */
-  display: block;
-  font-size: var(--text-xl);
-  margin-block-end: var(--space-2);
+.ai-notice p {
+  margin: 0;
 }
 
 /* ---------- Digest signup ---------- */
