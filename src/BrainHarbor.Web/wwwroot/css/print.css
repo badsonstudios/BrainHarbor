@@ -109,10 +109,39 @@ body {
   width: auto;
 }
 
-/* The hero's decorative brand repeat is ink nobody asked for — the masthead
-   above already identifies the page. */
-.hub__brand {
-  display: none;
+/* Decoration is ink nobody asked for: the masthead above already identifies
+   the page, and a patient printing this for an appointment wants the words.
+   The "See all" row is a dead control on paper. */
+.hero-band__watermark,
+.wave-edge,
+.wave-rule,
+.see-all-row {
+  display: none !important;
+}
+
+/* The hero band is a solid navy block on screen. On paper it would either eat
+   a toner cartridge or (with backgrounds off) print white-on-white text. */
+.hero-band {
+  background: #fff !important;
+  color: #000 !important;
+  padding: 0 !important;
+}
+
+.hero-band__disclosure,
+.hero-band__disclosure a {
+  color: #000 !important;
+}
+
+/* The lockup in the band is drawn in light inks for a dark background. */
+.hero-band h1 img {
+  filter: invert(1);
+  max-width: 3in;
+}
+
+.door {
+  border: 1pt solid #b9c4cd !important;
+  background: none !important;
+  color: #000 !important;
 }
 
 h1, h2, h3, h4 {

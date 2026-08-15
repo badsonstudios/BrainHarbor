@@ -95,6 +95,10 @@
             </a>
         </div>
     </header>
+    @* Full-bleed content between the header and main — the homepage's hero
+       band is edge-to-edge navy, so it cannot live inside main's container.
+       Optional: every other page renders nothing here. *@
+    @await RenderSectionAsync("Banner", required: false)
     <main id="main-content" class="container">
         @RenderBody()
     </main>

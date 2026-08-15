@@ -628,7 +628,61 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   important breakthrough". Pinned by tests in both directions.
   Refs: BrainHarbor.Safety\Guardrails.Negation/IsNegated.
 
-- [ ] **WI-425 A prominent "See all" button under the home feed**
+- [x] **WI-428a Homepage redesign — "Harbor Banner"** (done 2026-08-15 — Dan
+  brought a finished handoff back from Claude Design; reviewed locally and
+  approved)
+  Delivered: hero band (lockup as the `h1` with visually-hidden heading text,
+  watermark, wave edge), two doors instead of three, "Latest updates" with the
+  lighthouse mark and wave rule, **8 cards** instead of 4, "See all" as a filled
+  button in the section head and a large outlined button below the feed, and the
+  AI notice moved to the foot of the page. Evidence badge **4 marks, ladder with
+  no gaps** (was 5, 4, 2, 1 — nothing at 3). New `Banner` layout section so a
+  full-bleed band can sit before `main`.
+  **Absorbs WI-425** (the prominent "See all" button) entirely.
+  **Two deliberate deviations, both safety copy, both pinned by tests:** the AI
+  admission leads in the hero band (the handoff has no hero copy, and a reader
+  must not get through eight summaries before learning who wrote them), and
+  "A person does not check every one" survives into the bottom notice (the
+  handoff's copy says checks run, which is not the same statement).
+  Reading grade 3.7, axe clean, 772 tests.
+  Refs: docs/design/README.md (which handoff governs what), docs/design/homepage-handoff.
+
+- [ ] **WI-428 Restyle the research item page to match the new homepage**
+  Goal: finish the 2026-08-15 handoff — the homepage shipped, the item page did
+  not.
+  Acceptance: rebuild `Pages/Research/Item.cshtml` against
+  `docs/design/homepage-handoff/research-item.html` — the "What this means, and
+  doesn't mean" block (`.means-block` with its circled icon), `.original-title`,
+  `.provenance` styling, and the glossary `.term` treatment. Keep every existing
+  rule: only a PUBLISHED item renders, a pulled item 404s exactly like one that
+  never existed, no summary is ever invented, and the registry's words stay
+  labelled as the registry's. Reader-facing, so it rides the 6.0 ContentCheck
+  gate and the axe scan.
+  Note: the badge already renders 4 marks there; this is styling, not data.
+  Refs: docs/design/homepage-handoff/research-item.html + README §Item page.
+  Depends on: nothing.
+
+- [ ] **WI-429 Decide what happens to the readiness dial on /research**
+  Goal: one answer to "does the reader see a readiness score", instead of two.
+  Problem (surfaced by WI-428a): the homepage handoff's card is badge, title,
+  hook, meta — no photo backdrop, no 1-to-10 readiness dial. The homepage now
+  renders that plain card; `/research` still renders the photo and the dial,
+  because it is not in the handoff's scope AND it carries a "Most ready to use"
+  sort (WI-410) that would otherwise sort by a number the reader cannot see.
+  So the two pages currently disagree about what a card is. That is deliberate
+  and temporary — `_FeedCard` takes a `PlainCard` flag — but it should not stay.
+  Acceptance: Dan picks. Either `/research` adopts the plain card and the
+  readiness sort goes (the score stays in the DB, the pipeline, and the review
+  queue), or the homepage keeps the plain card as a deliberate exception and
+  that is written down. Then the `PlainCard` flag goes away either way.
+  Note: the card photo pool (`CardImages`, `wwwroot/img/cards`, IMAGE-CREDITS)
+  is a real feature with licensing notes — retiring it is a decision, not a
+  cleanup. Refs: Pages/Shared/_FeedCard.cshtml, WI-410, WI-306.
+
+- [x] **WI-425 A prominent "See all" button under the home feed** (done
+  2026-08-15 as part of WI-428a — the redesign ships both a filled button in the
+  section head and a large outlined one below the feed, which is what this asked
+  for)
   Goal: the way out of the home page's four cards is obvious (Dan's ask,
   2026-08-14: "the See all link next to Latest updates is way too small").
   Acceptance: **keep** the existing small "See all →" link beside the heading —
