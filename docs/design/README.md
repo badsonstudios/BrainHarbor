@@ -39,6 +39,15 @@ Both are safety copy, and both were kept on purpose. Change them knowingly.
 Both are pinned by tests in `HomeFeedTests`. The test comments say the same
 thing: rewording is fine, dropping them is not.
 
+3. **The feed card keeps its photo and its readiness dial.** The handoff
+   specifies a plainer card — badge, title, hook, meta — on the grounds that
+   nothing should compete with the evidence badge. Dan's call on 2026-08-15,
+   after seeing both live: the `/research` card is the better one and the
+   homepage should match it. The dial is the reason. The badge says how well
+   TESTED a finding is; the dial says how close it is to something a patient can
+   actually get, and those are different questions. One card renders on both
+   pages, so they cannot drift apart again.
+
 ## Not yet implemented
 
 The **research item page** restyle from `homepage-handoff/research-item.html`

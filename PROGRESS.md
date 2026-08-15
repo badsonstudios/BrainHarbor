@@ -13,7 +13,7 @@
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
 | **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
-| **Next up** | **WI-428** (restyle the research item page — finishes the 2026-08-15 handoff), **WI-429** (Dan's call: does `/research` adopt the homepage's plain card, and does the readiness sort go with it), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
+| **Next up** | **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -89,6 +89,27 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-08-15** — **WI-429 + WI-428 done — the homepage card gets its readiness
+  dial back, and the item page finishes the handoff.**
+  **WI-429 is Dan's call and it reverses the handoff.** That design specified a
+  plain card (badge, title, hook, meta) with no photo and no readiness dial.
+  Dan, after seeing both live: the `/research` card is better and the homepage
+  should match it. The dial is the reason — the badge says how well TESTED a
+  finding is, the dial says how close it is to something a patient can actually
+  get, and the homepage was answering only the first question. The `PlainCard`
+  flag is gone; ONE card renders on both pages, so they cannot drift again.
+  Recorded as deviation 3 in `docs/design/README.md`.
+  **WI-428 turned out to be nearly done already.** Every item-page style the new
+  handoff specifies (`.means-block` + head/icon, `.original-title`, `.term`,
+  `.provenance`, `.ai-note`) already matched value for value — the page was
+  built from the previous handoff and this one barely changed it. The one real
+  gap: the badge now repeats under "How early is this?", beside the words that
+  explain it, because by then the reader has passed the whole summary and
+  scrolling back up to count marks is how you lose someone. Kept against the
+  handoff: the readiness callout (Dan wants readiness more prominent, not less)
+  and "What this means, and what it doesn't" (the handoff writes that heading
+  with an em dash, which the site's own copy rule forbids). 773 tests.
 
 - **2026-08-15** — **WI-430 done — a suggestions address, with a steer attached.**
   Dan wants `support@brainharbor.org` on the site before he shares it publicly,
