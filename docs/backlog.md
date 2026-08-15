@@ -647,6 +647,21 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Reading grade 3.7, axe clean, 772 tests.
   Refs: docs/design/README.md (which handoff governs what), docs/design/homepage-handoff.
 
+- [x] **WI-430 A suggestions address on the site** (done 2026-08-15 — Dan's ask,
+  ahead of sharing the site publicly)
+  Goal: people who find the site can say what would make it better.
+  Delivered: `support@brainharbor.org` in three places — a "Tell us how to make
+  this better" box at the foot of the home page, one line in the footer of every
+  page, and a section on `/about`. A line in `/privacy` says what happens to an
+  email (kept so we can act on it; no list, no other use).
+  **The copy carries a safety steer, and that is the load-bearing part.** The
+  mailbox is named support@ but is for site suggestions, and "support" is
+  exactly what a frightened reader would email at 2am expecting help — then wait
+  days. So every prominent placement says the inbox is not a way to get medical
+  or urgent help, and puts the ABTA CareLine number right there rather than a
+  link away. Pinned by a test.
+  Reading grades: home 3.3, about 3.4, privacy 3.8.
+
 - [ ] **WI-428 Restyle the research item page to match the new homepage**
   Goal: finish the 2026-08-15 handoff — the homepage shipped, the item page did
   not.

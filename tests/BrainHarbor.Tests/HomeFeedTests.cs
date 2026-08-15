@@ -171,6 +171,26 @@ public sealed class HomeFeedTests : IClassFixture<WebApplicationFactory<Program>
             "the AI admission must come before the feed, not after it");
     }
 
+    /// <summary>
+    /// The suggestions box (Dan's ask, 2026-08-15). The address is support@,
+    /// but the inbox is for ideas about the site — and "support" is exactly
+    /// what a frightened reader at 2am would email expecting help, then wait
+    /// days for an answer.
+    ///
+    /// So the steer is the safety property here, not the address: the page must
+    /// say the inbox is not a way to get help, and must put the CareLine number
+    /// right there rather than a link away.
+    /// </summary>
+    [Fact]
+    public async Task TheSuggestionsBoxSaysWhatItIsNotForAndOffersTheCareLine()
+    {
+        var html = await GetHomeAsync();
+
+        Assert.Contains("mailto:support@brainharbor.org", html);
+        Assert.Contains("not a way to get", html);
+        Assert.Contains("800-886-2282", html);
+    }
+
     [Fact]
     public async Task PendingItemsDoNotAppearOnHome()
     {
