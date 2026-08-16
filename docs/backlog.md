@@ -740,6 +740,44 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: Pages\Index.cshtml, wwwroot\css\site.css (.door, .nav-cta).
   Depends on: nothing.
 
+- [x] **WI-432 Fix the human-review claim in /terms, and say what the site is
+  for** (done 2026-08-15 — Dan asked whether the site needs legal cover)
+  The real defect: `/terms` said "We check each summary before it goes up",
+  which reads as human review. Publishing mode is Auto and no person reads each
+  summary; every other page was scrubbed of that implication on 2026-07-31 and
+  this one was missed. It is the page most likely to be read as a promise, which
+  makes it the worst place to leave it. Now says AI writes them, they must pass
+  automatic checks, and a person does not read every one.
+  Also: the page states plainly that the site is for learning and for asking a
+  care team better questions, and a new "We are not part of these groups"
+  section covers ABTA, NCI and ClinicalTrials.gov — the site points at all three
+  and none of them checked what we wrote. `reviewed` stamp refreshed.
+  Reading grade 4.3.
+
+- [ ] **WI-433 `[user]` Have a lawyer review the site before soft launch**
+  Goal: real legal cover, written by someone qualified to write it.
+  Why it is a `[user]` item: the assistant corrected what it could verify
+  (see WI-432) and deliberately did NOT draft the rest, because Dan asked for
+  nothing he could not stand behind. These need a professional:
+  - a warranty disclaimer and limitation of liability (PLAN.md §5 lists
+    "no-warranty language" as a requirement; `/terms` currently has a soft
+    "we cannot promise everything is current", which is an apology, not a
+    disclaimer);
+  - governing law and jurisdiction;
+  - who operates the site — `/about` says "a small project, not a company", so
+    it is currently a person, not an entity, publishing medical information;
+  - whether the AI-authored, auto-published model needs its own language.
+  Context worth handing the lawyer: the audience is brain-tumor patients and
+  caregivers, summaries are written by AI and publish automatically once
+  automated safety checks pass with no human reading them, sources are
+  summarized and linked rather than republished, and the site takes no money and
+  runs no ads.
+  **Note on sources, since it is a common misreading:** publicly accessible is
+  not the same as public domain. ClinicalTrials.gov, NCI and SSA are public
+  domain; PubMed ABSTRACTS often carry publisher copyright, which is why the
+  pipeline summarizes and links and keeps raw abstracts admin-only (pinned by a
+  test). Depends on: nothing. Do before WI-408 soft launch.
+
 - [ ] **WI-431 Harden the deploy smoke check**
   Goal: a deploy that leaves the site half-broken fails loudly instead of going
   green (observed six times on 2026-08-15).

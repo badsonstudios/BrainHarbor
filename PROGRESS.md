@@ -90,6 +90,25 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-15** — **WI-432 done — /terms was still claiming a human reads every
+  summary.** Dan asked whether the site needs legal cover; looking for it turned
+  up a real defect rather than a missing paragraph. `/terms` said "We check each
+  summary before it goes up", which reads as human review. Publishing mode is
+  Auto and nobody reads each one; every other page was scrubbed of that
+  implication on 2026-07-31 and this page was missed — the one page most likely
+  to be read as a promise. Now: AI writes them, they must pass automatic checks,
+  and a person does not read every one.
+  Also added: the site says plainly it is for learning and for asking a care
+  team better questions, and a "We are not part of these groups" section for
+  ABTA, NCI and ClinicalTrials.gov, since the site points at all three and none
+  of them checked what we wrote. Grade 4.3, 773 tests.
+  **Deliberately NOT written** (Dan: "don't include anything you're not sure
+  about"): warranty disclaimer, limitation of liability, governing law, and the
+  operating-entity question. Filed as **WI-433**, a `[user]` item, with the
+  context a lawyer would need. Also recorded there: publicly accessible is not
+  public domain — PubMed abstracts often carry publisher copyright, which is why
+  the pipeline summarizes and links and keeps raw abstracts admin-only.
+
 - **2026-08-15** — **WI-429 + WI-428 done — the homepage card gets its readiness
   dial back, and the item page finishes the handoff.**
   **WI-429 is Dan's call and it reverses the handoff.** That design specified a
