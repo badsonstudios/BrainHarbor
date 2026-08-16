@@ -177,8 +177,32 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.True(failures.Count == 0,
             "ContentCheck failures:\n" + string.Join("\n", failures.Select(f => $"{f.File}: {f.Message}")));
 
-        // Six shell pages per the WI-107 acceptance criteria.
-        Assert.Equal(6, findings.Count(f => f.Message.StartsWith("reading grade")));
+        // The six WI-107 shell pages must each be graded. Named rather than
+        // counted: the old assertion pinned the TOTAL at six, so it failed the
+        // moment curated content was added (18 tumor pages, WI-412) even though
+        // every page passed. A count tells you the number changed; naming tells
+        // you whether the page you care about is still being checked.
+        string[] shellPages =
+            ["about.md", "how-we-write.md", "start.md", "digest.md", "privacy.md", "terms.md"];
+
+        var graded = findings
+            .Where(f => f.Message.StartsWith("reading grade"))
+            .Select(f => f.File)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var page in shellPages)
+        {
+            Assert.Contains(page, graded);
+        }
+
+        // And nothing shipped ungraded: every .md under the pages root got a
+        // grade, so a new folder cannot quietly escape the gate.
+        var onDisk = Directory
+            .EnumerateFiles(
+                Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages"),
+                "*.md", SearchOption.AllDirectories)
+            .Count();
+        Assert.Equal(onDisk, graded.Count);
     }
 
     private static string FindRepoRoot()

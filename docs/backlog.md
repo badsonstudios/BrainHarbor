@@ -432,7 +432,40 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tests/BrainHarbor.Tests/TestDatabase.cs, WI-402 log entry.
   Depends on: nothing.
 
-- [ ] **WI-412 Tumor-type descriptions (/tumors)**
+- [x] **WI-412 Tumor-type descriptions (/tumors)** (done 2026-08-16 — 18 of 24
+  types written; Dan asked for all of it at once and to review it live)
+  Delivered: `/tumors`, an index built from `taxonomy.yml` (the same file the
+  research filter reads, so the two cannot drift), grouped the way the taxonomy
+  groups — gliomas, other primary, secondary, spinal, and the cross-cutting
+  axes — because "is mine a glioma?" is a question the grouping itself answers.
+  **Deviation from the acceptance, deliberate:** each type gets its OWN page
+  (`/tumors/glioblastoma`) rather than only an anchor on one long page. People
+  arrive from a search engine having just been handed a word by a doctor, and a
+  page about their diagnosis beats an anchor part-way down a list. The anchors
+  exist too, so `/research` can still deep-link.
+  Descriptions live in `Content/pages/tumors/*.md`, NOT in `taxonomy.yml`: that
+  file is rendered into the classifier prompt on every call, so prose there
+  would cost tokens per item and would escape the reading-level gate. As curated
+  pages they inherit the 6.0 CI gate, glossary tooltips, the medical disclaimer,
+  `sources` front matter and site search.
+  Content discipline, because this is the riskiest writing on the site:
+  descriptions only — no survival figures, no prognosis, no treatment
+  recommendations, since those vary per person and are where a wrong word does
+  real harm. WHO CNS5 naming held throughout (grade 4 ≠ glioblastoma; DIPG is
+  the pontine subset of diffuse midline glioma; spinal cord tumor is not a brain
+  tumor and sits under its own heading, pinned by a test). Every page ends with
+  questions to ask a care team.
+  Reading grades 2.4 to 5.4, all under the gate. 777 tests.
+  **Not written yet (6):** ATRT, chordoma, CNS germ cell tumor, hemangioblastoma,
+  pituitary/other rare types as noted, and the "all brain tumors" catch-all.
+  They render "We are still writing this one" with a link to the research feed
+  for that type — honest rather than blank.
+  **Open question for Dan:** these pages were drafted by AI (this assistant) and
+  read as the site's own writing. `/how-we-write` describes the FEED pipeline
+  and says nothing about curated pages. Worth deciding whether curated pages
+  should disclose authorship the way summaries do.
+
+  Original acceptance, kept for the record:
   Goal: every tumor type a reader can pick in the /research filter has a
   plain-English "what is this?" explanation (Dan's ask, 2026-08-11 — an early
   slice of P2c; sitemap.md already reserves `/tumors/`).

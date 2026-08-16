@@ -1,0 +1,68 @@
+@page "/tumors"
+@model BrainHarbor.Web.Pages.TumorsModel
+@{
+    ViewData["Title"] = "Brain tumor types in plain words";
+    ViewData["Description"] =
+        "What each type of brain tumor is, in plain words, for patients and caregivers.";
+}
+
+@* WI-412. The list is built from taxonomy.yml, the same file the research
+   filter uses, so the two can never drift. Each type links to its own page
+   rather than an anchor part-way down this one: people arrive here from a
+   search engine having just been handed a word by a doctor, and a page about
+   their diagnosis is a better landing place than a list. *@
+
+<div class="container--read">
+    <h1>Brain tumor types</h1>
+
+    <p>
+        Doctors use a lot of words for brain tumors. Here is what the common
+        ones mean, in plain words. Pick a type to read more.
+    </p>
+
+    <p class="text-muted">
+        Your care team knows your case and this page does not. Use it to help
+        you ask them better questions.
+    </p>
+
+    @foreach (var group in Model.Groups)
+    {
+        <section aria-labelledby="group-@group.Heading.GetHashCode()">
+            <h2 id="group-@group.Heading.GetHashCode()">@group.Heading</h2>
+            <p>@group.Blurb</p>
+
+            <ul class="tumor-list">
+                @foreach (var entry in group.Entries)
+                {
+                    <li id="@entry.Slug" class="tumor-list__item">
+                        @if (entry.HasDescription)
+                        {
+                            <h3><a href="/tumors/@entry.Slug">@entry.Label</a></h3>
+                            @if (entry.Summary is { Length: > 0 })
+                            {
+                                <p>@entry.Summary</p>
+                            }
+                        }
+                        else
+                        {
+                            @* Honest about the gap. A blank row would read as
+                               "we have nothing for you", which is not true —
+                               the feed still filters by this type. *@
+                            <h3>@entry.Label</h3>
+                            <p class="text-muted">
+                                We are still writing this one.
+                                <a href="/research?tumor=@entry.Slug">See research on @entry.Label</a>.
+                            </p>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <p>
+        Looking for something else? Try the
+        <a href="/glossary">glossary</a> for single words, or
+        <a href="/research">all research updates</a>.
+    </p>
+</div>
