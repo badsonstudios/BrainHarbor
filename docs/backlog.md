@@ -465,6 +465,33 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-412a Nothing linked to /tumors** (done 2026-08-16, PR #46 — found by
+  Dan, not by the tests: "There's no navigation to get to the tumors page")
+  WI-412 shipped a page that worked and that no one could reach. Four gaps: no
+  header link, no footer link, absent from `sitemap.xml`, and no "What is this?"
+  link from the `/research` tumor filter — the last of which was WI-412's own
+  stated acceptance. Only a typed URL reached the page.
+  "Tumor types" went into the main nav, not just the footer: "what is this thing
+  I have" is the first question a newly diagnosed person asks, so it earns the
+  space. On `/research`, an active tumor filter now offers the plain-English
+  explanation of that type inline — the reader who picked "oligodendroglioma"
+  off the dropdown because it is the word on their pathology report is the one
+  who most needs it. It sits outside `#feed-results` so an htmx swap cannot drop
+  it, and the label comes from the taxonomy rather than the slug (a de-hyphenated
+  slug is not how the list spells the name, and "dipg" is not a word).
+  **Why no test caught it:** the existing link check walks the links that exist
+  and proves they do not 404. It is structurally blind to a page nothing points
+  at. The new test asserts the property, not the instance — every path
+  `sitemap.xml` advertises must be reachable from the home page. Worth applying
+  the same shape to future work: *can a reader get here?* is a different
+  question from *does this link work?*, and only the second one was being asked.
+  **Second defect, caught only by rendering the page:** the new link first went
+  in as a multi-line Razor implicit expression, which terminates at the newline.
+  It rendered "What is System.Collections.Generic.List`1[…]" while the test —
+  which asserted only the `href` — passed. The test now pins the whole anchor
+  including its visible text. A test that checks the attribute a human never
+  reads will not catch the text a human only ever reads.
+
   Original acceptance, kept for the record:
   Goal: every tumor type a reader can pick in the /research filter has a
   plain-English "what is this?" explanation (Dan's ask, 2026-08-11 — an early
@@ -899,6 +926,43 @@ abstracts admin-only (pinned by a test). Do not change that behaviour.
 
 - [ ] **WI-431b `[user]` Decide whether zero-downtime deploys are worth Standard tier**
   Goal: close the deploy window properly, or decide not to and know why.
+
+  ### First real measurement (2026-08-16, deploy of WI-412)
+
+  The hardened check caught the window on its first live run and produced the
+  evidence eight earlier sightings never did:
+
+  - **Two minutes, not one.** 22:18:21 to 22:20:19, nine failed rounds before
+    two consecutive clean passes. The deploy still finished green, correctly:
+    it waited, confirmed health, and passed.
+  - **Four routes down, `/` up throughout:** `/research`, `/trials`, `/search`
+    and **`/get-help-now`** all 500 while the home page answered 200.
+  - **The bodies were EMPTY.**
+
+  **That last point corrects something recorded earlier in this file and in
+  PROGRESS.** The previous note said a visitor caught in the window still gets
+  the calm custom error page with the helpline band and the CareLine number.
+  That is false. An empty 500 means the request never reached the application,
+  so ASP.NET's exception handler never ran and no BrainHarbor page was rendered.
+  The visitor sees the browser's own "this page isn't working" screen: no
+  helpline, no phone number, no branding. The route most affected is the one a
+  distressed reader is most likely to want.
+  It also rules out an application exception as the cause. An empty 500 is the
+  platform failing to get any response from the worker — the process is down or
+  still starting while Azure keeps routing to it. So this is start-up or swap
+  behaviour, not a bug in the code.
+
+  ### Recommended before spending anything
+  1. **Deploy at quiet hours and batch changes into fewer releases.** Free, and
+     costs nothing at all while the site is unlaunched.
+  2. **Collect two or three more measurements first.** The check now logs this
+     automatically on every deploy, at no effort. One sample of two minutes is
+     not a trend, and the previous release (CI-only) passed on the first attempt
+     with no window at all — so the length varies and the cause is not yet
+     pinned. Deciding to buy a tier on a single data point would be guessing
+     with money.
+  3. Only then weigh the tier.
+
   WI-431 made the window visible and shorter; it cannot remove it. Removing it
   means deploying to a staging slot, warming it, and swapping — and **slots
   require Standard tier**, so this is a monthly bill, not a code change. The

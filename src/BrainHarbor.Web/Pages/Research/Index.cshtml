@@ -58,6 +58,24 @@
     </label>
 </form>
 
+@* WI-412: when a reader has filtered to a type, offer the plain-English
+   explanation of it right there. Someone who picked "oligodendroglioma" from a
+   list because it is the word on their report is exactly the person who needs
+   to know what it means, and asking them to go hunting for it is how you lose
+   them. Outside #feed-results so an htmx swap of the results does not drop it. *@
+@if (Model.Query.TumorType is { Length: > 0 } filtered)
+{
+    @* The label comes from the taxonomy, not from the slug: "dipg" is not a
+       word, and "brain-metastases" de-hyphenated is still not how the list
+       spells it. An unknown slug gets no link at all rather than a link that
+       reads "What is ?". *@
+    var label = Model.TumorTypes.FirstOrDefault(t => t.Slug == filtered)?.Label;
+    if (label is not null)
+    {
+        <p><a href="/tumors#@filtered">What is @label?</a></p>
+    }
+}
+
 <div id="feed-results">
     <p class="text-muted">
         @Model.Result.TotalCount item(s)@(Model.Query.IncludeEarlyStage

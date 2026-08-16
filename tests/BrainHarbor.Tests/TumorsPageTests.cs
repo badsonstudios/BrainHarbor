@@ -94,6 +94,66 @@ public class TumorsPageTests : IClassFixture<WebApplicationFactory<Program>>
             "the spinal cord type must sit under its own heading, not among the brain types");
     }
 
+    /// <summary>
+    /// WI-412 shipped ORPHANED: the page existed, worked, and nothing on the
+    /// site linked to it — not the nav, not the footer, not sitemap.xml. Dan
+    /// found it by noticing he could not get there. The link check that already
+    /// exists only proves links do not 404; it cannot see a page that no link
+    /// points at.
+    ///
+    /// This asserts the general property rather than the one instance: every
+    /// path the sitemap advertises must be reachable by following a link from
+    /// the home page, because a page a reader cannot navigate to may as well
+    /// not exist.
+    /// </summary>
+    [Fact]
+    public async Task EverySitemapPathIsReachableByALinkFromTheHomePage()
+    {
+        var client = _factory.CreateClient();
+        var home = await client.GetStringAsync("/");
+        var sitemap = await client.GetStringAsync("/sitemap.xml");
+
+        var advertised = System.Text.RegularExpressions.Regex
+            .Matches(sitemap, @"<loc>(.*?)</loc>")
+            .Select(m => new Uri(m.Groups[1].Value).AbsolutePath)
+            .Where(p => p.Length > 1)          // "/" is the page we start from
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        Assert.NotEmpty(advertised);
+
+        foreach (var path in advertised)
+        {
+            Assert.True(
+                home.Contains($"href=\"{path}\"", StringComparison.Ordinal),
+                $"nothing on the home page links to {path}, so a reader cannot get there");
+        }
+    }
+
+    /// <summary>
+    /// WI-412's acceptance: the /research tumor filter offers "what is this?".
+    /// The reader who picked a type off that dropdown because it is the word on
+    /// their pathology report is the one who most needs the explanation.
+    /// </summary>
+    [Fact]
+    public async Task FilteringResearchByATypeOffersTheExplanationOfThatType()
+    {
+        var client = _factory.CreateClient();
+
+        var filtered = await client.GetStringAsync("/research?tumor=glioblastoma");
+
+        // The whole link, not just the href. Asserting only the href let a
+        // broken Razor expression ship text that read "What is
+        // System.Collections.Generic.List`1[...]" while the test stayed green.
+        Assert.Contains(
+            "<a href=\"/tumors#glioblastoma\">What is Glioblastoma?</a>", filtered);
+
+        // Unfiltered, there is no single type to explain — the prompt would be
+        // meaningless, so it must not appear.
+        var unfiltered = await client.GetStringAsync("/research");
+        Assert.DoesNotContain("/tumors#", unfiltered);
+    }
+
     private static string RepoRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

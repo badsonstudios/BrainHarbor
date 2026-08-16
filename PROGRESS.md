@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. (2026-08-16: `/tumors` shipped with no way to reach it — nav, footer, sitemap and the `/research` "What is this?" link all added; see the WI-412a log entry.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -90,6 +90,47 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-16** — **The deploy window, measured at last — and my earlier
+  reassurance about it was wrong.** WI-431's hardened smoke check caught the
+  window on its first live run (the WI-412 release) and produced the evidence
+  eight earlier sightings never did: **two minutes**, not one — 22:18:21 to
+  22:20:19, nine failed rounds — with `/research`, `/trials`, `/search` and
+  **`/get-help-now`** all 500 while `/` answered 200 throughout. The deploy
+  still went green, correctly: it waited, confirmed health, then passed.
+  **The bodies were empty**, which corrects what this file said on 2026-08-15.
+  I recorded then that a visitor in the window still sees the calm error page
+  with the helpline band and the CareLine number. That is false. An empty 500
+  means the request never reaches the application, so the exception handler
+  never runs and nothing of ours renders — the visitor gets the browser's own
+  error screen, on the route a distressed reader is most likely to want. It also
+  rules out an application exception: this is start-up or swap behaviour at the
+  platform, not a bug in the code.
+  **Recommendation recorded in WI-431b, and deliberately not acted on:** deploy
+  at quiet hours and batch releases (free, and free of consequence while
+  unlaunched), and collect two or three more measurements — the check now logs
+  them automatically — before spending on Standard tier. The previous release
+  had no window at all, so one sample of two minutes is not a trend, and buying
+  a tier on it would be guessing with money.
+
+- **2026-08-16** — **WI-412a — /tumors shipped ORPHANED; navigation added.**
+  Dan: "There's no navigation to get to the tumors page." He was right, and the
+  gap was wider than the nav: no header link, no footer link, `/tumors` missing
+  from `sitemap.xml`, and no "What is this?" link from the `/research` tumor
+  filter — which was WI-412's own acceptance criterion. The page worked
+  perfectly and nothing on the site pointed at it, so only a typed URL reached
+  it. Fixed all four. **Why the tests missed it:** the existing link check walks
+  the links that exist and proves they do not 404 — it is structurally blind to
+  a page no link points at. The new test asserts the general property instead of
+  this one instance: every path `sitemap.xml` advertises must be reachable from
+  the home page. **Second bug, caught only by looking at the rendered page:** the
+  "What is this?" link first shipped as a multi-line Razor implicit expression,
+  which terminates at the newline — it rendered "What is
+  System.Collections.Generic.List`1[BrainHarbor.Web.Content.TumorType]" while the
+  test, which asserted only the `href`, stayed green. The test now asserts the
+  whole anchor including its visible text. Lesson worth keeping: a test that
+  checks the attribute a human never reads will not notice the text a human
+  only ever reads.
+
 - **2026-08-16** — **WI-412 done — /tumors, "what is this?" for 18 of 24 types.**
   Dan asked for all of it in one go, shipped live, and said he would review it
   there. The index is built from `taxonomy.yml` — the same file the research
@@ -134,10 +175,12 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   Both paths verified locally against the live site before shipping (healthy →
   exit 0 after two passes; bad host → body captured, counter reset, exit 1), and
   the release that carries this change is itself the first real exercise of it.
-  **Softens the impact, worth knowing:** a visitor caught in that window gets the
-  calm custom error page rendered through the normal layout — so the helpline
-  band and the CareLine number are still on screen. That was designed in at
-  WI-103.
+  **CORRECTED 2026-08-16 — this was wrong.** The entry originally said a visitor
+  caught in the window still gets the calm custom error page with the helpline
+  band and CareLine number on screen. The first real capture shows the 500
+  bodies are EMPTY: the request never reaches the application, so ASP.NET's
+  exception handler never runs and no BrainHarbor page renders. The visitor sees
+  the browser's own error screen. See WI-431b for the measurement.
   Filed **WI-431b** (`[user]`): whether to buy Standard tier for slot swaps —
   explicitly NOT to be decided until the body capture identifies the cause,
   since a start-up or migration-lock cause may be free to fix in code.

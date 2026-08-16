@@ -15,8 +15,12 @@ namespace BrainHarbor.Web.Seo;
 public static class SyndicationEndpoints
 {
     // Live static pages worth indexing (dead/placeholder routes excluded).
+    // /tumors is the index; crawlers reach each individual type page by
+    // following its links, which is why the index has to be listed here — a
+    // page nothing links to and nothing lists is invisible to a search engine
+    // as well as to a reader (WI-412 shipped orphaned; found 2026-08-16).
     private static readonly string[] StaticPaths =
-        ["/", "/research", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
+        ["/", "/research", "/tumors", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
 
     private const int SitemapLimit = 5000;
     private const int FeedLimit = 50;
