@@ -432,7 +432,40 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tests/BrainHarbor.Tests/TestDatabase.cs, WI-402 log entry.
   Depends on: nothing.
 
-- [ ] **WI-412 Tumor-type descriptions (/tumors)**
+- [x] **WI-412 Tumor-type descriptions (/tumors)** (done 2026-08-16 — 18 of 24
+  types written; Dan asked for all of it at once and to review it live)
+  Delivered: `/tumors`, an index built from `taxonomy.yml` (the same file the
+  research filter reads, so the two cannot drift), grouped the way the taxonomy
+  groups — gliomas, other primary, secondary, spinal, and the cross-cutting
+  axes — because "is mine a glioma?" is a question the grouping itself answers.
+  **Deviation from the acceptance, deliberate:** each type gets its OWN page
+  (`/tumors/glioblastoma`) rather than only an anchor on one long page. People
+  arrive from a search engine having just been handed a word by a doctor, and a
+  page about their diagnosis beats an anchor part-way down a list. The anchors
+  exist too, so `/research` can still deep-link.
+  Descriptions live in `Content/pages/tumors/*.md`, NOT in `taxonomy.yml`: that
+  file is rendered into the classifier prompt on every call, so prose there
+  would cost tokens per item and would escape the reading-level gate. As curated
+  pages they inherit the 6.0 CI gate, glossary tooltips, the medical disclaimer,
+  `sources` front matter and site search.
+  Content discipline, because this is the riskiest writing on the site:
+  descriptions only — no survival figures, no prognosis, no treatment
+  recommendations, since those vary per person and are where a wrong word does
+  real harm. WHO CNS5 naming held throughout (grade 4 ≠ glioblastoma; DIPG is
+  the pontine subset of diffuse midline glioma; spinal cord tumor is not a brain
+  tumor and sits under its own heading, pinned by a test). Every page ends with
+  questions to ask a care team.
+  Reading grades 2.4 to 5.4, all under the gate. 777 tests.
+  **Not written yet (6):** ATRT, chordoma, CNS germ cell tumor, hemangioblastoma,
+  pituitary/other rare types as noted, and the "all brain tumors" catch-all.
+  They render "We are still writing this one" with a link to the research feed
+  for that type — honest rather than blank.
+  **Open question for Dan:** these pages were drafted by AI (this assistant) and
+  read as the site's own writing. `/how-we-write` describes the FEED pipeline
+  and says nothing about curated pages. Worth deciding whether curated pages
+  should disclose authorship the way summaries do.
+
+  Original acceptance, kept for the record:
   Goal: every tumor type a reader can pick in the /research filter has a
   plain-English "what is this?" explanation (Dan's ask, 2026-08-11 — an early
   slice of P2c; sitemap.md already reserves `/tumors/`).
@@ -754,29 +787,17 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and none of them checked what we wrote. `reviewed` stamp refreshed.
   Reading grade 4.3.
 
-- [ ] **WI-433 `[user]` Have a lawyer review the site before soft launch**
-  Goal: real legal cover, written by someone qualified to write it.
-  Why it is a `[user]` item: the assistant corrected what it could verify
-  (see WI-432) and deliberately did NOT draft the rest, because Dan asked for
-  nothing he could not stand behind. These need a professional:
-  - a warranty disclaimer and limitation of liability (PLAN.md §5 lists
-    "no-warranty language" as a requirement; `/terms` currently has a soft
-    "we cannot promise everything is current", which is an apology, not a
-    disclaimer);
-  - governing law and jurisdiction;
-  - who operates the site — `/about` says "a small project, not a company", so
-    it is currently a person, not an entity, publishing medical information;
-  - whether the AI-authored, auto-published model needs its own language.
-  Context worth handing the lawyer: the audience is brain-tumor patients and
-  caregivers, summaries are written by AI and publish automatically once
-  automated safety checks pass with no human reading them, sources are
-  summarized and linked rather than republished, and the site takes no money and
-  runs no ads.
-  **Note on sources, since it is a common misreading:** publicly accessible is
-  not the same as public domain. ClinicalTrials.gov, NCI and SSA are public
-  domain; PubMed ABSTRACTS often carry publisher copyright, which is why the
-  pipeline summarizes and links and keeps raw abstracts admin-only (pinned by a
-  test). Depends on: nothing. Do before WI-408 soft launch.
+~~WI-433 Have a lawyer review the site~~ — **dropped 2026-08-16, Dan's call.**
+Not doing it. Recorded rather than deleted silently so it is not re-filed every
+time someone reads `/terms` and notices what is missing.
+What still stands, as fact rather than argument: `/terms` and `/privacy` say
+what the site is and is not, `/terms` no longer implies a human reads each
+summary (WI-432), every page carries the not-medical-advice line, and there is
+no warranty disclaimer, no limitation of liability and no governing-law clause.
+One source note worth keeping for its own sake: publicly accessible is not the
+same as public domain — PubMed abstracts often carry publisher copyright, which
+is why the pipeline summarizes and links rather than republishing, and keeps raw
+abstracts admin-only (pinned by a test). Do not change that behaviour.
 
 - [ ] **WI-434 Fill out the glossary (three terms is not a glossary)**
   Goal: the words a patient meets on this site are explained where they meet
@@ -811,8 +832,50 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Note: WI-105 shipped with a real gap of this shape — no page used a term, so
   the tooltip was invisible until a sample was added to the styleguide. More
   terms is also more coverage of that feature in the wild.
+  ### How the page should work (planned 2026-08-16, Dan asked for a proposal)
+
+  **One page, sections by first letter, anchor per term. Not pagination.**
+
+  Pagination by letter was the alternative and it fails this audience on one
+  point: it makes the reader guess the spelling before they can look anything
+  up. Someone who has just been handed the word "oligodendroglioma" out loud, or
+  who is reading it off a pathology report through treatment fog, cannot
+  reliably pick the right letter tab — and a wrong guess returns an empty page
+  that looks like the site does not have the word at all. A single page means
+  the browser's own find (Ctrl+F, and "Find in page" on a phone) searches
+  everything, which is what people actually do.
+  It also keeps one URL to link and share, prints in one pass (patients print
+  for appointments), and needs no JavaScript.
+
+  Concretely:
+  - **Letter jump bar** at the top: plain anchor links (`#a`, `#b`, …), tap
+    targets at the site's 44px floor. Letters with no terms render as plain
+    text, NOT as links to an empty section — a dead link is worse than an
+    absent one.
+  - **`<h2>` per letter, `<h3>` per term**, each term with a stable `id` of its
+    slug, so anything can deep-link (`/glossary#mgmt`). Heading levels stay in
+    order; heading navigation is a primary strategy for this audience.
+  - **`scroll-margin-block-start`** on those targets, or a jumped-to term sits
+    under the top of the viewport.
+  - **"Back to top" after each letter section** — on a phone, 60 terms is a
+    long way back.
+  - **Print:** hide the jump bar and the back-to-top links; show every term.
+  - **Search:** `/search` does NOT index glossary terms today (it covers feed
+    items and `Content/pages`, not `Content/glossary`) — so someone searching
+    "MGMT" gets nothing. Index the terms, or at minimum make the glossary page
+    itself findable, and label the results so a definition is not mistaken for
+    a research finding.
+  - **Revisit if it passes ~150 terms.** Sixty entries of 40 words is about
+    2,400 words, which is a comfortable page. It is not a rule that scales
+    forever.
+
+  Note the interaction with the tooltip: the marker fires on the FIRST
+  occurrence per page. With 60 terms live, check a long feed page for visual
+  noise before shipping — that is a content-volume problem the three-term
+  version could never show.
+
   Refs: Content/glossary/*.md, GlossaryStore, GlossaryMarker, /glossary,
-  content-pipeline.md §6. Depends on: nothing.
+  Pages/Search.cshtml.cs, content-pipeline.md §6. Depends on: nothing.
 
 - [x] **WI-431 Harden the deploy smoke check** (done 2026-08-15)
   Delivered: the check now requests all five main routes, on `brainharbor.org`
