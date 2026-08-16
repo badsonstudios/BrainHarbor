@@ -778,6 +778,42 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   pipeline summarizes and links and keeps raw abstracts admin-only (pinned by a
   test). Depends on: nothing. Do before WI-408 soft launch.
 
+- [ ] **WI-434 Fill out the glossary (three terms is not a glossary)**
+  Goal: the words a patient meets on this site are explained where they meet
+  them (Dan's ask, 2026-08-15).
+  Today `Content/glossary/` holds exactly three: glioblastoma, glioma, IDH gene
+  change. The machinery is done and good — `GlossaryStore` + the Markdig
+  extension mark the FIRST occurrence per page as a native-popover tooltip
+  (WI-105), `/glossary` lists them A to Z, and ContentCheck caps a definition at
+  40 words. What is missing is the content.
+  Acceptance: add terms in the vocabulary this audience actually hits, each in
+  the existing format (`term`, optional `also` aliases, `pronunciation`, then a
+  definition of 40 words or fewer at the site's reading level). Candidates,
+  drawn from what the feed and the taxonomy already use rather than invented:
+  - **tumor types:** astrocytoma, oligodendroglioma, meningioma, medulloblastoma,
+    ependymoma, DIPG / diffuse midline glioma, acoustic neuroma / schwannoma,
+    craniopharyngioma, brain metastases, low-grade glioma;
+  - **words on a pathology or MRI report:** grade, IDH, MGMT, 1p/19q,
+    resection (gross total / subtotal), biopsy, contrast enhancement, edema,
+    progression, recurrence, pseudoprogression;
+  - **treatment words:** temozolomide, bevacizumab, radiotherapy, proton therapy,
+    stereotactic radiosurgery, tumor-treating fields, craniotomy, shunt,
+    steroids / dexamethasone, clinical trial phase;
+  - **words the summaries themselves use:** progression-free survival, overall
+    survival, median, placebo, randomized, control group, adverse event.
+  Rules that already apply and must hold: **no AHFS/MedlinePlus drug monograph
+  text** (ASHP copyright, PLAN.md §5) — write plain definitions from public
+  sources and cite; ≤40 words each; reading level at the site's bar; no hype
+  words; a definition must not read as advice about someone's own care.
+  Worth deciding while doing it: the tooltip fires on the first occurrence per
+  page, so a term that appears in every summary (like "glioma") will mark
+  constantly — check that it does not become visual noise on a long feed.
+  Note: WI-105 shipped with a real gap of this shape — no page used a term, so
+  the tooltip was invisible until a sample was added to the styleguide. More
+  terms is also more coverage of that feature in the wild.
+  Refs: Content/glossary/*.md, GlossaryStore, GlossaryMarker, /glossary,
+  content-pipeline.md §6. Depends on: nothing.
+
 - [ ] **WI-431 Harden the deploy smoke check**
   Goal: a deploy that leaves the site half-broken fails loudly instead of going
   green (observed six times on 2026-08-15).
