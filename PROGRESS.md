@@ -90,6 +90,28 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-16** — **The deploy window, measured at last — and my earlier
+  reassurance about it was wrong.** WI-431's hardened smoke check caught the
+  window on its first live run (the WI-412 release) and produced the evidence
+  eight earlier sightings never did: **two minutes**, not one — 22:18:21 to
+  22:20:19, nine failed rounds — with `/research`, `/trials`, `/search` and
+  **`/get-help-now`** all 500 while `/` answered 200 throughout. The deploy
+  still went green, correctly: it waited, confirmed health, then passed.
+  **The bodies were empty**, which corrects what this file said on 2026-08-15.
+  I recorded then that a visitor in the window still sees the calm error page
+  with the helpline band and the CareLine number. That is false. An empty 500
+  means the request never reaches the application, so the exception handler
+  never runs and nothing of ours renders — the visitor gets the browser's own
+  error screen, on the route a distressed reader is most likely to want. It also
+  rules out an application exception: this is start-up or swap behaviour at the
+  platform, not a bug in the code.
+  **Recommendation recorded in WI-431b, and deliberately not acted on:** deploy
+  at quiet hours and batch releases (free, and free of consequence while
+  unlaunched), and collect two or three more measurements — the check now logs
+  them automatically — before spending on Standard tier. The previous release
+  had no window at all, so one sample of two minutes is not a trend, and buying
+  a tier on it would be guessing with money.
+
 - **2026-08-16** — **WI-412 done — /tumors, "what is this?" for 18 of 24 types.**
   Dan asked for all of it in one go, shipped live, and said he would review it
   there. The index is built from `taxonomy.yml` — the same file the research
@@ -134,10 +156,12 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   Both paths verified locally against the live site before shipping (healthy →
   exit 0 after two passes; bad host → body captured, counter reset, exit 1), and
   the release that carries this change is itself the first real exercise of it.
-  **Softens the impact, worth knowing:** a visitor caught in that window gets the
-  calm custom error page rendered through the normal layout — so the helpline
-  band and the CareLine number are still on screen. That was designed in at
-  WI-103.
+  **CORRECTED 2026-08-16 — this was wrong.** The entry originally said a visitor
+  caught in the window still gets the calm custom error page with the helpline
+  band and CareLine number on screen. The first real capture shows the 500
+  bodies are EMPTY: the request never reaches the application, so ASP.NET's
+  exception handler never runs and no BrainHarbor page renders. The visitor sees
+  the browser's own error screen. See WI-431b for the measurement.
   Filed **WI-431b** (`[user]`): whether to buy Standard tier for slot swaps —
   explicitly NOT to be decided until the body capture identifies the cause,
   since a start-up or migration-lock cause may be free to fix in code.

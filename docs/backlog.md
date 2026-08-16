@@ -899,6 +899,43 @@ abstracts admin-only (pinned by a test). Do not change that behaviour.
 
 - [ ] **WI-431b `[user]` Decide whether zero-downtime deploys are worth Standard tier**
   Goal: close the deploy window properly, or decide not to and know why.
+
+  ### First real measurement (2026-08-16, deploy of WI-412)
+
+  The hardened check caught the window on its first live run and produced the
+  evidence eight earlier sightings never did:
+
+  - **Two minutes, not one.** 22:18:21 to 22:20:19, nine failed rounds before
+    two consecutive clean passes. The deploy still finished green, correctly:
+    it waited, confirmed health, and passed.
+  - **Four routes down, `/` up throughout:** `/research`, `/trials`, `/search`
+    and **`/get-help-now`** all 500 while the home page answered 200.
+  - **The bodies were EMPTY.**
+
+  **That last point corrects something recorded earlier in this file and in
+  PROGRESS.** The previous note said a visitor caught in the window still gets
+  the calm custom error page with the helpline band and the CareLine number.
+  That is false. An empty 500 means the request never reached the application,
+  so ASP.NET's exception handler never ran and no BrainHarbor page was rendered.
+  The visitor sees the browser's own "this page isn't working" screen: no
+  helpline, no phone number, no branding. The route most affected is the one a
+  distressed reader is most likely to want.
+  It also rules out an application exception as the cause. An empty 500 is the
+  platform failing to get any response from the worker — the process is down or
+  still starting while Azure keeps routing to it. So this is start-up or swap
+  behaviour, not a bug in the code.
+
+  ### Recommended before spending anything
+  1. **Deploy at quiet hours and batch changes into fewer releases.** Free, and
+     costs nothing at all while the site is unlaunched.
+  2. **Collect two or three more measurements first.** The check now logs this
+     automatically on every deploy, at no effort. One sample of two minutes is
+     not a trend, and the previous release (CI-only) passed on the first attempt
+     with no window at all — so the length varies and the cause is not yet
+     pinned. Deciding to buy a tier on a single data point would be guessing
+     with money.
+  3. Only then weigh the tier.
+
   WI-431 made the window visible and shorter; it cannot remove it. Removing it
   means deploying to a staging slot, warming it, and swapping — and **slots
   require Standard tier**, so this is a monthly bill, not a code change. The
