@@ -30,7 +30,7 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
     [InlineData("/start", "Get emergency help for these signs")]
     [InlineData("/digest", "What it is")]
     [InlineData("/privacy", "We do not track you")]
-    [InlineData("/terms", "This site is information, not care")]
+    [InlineData("/terms", "This site is for learning, not for care")]
     public async Task ShellPageRendersWithTheSiteChrome(string url, string marker)
     {
         var client = _factory.CreateClient();

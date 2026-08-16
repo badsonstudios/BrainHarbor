@@ -4,24 +4,35 @@ slug: terms
 description: "The plain-language rules for using this site."
 tags: [legal, terms]
 sources: []
-reviewed: 2026-07-19
-review_due: 2027-01-19
+reviewed: 2026-08-15
+review_due: 2027-02-15
 disclaimers: [medical, legal]
 ---
 
-## This site is information, not care
+## This site is for learning, not for care
 
-BrainHarbor explains published research in plain words. It does not know your
-case. It is not a doctor, and using it does not create any care relationship.
+BrainHarbor explains published research in plain words. It is here to help you
+learn, and to help you ask your care team better questions. That is all it is
+for.
+
+It does not know your case. It is not a doctor, and using it does not create
+any care relationship.
 
 Never delay care or change a treatment because of something you read here.
 Talk with your care team first. If you have an emergency, call 911.
 
 ## We try hard, and we can still be wrong
 
-Research changes, and summaries can contain mistakes. We check each summary
-before it goes up, and we fix errors when we learn about them. Even so, we
-cannot promise that everything here is complete or current.
+Research changes, and summaries can contain mistakes. AI writes them. Each one
+must pass our automatic checks before it goes up, but a person does not read
+every one. We fix errors when we learn about them. Even so, we cannot promise
+that everything here is complete or current.
+
+## We are not part of these groups
+
+We point you to the ABTA CareLine, the National Cancer Institute, and
+ClinicalTrials.gov because their help is good. We are not part of them. They do
+not run this site, and they did not check what we wrote.
 
 ## Using our words
 
