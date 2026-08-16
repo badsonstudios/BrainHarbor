@@ -90,6 +90,35 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-16** — **WI-412 done — /tumors, "what is this?" for 18 of 24 types.**
+  Dan asked for all of it in one go, shipped live, and said he would review it
+  there. The index is built from `taxonomy.yml` — the same file the research
+  filter reads — so the list and the descriptions cannot drift apart.
+  **Deviation, deliberate:** each type gets its own page (`/tumors/glioblastoma`)
+  rather than only an anchor on one page. People arrive from a search engine
+  having just been handed a word by a doctor; a page about their diagnosis beats
+  an anchor part-way down a list. Anchors still exist for `/research` to link.
+  Descriptions live in `Content/pages/tumors/*.md`, NOT in `taxonomy.yml` —
+  that file is rendered into the classifier prompt on every call, so prose there
+  would cost tokens per item and escape the reading gate. As curated pages they
+  inherit the 6.0 CI gate, glossary tooltips, the medical disclaimer, `sources`
+  front matter and site search.
+  **Content discipline, because this is the riskiest writing on the site:**
+  descriptions only. No survival figures, no prognosis, no treatment
+  recommendations — those vary per person and are where a wrong word does real
+  harm. WHO CNS5 naming held throughout (grade 4 ≠ glioblastoma; DIPG is the
+  pontine subset; spinal cord tumor is not a brain tumor and has its own
+  heading, pinned by a test). Every page ends with questions to ask a care team.
+  Grades 2.4-5.4. 777 tests.
+  Fixed on the way: `ShellPagesTests` pinned the TOTAL graded-page count at 6,
+  so it failed the moment curated content was added even though every page
+  passed — now it names the six shell pages and asserts every `.md` under the
+  pages root is graded, so a new folder cannot escape the gate.
+  **Two things for Dan:** six rare types still say "We are still writing this
+  one" (honest, and they link to the feed for that type), and these pages were
+  drafted by AI yet read as the site's own writing — `/how-we-write` covers the
+  FEED pipeline and says nothing about curated pages. Worth a decision.
+
 - **2026-08-15** — **WI-431 done — the deploy smoke check now asks whether the
   SITE is healthy, not whether something answered.** Eight deploys today each
   served 500s on `/research`, `/get-help-now`, `/trials` and `/search` for about
