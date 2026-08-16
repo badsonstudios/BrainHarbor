@@ -87,12 +87,61 @@ jobs:
       # Migrations run on app START, not in this workflow — so a bad migration
       # would otherwise show as a green deploy and a dead site. This step makes
       # the run honest: the site must actually answer before we call it done.
+      #
+      # WI-431. The previous version of this check asked "did something respond"
+      # when the question is "is the site healthy". It hit ONLY "/", on the
+      # azurewebsites hostname, and exited on the FIRST 200 — which during App
+      # Service's old/new overlap can come from the instance being replaced. On
+      # 2026-08-15, eight deploys each served 500s on /research, /get-help-now,
+      # /trials and /search for about a minute while "/" answered 200 throughout,
+      # and this step went green every time.
+      #
+      # Three changes: every main route, the domain visitors actually use, and
+      # two CONSECUTIVE clean passes so one lucky hit cannot pass it. The polling
+      # also warms those routes, which shortens the window a real visitor can
+      # fall into. It does not remove that window — only a staging slot and a
+      # swap would, and slots need Standard tier.
+      #
+      # On failure it prints the response body, because eight sightings of this
+      # produced no evidence of the CAUSE. The next occurrence should.
       - name: Smoke check
         run: |
-          for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 \
-              https://app-brainharbor-prod-eus2.azurewebsites.net/) && \
-              [ "$code" = "200" ] && echo "site up (attempt $i)" && exit 0
-            echo "attempt $i: $code — retrying in 10s"; sleep 10
+          SITE="https://brainharbor.org"
+          FALLBACK="https://app-brainharbor-prod-eus2.azurewebsites.net"
+          ROUTES="/ /research /trials /search /get-help-now"
+          NEEDED=2
+          clean=0
+
+          for attempt in $(seq 1 20); do
+            bad=""
+            for route in $ROUTES; do
+              code=$(curl -s -o /tmp/smoke-body -w "%{http_code}" --max-time 20 "$SITE$route" || echo "000")
+              if [ "$code" != "200" ]; then
+                bad="$bad $route($code)"
+                echo "--- $route returned $code, first 300 bytes of the body: ---"
+                head -c 300 /tmp/smoke-body || true
+                echo ""
+              fi
+            done
+
+            if [ -z "$bad" ]; then
+              clean=$((clean + 1))
+              echo "attempt $attempt: every route 200 ($clean of $NEEDED consecutive)"
+              if [ "$clean" -ge "$NEEDED" ]; then
+                echo "site healthy after deploy"
+                exit 0
+              fi
+            else
+              clean=0
+              echo "attempt $attempt: still settling -$bad"
+            fi
+
+            sleep 10
           done
-          echo "site never answered 200 after deploy" && exit 1
+
+          echo "FAILED: the site did not serve every route cleanly after deploy"
+          echo "--- same routes on the Azure hostname, to tell app from domain: ---"
+          for route in $ROUTES; do
+            echo "$route -> $(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$FALLBACK$route" || echo 000)"
+          done
+          exit 1
