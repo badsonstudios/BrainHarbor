@@ -778,25 +778,78 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   pipeline summarizes and links and keeps raw abstracts admin-only (pinned by a
   test). Depends on: nothing. Do before WI-408 soft launch.
 
-- [ ] **WI-431 Harden the deploy smoke check**
-  Goal: a deploy that leaves the site half-broken fails loudly instead of going
-  green (observed six times on 2026-08-15).
-  Problem: every deploy that day served 500s on `/research`, `/get-help-now`,
-  `/trials` and `/search` for roughly a minute while `/` kept answering 200. The
-  smoke check hits ONLY `/`, on the azurewebsites.net hostname, and exits on the
-  FIRST 200 — which can come from the old instance during App Service's
-  overlap. So it answers "did something respond" when the question is "is the
-  site healthy". Invisible today; the moment the link is shared, a deploy during
-  traffic puts frightened people on error pages while they look for a helpline.
-  Acceptance: the check requests the five main routes, requires TWO consecutive
-  clean passes about ten seconds apart (one warm-instance hit must not pass it),
-  and checks `brainharbor.org` as well as the Azure hostname. The polling
-  doubles as a warm-up, which shrinks the window real visitors can hit.
-  **Known limit, state it in the workflow rather than implying otherwise:** this
-  reduces the window, it does not remove it. Zero-downtime needs a staging slot
-  and a swap, and slots require Standard tier — a real monthly cost on the
-  current B1 plan, not a code change.
-  Refs: .github/workflows/ci.yml (deploy job, "Smoke check"). Depends on: nothing.
+- [ ] **WI-434 Fill out the glossary (three terms is not a glossary)**
+  Goal: the words a patient meets on this site are explained where they meet
+  them (Dan's ask, 2026-08-15).
+  Today `Content/glossary/` holds exactly three: glioblastoma, glioma, IDH gene
+  change. The machinery is done and good — `GlossaryStore` + the Markdig
+  extension mark the FIRST occurrence per page as a native-popover tooltip
+  (WI-105), `/glossary` lists them A to Z, and ContentCheck caps a definition at
+  40 words. What is missing is the content.
+  Acceptance: add terms in the vocabulary this audience actually hits, each in
+  the existing format (`term`, optional `also` aliases, `pronunciation`, then a
+  definition of 40 words or fewer at the site's reading level). Candidates,
+  drawn from what the feed and the taxonomy already use rather than invented:
+  - **tumor types:** astrocytoma, oligodendroglioma, meningioma, medulloblastoma,
+    ependymoma, DIPG / diffuse midline glioma, acoustic neuroma / schwannoma,
+    craniopharyngioma, brain metastases, low-grade glioma;
+  - **words on a pathology or MRI report:** grade, IDH, MGMT, 1p/19q,
+    resection (gross total / subtotal), biopsy, contrast enhancement, edema,
+    progression, recurrence, pseudoprogression;
+  - **treatment words:** temozolomide, bevacizumab, radiotherapy, proton therapy,
+    stereotactic radiosurgery, tumor-treating fields, craniotomy, shunt,
+    steroids / dexamethasone, clinical trial phase;
+  - **words the summaries themselves use:** progression-free survival, overall
+    survival, median, placebo, randomized, control group, adverse event.
+  Rules that already apply and must hold: **no AHFS/MedlinePlus drug monograph
+  text** (ASHP copyright, PLAN.md §5) — write plain definitions from public
+  sources and cite; ≤40 words each; reading level at the site's bar; no hype
+  words; a definition must not read as advice about someone's own care.
+  Worth deciding while doing it: the tooltip fires on the first occurrence per
+  page, so a term that appears in every summary (like "glioma") will mark
+  constantly — check that it does not become visual noise on a long feed.
+  Note: WI-105 shipped with a real gap of this shape — no page used a term, so
+  the tooltip was invisible until a sample was added to the styleguide. More
+  terms is also more coverage of that feature in the wild.
+  Refs: Content/glossary/*.md, GlossaryStore, GlossaryMarker, /glossary,
+  content-pipeline.md §6. Depends on: nothing.
+
+- [x] **WI-431 Harden the deploy smoke check** (done 2026-08-15)
+  Delivered: the check now requests all five main routes, on `brainharbor.org`
+  (the domain visitors use) rather than the Azure hostname, and requires TWO
+  consecutive clean passes so one lucky hit during App Service's old/new overlap
+  cannot pass it. On failure it prints the response body per failing route, and
+  then the same routes on the Azure hostname so app trouble can be told apart
+  from domain trouble.
+  **The body capture is the point as much as the gating is.** Eight sightings of
+  this on 2026-08-15 produced no evidence of the CAUSE, because nobody ever
+  captured a failing response. The next occurrence will produce one.
+  Verified both paths locally against the live site before shipping: healthy
+  exits 0 after two consecutive passes; a deliberately bad host captures the
+  body, resets the counter and exits 1.
+  **Known limit, stated in the workflow rather than implied away:** this makes a
+  bad deploy fail loudly and warms the routes, which shortens the window. It
+  does not remove it. Zero-downtime needs a staging slot and a swap, and slots
+  need Standard tier — a monthly cost, not a code change. Free mitigation in the
+  meantime: deploy at a quiet hour once the site has traffic.
+  Refs: .github/workflows/ci.yml.
+
+- [ ] **WI-431b `[user]` Decide whether zero-downtime deploys are worth Standard tier**
+  Goal: close the deploy window properly, or decide not to and know why.
+  WI-431 made the window visible and shorter; it cannot remove it. Removing it
+  means deploying to a staging slot, warming it, and swapping — and **slots
+  require Standard tier**, so this is a monthly bill, not a code change. The
+  plan currently runs on a shared B1 (WI-401 chose it deliberately at ~$1-3/mo
+  incremental).
+  **Do not decide this until WI-431's body capture has caught the failure at
+  least once.** If the cause turns out to be app start-up or the DbUp migration
+  holding its advisory lock, it may be fixable in code for nothing, and paying
+  for slots would be buying the wrong thing.
+  Then weigh: how often deploys actually happen once the site is not being
+  rebuilt daily, whether they can simply run at a quiet hour, and what a minute
+  of 500s on the inner pages is worth when the custom error page still carries
+  the helpline band and the CareLine number.
+  Refs: WI-431, WI-401 (plan sizing), .github/workflows/ci.yml.
 
 - [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**
   Goal: an audit trail of what the checks said WHEN they said it (the other

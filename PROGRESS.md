@@ -90,6 +90,29 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-15** — **WI-431 done — the deploy smoke check now asks whether the
+  SITE is healthy, not whether something answered.** Eight deploys today each
+  served 500s on `/research`, `/get-help-now`, `/trials` and `/search` for about
+  a minute while `/` returned 200 throughout — and the check went green every
+  time, because it hit only `/`, on the azurewebsites hostname, and exited on the
+  FIRST 200 (which during App Service's old/new overlap can come from the
+  instance being replaced). Now: all five main routes, on `brainharbor.org`, and
+  **two consecutive clean passes** so one lucky hit cannot pass it.
+  **It also prints the failing response body**, which matters as much as the
+  gating: eight sightings produced no evidence of the CAUSE because nobody ever
+  captured one. The next occurrence will. Until then, "it is the app restarting"
+  is inference, not diagnosis — do not treat it as known.
+  Both paths verified locally against the live site before shipping (healthy →
+  exit 0 after two passes; bad host → body captured, counter reset, exit 1), and
+  the release that carries this change is itself the first real exercise of it.
+  **Softens the impact, worth knowing:** a visitor caught in that window gets the
+  calm custom error page rendered through the normal layout — so the helpline
+  band and the CareLine number are still on screen. That was designed in at
+  WI-103.
+  Filed **WI-431b** (`[user]`): whether to buy Standard tier for slot swaps —
+  explicitly NOT to be decided until the body capture identifies the cause,
+  since a start-up or migration-lock cause may be free to fix in code.
+
 - **2026-08-15** — **WI-432 done — /terms was still claiming a human reads every
   summary.** Dan asked whether the site needs legal cover; looking for it turned
   up a real defect rather than a missing paragraph. `/terms` said "We check each
