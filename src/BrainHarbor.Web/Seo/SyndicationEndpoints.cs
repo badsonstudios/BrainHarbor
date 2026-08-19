@@ -19,8 +19,11 @@ public static class SyndicationEndpoints
     // following its links, which is why the index has to be listed here — a
     // page nothing links to and nothing lists is invisible to a search engine
     // as well as to a reader (WI-412 shipped orphaned; found 2026-08-16).
+    // /start was reachable from the home page but absent here, so search
+    // engines never saw the page a newly diagnosed person is most likely to be
+    // searching for. Same orphan as /tumors, pointed the other way.
     private static readonly string[] StaticPaths =
-        ["/", "/research", "/tumors", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
+        ["/", "/start", "/research", "/tumors", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
 
     private const int SitemapLimit = 5000;
     private const int FeedLimit = 50;

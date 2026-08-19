@@ -27,7 +27,7 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
     [Trait("Category", "Database")]
     [InlineData("/about", "Why this site exists")]
     [InlineData("/how-we-write", "The short version")]
-    [InlineData("/start", "Get emergency help for these signs")]
+    [InlineData("/start", "Get emergency help right away")]
     [InlineData("/digest", "What it is")]
     [InlineData("/privacy", "We do not track you")]
     [InlineData("/terms", "This site is for learning, not for care")]
