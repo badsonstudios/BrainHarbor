@@ -465,6 +465,37 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-436 Rewrite /start with Dan's copy** (done 2026-08-19 — Dan supplied
+  new text for the Just Diagnosed page)
+  Delivered Dan's rewrite of `Content/pages/start.md`: new emergency heading,
+  an "find the nearest emergency room" link, softer framing in the take-a-breath
+  section, "all of your questions" rather than three, and a link to the ABTA
+  CareLine page alongside the phone number. Reading grade 4.2, under the 6.0
+  gate. `/start` also added to `sitemap.xml` — it was linked from the home page
+  door but invisible to search engines, which is the WI-412a orphan pointed the
+  other way, and on the page a newly diagnosed person is most likely to search
+  for.
+  **Four deviations from the supplied copy, all flagged to Dan:**
+  1. The closing "This is not medical advice…" paragraph was NOT added: it is
+     word-for-word what `disclaimers: [medical]` already renders on every
+     curated page, so including it would print the disclaimer twice.
+  2. **Kept "It is open on weekdays during business hours."** Dan's text dropped
+     it. The CareLine is Mon–Fri 8:30–5:00 CT (verified), so without the hours a
+     reader calls at 9pm Saturday and gets nothing — on the page for people at
+     their worst moment. Dan's "day or night → get help now" line redirects but
+     does not say the CareLine itself is closed. Reversible on his word.
+  3. "Find the nearest emergency room" had no target in the copy; pointed at a
+     Google Maps search (`?api=1&query=emergency+room+near+me`), which needs no
+     location permission and works with JS off. Outbound third-party link.
+  4. The opening paragraph became the `description` front matter, which renders
+     as the lead under the H1 — where Dan put it. The duplicate "Just diagnosed?
+     This is a good place to start" was dropped because the H1 already reads
+     "Just diagnosed? Start here".
+  Note: `FrontMatter.Description` renders visibly but is NOT wired to the
+  `<meta name="description">` tag (ContentPage sets only `ViewData["Title"]`),
+  so every curated page currently shares the site-wide default meta
+  description. Worth its own item if SEO matters before launch.
+
 - [x] **WI-412a Nothing linked to /tumors** (done 2026-08-16, PR #46 — found by
   Dan, not by the tests: "There's no navigation to get to the tumors page")
   WI-412 shipped a page that worked and that no one could reach. Four gaps: no
@@ -592,6 +623,35 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   behaviour; content-pipeline §5 states which allowance applies where.
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
+
+- [ ] **WI-435 ContentCheck passes when it checked nothing**
+  Goal: the gate that enforces reading level on medical copy must fail loudly
+  when it is not actually checking anything.
+  Problem (found 2026-08-19 while editing `start.md`): the tool takes the pages
+  root as a positional argument, so ANY unrecognised argument is silently
+  swallowed as that path. `dotnet run --project tools/BrainHarbor.ContentCheck
+  --nologo` prints `WARN pages root MISSING — no pages were checked`, skips
+  every Markdown page, and **exits 0** — reporting "ContentCheck passed
+  (22 checks, 0 failures)" while having graded zero curated pages. The count is
+  the only tell, and only if you know 48 is the right number. I hit this myself
+  and quoted the partial number as verification on PR #46; CI invokes the tool
+  correctly, so nothing shipped ungated, but the tool made a wrong claim look
+  like a right one.
+  Why it matters beyond the typo: this is the check standing between an
+  AI-drafted tumor description and a frightened reader. A gate whose failure
+  mode is "quietly grade nothing and report success" is worse than no gate,
+  because it manufactures confidence. The same shape would hide a CI
+  misconfiguration, a moved content directory, or a bad refactor of the path
+  resolution — none of which would turn CI red.
+  Acceptance: a missing/unresolvable pages root is a FAILURE (non-zero exit),
+  not a WARN; unknown arguments are rejected rather than reinterpreted as a
+  path; the summary line states what was covered ("N pages, M glossary, K
+  Razor") so a collapse in coverage is visible at a glance; a test asserts the
+  tool exits non-zero when pointed at a directory that does not exist.
+  Consider also asserting a floor — if the pages root resolves but yields zero
+  Markdown files, that is still a broken run, not a clean one.
+  Refs: tools/BrainHarbor.ContentCheck/ContentChecker.cs, .github/workflows/ci.yml.
+  Depends on: nothing. Related: [WI-416] (the two graders).
 
 - [x] **WI-417 Real logs for the scheduled pipeline runs** (done 2026-08-13 — per-run file in `%LOCALAPPDATA%\BrainHarbor\logs`, self-pruning, key-scrubbed, plus a flags-by-cause tally)
   Goal: a daily run that fails at 06:00 leaves evidence Dan can read (Dan's
