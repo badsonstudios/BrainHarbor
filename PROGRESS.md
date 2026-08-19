@@ -112,6 +112,27 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   had no window at all, so one sample of two minutes is not a trend, and buying
   a tier on it would be guessing with money.
 
+- **2026-08-19** — **Deploy window, third measurement: 84 seconds** (WI-436
+  release, PR #49). 20:49:10 → 20:50:34 by an independent poll of `/start`; the
+  smoke check agrees (six failing rounds, first clean at 20:50:40, second
+  consecutive at 20:50:52). Same signature a third time: inner pages 500 while
+  `/` stays up.
+  **Series: 2m00s, 1m23s, 1m24s. WI-431b's precondition is now met** — three
+  measurements, and the last two are within a second of each other. The shape is
+  settled: roughly 85 seconds of 500s on every page except `/`, every deploy.
+  **This is Dan's call now, and it is a real one:** ~85s of hard 500s on
+  `/get-help-now` is the part that matters, because that is the page a
+  distressed reader is pointed to from the band on every page and from `/start`.
+  While unlaunched it costs nothing. At soft launch (WI-408) it is a defect.
+  Options unchanged: deploy at quiet hours + batch releases (free), or Standard
+  tier for slot swaps (money, removes it).
+  **Also this release: CI hung for 35 minutes** on `Install Playwright browsers`
+  (`playwright.ps1 install --with-deps chromium` — the `--with-deps` half shells
+  out to apt-get). Cancelled and re-ran; both passed. First occurrence, so not
+  filed yet, but note the step has no `timeout-minutes`, so a hang there blocks
+  until the job's 6-hour default and a stalled pipeline looks exactly like a slow
+  one. If it recurs, that is the fix.
+
 - **2026-08-19** — **WI-436 — /start rewritten from Dan's copy.** Dan supplied
   new text for the Just Diagnosed page; implemented at reading grade 4.2 (gate
   is 6.0). `/start` also added to `sitemap.xml` — it was reachable from the home
