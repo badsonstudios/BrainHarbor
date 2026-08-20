@@ -76,7 +76,8 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         string[]? tags = null,
         string? slug = null,
         DateOnly? publishedAt = null,
-        int? readiness = null) =>
+        int? readiness = null,
+        string researchStage = "human_trial") =>
         _connection.ExecuteAsync(
             """
             INSERT INTO aggregated_items
@@ -85,7 +86,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                  readiness_score)
             VALUES
                 (@TestSource, @sourceKind, @externalId, @title, 'https://example.org',
-                 @status, @relevance, @tags, @slug, @publishedAt, 'human_trial', @title,
+                 @status, @relevance, @tags, @slug, @publishedAt, @researchStage, @title,
                  @readiness)
             """,
             new
@@ -100,6 +101,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
                 slug = slug ?? $"study-{externalId}",
                 publishedAt = publishedAt ?? new DateOnly(2026, 6, 12),
                 readiness,
+                researchStage,
             });
 
     /// <summary>
@@ -320,18 +322,29 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         Assert.Contains("Research updates", html);
         Assert.Contains("Show early-stage research", html);
         Assert.Contains("class=\"feed-grid\"", html);
-        Assert.Contains("badge badge--", html);
+
+        // The path is laid OVER the card photo, in the position the readiness
+        // dial used to hold (Dan, 2026-08-19). The indicator plate is what
+        // makes it legible on an arbitrary photo, so assert the nesting rather
+        // than just the path's presence — a path that rendered below the hero
+        // again would still pass a bare "is there a .journey" check.
+        Assert.Contains("card-hero__indicator", html);
+        Assert.Contains("journey journey--over", html);
+        Assert.Matches(
+            @"card-hero__indicator""\s*>\s*<ol class=""journey journey--over""",
+            html);
     }
 
     [Fact]
-    public async Task AnItemPermalinkRendersWithItsBadgeAndProvenance()
+    public async Task AnItemPermalinkRendersWithItsJourneyPathAndProvenance()
     {
         await InsertAsync("f-perma", slug: "study-f-perma");
 
         var html = await _factory.CreateClient().GetStringAsync("/research/study-f-perma");
 
         Assert.Contains("Study f-perma", html);
-        Assert.Contains("How early is this?", html);
+        Assert.Contains("How far along is this research?", html);
+        Assert.Contains("journey--lg", html);
         Assert.Contains("Read the original", html);
         Assert.Contains("class=\"ai-note\"", html);
     }
@@ -594,7 +607,7 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     }
 
     [Fact]
-    public async Task TheItemPageRendersAllSixBlocksAndTheReadinessScore()
+    public async Task TheItemPageRendersAllSixBlocksAndTheJourneyPath()
     {
         await InsertFullSummaryAsync("f-full", "study-f-full");
 
@@ -605,8 +618,33 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         Assert.Contains("What they found", html);
         Assert.Contains("What this means", html);          // the means-block heading
         Assert.Contains("does not fit every tumor", html); // the doesn't-mean block
-        Assert.Contains("Readiness 7/10", html);
-        Assert.Contains("In late human trials", html);     // the readiness band label
+        Assert.Contains("How far along is this research?", html);
+        Assert.Contains("Tested in people. Stage 4 of 4", html);  // the server-built label
+    }
+
+    /// <summary>
+    /// The 1-to-10 readiness score is gone from every reader-facing surface
+    /// (journey handoff, 2026-08-19) while staying in the database, the sync
+    /// contract and the admin queue. This is the guard: the number is the exact
+    /// thing the handoff argued against, because no single value on a 10-point
+    /// scale has a meaning a patient can state, and "7 of 10 ready" reads as a
+    /// promise about a schedule that nobody made.
+    /// </summary>
+    [Fact]
+    public async Task NoReaderFacingPageShowsTheOneToTenReadinessScore()
+    {
+        await InsertFullSummaryAsync("f-noscore", "study-f-noscore");
+        var client = _factory.CreateClient();
+
+        foreach (var url in new[] { "/", "/research", "/research/study-f-noscore" })
+        {
+            var html = Collapse(await client.GetStringAsync(url));
+
+            Assert.DoesNotContain("Readiness 7/10", html);
+            Assert.DoesNotContain("of 10 ready", html);
+            Assert.DoesNotContain("readiness__bar", html);
+            Assert.DoesNotContain("How close is this to helping patients?", html);
+        }
     }
 
     [Fact]
@@ -728,22 +766,54 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     // ---------- WI-410: sorting ----------
 
     [Fact]
-    public async Task ReadinessSortPutsHighestFirstAndUnscoredLast()
+    public async Task FurthestAlongSortRanksByTheStageLadderTheCardsShow()
     {
-        // "What is closest to helping me?" — and an UNSCORED item must sort
-        // last, not first: readiness_score is nullable, and a bare DESC would
-        // put NULLs on top (the same trap published_at already guards).
-        await InsertAsync("s-low", readiness: 3, slug: "study-s-low");
-        await InsertAsync("s-high", readiness: 9, slug: "study-s-high");
-        await InsertAsync("s-unscored", readiness: null, slug: "study-s-unscored");
+        // "What is furthest along?" — ranked by the SAME four stages the
+        // journey path draws, not by the 1-to-10 readiness score it replaced
+        // (journey handoff, 2026-08-19). Sorting by a number the reader cannot
+        // see on the card is the thing WI-429 said not to leave standing.
+        await InsertAsync("s-cells", researchStage: "preclinical_cell", slug: "study-s-cells");
+        await InsertAsync("s-people", researchStage: "human_trial", slug: "study-s-people");
+        await InsertAsync("s-animals", researchStage: "preclinical_animal", slug: "study-s-animals");
+        await InsertAsync("s-review", researchStage: "review_guideline", slug: "study-s-review");
 
         var rows = await MyRowsInFeedOrderAsync(
             new FeedQuery(Sort: "readiness"),
-            "study-s-low", "study-s-high", "study-s-unscored");
+            "study-s-cells", "study-s-people", "study-s-animals", "study-s-review");
 
         Assert.Equal(
-            ["study-s-high", "study-s-low", "study-s-unscored"],
+            ["study-s-people", "study-s-review", "study-s-animals", "study-s-cells"],
             rows.Select(r => r.Slug).ToArray());
+    }
+
+    /// <summary>
+    /// Trials, news and preprints are not findings, so they must not out-rank a
+    /// real one in a sort that means "furthest along" — the same reason they get
+    /// a .stage-note strip instead of a journey path.
+    ///
+    /// The preprint here carries research_stage 'human_trial' deliberately: the
+    /// mapper decides preprint from source_kind BEFORE it looks at the stage, so
+    /// a SQL CASE that tested research_stage first would rank this preprint as
+    /// "tested in people" and float it to the top of the feed.
+    /// </summary>
+    [Fact]
+    public async Task ItemsThatAreNotFindingsSortBelowEveryRealFinding()
+    {
+        // relevance 'early_stage', not the default: a DB check constraint
+        // forbids a patient_relevant preprint outright (content-pipeline §9),
+        // which is a rule worth tripping over rather than working around.
+        await InsertAsync("s-preprint", sourceKind: "preprint", relevance: "early_stage",
+            researchStage: "human_trial", slug: "study-s-preprint");
+        await InsertAsync("s-trial", sourceKind: "trial_update",
+            researchStage: "human_trial", slug: "study-s-trial");
+        await InsertAsync("s-labcells", researchStage: "preclinical_cell", slug: "study-s-labcells");
+
+        var rows = await MyRowsInFeedOrderAsync(
+            new FeedQuery(Sort: "readiness", IncludeEarlyStage: true),
+            "study-s-preprint", "study-s-trial", "study-s-labcells");
+
+        // The weakest real finding still beats both non-findings.
+        Assert.Equal("study-s-labcells", rows[0].Slug);
     }
 
     [Fact]

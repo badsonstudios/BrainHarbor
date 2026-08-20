@@ -1,48 +1,33 @@
-using System.Globalization;
-using BrainHarbor.Web.Models;
-using Microsoft.AspNetCore.Html;
-
 namespace BrainHarbor.Web.Feed;
 
 /// <summary>
-/// The card hero: a vetted photo backdrop (chosen by content — see
-/// <see cref="CardImages"/>) with the item's readiness score laid over it as a
-/// dial. The photo is picked from a small human-reviewed pool, never generated,
-/// so it can't invent a misleading medical image; the dial sits on a dark disc
-/// so its number is legible on any photo. Decorative — rendered aria-hidden.
+/// The card hero: a vetted photo backdrop, chosen by content — see
+/// <see cref="CardImages"/>. Picked from a small human-reviewed pool, never
+/// generated, so it cannot invent a misleading medical image. Decorative.
+///
+/// It carried the readiness score as a "N of 10 ready" dial until the journey
+/// handoff (2026-08-19) retired that number: a 10-point scale has no
+/// plain-language meaning at any single value, and a dial filled most of the
+/// way round reads as "nearly cured" to exactly the reader least able to
+/// discount it. The journey path took over BOTH its job and its position —
+/// overlaid on the photo, not stacked under it.
 /// </summary>
 public static class CardArt
 {
-    public static IHtmlContent Hero(FeedCard card, string? imageUrl)
-    {
-        var bg = imageUrl is not null
+    /// <summary>
+    /// The inline background for the hero. Only the style value, not the whole
+    /// element: the journey path is rendered INSIDE the hero by a partial
+    /// (Dan's call, 2026-08-19 — the indicator overlays the photo where the
+    /// dial used to be, rather than sitting under it), and building nested
+    /// markup as a raw string here would put a Razor partial's output inside a
+    /// hand-concatenated string. The element lives in _FeedCard.cshtml instead.
+    /// </summary>
+    /// <param name="imageUrl">
+    /// From <see cref="CardImages"/>; null falls back to a plain gradient so a
+    /// card with no matching photo still gets a surface for the path to sit on.
+    /// </param>
+    public static string HeroStyle(string? imageUrl) =>
+        imageUrl is not null
             ? $"background-image:url('{imageUrl}')"
             : "background:linear-gradient(135deg,hsl(205,30%,90%),hsl(190,28%,94%))";
-
-        var dial = card.Readiness is { } score ? Dial(score) : "";
-
-        return new HtmlString(
-            $"<div class=\"card-hero\" style=\"{bg}\"><span class=\"card-hero__scrim\"></span>{dial}</div>");
-    }
-
-    private static string Dial(int score)
-    {
-        const double r = 45, circ = 2 * Math.PI * r;
-        var offset = (circ * (1 - Math.Clamp(score, 1, 10) / 10.0)).ToString("0.0", CultureInfo.InvariantCulture);
-        var arc = score >= 7 ? "#2fc4b4" : score >= 4 ? "#4f9ff0" : "#f2a83c";
-        var c = circ.ToString("0.0", CultureInfo.InvariantCulture);
-
-        return "<svg class=\"card-hero__dial\" viewBox=\"0 0 120 120\" aria-hidden=\"true\" role=\"presentation\">" +
-               // deep, near-solid disc so the number owns the card...
-               "<circle cx=\"60\" cy=\"60\" r=\"54\" fill=\"#15263b\" fill-opacity=\"0.92\"/>" +
-               // ...with a crisp light rim to cut it out from the washed backdrop
-               "<circle cx=\"60\" cy=\"60\" r=\"54\" fill=\"none\" stroke=\"#ffffff\" stroke-opacity=\"0.9\" stroke-width=\"2\"/>" +
-               // the readiness ring: a subtle track + a bold, bright arc
-               "<circle cx=\"60\" cy=\"60\" r=\"45\" fill=\"none\" stroke=\"rgba(255,255,255,0.20)\" stroke-width=\"14\"/>" +
-               $"<circle cx=\"60\" cy=\"60\" r=\"45\" fill=\"none\" stroke=\"{arc}\" stroke-width=\"14\" " +
-               $"stroke-linecap=\"round\" stroke-dasharray=\"{c}\" stroke-dashoffset=\"{offset}\" transform=\"rotate(-90 60 60)\"/>" +
-               $"<text x=\"60\" y=\"63\" text-anchor=\"middle\" class=\"card-hero__num\">{score}</text>" +
-               "<text x=\"60\" y=\"82\" text-anchor=\"middle\" class=\"card-hero__lbl\">of 10 ready</text>" +
-               "</svg>";
-    }
 }

@@ -1,0 +1,63 @@
+@using BrainHarbor.Web.Models
+@model ResearchStage
+
+@* The evidence indicator (journey handoff, 2026-08-19). Two shapes, chosen by
+   whether the item is a finding at all:
+
+   - Findings get the four-stage journey path. All four steps ALWAYS render —
+     the unreached ones show how much road is left, which is the whole point.
+   - Trials, news and preprints get a .stage-note strip instead. A path would
+     imply they sit somewhere on the evidence scale, and they don't.
+
+   Both are role="img" with a server-built aria-label, so a screen reader hears
+   one clean sentence rather than four orphaned words, and hears exactly what a
+   sighted reader sees. The label is never scraped from the visual text.
+
+   The caller passes a modifier through ViewData["Modifier"]:
+     journey--lg   the item page's larger path
+     journey--over laid over a card photo — needs light-on-dark colours
+
+   A modifier applies to whichever shape renders, so `journey--over` also
+   reaches the stage-note as `stage-note--over`. Trials and news sit on the
+   same photos and need the same contrast guarantee; styling only the path
+   would leave one card in three unreadable. *@
+
+@{
+    var modifier = ViewData["Modifier"] as string;
+    var path = JourneyPath.For(Model);
+    var note = StageNote.For(Model);
+    var noteModifier = modifier == "journey--over" ? "stage-note--over" : null;
+}
+
+@if (path is not null)
+{
+    @* role="presentation" on the items is load-bearing, not tidying. Putting
+       role="img" on the <ol> overrides its implicit `list` role, which leaves
+       every <li> an orphaned `listitem` with no list parent — axe-core flags
+       it SERIOUS ("<li> elements must be contained in a <ul> or <ol>"), and
+       this component renders on every card on every page, so the handoff's
+       markup as written would have shipped that site-wide.
+
+       Marking the items presentational says what role="img" already implies:
+       the label on the parent is the whole accessible story, and the four
+       items are the picture it describes. *@
+    <ol class="journey @modifier" role="img" aria-label="@path.AriaLabel">
+        @for (var step = 1; step <= JourneyPath.StepCount; step++)
+        {
+            <li class="@path.CssFor(step)" role="presentation">
+                <span class="journey__dot"></span>
+                <span class="journey__label">@JourneyPath.Steps[step - 1]</span>
+            </li>
+        }
+    </ol>
+}
+else if (note is not null)
+{
+    <div class="@note.CssClass @noteModifier" role="img" aria-label="@note.AriaLabel">
+        <span class="stage-note__glyph" aria-hidden="true">@note.Glyph</span>
+        <span class="stage-note__text" aria-hidden="true">
+            <strong>@note.Title</strong>
+            <span>@note.Detail</span>
+        </span>
+    </div>
+}

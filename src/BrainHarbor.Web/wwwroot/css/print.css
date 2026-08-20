@@ -72,6 +72,103 @@ form {
   border-color: #000 !important;
 }
 
+/* The journey path has the same problem as the dot-meter, and it matters more
+   because it is now the ONLY evidence indicator a reader sees. Printers strip
+   backgrounds by default, so without this every dot prints as an empty circle
+   and "Tested in people" is indistinguishable from "Lab cells" on paper — on
+   the page a patient carries into an appointment. Outline the dots, fill the
+   reached ones with real ink, and ring the current one so it is still found by
+   shape rather than colour. */
+.journey__dot {
+  border: 1.5px solid #000 !important;
+  background: #fff !important;
+}
+
+.journey__step.is-done .journey__dot {
+  background: #000 !important;
+  print-color-adjust: exact;
+}
+
+.journey__step.is-current .journey__dot {
+  background: #000 !important;
+  border-color: #fff !important;
+  box-shadow: none !important;
+  outline: 2px solid #000;
+  outline-offset: 2px;
+  print-color-adjust: exact;
+}
+
+/* The connectors carry the "how far along the road" reading. Without ink they
+   vanish and the dots become four unrelated circles. */
+.journey__step::before {
+  background: #999 !important;
+  print-color-adjust: exact;
+}
+
+.journey__step.is-done::before,
+.journey__step.is-current::before {
+  background: #000 !important;
+  print-color-adjust: exact;
+}
+
+.journey__label {
+  color: #000 !important;
+}
+
+.stage-note {
+  background: #fff !important;
+  border-inline-start-color: #000 !important;
+}
+
+.stage-note__glyph {
+  border-color: #000 !important;
+  color: #000 !important;
+}
+
+.stage-note__text strong,
+.stage-note__text span {
+  color: #000 !important;
+}
+
+/* The card photo is decoration that costs a patient toner and tells them
+   nothing — but the journey path now lives INSIDE the hero, so hiding the
+   whole element would delete the evidence indicator from every printed card.
+   Drop the picture, keep the box, and flatten the dark plate to plain ink. */
+.card-hero {
+  background-image: none !important;
+  background-color: #fff !important;
+  min-height: 0 !important;
+  margin: 0 0 8pt !important;
+}
+
+.card-hero__scrim {
+  display: none !important;
+}
+
+.card-hero__indicator {
+  background: #fff !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* The overlay variant is light-on-dark on screen. On paper the plate is gone,
+   so those colours would print white-on-white — invert them back to ink. */
+.journey--over .journey__label,
+.journey--over .journey__step.is-current .journey__label,
+.stage-note--over .stage-note__text strong,
+.stage-note--over .stage-note__text span {
+  color: #000 !important;
+}
+
+.stage-note--over {
+  border-inline-start-color: #000 !important;
+}
+
+.stage-note--over .stage-note__glyph {
+  border-color: #000 !important;
+  color: #000 !important;
+}
+
 .tag {
   background: #fff !important;
   color: #000 !important;

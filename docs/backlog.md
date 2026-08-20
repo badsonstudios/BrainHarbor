@@ -465,6 +465,58 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-437 Journey path replaces the readiness dial and the stage badge**
+  (done 2026-08-19 — new design handoff from Dan,
+  `design_handoff_brainharbor_journey`)
+  Goal: one evidence indicator a reader can act on, instead of two in different
+  units. Cards and the item page carried a 4-mark badge ("how well tested") AND
+  a 1-to-10 readiness dial ("how close to a patient"); both are replaced by a
+  four-stage path — Lab cells → Animals → Review → Tested in people.
+  **This also answers WI-429**, which asked what happens to the readiness dial:
+  it is gone from reader pages, and the plain/photo card split it described no
+  longer exists.
+  Delivered: `JourneyPath`/`StageNote` models + `_JourneyPath.cshtml`, driven
+  entirely off the existing `ResearchStage` enum (the handoff's "map the 0-10
+  score onto four stages" worry did not apply — the enum already WAS the four
+  stages, so nothing had to be guessed); the `.journey`/`.stage-note` CSS with a
+  vertical variant, print rules, and the feed grid widened 320 → 340px because
+  four labels need the room; the item page's badge, readiness callout and
+  repeated badge folded into one "How far along is this research?" section; the
+  `?sort=readiness` sort re-pointed at the stage ladder and relabelled
+  "Furthest along".
+  **Scope, per Dan:** indicator only. The hero band, doors, 8 cards, See-all
+  buttons, AI notice and brand assets in the same bundle had already shipped in
+  WI-428a and were left alone.
+  **Dan's four calls:** replace both badge and dial (not one); re-point the sort
+  rather than drop it; KEEP the card photos; and — after seeing it live — put
+  the path OVER the photo where the dial was, "prevalent" rather than a row of
+  dots underneath.
+  **Two defects found that markup and tests could not have shown:**
+  1. *In the handoff itself:* `role="img"` on the `<ol>` overrides its implicit
+     `list` role, orphaning every `<li>`. axe-core: SERIOUS, 28 nodes. This
+     component renders on every card on every page, so as written it would have
+     shipped site-wide. Fixed with `role="presentation"` on the items. Worth
+     telling the designer.
+  2. *Mine:* at phone width the overlaid path flipped vertical and swallowed the
+     whole photo — the `.journey--over` override tied on specificity with the
+     base rule and lost on source order. Only a screenshot showed it; the
+     structure and every test were green. Fixed by doubling the selector
+     (`.journey.journey--over`) so it no longer depends on file order.
+     **The lesson is the same one WI-412a taught in a different costume:** a
+     test that checks structure cannot see what a page looks like. Screenshot
+     anything visual before calling it done.
+  Contrast was computed by hand rather than left to axe, which cannot reason
+  about a translucent plate over an arbitrary photo: white label 11.8:1 over a
+  white photo, 15.1:1 over a black one; secondary labels 9.2:1 / 11.4:1. All
+  AAA. Unreached dots are ~2.8:1 and decorative only — meaning is carried by
+  size and the ring, never colour.
+  **Not touched:** `readiness_score` in the DB, pipeline, sync contract and
+  review queue, so this is reversible without a migration. The stage badge
+  survives for the admin queue and style guide (a compact pill triages better in
+  a dense list) — do not "finish the job" by deleting it.
+  781 tests, ContentCheck 49/0. Refs: docs/design/README.md,
+  Models/JourneyPath.cs, Pages/Shared/_JourneyPath.cshtml, Feed/CardArt.cs.
+
 - [x] **WI-436 Rewrite /start with Dan's copy** (done 2026-08-19 — Dan supplied
   new text for the Just Diagnosed page)
   Delivered Dan's rewrite of `Content/pages/start.md`: new emergency heading,
@@ -822,7 +874,16 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/design/homepage-handoff/research-item.html + README §Item page.
   Depends on: nothing.
 
-- [ ] **WI-429 Decide what happens to the readiness dial on /research**
+- [x] **WI-429 Decide what happens to the readiness dial on /research**
+  (answered 2026-08-19 by **WI-437**, not by a decision taken here)
+  The question was "plain card or photo card, and does the reader see a
+  readiness score". The journey handoff dissolved it: the score is gone from
+  every reader-facing page, the photo stays, and one card renders on both pages
+  so there is nothing left to keep in sync. The `PlainCard` flag this item was
+  written to retire had already gone when the homepage adopted the /research
+  card on 2026-08-15.
+  Original text below for the record.
+
   Goal: one answer to "does the reader see a readiness score", instead of two.
   Problem (surfaced by WI-428a): the homepage handoff's card is badge, title,
   hook, meta — no photo backdrop, no 1-to-10 readiness dial. The homepage now

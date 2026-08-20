@@ -29,13 +29,34 @@
     }
 
     <div class="item-header">
-        <partial name="_StageBadge" model="Model.Badge" />
         <h1>@(Model.Item.PlainTitle ?? Model.Item.Title)</h1>
         @if (Model.Item.PlainTitle is not null)
         {
             <p class="original-title">Original title: @Model.Item.Title</p>
         }
     </div>
+
+    @* "How far along is this research?" sits HERE, right under the title, per
+       the journey handoff — before the summary, so nobody reads a result
+       without first seeing what kind of evidence produced it.
+
+       This replaces three things that used to be spread down the page: a badge
+       up here with no explanation, a 1-to-10 readiness callout in the middle,
+       and a repeat of the badge near the foot. The repeat existed only because
+       the top badge was unexplained and asking a reader to scroll back up to
+       count dots is asking them to give up — with the path and its explanation
+       together in one place, the reason for the repeat is gone.
+
+       Both paragraphs earn their place: StageExplanation is the same for every
+       item at this stage ("this was done in animals"), while ReadinessReason is
+       written for THIS item ("only done in mice, and the drug did not work"). *@
+    <h2>How far along is this research?</h2>
+    <partial name="_JourneyPath" model="Model.Badge.Stage" view-data='new ViewDataDictionary(ViewData) { ["Modifier"] = "journey--lg" }' />
+    <p>@Model.StageExplanation</p>
+    @if (Model.Item.ReadinessReason is not null)
+    {
+        <p>@Model.Block(Model.Item.ReadinessReason)</p>
+    }
 
     @* The trial's status as it is RIGHT NOW, read from the trial cache rather
        than from the summary (WI-402). The summary is written once and frozen;
@@ -98,26 +119,12 @@
         </p>
     }
 
-    @if (Model.Readiness is not null)
-    {
-        <div class="readiness-callout">
-            <h2>How close is this to helping patients?</h2>
-            <partial name="_ReadinessBadge" model="Model.Readiness" />
-            @if (Model.Item.ReadinessReason is not null)
-            {
-                <p class="readiness-reason">@Model.Block(Model.Item.ReadinessReason)</p>
-            }
-        </div>
-    }
-
-    @* The meter repeats here, beside the words that explain it (2026-08-15
-       handoff). It appears at the top of the page too, but by this point the
-       reader has passed the whole summary, and "how early is this" is the
-       question the marks answer — asking someone to scroll back up to count
-       them is asking them to give up. *@
-    <h2>How early is this?</h2>
-    <p><partial name="_StageBadge" model="Model.Badge" /></p>
-    <p>@Model.StageExplanation</p>
+    @* The readiness callout ("How close is this to helping patients?", a 1-to-10
+       bar) and the repeated "How early is this?" badge both used to sit here.
+       The journey handoff folded both into the single "How far along is this
+       research?" section above: two indicators measuring different things, in
+       different units, in different places on one page is a puzzle to solve
+       rather than an answer to read. *@
 
     <div class="provenance">
         <p>
