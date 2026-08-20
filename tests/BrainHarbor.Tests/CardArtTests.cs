@@ -1,24 +1,18 @@
-using System.Text.Encodings.Web;
 using BrainHarbor.Web.Feed;
 using BrainHarbor.Web.Models;
-using Microsoft.AspNetCore.Html;
 
 namespace BrainHarbor.Tests;
 
 /// <summary>
-/// The card hero: a content-matched photo backdrop (from a vetted pool) with
-/// the item's readiness dial on top. The safety-critical parts: the theme is
-/// derived from the item's own words/stage, selection is deterministic, and the
-/// URL always comes from the installed pool (never invented).
+/// The card hero: a content-matched photo backdrop from a vetted pool. The
+/// safety-critical parts: the theme is derived from the item's own words and
+/// stage, selection is deterministic, and the URL always comes from the
+/// installed pool (never invented). The readiness dial that used to sit on top
+/// was retired by the journey handoff, 2026-08-19; the journey path took its
+/// place, and is rendered by _FeedCard.cshtml rather than from here.
 /// </summary>
 public class CardArtTests
 {
-    private static string Render(IHtmlContent c)
-    {
-        using var w = new StringWriter();
-        c.WriteTo(w, HtmlEncoder.Default);
-        return w.ToString();
-    }
 
     private static FeedCard Card(string title = "A study", string hook = "", string url = "/research/x",
         ResearchStage stage = ResearchStage.TestedInPeople, int? readiness = 6) =>
@@ -65,25 +59,28 @@ public class CardArtTests
         Assert.Contains("/img/cards/genetics-", url);
     }
 
-    // ---- the hero markup ----
+    // ---- the hero background ----
 
     [Fact]
-    public void TheHeroRendersThePhotoAndTheDialAndIsDecorative()
+    public void TheHeroUsesThePhotoAsItsBackground()
     {
-        var html = Render(CardArt.Hero(Card(readiness: 8), "/img/cards/brain-01.jpg"));
-
-        Assert.Contains("background-image:url('/img/cards/brain-01.jpg')", html);
-        Assert.Contains(">8<", html);                 // the readiness number
-        Assert.Contains("aria-hidden=\"true\"", html);
+        Assert.Equal(
+            "background-image:url('/img/cards/brain-01.jpg')",
+            CardArt.HeroStyle("/img/cards/brain-01.jpg"));
     }
 
+    /// <summary>
+    /// A card with no matching photo still needs a surface: the journey path is
+    /// laid over the hero, so an empty background would leave the indicator
+    /// plate floating on nothing.
+    /// </summary>
     [Fact]
-    public void AnUnscoredItemStillGetsAPhotoButNoDial()
+    public void AnItemWithNoPhotoFallsBackToAGradientRatherThanAnEmptyBox()
     {
-        var html = Render(CardArt.Hero(Card(readiness: null), "/img/cards/brain-01.jpg"));
+        var style = CardArt.HeroStyle(null);
 
-        Assert.Contains("background-image", html);
-        Assert.DoesNotContain("card-hero__dial", html);
+        Assert.DoesNotContain("background-image", style);
+        Assert.Contains("linear-gradient", style);
     }
 
     private static string FindRepoRoot()

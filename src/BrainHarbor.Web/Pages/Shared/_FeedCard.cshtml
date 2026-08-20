@@ -5,23 +5,38 @@
 @*
     One feed card (WI-109), identical on the homepage and /research.
 
-    Anatomy: hero (content-matched photo + the readiness dial) → badge → title
-    → hook → tags + date · source.
+    Anatomy: hero (content-matched photo with the journey path laid OVER it) →
+    title → hook → tags + date · source.
 
-    The 2026-08-15 homepage handoff specified a plainer card with neither the
-    photo nor the dial. Dan's call, 2026-08-15, after seeing both live: the
-    /research card is the better one, and the homepage should match it. The dial
-    is the reason — "how far along the ready scale a finding is" is information
-    the homepage was missing, and it is the thing the badge does NOT say. The
-    badge is about how well tested the evidence is; the dial is about how close
-    it is to something a patient can actually get.
+    Two handoffs have now shaped this card, and the history matters because it
+    reads like a reversal and isn't quite one:
 
-    See docs/design/README.md, which records this as a deliberate deviation so
-    nobody later "restores" the handoff version.
+    - 2026-08-15: the homepage handoff wanted a plain card, no photo and no
+      dial. Dan kept both, because "how far along the ready scale" was
+      information the homepage lacked and the badge did not carry.
+    - 2026-08-19: the journey handoff replaced the 0-10 dial AND the badge with
+      a single four-stage path. Dan's call: keep the photos, drop the dial, and
+      put the path where the dial was — ON the image, not under it. The path
+      answers the question the dial was there for, in words a patient can
+      repeat, without a number that reads as a percentage of a cure.
+
+    So the photo survived both rounds and the dial did not, but the dial's
+    POSITION survived: it was the most prominent thing on the card and the
+    indicator that replaced it had to inherit that prominence, not be demoted
+    to a row of dots beneath the picture. See docs/design/README.md.
 *@
 <li class="card">
-    @BrainHarbor.Web.Feed.CardArt.Hero(Model, CardImages.UrlFor(Model))
-    <partial name="_StageBadge" model="StageBadge.For(Model.Stage)" />
+    @* The path sits inside the hero, so it needs its own opaque surface: a
+       photo backdrop varies per card and cannot be relied on for contrast.
+       The dark plate does what the dial's dark disc did — guarantees the
+       measured contrast ratios no matter which image is behind it. *@
+    <div class="card-hero" style="@BrainHarbor.Web.Feed.CardArt.HeroStyle(CardImages.UrlFor(Model))">
+        <span class="card-hero__scrim" aria-hidden="true"></span>
+        <div class="card-hero__indicator">
+            <partial name="_JourneyPath" model="Model.Stage"
+                     view-data='new ViewDataDictionary(ViewData) { ["Modifier"] = "journey--over" }' />
+        </div>
+    </div>
     <h3><a href="@Model.Url">@Model.Title</a></h3>
     <p class="card__hook">@Model.Hook</p>
     <p class="card__meta">

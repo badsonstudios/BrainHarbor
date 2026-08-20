@@ -465,6 +465,58 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-437 Journey path replaces the readiness dial and the stage badge**
+  (done 2026-08-19 — new design handoff from Dan,
+  `design_handoff_brainharbor_journey`)
+  Goal: one evidence indicator a reader can act on, instead of two in different
+  units. Cards and the item page carried a 4-mark badge ("how well tested") AND
+  a 1-to-10 readiness dial ("how close to a patient"); both are replaced by a
+  four-stage path — Lab cells → Animals → Review → Tested in people.
+  **This also answers WI-429**, which asked what happens to the readiness dial:
+  it is gone from reader pages, and the plain/photo card split it described no
+  longer exists.
+  Delivered: `JourneyPath`/`StageNote` models + `_JourneyPath.cshtml`, driven
+  entirely off the existing `ResearchStage` enum (the handoff's "map the 0-10
+  score onto four stages" worry did not apply — the enum already WAS the four
+  stages, so nothing had to be guessed); the `.journey`/`.stage-note` CSS with a
+  vertical variant, print rules, and the feed grid widened 320 → 340px because
+  four labels need the room; the item page's badge, readiness callout and
+  repeated badge folded into one "How far along is this research?" section; the
+  `?sort=readiness` sort re-pointed at the stage ladder and relabelled
+  "Furthest along".
+  **Scope, per Dan:** indicator only. The hero band, doors, 8 cards, See-all
+  buttons, AI notice and brand assets in the same bundle had already shipped in
+  WI-428a and were left alone.
+  **Dan's four calls:** replace both badge and dial (not one); re-point the sort
+  rather than drop it; KEEP the card photos; and — after seeing it live — put
+  the path OVER the photo where the dial was, "prevalent" rather than a row of
+  dots underneath.
+  **Two defects found that markup and tests could not have shown:**
+  1. *In the handoff itself:* `role="img"` on the `<ol>` overrides its implicit
+     `list` role, orphaning every `<li>`. axe-core: SERIOUS, 28 nodes. This
+     component renders on every card on every page, so as written it would have
+     shipped site-wide. Fixed with `role="presentation"` on the items. Worth
+     telling the designer.
+  2. *Mine:* at phone width the overlaid path flipped vertical and swallowed the
+     whole photo — the `.journey--over` override tied on specificity with the
+     base rule and lost on source order. Only a screenshot showed it; the
+     structure and every test were green. Fixed by doubling the selector
+     (`.journey.journey--over`) so it no longer depends on file order.
+     **The lesson is the same one WI-412a taught in a different costume:** a
+     test that checks structure cannot see what a page looks like. Screenshot
+     anything visual before calling it done.
+  Contrast was computed by hand rather than left to axe, which cannot reason
+  about a translucent plate over an arbitrary photo: white label 11.8:1 over a
+  white photo, 15.1:1 over a black one; secondary labels 9.2:1 / 11.4:1. All
+  AAA. Unreached dots are ~2.8:1 and decorative only — meaning is carried by
+  size and the ring, never colour.
+  **Not touched:** `readiness_score` in the DB, pipeline, sync contract and
+  review queue, so this is reversible without a migration. The stage badge
+  survives for the admin queue and style guide (a compact pill triages better in
+  a dense list) — do not "finish the job" by deleting it.
+  781 tests, ContentCheck 49/0. Refs: docs/design/README.md,
+  Models/JourneyPath.cs, Pages/Shared/_JourneyPath.cshtml, Feed/CardArt.cs.
+
 - [x] **WI-436 Rewrite /start with Dan's copy** (done 2026-08-19 — Dan supplied
   new text for the Just Diagnosed page)
   Delivered Dan's rewrite of `Content/pages/start.md`: new emergency heading,
@@ -822,7 +874,16 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: docs/design/homepage-handoff/research-item.html + README §Item page.
   Depends on: nothing.
 
-- [ ] **WI-429 Decide what happens to the readiness dial on /research**
+- [x] **WI-429 Decide what happens to the readiness dial on /research**
+  (answered 2026-08-19 by **WI-437**, not by a decision taken here)
+  The question was "plain card or photo card, and does the reader see a
+  readiness score". The journey handoff dissolved it: the score is gone from
+  every reader-facing page, the photo stays, and one card renders on both pages
+  so there is nothing left to keep in sync. The `PlainCard` flag this item was
+  written to retire had already gone when the homepage adopted the /research
+  card on 2026-08-15.
+  Original text below for the record.
+
   Goal: one answer to "does the reader see a readiness score", instead of two.
   Problem (surfaced by WI-428a): the homepage handoff's card is badge, title,
   hook, meta — no photo backdrop, no 1-to-10 readiness dial. The homepage now
@@ -1012,30 +1073,53 @@ abstracts admin-only (pinned by a test). Do not change that behaviour.
   still starting while Azure keeps routing to it. So this is start-up or swap
   behaviour, not a bug in the code.
 
-  ### Recommended before spending anything
+  ### The series is complete (2026-08-19) — this is now a decision, not a study
+
+  | Release | Window | Notes |
+  |---|---|---|
+  | WI-412 (PR #45, 2026-08-16) | **2m00s** | nine failed rounds |
+  | WI-412a (PR #47, 2026-08-16) | **1m23s** | six failed rounds |
+  | WI-436 (PR #49, 2026-08-19) | **1m24s** | six failed rounds |
+
+  Three measurements, the last two within one second of each other, every one
+  with the same signature: `/research`, `/trials`, `/search` and
+  `/get-help-now` all 500 with empty bodies while `/` answers 200 throughout.
+  **The behaviour is settled: roughly 85 seconds, every deploy.** The two-minute
+  first sample looks like the outlier, not the rule.
+
+  The precondition this item set for itself — "collect two or three more
+  measurements", "do not decide until the body capture has caught the failure at
+  least once" — is met three times over. The bodies were empty every time, which
+  rules out an application exception and rules out the cheap code-level fix that
+  might have made this free. It is platform start-up/swap behaviour, so the only
+  thing that removes it is a staging slot, and slots mean Standard tier.
+
+  ### Recommended
   1. **Deploy at quiet hours and batch changes into fewer releases.** Free, and
-     costs nothing at all while the site is unlaunched.
-  2. **Collect two or three more measurements first.** The check now logs this
-     automatically on every deploy, at no effort. One sample of two minutes is
-     not a trend, and the previous release (CI-only) passed on the first attempt
-     with no window at all — so the length varies and the cause is not yet
-     pinned. Deciding to buy a tier on a single data point would be guessing
-     with money.
-  3. Only then weigh the tier.
+     costs nothing at all while the site is unlaunched. Sufficient for now.
+  2. **Revisit at soft launch (WI-408), not before.** ~85 seconds of hard 500s
+     is worth nothing today and is a real defect the day the site has readers —
+     specifically on `/get-help-now`, the page the band on every page points a
+     distressed reader to. That change in stakes, not a new measurement, is what
+     should trigger the spend.
 
   WI-431 made the window visible and shorter; it cannot remove it. Removing it
   means deploying to a staging slot, warming it, and swapping — and **slots
   require Standard tier**, so this is a monthly bill, not a code change. The
   plan currently runs on a shared B1 (WI-401 chose it deliberately at ~$1-3/mo
   incremental).
-  **Do not decide this until WI-431's body capture has caught the failure at
-  least once.** If the cause turns out to be app start-up or the DbUp migration
-  holding its advisory lock, it may be fixable in code for nothing, and paying
-  for slots would be buying the wrong thing.
-  Then weigh: how often deploys actually happen once the site is not being
-  rebuilt daily, whether they can simply run at a quiet hour, and what a minute
-  of 500s on the inner pages is worth when the custom error page still carries
-  the helpline band and the CareLine number.
+  ~~Do not decide this until WI-431's body capture has caught the failure at
+  least once.~~ **Satisfied 2026-08-16, three times over by 2026-08-19.** The
+  hoped-for cheap outcome (app start-up or the DbUp advisory lock, fixable in
+  code for nothing) is ruled out: an empty body means no application code ran.
+  What remains to weigh: how often deploys actually happen once the site is not
+  being rebuilt daily, whether they can simply run at a quiet hour, and what
+  ~85 seconds of 500s on the inner pages is worth once there are readers.
+  Note the last of those is worse than this item originally assumed — the
+  earlier text said the custom error page still carried the helpline band and
+  the CareLine number during the window. It does not; see the correction above.
+  A reader who lands on `/get-help-now` mid-deploy gets the browser's own error
+  screen with no phone number on it.
   Refs: WI-431, WI-401 (plan sizing), .github/workflows/ci.yml.
 
 - [ ] **WI-424 Record the flag reason at flag time, not just re-derive it**

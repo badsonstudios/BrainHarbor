@@ -437,16 +437,40 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
     /// this fixed switch over a normalized value — reader input never reaches
     /// the SQL text.
     ///
-    /// Readiness answers "what is closest to helping me?" — highest score
-    /// first, and UNSCORED items last, not first (nullable score, the same
-    /// NULLS LAST trap as published_at). Type is a grouping, not a ranking:
-    /// groups in the order readers see in the filter menu, and within a group
-    /// the order stays newest-first, decided here explicitly.
+    /// "readiness" answers "what is furthest along?". It used to sort by the
+    /// 1-to-10 readiness_score; the journey handoff (2026-08-19) took that
+    /// number off the cards, and sorting by a number the reader cannot see is
+    /// exactly what WI-429 said not to leave standing. It now ranks by the same
+    /// four-stage ladder the journey path draws, so the sort order and the
+    /// thing on screen are the same fact.
+    ///
+    /// The sort KEY stays "readiness" on purpose: bookmarked and shared
+    /// ?sort=readiness URLs keep working rather than silently reverting to
+    /// newest-first, which would look like the page ignoring the reader.
+    ///
+    /// Items that are not findings (trials, news, preprints) rank last. They
+    /// have no place on the evidence ladder at all — the same reason they get a
+    /// .stage-note instead of a path — so they must not out-rank a real
+    /// finding here. Type is a grouping, not a ranking: groups in the order
+    /// readers see in the filter menu, and within a group the order stays
+    /// newest-first, decided here explicitly.
     /// </summary>
     private static string OrderByFor(string? sort) => sort switch
     {
+        // Mirrors ResearchStageMapper + JourneyPath.For: preprint and
+        // trial_update are decided by source_kind BEFORE research_stage is
+        // consulted, so those two arms have to come first here too, or a
+        // preprint whose research_stage is 'human_trial' would sort as if it
+        // were tested in people.
         "readiness" => """
-            a.readiness_score DESC NULLS LAST,
+            CASE
+                WHEN a.source_kind IN ('preprint', 'trial_update') THEN 0
+                WHEN a.research_stage IN ('human_trial', 'observational') THEN 4
+                WHEN a.research_stage = 'review_guideline' THEN 3
+                WHEN a.research_stage = 'preclinical_animal' THEN 2
+                WHEN a.research_stage = 'preclinical_cell' THEN 1
+                ELSE 0
+            END DESC,
             a.published_at DESC NULLS LAST, a.id DESC
             """,
         "type" => """
