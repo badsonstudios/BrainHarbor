@@ -67,7 +67,28 @@
   --card-radius: 16px;
   --card-shadow: 0 3px 14px rgba(20, 45, 65, .07);
 
-  /* Stage badge: pill + evidence dot-meter */
+  /* Journey path — the evidence indicator (journey handoff, 2026-08-19).
+     Replaces both the stage badge's dot-meter and the 0-10 readiness dial:
+     four named stages a reader can repeat to their doctor, instead of a
+     number nobody can interpret at any single value. */
+  --journey-on: #0d6a86;     /* stages reached */
+  --journey-off: #cfd9e0;    /* not reached — 1.6:1 on white, DECORATIVE ONLY,
+                                never put text on it */
+  --journey-now: #0d3b4a;    /* the current stage — 11:1 as a label colour */
+
+  /* Laid over a card photo the colours have to invert: the backdrop is a
+     different image on every card, so nothing can be assumed about what is
+     behind the path. The plate below is near-opaque for exactly that reason —
+     it re-establishes a known background, and these values are measured
+     against IT, not against the photo. */
+  --journey-plate: rgba(11, 45, 58, 0.93);   /* white on this: ~10.4:1 */
+  --journey-on-over: #ffffff;
+  --journey-off-over: rgba(255, 255, 255, 0.34);  /* decorative only */
+
+  /* Stage badge: pill + evidence dot-meter. Retired from reader-facing pages
+     by the journey handoff, but still used by the ADMIN review queue and the
+     dev style guide, where a compact operational badge beats a four-stage
+     path in a dense triage list. */
   --badge-fill: #0d6a86;
   --badge-empty: #bcd3db;
 }
@@ -585,8 +606,10 @@ main {
   display: grid;
   /* auto-fit rather than a fixed 2 columns: the cards decide when to wrap, so
      one breakpoint stops being a thing that can be forgotten. Two-up on
-     desktop, one column on a phone, and it degrades gracefully in between. */
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+     desktop, one column on a phone, and it degrades gracefully in between.
+     340px, not 320: the journey path's four labels need the width, and below
+     this they wrap into an unreadable stack (journey handoff, 2026-08-19). */
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: var(--space-4);
   list-style: none;
   margin: 0;
@@ -608,47 +631,42 @@ main {
   overflow: hidden; /* clip the banner to the card's rounded top */
 }
 
-/* Card hero: a content-matched photo backdrop with the readiness dial laid on
-   top. Bleeds to the card edges, sits above the badge, breaks up the wall of
-   text. Purely decorative. */
+/* Card hero: a content-matched photo backdrop. Bleeds to the card edges, sits
+   above the journey path, breaks up the wall of text. Purely decorative.
+   It carried the 0-10 readiness dial until the journey handoff (2026-08-19)
+   retired that number; Dan kept the photos, so the hero is now backdrop only. */
 .card-hero {
   position: relative;
   margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-5)) 0;
-  height: 8rem;
+  /* min-height, not height: the indicator plate lives inside this box now, and
+     on a narrow card the four journey labels wrap to two lines. A fixed height
+     would clip "Tested in people" — the label that matters most — rather than
+     letting the band grow.
+
+     11rem, up from the dial era's 8: the plate is ~7rem tall once a label
+     wraps, so at 8rem the photo was a sliver and there was no point keeping
+     it. This leaves the picture a real band above the plate. */
+  min-height: 11rem;
   overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  /* The plate sits at the BOTTOM of the photo: it reads as a caption on the
+     image rather than a bar floating over the middle of it, and it puts the
+     path directly above the headline it qualifies. */
+  align-items: flex-end;
   background-size: cover;
   background-position: center;
   background-color: var(--color-surface);
 }
 
-/* Fade the photo back so the readiness dial is clearly the hero. A light wash
-   (~50%) softens the image toward the card, keeping it as a calm backdrop
-   rather than a focal point. Tune the two alpha values to taste. */
+/* Fade the photo back so it stays a calm backdrop rather than a focal point.
+   Lighter wash than the dial era (0.72/0.82): the dark indicator plate now
+   supplies all the contrast the text needs, so the photo no longer has to be
+   bleached to make something on top of it readable. It still gets washed
+   enough to stay a backdrop — the plate has to be the loudest thing here. */
 .card-hero__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.82));
-}
-
-/* The readiness dial — the card's hero. A soft drop shadow lifts it off the
-   washed backdrop so it reads as a chip floating on top, not embedded in it. */
-.card-hero__dial {
-  position: relative;
-  width: 5.75rem;
-  height: 5.75rem;
-  filter: drop-shadow(0 4px 9px rgba(15, 30, 45, 0.45));
-}
-.card-hero__num {
-  font-size: 2.9rem;
-  font-weight: 700;
-  fill: #ffffff;
-}
-.card-hero__lbl {
-  font-size: 0.95rem;
-  fill: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.68));
 }
 
 .card h3 {
@@ -688,14 +706,286 @@ main {
   color: var(--color-ink-muted);
 }
 
+/* ---------- Journey path: the evidence indicator ----------
+   (journey handoff, 2026-08-19 — replaces the badge dot-meter AND the 0-10
+   readiness dial.) Four named stages, a filled dot for each stage reached and
+   a larger ringed dot on the current one. Markup, built server-side from the
+   stage enum so no author ever types a number:
+     <ol class="journey" role="img"
+         aria-label="Review of existing research. Stage 3 of 4.">
+       <li class="journey__step is-done">
+         <span class="journey__dot"></span>
+         <span class="journey__label">Lab cells</span>
+       </li> … always all four
+     </ol>
+   All four steps always render: the unreached ones ARE the message, because
+   they show how much road is left. */
+
+.journey {
+  display: flex;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  max-width: none;
+}
+
+.journey__step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  min-width: 0;
+}
+
+/* Connector runs from the previous dot's centre to this one's. Dots are 22px,
+   so their centre is at 11px; the 4px line sits at top:9px. The current dot is
+   32px with margin-top:-5px, which puts ITS centre at 11px too. Change either
+   size and you must keep those centres equal or the line visibly steps. */
+.journey__step::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: -50%;
+  right: 50%;
+  height: 4px;
+  background: var(--journey-off);
+}
+
+.journey__step:first-child::before { display: none; }
+
+.journey__step.is-done::before,
+.journey__step.is-current::before { background: var(--journey-on); }
+
+.journey__dot {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--journey-off);
+  margin: 0 auto var(--space-2);
+}
+
+.journey__step.is-done .journey__dot { background: var(--journey-on); }
+
+/* The current stage is bigger, darker and double-ringed so it is found by
+   SHAPE and SIZE, not colour alone (WCAG 1.4.1). Keep both if you restyle. */
+.journey__step.is-current .journey__dot {
+  width: 32px;
+  height: 32px;
+  margin: -5px auto var(--space-2);
+  background: var(--journey-now);
+  border: 4px solid var(--color-paper);
+  box-shadow: 0 0 0 3px var(--journey-now);
+}
+
+.journey__label {
+  display: block;
+  font-size: var(--text-sm);  /* 16px — the floor, not a suggestion */
+  line-height: 1.2;
+  color: var(--color-ink-muted);
+}
+
+.journey__step.is-current .journey__label {
+  font-weight: 700;
+  color: var(--journey-now);
+}
+
+/* The item page's larger path, under "How far along is this research?" */
+.journey--lg {
+  max-width: 34rem;
+  margin-block-end: var(--space-5);
+}
+
+.journey--lg .journey__label { font-size: var(--text-base); }
+
+/* ---- Laid over the card photo (Dan, 2026-08-19) ----
+   The path takes the dial's old position AND its prominence: it is the first
+   thing on the card and the only element that differs meaningfully between
+   cards. Sitting under the photo made it a footnote to a decorative image. */
+
+.card-hero__indicator {
+  position: relative;          /* above the scrim */
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--journey-plate);
+  /* The plate is why this is legible on ANY photo in the pool. Without it the
+     contrast of every label would depend on which image the matcher picked,
+     which is not something that can be tested per card. */
+  box-shadow: 0 6px 18px rgba(10, 25, 38, 0.38);
+}
+
+.journey--over { margin: 0; }
+
+.journey--over .journey__dot { background: var(--journey-off-over); }
+.journey--over .journey__step::before { background: var(--journey-off-over); }
+
+.journey--over .journey__step.is-done .journey__dot,
+.journey--over .journey__step.is-done::before,
+.journey--over .journey__step.is-current::before {
+  background: var(--journey-on-over);
+}
+
+/* White disc, dark gap, white ring — a bullseye that reads as "you are here"
+   at a glance. The ring/gap colours swap from the on-white version because the
+   surround is now dark; the SIZE difference is what carries the meaning either
+   way, so this still is not colour alone. */
+.journey--over .journey__step.is-current .journey__dot {
+  background: var(--journey-on-over);
+  border-color: var(--journey-plate);
+  box-shadow: 0 0 0 3px var(--journey-on-over);
+}
+
+.journey--over .journey__label { color: rgba(255, 255, 255, 0.86); }
+
+.journey--over .journey__step.is-current .journey__label {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+/* The vertical flip below 30rem must NOT apply here: the path sits in a band
+   across a card photo, and stacking it turns the band into a full-height
+   column that swallows the picture entirely. It stays horizontal and the
+   labels wrap instead; the hero uses min-height so the band grows rather than
+   clipping them.
+
+   Selectors are doubled (.journey.journey--over) deliberately. The base
+   vertical rule lives in a LATER media block, so a single-class override here
+   ties on specificity and loses on order — which is exactly what happened the
+   first time, and it only showed up in a phone-width screenshot. Doubling the
+   class makes this independent of where the blocks sit in the file. */
+@media (max-width: 30rem) {
+  .journey.journey--over {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .journey.journey--over .journey__step {
+    display: block;
+    text-align: center;
+    width: auto;
+    flex: 1;
+  }
+
+  .journey.journey--over .journey__step::before {
+    top: 9px;
+    bottom: auto;
+    left: -50%;
+    right: 50%;
+    width: auto;
+    height: 4px;
+  }
+
+  .journey.journey--over .journey__dot { margin: 0 auto var(--space-2); }
+
+  .journey.journey--over .journey__step.is-current .journey__dot {
+    margin: -5px auto var(--space-2);
+  }
+}
+
+/* Below 30rem the path turns vertical. Same markup, same classes. */
+@media (max-width: 30rem) {
+  .journey {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .journey__step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: start;
+    width: 100%;
+    flex: none;
+  }
+
+  .journey__step::before {
+    top: auto;
+    bottom: 100%;
+    left: 9px;
+    right: auto;
+    width: 4px;
+    height: var(--space-2);
+  }
+
+  .journey__dot { margin: 0; flex: none; }
+  .journey__step.is-current .journey__dot { margin: 0 0 0 -5px; }
+}
+
+/* ---------- Stage strip: items that are NOT on the evidence ladder ----------
+   Trials, news and preprints are not findings. They get no path, because a
+   path would imply they sit somewhere on the evidence scale — and they don't.
+   A tinted strip with a glyph, the stage name, and one plain line instead. */
+
+.stage-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border-inline-start: 5px solid var(--color-accent);
+  border-radius: 8px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.stage-note__glyph {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--color-accent);
+  border-radius: 6px;
+  font-weight: 800;
+  color: var(--color-band);
+}
+
+.stage-note--info .stage-note__glyph {
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+
+.stage-note--unverified { border-inline-start-style: dashed; }
+
+.stage-note__text strong {
+  display: block;
+  font-size: var(--text-base);
+  color: var(--color-band);
+}
+
+.stage-note__text span {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+/* Over a card photo, same reasoning as .journey--over: a card whose indicator
+   is a stage-note sits in the same grid, on the same kind of photo, and must
+   be as readable and as prominent as its neighbours. */
+.stage-note--over {
+  background: none;          /* the plate behind it already provides the fill */
+  border-radius: 0;
+  padding: 0;
+  border-inline-start-color: var(--journey-on-over);
+}
+
+.stage-note--over .stage-note__glyph {
+  border-color: var(--journey-on-over);
+  color: #ffffff;
+}
+
+.stage-note--over .stage-note__text strong { color: #ffffff; }
+.stage-note--over .stage-note__text span { color: rgba(255, 255, 255, 0.86); }
+
 /* ---------- Stage badge: pill + evidence dot-meter ----------
-   Trust is read from filled marks + words, never color alone. Markup
-   (WI-109 partial builds this, aria-label server-side):
+   ADMIN + style guide only since the journey handoff (2026-08-19). Reader
+   pages use .journey / .stage-note above. Kept because the review queue lists
+   many items densely and a compact pill triages better than four labelled
+   stages. Trust is still read from filled marks + words, never colour alone.
      <span class="badge badge--result" role="img"
-           aria-label="Tested in people. Evidence strength 5 of 5.">
-       <span class="badge__meter" aria-hidden="true">
-         <span class="step step--on"></span> … 5 steps, N filled
-       </span>
+           aria-label="Tested in people. Evidence strength 4 of 4.">
+       <span class="badge__meter" aria-hidden="true">…</span>
        <span class="badge__label">Tested in people</span>
      </span>
    Kinds: --result (meter) | --progress (→) | --info (i) | --unverified (dashed). */
@@ -1257,16 +1547,12 @@ main {
 
 .readiness__text { line-height: 1.15; }
 
-/* Item-page readiness callout wraps the badge + the plain reason. */
-.readiness-callout {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: var(--card-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-}
+/* The item-page readiness callout (.readiness-callout) was removed by the
+   journey handoff, 2026-08-19: the item page now answers "how far along is
+   this research?" once, with the large journey path, instead of asking the
+   reader to reconcile a 4-step badge and a 1-10 bar that measured different
+   things. The badge + bar above remain for the admin queue only — as does
+   .readiness-reason, which the review row still renders. */
 
 .readiness-reason { color: var(--color-ink-muted); }
 

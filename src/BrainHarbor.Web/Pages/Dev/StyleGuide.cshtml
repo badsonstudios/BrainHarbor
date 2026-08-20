@@ -5,14 +5,34 @@
     ViewData["Title"] = "Style guide (dev only)";
 }
 
-@* WI-109 preview surface: every badge kind + sample cards, for visual and
+@* WI-109 preview surface: every indicator kind + sample cards, for visual and
    a11y checks before real data exists. Development environment only —
    the page model 404s everywhere else. *@
 
 <h1>Style guide</h1>
-<p>Development only. Every stage badge, plus the feed card in the handoff grid.</p>
+<p>Development only. Every evidence indicator, plus the feed card in the handoff grid.</p>
 
-<h2>Stage badges</h2>
+@* Every stage rendered at once is the fastest way to catch the two things
+   that break quietly here: a connector that steps because the dot centres
+   stopped matching, and a label that wraps differently at one stage only. *@
+<h2>Journey path (reader-facing)</h2>
+<ul class="styleguide-badges">
+    @foreach (var stage in Enum.GetValues<ResearchStage>())
+    {
+        <li>
+            <partial name="_JourneyPath" model="stage" />
+            <code>@stage</code>
+        </li>
+    }
+</ul>
+
+<h2>Journey path, large (item page)</h2>
+<partial name="_JourneyPath" model="ResearchStage.ReviewOfExistingResearch"
+         view-data='new ViewDataDictionary(ViewData) { ["Modifier"] = "journey--lg" }' />
+
+@* Retired from reader pages by the journey handoff, kept for the admin review
+   queue — which still renders it, so it still needs checking. *@
+<h2>Stage badges (admin queue only)</h2>
 <ul class="styleguide-badges">
     @foreach (var stage in Enum.GetValues<ResearchStage>())
     {

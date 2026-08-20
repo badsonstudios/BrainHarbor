@@ -44,7 +44,11 @@
     <label for="sort">Sort by</label>
     <select id="sort" name="sort">
         <option value="">Newest first</option>
-        <option value="readiness" selected="@(Model.Query.Sort == "readiness")">Most ready to use</option>
+        @* "Most ready to use" described the 1-to-10 readiness score, which the
+           journey handoff retired. This now sorts by the four-stage ladder the
+           cards actually show, so the words match what the reader sees. The
+           value stays "readiness" so shared links keep working. *@
+        <option value="readiness" selected="@(Model.Query.Sort == "readiness")">Furthest along</option>
         <option value="type" selected="@(Model.Query.Sort == "type")">By kind</option>
     </select>
 

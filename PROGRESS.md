@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. (2026-08-19: **WI-436** — `/start` rewritten from Dan's copy + added to the sitemap. New ticket **WI-435**: ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. (2026-08-19: **WI-437** — the journey path replaces the readiness dial + stage badge on all reader pages, overlaid on the card photo; closes WI-429. Also **WI-436** — `/start` rewritten from Dan's copy. Open ticket **WI-435**: ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -111,6 +111,37 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   them automatically — before spending on Standard tier. The previous release
   had no window at all, so one sample of two minutes is not a trend, and buying
   a tier on it would be guessing with money.
+
+- **2026-08-19** — **WI-437 — the journey path replaces BOTH the readiness dial
+  and the stage badge.** New design handoff from Dan
+  (`design_handoff_brainharbor_journey`). Cards and the item page used to carry
+  a 4-mark badge ("how well tested") and a 1-to-10 dial ("how close to a
+  patient") in different units; now one four-stage path — Lab cells → Animals →
+  Review → Tested in people. **This also closes WI-429.**
+  The handoff worried about mapping a 0-10 score onto four stages; that did not
+  apply, because `ResearchStage` already WAS the four stages, so the component
+  is driven straight off the enum and a content author can never type a number.
+  **Dan's calls:** replace both indicators; keep the card photos; re-point the
+  `?sort=readiness` sort at the stage ladder ("Furthest along") rather than drop
+  it; and — after seeing it live — lay the path OVER the photo where the dial
+  sat, prominent, not as a row of dots underneath.
+  **Two defects neither markup nor tests could show:**
+  (1) *in the handoff itself* — `role="img"` on the `<ol>` orphans every `<li>`;
+  axe called it SERIOUS across 28 nodes, and this renders on every card on every
+  page, so it would have shipped site-wide. Fixed with `role="presentation"`.
+  **Worth telling the designer.**
+  (2) *mine* — at phone width the overlaid path flipped vertical and swallowed
+  the whole photo; my override tied on specificity and lost on source order.
+  Every test was green and the structure was correct; only a screenshot showed
+  it. **Same lesson WI-412a taught in a different costume: a test that checks
+  structure cannot see what a page looks like.** Screenshot anything visual.
+  Contrast computed by hand rather than trusted to axe (which cannot reason
+  about a translucent plate over an arbitrary photo): 11.8:1 to 15.1:1 for the
+  current label, 9.2:1 to 11.4:1 for the rest — AAA either way.
+  **`readiness_score` is untouched** in the DB, pipeline, sync contract and
+  review queue, so this is reversible without a migration; two tests guard
+  against the number reappearing on a reader page. The stage badge survives for
+  the admin queue and style guide only. 781 tests, ContentCheck 49/0.
 
 - **2026-08-19** — **Deploy window, third measurement: 84 seconds** (WI-436
   release, PR #49). 20:49:10 → 20:50:34 by an independent poll of `/start`; the
