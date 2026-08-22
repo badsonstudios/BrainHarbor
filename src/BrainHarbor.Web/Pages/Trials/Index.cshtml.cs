@@ -1,4 +1,5 @@
 using BrainHarbor.Web.Content;
+using BrainHarbor.Web.Models;
 using BrainHarbor.Web.Trials;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -44,8 +45,19 @@ public class IndexModel(
 
     public int RadiusMiles => NearbyTrialsClient.RadiusMiles;
 
+    /// <summary>The 1-based page the reader is on, for the pager (WI-438).</summary>
+    public Pagination Pages { get; private set; } = new(1, 1);
+
+    /// <param name="pageNumber">
+    /// Bound explicitly from the query and deliberately NOT named `page` —
+    /// `page` is a reserved route-value key in Razor Pages, so a parameter of
+    /// that name silently binds the route value instead and always yields the
+    /// default. This page paged as badly as /research did until WI-438; see the
+    /// long note on Research/IndexModel.OnGetAsync.
+    /// </param>
     public async Task OnGetAsync(
-        string? tumorType, string? phase, bool includeClosed = false, int page = 0,
+        string? tumorType, string? phase, bool includeClosed = false,
+        [FromQuery(Name = "page")] int pageNumber = 1,
         string? zip = null, double? lat = null, double? lon = null,
         CancellationToken cancellationToken = default)
     {
@@ -62,11 +74,19 @@ public class IndexModel(
         Phase = TrialsRepository.NormalizePhase(phase, Phases);
         IncludeClosed = includeClosed;
 
-        var query = new TrialQuery(TumorType, Phase, IncludeClosed, page);
+        var query = new TrialQuery(TumorType, Phase, IncludeClosed, Math.Max(0, pageNumber - 1));
 
         // Browse always runs, so a failed or empty near-me search still leaves
         // the reader with something to read rather than an empty page.
         Results = await trials.BrowseAsync(query, cancellationToken);
+        Pages = Pagination.For(Results.TotalCount, TrialQuery.PageSize, pageNumber);
+
+        // A stale ?page=99 lands on the last real page rather than an empty list.
+        if (Pages.CurrentPage - 1 != query.Page)
+        {
+            Results = await trials.BrowseAsync(
+                query with { Page = Pages.CurrentPage - 1 }, cancellationToken);
+        }
 
         if (zip is not null || lat is not null || lon is not null)
         {
@@ -148,9 +168,20 @@ public class IndexModel(
         return parts.Count == 0 ? "/trials" : $"/trials?{string.Join("&", parts)}";
     }
 
-    public string PageUrl(int page)
+    /// <summary>
+    /// The URL for a 1-based page, keeping the current filters. Page 1 is left
+    /// bare so the canonical /trials URL has no redundant ?page=1 on it.
+    ///
+    /// Deliberately NOT carrying a ZIP or coordinates: those responses are
+    /// marked private/no-store and the near-me results are rendered separately,
+    /// so a pager link that dragged a reader's location into a shareable URL
+    /// would leak it for no benefit.
+    /// </summary>
+    public string PageUrl(int pageNumber)
     {
         var url = FilterUrl();
-        return page == 0 ? url : $"{url}{(url.Contains('?') ? "&" : "?")}page={page}";
+        return pageNumber <= 1
+            ? url
+            : $"{url}{(url.Contains('?') ? "&" : "?")}page={pageNumber}";
     }
 }

@@ -706,6 +706,84 @@ main {
   color: var(--color-ink-muted);
 }
 
+/* ---------- Pager (WI-438) ----------
+   Back / page numbers / Next. Every control is at least --tap-target square,
+   because this is a control a reader uses repeatedly and often on a phone, and
+   the audience includes people whose treatment has affected their fine motor
+   control. Numbers wrap rather than scroll sideways on a narrow screen. */
+
+.pager {
+  margin-block-start: var(--space-6);
+}
+
+.pager__status {
+  margin: 0 0 var(--space-3);
+  color: var(--color-ink-muted);
+  max-width: none;
+}
+
+.pager__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.pager__page,
+.pager__step,
+.pager__gap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--tap-target);
+  min-block-size: var(--tap-target);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+}
+
+.pager__page,
+.pager__step {
+  border: 2px solid var(--color-border-subtle);
+  color: var(--color-accent);
+  text-decoration: underline;
+  gap: var(--space-2);
+}
+
+.pager__page:hover,
+.pager__step:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+
+/* The current page is not a link — there is nowhere to go — so it must be told
+   apart by more than colour: it is filled, and its border is solid ink. */
+.pager__page--current {
+  background: var(--color-band);
+  border: 2px solid var(--color-band);
+  color: var(--color-band-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Disabled Back/Next keep their space so the control does not resize under a
+   reader's finger as they page. */
+.pager__step--off {
+  border: 2px dashed var(--color-border-subtle);
+  color: var(--color-ink-muted);
+  text-decoration: none;
+}
+
+.pager__gap {
+  min-inline-size: 0;
+  padding-inline: var(--space-1);
+  color: var(--color-ink-muted);
+}
+
 /* ---------- Journey path: the evidence indicator ----------
    (journey handoff, 2026-08-19 — replaces the badge dot-meter AND the 0-10
    readiness dial.) Four named stages, a filled dot for each stage reached and
@@ -1249,11 +1327,12 @@ main {
   color: var(--color-ink-muted);
 }
 
-.pager {
-  display: flex;
-  gap: var(--space-5);
-  margin-block: var(--space-5);
-}
+/* The old trials-only .pager (display:flex, two links side by side) lived here
+   and, being later in the file, silently overrode the shared pager above — it
+   turned the whole control into a flex ROW, squeezing "Page 8 of 16" into a
+   column three lines tall. Removed with WI-438; the shared rule is the only
+   one now. Kept as a note because a duplicate class name in a 1,500-line
+   stylesheet is not something the next person will think to look for. */
 
 .breadcrumb {
   margin-block-end: var(--space-4);

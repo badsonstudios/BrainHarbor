@@ -848,10 +848,10 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         Assert.Equal(expected, FeedRepository.NormalizeSort(input));
 
     [Fact]
-    public async Task ShowMoreKeepsTheChosenSortAndFilters()
+    public async Task PagerLinksKeepTheChosenSortAndFilters()
     {
-        // A shared or bookmarked sorted view must survive paging — the sort
-        // and every filter ride the Show more URL together.
+        // A shared or bookmarked sorted view must survive paging — the sort and
+        // every filter ride the pager URLs together.
         var model = new BrainHarbor.Web.Pages.Research.IndexModel(_feed, _taxonomy)
         {
             PageContext = new Microsoft.AspNetCore.Mvc.RazorPages.PageContext
@@ -861,12 +861,78 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
         };
 
         await model.OnGetAsync(
-            tumor: "glioma", early: true, page: 1, applied: true, sort: "readiness");
+            tumor: "glioma", early: true, pageNumber: 1, applied: true, sort: "readiness");
 
-        Assert.Contains("page=2", model.NextPageUrl);
-        Assert.Contains("tumor=glioma", model.NextPageUrl);
-        Assert.Contains("early=true", model.NextPageUrl);
-        Assert.Contains("sort=readiness", model.NextPageUrl);
+        var url = model.UrlForPage(2);
+        Assert.Contains("page=2", url);
+        Assert.Contains("tumor=glioma", url);
+        Assert.Contains("early=true", url);
+        Assert.Contains("sort=readiness", url);
+    }
+
+    /// <summary>
+    /// WI-438, and the whole reason the original bug shipped: the test this
+    /// replaces asserted only that the "Show more" URL was BUILT correctly. It
+    /// never requested that URL, so it stayed green while `?page=N` was ignored
+    /// entirely and every page returned page 1 — on /research and /trials at the
+    /// same time.
+    ///
+    /// The cause was that `page` is a reserved route-value key in Razor Pages,
+    /// so a handler parameter of that name binds the route value rather than the
+    /// query string and silently falls back to its default. Nothing throws.
+    /// The only test that can catch that class of bug is one that makes a REAL
+    /// request for page 2 and checks it came back with different items.
+    /// </summary>
+    [Fact]
+    public async Task RequestingPageTwoActuallyReturnsDifferentItems()
+    {
+        // More than one page of our own rows, dated so they sort together.
+        for (var i = 0; i < FeedQuery.PageSize + 5; i++)
+        {
+            await InsertAsync($"pg-{i}", slug: $"study-pg-{i}",
+                publishedAt: new DateOnly(2026, 3, 1).AddDays(-i));
+        }
+
+        var client = _factory.CreateClient();
+        var page1 = await client.GetStringAsync("/research?page=1");
+        var page2 = await client.GetStringAsync("/research?page=2");
+
+        static string[] Slugs(string html) =>
+            [.. System.Text.RegularExpressions.Regex
+                .Matches(html, @"href=""/research/([a-z0-9-]+)""")
+                .Select(m => m.Groups[1].Value)
+                .Distinct(StringComparer.Ordinal)];
+
+        var first = Slugs(page1);
+        var second = Slugs(page2);
+
+        Assert.NotEmpty(first);
+        Assert.NotEmpty(second);
+        Assert.Empty(first.Intersect(second, StringComparer.Ordinal));
+    }
+
+    /// <summary>
+    /// A stale or hand-typed page number must land somewhere real. Showing an
+    /// empty list with no way back is how a reader concludes the site is broken.
+    /// </summary>
+    [Fact]
+    public async Task AnOutOfRangePageLandsOnTheLastRealPage()
+    {
+        // Enough of our own rows to guarantee more than one page, so the pager
+        // renders at all. Asserting on whatever the shared test database
+        // happens to hold would make this pass or fail by accident.
+        for (var i = 0; i < FeedQuery.PageSize + 5; i++)
+        {
+            await InsertAsync($"clamp-{i}", slug: $"study-clamp-{i}");
+        }
+
+        var html = await _factory.CreateClient().GetStringAsync("/research?page=9999");
+
+        Assert.Contains("aria-current=\"page\"", html);
+        Assert.DoesNotContain("Nothing matches yet", html);
+
+        // Landed on the LAST page, so there is nowhere further forward.
+        Assert.Contains("pager__step--off", html);
     }
 
     [Fact]
