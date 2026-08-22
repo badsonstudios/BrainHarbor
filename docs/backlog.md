@@ -465,6 +465,52 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [ ] **WI-439 The Kestrel test host must start deterministically, or retry**
+  (Dan, 2026-08-21, after it blocked a production deploy)
+  Goal: a red `main` always means something is actually wrong.
+  **Problem.** `A11ySmokeTests` intermittently fails at start-up with
+  *"The Kestrel test host did not start"* wrapping *"The server has not been
+  started or no web application was configured."* It is not an accessibility
+  failure — no axe rule is involved; the host never came up. Tracked since
+  WI-403, which added the diagnostic message but was explicitly recorded as
+  **not proven fixed** because it was never reproducible on demand.
+  **Why it is no longer a nuisance.** On 2026-08-22 it fired on `main` for the
+  WI-438 release. `build-test` gates the `deploy` job, so **the deploy silently
+  did not happen** — the merge succeeded, CI went red, and production stayed on
+  the old build with pagination still broken. A re-run of the same commit passed
+  and deployed fine. The cost is no longer a local re-run; it is a release that
+  looks shipped and is not.
+  The second-order cost is worse: a `main` that goes red for reasons that are
+  not real trains everyone to re-run first and read later, which is exactly the
+  habit that lets a genuine failure through.
+  **The strongest lead, and it constrains the fix.** In the CI run the failing
+  test took **1 ms**. A real host start takes seconds, so nothing was attempted
+  — `CreateClient()` returned an already-broken cached host. `EnsureServer()`
+  calls `WebApplicationFactory.CreateClient()`, and once that has failed the
+  base class holds the half-built `_host` and every later call fails instantly
+  the same way. **The factory poisons itself.**
+  That means a naive retry loop around `EnsureServer()` **fixes nothing** — it
+  would spin on the same dead cached host. A retry has to dispose the factory
+  and build a fresh one, which is why this needs doing properly rather than
+  wrapping the call in a `for` loop.
+  Also suspect (in `CreateHost`, which is order-dependent by design): if
+  `_kestrelHost.Start()` throws — a port race on `127.0.0.1:0`, or the database
+  not being ready — `testHost.Start()` never runs, and the factory is left in
+  exactly the poisoned state above with the original cause swallowed by the
+  wrapper.
+  Acceptance: either the dual host starts deterministically (find and remove the
+  race), or `EnsureServer` retries by DISPOSING and rebuilding rather than
+  re-asking a poisoned factory, with a bounded number of attempts and the
+  ORIGINAL inner exception preserved on final failure. Whichever route, the
+  first failed attempt must log what actually went wrong — the current wrapper
+  guesses at two causes ("the database... or a port") and names neither.
+  Worth checking as part of this: whether the CI job should retry `Test` as a
+  whole. It should not. A retry there would hide real flakes; the fix belongs at
+  the fixture.
+  Refs: tests/BrainHarbor.Tests/KestrelWebApplicationFactory.cs (`EnsureServer`,
+  `CreateHost`), A11ySmokeTests, WI-403, .github/workflows/ci.yml.
+  Depends on: nothing.
+
 - [x] **WI-438 Pagination is broken everywhere, and "Show more" should be a real
   pager** (Dan, 2026-08-21: "the pagination is not working. When I click Show
   More, it sticks on page 1.")
