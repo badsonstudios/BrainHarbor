@@ -1,0 +1,116 @@
+@using BrainHarbor.Web.Models
+@model Pagination
+
+@* WI-438. Replaces the single "Show more" link with a real pager: back,
+   forward, where you are, and a few pages either side.
+
+   "Show more" had two problems beyond the binding bug it was hiding. It only
+   ever went forward, so a reader who wanted the previous page had to use the
+   browser's back button and hope; and it never said how much was left, so
+   there was no way to tell page 2 of 3 from page 2 of 40.
+
+   Plain links, so it works with JavaScript off. That is the baseline; htmx is
+   an enhancement on top, never a requirement.
+
+   ViewData:
+     "PageUrl"   (required) Func<int, string> — only the page model knows which
+                 filters have to ride along in the URL.
+     "HxTarget"  (optional) a selector such as "#feed-results". When present the
+                 links also swap in place, mirroring the filter form on the same
+                 page. When absent they are ordinary links and the browser does
+                 a normal navigation — which is why /trials, which has no such
+                 container, can share this partial unchanged.
+
+   href stays authoritative either way: htmx reads the same URL via hx-get, so
+   the two can never disagree about where a link goes. *@
+
+@{
+    var urlFor = (Func<int, string>)ViewData["PageUrl"]!;
+    var hxTarget = ViewData["HxTarget"] as string;
+}
+
+@if (Model.IsNeeded)
+{
+    <nav class="pager" aria-label="Pagination">
+        @* A live status line, not decoration: it is the only thing that tells a
+           reader how much is left, and it is what a screen reader announces
+           after a swap. *@
+        <p class="pager__status">Page @Model.CurrentPage of @Model.TotalPages</p>
+
+        <ul class="pager__list">
+            <li>
+                @if (Model.HasPrevious)
+                {
+                    <a class="pager__step" href="@urlFor(Model.PreviousPage)"
+                       hx-get="@(hxTarget is null ? null : urlFor(Model.PreviousPage))"
+                       hx-target="@hxTarget" hx-select="@hxTarget"
+                       hx-swap="@(hxTarget is null ? null : "outerHTML")"
+                       hx-push-url="@(hxTarget is null ? null : "true")"
+                       rel="prev" aria-label="Go to the page before this one">
+                        <span aria-hidden="true">&#8592;</span> Back
+                    </a>
+                }
+                else
+                {
+                    @* Rendered, not hidden: the control keeps its shape from the
+                       first page to the last, so nothing shifts under a reader's
+                       finger when they page. aria-hidden because a disabled
+                       control is noise to a screen reader. *@
+                    <span class="pager__step pager__step--off" aria-hidden="true">
+                        <span>&#8592;</span> Back
+                    </span>
+                }
+            </li>
+
+            @foreach (var link in Model.Links())
+            {
+                <li>
+                    @if (link.IsGap)
+                    {
+                        <span class="pager__gap" aria-hidden="true">&hellip;</span>
+                    }
+                    else if (link.IsCurrent)
+                    {
+                        @* aria-current is how a screen reader knows which one it
+                           is standing on. Not a link: there is nowhere to go. *@
+                        <span class="pager__page pager__page--current" aria-current="page">
+                            @link.Number
+                        </span>
+                    }
+                    else
+                    {
+                        @* The visible text is a bare number, which is meaningless
+                           read aloud out of context, so the accessible name says
+                           the whole thing. *@
+                        <a class="pager__page" href="@urlFor(link.Number)"
+                           hx-get="@(hxTarget is null ? null : urlFor(link.Number))"
+                           hx-target="@hxTarget" hx-select="@hxTarget"
+                           hx-swap="@(hxTarget is null ? null : "outerHTML")"
+                           hx-push-url="@(hxTarget is null ? null : "true")"
+                           aria-label="Go to page @link.Number">@link.Number</a>
+                    }
+                </li>
+            }
+
+            <li>
+                @if (Model.HasNext)
+                {
+                    <a class="pager__step" href="@urlFor(Model.NextPage)"
+                       hx-get="@(hxTarget is null ? null : urlFor(Model.NextPage))"
+                       hx-target="@hxTarget" hx-select="@hxTarget"
+                       hx-swap="@(hxTarget is null ? null : "outerHTML")"
+                       hx-push-url="@(hxTarget is null ? null : "true")"
+                       rel="next" aria-label="Go to the next page">
+                        Next <span aria-hidden="true">&#8594;</span>
+                    </a>
+                }
+                else
+                {
+                    <span class="pager__step pager__step--off" aria-hidden="true">
+                        Next <span>&#8594;</span>
+                    </span>
+                }
+            </li>
+        </ul>
+    </nav>
+}

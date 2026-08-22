@@ -192,16 +192,10 @@ else
         }
     </ul>
 
-    <nav class="pager" aria-label="More trials">
-        @if (Model.Results.Query.Page > 0)
-        {
-            <a href="@Model.PageUrl(Model.Results.Query.Page - 1)">Previous</a>
-        }
-        @if (Model.Results.HasMore)
-        {
-            <a href="@Model.PageUrl(Model.Results.Query.Page + 1)">Next</a>
-        }
-    </nav>
+    @* The same pager /research uses (WI-438). No HxTarget: this page has no
+       swappable results container, so the links navigate normally. *@
+    <partial name="_Pagination" model="Model.Pages"
+             view-data='new ViewDataDictionary(ViewData) { ["PageUrl"] = (Func<int, string>)Model.PageUrl }' />
 }
 
 <p class="provenance">

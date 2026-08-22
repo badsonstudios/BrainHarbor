@@ -465,6 +465,64 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-438 Pagination is broken everywhere, and "Show more" should be a real
+  pager** (Dan, 2026-08-21: "the pagination is not working. When I click Show
+  More, it sticks on page 1.")
+  **The bug.** `?page=N` is ignored on every paged page. `/research?page=2`
+  returns the same items as page 1, and the "Show more" link always points at
+  `page=1`. Reproduced on `/research` AND `/trials` (311 trials, identical
+  first rows on pages 0, 1 and 2). `/admin/queue` shares the pattern.
+  **Root cause: `page` is a RESERVED route-value key in Razor Pages.** The
+  routing system uses it to hold the page path ("/Research/Index"). A handler
+  parameter named `page` therefore binds the ambient ROUTE value rather than the
+  query string, fails to parse as an `int`, and falls back to the default `0` —
+  silently, with no error anywhere. Every other query parameter on the same
+  handler (`tumor`, `kind`, `sort`, `early`) binds correctly, which is why this
+  looked like a paging bug rather than a binding one.
+  Fix: bind explicitly from the query with `[FromQuery(Name = "page")]` and a
+  C# parameter that is NOT called `page`.
+  **Why the tests did not catch it.** `FeedTests.ShowMoreUrlKeepsEveryFilter`
+  sets `model.Query` directly and asserts `NextPageUrl` contains `page=2`. That
+  proves the URL is BUILT correctly and never proves that requesting it does
+  anything. The whole defect lives in the gap between "the link is right" and
+  "following the link works". Any replacement test has to make a real request
+  for page 2 and assert it returns DIFFERENT items.
+  **The feature.** Replace the single "Show more" link with a real pager, the
+  way a product listing does it: previous, next, the current page marked, and a
+  few pages either side with the first and last always reachable. Dan's words:
+  "go back, go forward, and what page you're on, and maybe a few pages coming
+  up. You know how it normally works on Amazon listings."
+  Acceptance: `?page=N` actually pages, on `/research` and `/trials`; a shared
+  pagination partial driven by a unit-tested window calculation (first, last,
+  current ±2, ellipsis for gaps); page numbers in the URL are 1-based so a
+  shared link matches what the reader sees, with out-of-range values clamped
+  rather than 500ing or showing an empty page; every filter still rides along;
+  works with JavaScript off (plain links) and swaps via htmx when it is on, like
+  the filter form already does; `<nav aria-label>`, `aria-current="page"` on the
+  current one, and link text a screen reader can use ("Go to page 3", not "3");
+  tap targets ≥44px; reading level within the 6.0 gate.
+  Refs: Pages/Research/Index.cshtml(.cs), Pages/Trials/Index.cshtml(.cs),
+  Pages/Admin/Queue.cshtml.cs, Feed/FeedRepository.cs (`HasMore`).
+
+  **Done 2026-08-21.** Binding fixed with `[FromQuery(Name = "page")]` and a C#
+  parameter deliberately not called `page`, on `/research` and `/trials` both.
+  Shared `_Pagination` partial + a unit-tested `Pagination` model (21 cases);
+  URLs are 1-based and out-of-range values clamp to the last real page. htmx is
+  opt-in via `ViewData["HxTarget"]`, which is what lets `/trials` — with no
+  swappable container — share the partial and simply navigate.
+  **Scope note:** Dan asked about `/research`. `/trials` was fixed too because
+  the investigation proved it carried the identical defect, and knowingly
+  leaving a broken page is not a defensible reading of "fix the pagination".
+  `/admin/queue` was left alone: internal triage tool, its plain "show more"
+  is adequate.
+  **A third defect, found by screenshot:** a DUPLICATE `.pager` rule sat ~600
+  lines further down site.css (the old trials-only one). Being later in the
+  file it overrode the new component and squeezed "Page 8 of 16" into a
+  three-line column. Every test was green. Removed, with a comment left in its
+  place — a duplicated class name in a 1,500-line stylesheet is not something
+  the next person will think to look for.
+  804 tests, ContentCheck 50/0.
+
 - [x] **WI-437 Journey path replaces the readiness dial and the stage badge**
   (done 2026-08-19 — new design handoff from Dan,
   `design_handoff_brainharbor_journey`)
