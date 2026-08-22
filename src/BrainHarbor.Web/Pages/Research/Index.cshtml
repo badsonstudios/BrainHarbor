@@ -102,8 +102,8 @@
         }
     </ul>
 
-    @if (Model.Result.HasMore)
-    {
-        <p><a href="@Model.NextPageUrl">Show more →</a></p>
-    }
+    @* Inside #feed-results so an htmx swap replaces the pager along with the
+       cards — otherwise page 3's results would sit under page 2's pager. *@
+    <partial name="_Pagination" model="Model.Pages"
+             view-data='new ViewDataDictionary(ViewData) { ["PageUrl"] = (Func<int, string>)Model.UrlForPage, ["HxTarget"] = "#feed-results" }' />
 </div>
