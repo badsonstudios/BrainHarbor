@@ -74,13 +74,46 @@
                should hear what a sighted reader sees. width/height are the
                artwork's own ratio so the header cannot reflow while the SVG
                loads; CSS sizes it in rem so it grows with large-text mode. *@
-            <a class="site-name" asp-page="/Index">
-                <img src="~/img/brand/lockup-no-tagline.svg" alt="Brain Harbor"
-                     width="920" height="210" />
+            @* Two marks, one shown at a time by CSS. The full lockup is ~370px
+               wide, which on a 390px phone leaves no room beside it — the menu
+               button was forced onto its own row purely by the logo's width.
+               Below 40rem the icon-only mark stands in.
+
+               Both are alt="" with the accessible name on the LINK, so a screen
+               reader hears "Brain Harbor, link" exactly once however the CSS
+               resolves, and never twice if a future change shows both. *@
+            <a class="site-name" asp-page="/Index" aria-label="Brain Harbor, home">
+                <img class="site-name__lockup" src="~/img/brand/lockup-no-tagline.svg"
+                     alt="" width="920" height="210" />
+                <img class="site-name__mark" src="~/img/brand/mark-color.svg"
+                     alt="" width="512" height="512" />
             </a>
             @* v1 nav per docs/sitemap.md. Targets land in WI-103 (/get-help-now),
-               M2 (/research) and M4 (/trials). /digest is the last dead link. *@
-            <nav class="site-nav" aria-label="Main">
+               M2 (/research) and M4 (/trials). /digest is the last dead link.
+
+               <details>/<summary> rather than a button, because the site works
+               with JavaScript off and this is the primary navigation — a button
+               with aria-expanded would need script to do anything. The browser
+               gives us the disclosure behaviour, the keyboard handling and the
+               expanded state for free.
+
+               Above 48rem CSS opens it permanently and hides the summary, so a
+               desktop reader sees an ordinary horizontal nav and never knows a
+               disclosure is involved. *@
+            @* The nav is a SIBLING of the toggle, not its child. Nesting it
+               inside <details> is the tidier markup, but it forces the desktop
+               layout to fight the element's own semantics: the browser hides a
+               closed <details>'s content, and unpicking that with
+               `display: contents` left the nav laid out 0px wide and spilling
+               below the header. As a sibling, CSS controls visibility outright
+               and desktop never has to know a disclosure exists. *@
+            <details class="nav-collapse">
+                <summary class="nav-collapse__toggle" aria-controls="site-nav">
+                    <span class="nav-collapse__bars" aria-hidden="true"></span>
+                    <span>Menu</span>
+                </summary>
+            </details>
+            <nav class="site-nav" id="site-nav" aria-label="Main">
                 <ul>
                     <li><a href="/research">Research</a></li>
                     @* "What is this thing I have" is the first question a newly
@@ -90,12 +123,23 @@
                     <li><a href="/trials">Trials</a></li>
                     <li><a href="/digest">Digest</a></li>
                     <li><a href="/search">Search</a></li>
-                    <li><a class="nav-cta" href="/get-help-now">Get Help Now</a></li>
                 </ul>
             </nav>
-            <a class="text-toggle" href="@toggleHref">
+
+            @* Get Help Now sits OUTSIDE the collapsed menu, deliberately.
+               PLAN.md §3 is "always one tap to a human"; putting the crisis
+               route behind a disclosure makes it two taps for the reader least
+               able to spare one. It stays a visible pill at every width. *@
+            <a class="nav-cta" href="/get-help-now">Get Help Now</a>
+
+            @* Likewise the text-size control: the audience includes people who
+               cannot comfortably read the page that would be hiding the button
+               they need. On narrow screens the words drop and the "Aa" carries
+               it, with the full label kept as the accessible name. *@
+            <a class="text-toggle" href="@toggleHref"
+               aria-label="@(isLargeText ? "Use standard text size" : "Use larger text")">
                 <span aria-hidden="true">Aa</span>
-                @(isLargeText ? "Standard text" : "Larger text")
+                <span class="text-toggle__label">@(isLargeText ? "Standard text" : "Larger text")</span>
             </a>
         </div>
     </header>

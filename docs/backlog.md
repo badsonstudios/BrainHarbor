@@ -465,6 +465,105 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-440 Make the site work on a phone, starting with the home page**
+  (done 2026-08-23 — Dan: "it looks pretty good on mobile for the most part,
+  but the home page needs the little hamburger menu instead of all the links at
+  the top. Things like that.")
+  Goal: the layout most readers will actually use should not be the one nobody
+  looked at.
+  **What the measurements showed.** No horizontal overflow anywhere and no text
+  under the 16px floor — the body content was already sound. The damage was all
+  in chrome and forms: on a 390px phone a reader scrolled past **1107px** before
+  reaching `<main>`, more than a full viewport, on every page.
+  Delivered:
+  - **Hamburger nav** using `<details>`/`<summary>`, so it needs no JavaScript —
+    the site's standing constraint. Full-width dropdown panel; each link a
+    full-width row rather than a word-sized target.
+  - **Icon-only masthead** below 40rem. The lockup is ~200px wide and was single-
+    handedly forcing the menu button onto its own row.
+  - **"Get Help Now" stays OUTSIDE the menu** at every width. PLAN.md §3 is
+    "always one tap to a human"; putting the crisis route behind a disclosure
+    makes it two taps for the reader least able to spare one. Pinned by a test,
+    because tidying it in with the other links is the obvious-looking change for
+    anyone who does not know why it is out.
+  - Helpline band and hero band tightened; `main` padding and heading margins
+    trimmed on narrow screens (they were stacking into ~150px of nothing above
+    every `h1`).
+  - **Filter forms stack**: on `/research` the wrapped row separated every label
+    from its control — the page read "Kind [Everything] Sort by" then
+    "[Newest first]". A label beside the wrong control is worse than no label.
+    Now a grid, so the pairing is structural.
+  - **Checkboxes** went from 13px to 22px with a 44px label row, keeping the
+    native control so its focus ring and assistive-tech behaviour survive.
+  Result: 1107px → ~890px before content, header 245px → 137px.
+  **The gap this closed in the gate:** every axe scan ran at the default desktop
+  viewport, where the hamburger is `display: none`. The entire phone layout —
+  including a menu panel that did not exist before — was outside the
+  accessibility gate. Scans now run at 390px, menu closed and open, on `/`,
+  `/research` and `/trials`.
+  **Three bugs hit while doing it, none of which a test could see:**
+  1. *A tap-target regression I introduced:* shaved the band links to 40.5px
+     chasing four pixels, breaking the 44px floor on the two most important
+     links on the site. The space came from padding instead.
+  2. *Specificity:* `.site-name img { display: block }` (0-1-1) outranked
+     `.site-name__lockup { display: none }` (0-1-0), so BOTH logos rendered and
+     the masthead stayed 242px wide. The markup and the media query were both
+     correct; the toggle simply never won.
+  3. *`display: contents` on `<details>`* broke the desktop nav — links laid out
+     0px wide, spilling below the header. Fixed by restructuring rather than
+     patching: the nav is now a SIBLING of the toggle, so desktop never has to
+     fight the element's built-in content hiding.
+  Desktop is unchanged; every rule is scoped to `max-width: 40rem` except the
+  checkbox sizing, which was too small at every width.
+  806 tests, ContentCheck 50/0. Refs: Pages/Shared/_Layout.cshtml,
+  wwwroot/css/site.css, A11ySmokeTests.
+
+- [ ] **WI-439 The Kestrel test host must start deterministically, or retry**
+  (Dan, 2026-08-21, after it blocked a production deploy)
+  Goal: a red `main` always means something is actually wrong.
+  **Problem.** `A11ySmokeTests` intermittently fails at start-up with
+  *"The Kestrel test host did not start"* wrapping *"The server has not been
+  started or no web application was configured."* It is not an accessibility
+  failure — no axe rule is involved; the host never came up. Tracked since
+  WI-403, which added the diagnostic message but was explicitly recorded as
+  **not proven fixed** because it was never reproducible on demand.
+  **Why it is no longer a nuisance.** On 2026-08-22 it fired on `main` for the
+  WI-438 release. `build-test` gates the `deploy` job, so **the deploy silently
+  did not happen** — the merge succeeded, CI went red, and production stayed on
+  the old build with pagination still broken. A re-run of the same commit passed
+  and deployed fine. The cost is no longer a local re-run; it is a release that
+  looks shipped and is not.
+  The second-order cost is worse: a `main` that goes red for reasons that are
+  not real trains everyone to re-run first and read later, which is exactly the
+  habit that lets a genuine failure through.
+  **The strongest lead, and it constrains the fix.** In the CI run the failing
+  test took **1 ms**. A real host start takes seconds, so nothing was attempted
+  — `CreateClient()` returned an already-broken cached host. `EnsureServer()`
+  calls `WebApplicationFactory.CreateClient()`, and once that has failed the
+  base class holds the half-built `_host` and every later call fails instantly
+  the same way. **The factory poisons itself.**
+  That means a naive retry loop around `EnsureServer()` **fixes nothing** — it
+  would spin on the same dead cached host. A retry has to dispose the factory
+  and build a fresh one, which is why this needs doing properly rather than
+  wrapping the call in a `for` loop.
+  Also suspect (in `CreateHost`, which is order-dependent by design): if
+  `_kestrelHost.Start()` throws — a port race on `127.0.0.1:0`, or the database
+  not being ready — `testHost.Start()` never runs, and the factory is left in
+  exactly the poisoned state above with the original cause swallowed by the
+  wrapper.
+  Acceptance: either the dual host starts deterministically (find and remove the
+  race), or `EnsureServer` retries by DISPOSING and rebuilding rather than
+  re-asking a poisoned factory, with a bounded number of attempts and the
+  ORIGINAL inner exception preserved on final failure. Whichever route, the
+  first failed attempt must log what actually went wrong — the current wrapper
+  guesses at two causes ("the database... or a port") and names neither.
+  Worth checking as part of this: whether the CI job should retry `Test` as a
+  whole. It should not. A retry there would hide real flakes; the fix belongs at
+  the fixture.
+  Refs: tests/BrainHarbor.Tests/KestrelWebApplicationFactory.cs (`EnsureServer`,
+  `CreateHost`), A11ySmokeTests, WI-403, .github/workflows/ci.yml.
+  Depends on: nothing.
+
 - [x] **WI-438 Pagination is broken everywhere, and "Show more" should be a real
   pager** (Dan, 2026-08-21: "the pagination is not working. When I click Show
   More, it sticks on page 1.")
