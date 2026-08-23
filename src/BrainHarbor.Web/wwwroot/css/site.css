@@ -315,11 +315,39 @@ textarea {
   font-weight: 800;
 }
 
+/* On a phone the band stacked into three full-height rows and ate 155px —
+   more than a sixth of the viewport, on every page, before anything else.
+   Tighten it to two: the prompt sits inline with the number (it is a short
+   question, not a heading), and "More help options" keeps its own row because
+   it is a separate destination and must stay a full-width tap target.
+   Nothing is removed: the number and the route to more help both survive,
+   which is the part that is not negotiable on this band. */
+@media (max-width: 40rem) {
+  .helpline-band .container {
+    gap: 0 var(--space-3);
+    padding-block: var(--space-1);
+  }
+
+  .helpline-band span {
+    font-size: var(--text-sm);
+  }
+
+  /* The links KEEP a full 44px box. An earlier pass here shaved them to 2.25rem
+     (40.5px) to save four pixels and broke the tap-target floor on the two
+     most important links on the site. The saving comes from the padding and
+     from the label's row instead, never from the target. */
+  .helpline-band a {
+    min-block-size: var(--tap-target);
+  }
+}
+
 /* ---------- Header ---------- */
 
 .site-header {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border-subtle);
+  /* The anchor for the mobile menu panel, which drops out of flow below it. */
+  position: relative;
 }
 
 .site-header .container {
@@ -347,6 +375,21 @@ textarea {
   height: 2.5rem;
   width: auto;
   display: block;
+}
+
+/* Icon-only masthead on a phone (see _Layout). The lockup's ~200px width was
+   what pushed the menu button onto a row of its own.
+
+   Selectors are `.site-name img.x` (0-2-1) on purpose. `.site-name img` above
+   sets `display: block` at 0-1-1, which OUTRANKS a bare `.site-name__lockup`
+   (0-1-0) — so the first version of this rule left BOTH images rendering, the
+   masthead 242px wide, and the menu button still wrapped. Nothing about the
+   markup or the media query was wrong; the toggle simply never won. */
+.site-name img.site-name__mark { display: none; }
+
+@media (max-width: 40rem) {
+  .site-name img.site-name__lockup { display: none; }
+  .site-name img.site-name__mark { display: block; }
 }
 
 /* No underline on hover here: the target is a picture, and a rule under a
@@ -387,17 +430,142 @@ textarea {
   text-decoration: underline;
 }
 
-/* "Get Help Now" — the one filled pill in the nav. */
-.site-nav a.nav-cta {
+/* "Get Help Now" — the one filled pill. Lives OUTSIDE the collapsible menu
+   (see _Layout): the crisis route stays one tap at every width. */
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
   background: var(--color-accent);
   color: var(--color-band-ink);
   font-weight: 700;
-  padding-inline: var(--space-4);
+  text-decoration: none;
 }
 
-.site-nav a.nav-cta:hover {
+.nav-cta:hover {
   background: var(--color-accent-strong);
   color: var(--color-band-ink);
+}
+
+/* ---------- Collapsible nav (the hamburger) ----------
+   MOBILE FIRST: the menu is closed by default and the toggle is visible. The
+   desktop rule below re-opens it permanently. No JavaScript anywhere in here —
+   <details> gives us the disclosure, the keyboard handling and the state. */
+
+/* Two rows on a phone, not three:
+     row 1  [logo] .......... [Aa] [Menu]
+     row 2  [ Get Help Now, full width ]
+   The crisis CTA gets the full width deliberately. It is the one control on
+   this page a reader might be reaching for in a panic, and a full-width bar is
+   both unmissable and impossible to mis-tap — better than the word-sized pill
+   it was, not a consolation for moving it down a row. */
+.nav-collapse {
+  order: 3;
+}
+
+.text-toggle { order: 2; }
+
+.nav-cta {
+  order: 4;
+  flex-basis: 100%;
+  justify-content: center;
+}
+
+.site-name { order: 1; margin-inline-end: auto; }
+
+.nav-collapse__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--tap-target);
+  min-inline-size: var(--tap-target);
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;     /* kill the default disclosure triangle */
+}
+
+/* Safari needs the -webkit pseudo-element too, or the triangle survives. */
+.nav-collapse__toggle::-webkit-details-marker { display: none; }
+
+.nav-collapse__toggle:hover {
+  background: var(--color-surface);
+  border-color: var(--color-accent-strong);
+}
+
+/* The three bars, drawn with borders so they cost no image and inherit the
+   text colour — including in forced-colours / high-contrast mode, where a
+   background-drawn icon would disappear. */
+.nav-collapse__bars {
+  inline-size: 1.15rem;
+  block-size: 0.85rem;
+  border-block-start: 3px solid currentColor;
+  border-block-end: 3px solid currentColor;
+  position: relative;
+}
+
+.nav-collapse__bars::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: calc(50% - 1.5px);
+  block-size: 3px;
+  background: currentColor;
+}
+
+/* MOBILE: the nav is hidden until the toggle is open. It is a SIBLING of the
+   <details> (see _Layout), so plain CSS decides — no wrestling with the
+   element's built-in content hiding. */
+.site-nav { display: none; }
+
+/* Open: a full-width panel dropping below the header, out of flow so the Menu
+   button does not jump to another row when it opens. Anchored to
+   .site-header, which is position:relative for this. */
+.nav-collapse[open] ~ .site-nav {
+  display: block;
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 100%;
+  z-index: 20;
+  background: var(--color-surface);
+  border-block-end: 1px solid var(--color-border-subtle);
+  /* It overlays the hero band, so it needs to read as a layer above the page
+     rather than as part of it. */
+  box-shadow: 0 12px 28px rgba(20, 45, 65, 0.22);
+  /* Inline padding matches .container so the menu items line up with the
+     masthead above them rather than sitting a few pixels adrift. */
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
+
+.nav-collapse[open] ~ .site-nav ul {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+/* Full-width rows with a rule between them: a list of destinations reads
+   faster than a wrapped cloud of links, and each row is a wide tap target
+   rather than a word-sized one.
+
+   `display: flex` (not the inline-flex these links use elsewhere) is what
+   makes the row full width. As inline-flex the box — and so the tap target and
+   the divider rule under it — stopped at the end of the word, which put a
+   short rule under "Trials" and a long one under "Tumor types" and left most
+   of each row untappable. */
+.nav-collapse[open] ~ .site-nav a {
+  display: flex;
+  border-block-end: 1px solid var(--color-border-subtle);
+  border-radius: 0;
+  padding-inline: var(--space-1);
+}
+
+.nav-collapse[open] ~ .site-nav li:last-child a {
+  border-block-end: 0;
 }
 
 /* Large-text toggle — an outlined pill so it reads as a control, not a link. */
@@ -414,6 +582,73 @@ textarea {
   font-weight: 700;
 }
 
+/* ---------- Desktop: undo the collapse ----------
+   Above 48rem the disclosure disappears entirely and the nav is an ordinary
+   horizontal list. The `[open]` attribute is irrelevant here: the content is
+   shown whatever its state, so a reader who toggled it shut on a phone and
+   then rotated to landscape does not find their nav missing. */
+@media (min-width: 48rem) {
+  /* The disclosure disappears entirely — it is a phone control, and at this
+     width the nav is an ordinary horizontal list that never needed one. */
+  .nav-collapse { display: none; }
+
+  /* Back to one row, in source order, with the CTA back to a pill. */
+  .site-name,
+  .text-toggle,
+  .nav-cta { order: 0; }
+
+  .site-name { margin-inline-end: 0; }
+
+  .nav-cta { flex-basis: auto; }
+
+  /* Always shown, whatever state the <details> was left in. A reader who
+     opened the menu on a phone and then rotated to landscape must not find
+     their navigation missing. */
+  .site-nav,
+  .nav-collapse[open] ~ .site-nav {
+    display: block;
+    position: static;
+    margin-inline-start: auto;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .site-nav ul,
+  .nav-collapse[open] ~ .site-nav ul {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .site-nav a,
+  .nav-collapse[open] ~ .site-nav a {
+    display: inline-flex;
+    border-block-end: 0;
+    border-radius: var(--radius);
+    padding-inline: var(--space-3);
+  }
+}
+
+/* The words beside "Aa" cost a whole row on a narrow header. The button keeps
+   its accessible name either way (aria-label on the anchor), so a screen
+   reader still hears "Use larger text" rather than "Aa". */
+@media (max-width: 30rem) {
+  .text-toggle__label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .text-toggle {
+    padding-inline: var(--space-3);
+  }
+}
+
 .text-toggle:hover {
   text-decoration: underline;
   color: var(--color-accent-strong);
@@ -421,6 +656,31 @@ textarea {
 
 main {
   padding-block: var(--space-6) var(--space-8);
+}
+
+/* --space-6/8 (2rem/4rem) is composure on a wide page and dead scrolling on a
+   phone: it put roughly 150px of nothing between the header and every h1, on
+   every page, before a reader saw a single word. Halved at the top, trimmed at
+   the bottom — the footer supplies its own breathing room.
+
+   Heading margins come down with it. Vertical rhythm tuned for a 65ch column
+   reads as drift in a 390px one, and the FIRST heading needs no top margin at
+   all: the container's padding already spaced it, so the two were stacking. */
+@media (max-width: 40rem) {
+  main {
+    padding-block: var(--space-4) var(--space-6);
+  }
+
+  h1, h2, h3, h4 {
+    margin-block: var(--space-5) var(--space-3);
+  }
+
+  main > :first-child,
+  main > .container--read > :first-child,
+  main > article > :first-child,
+  main > article > .container--read > :first-child {
+    margin-block-start: 0;
+  }
 }
 
 /* ---------- Hero band — the "Harbor Banner" (homepage handoff) ----------
@@ -469,6 +729,41 @@ main {
   width: 640px;
   max-width: 100%;
   height: auto;
+}
+
+/* On a phone the header lockup and this one land within a few hundred pixels
+   of each other, so the brand reads twice at full size before a single word of
+   content. The header keeps its masthead (it is the link home on every page)
+   and this one gives some height back: still the branded moment, no longer a
+   second full-width logo stacked under the first.
+
+   The padding goes too. --space-6/7 was tuned for a wide band where the
+   whitespace reads as composure; in a 390px column it is just scrolling. */
+@media (max-width: 40rem) {
+  .hero-band {
+    padding-block-start: var(--space-4);
+  }
+
+  .hero-band__inner {
+    padding-block-end: var(--space-5);
+  }
+
+  .hero-band h1 {
+    margin-block-end: var(--space-4);
+  }
+
+  .hero-band h1 img {
+    width: 78%;
+  }
+
+  /* The watermark is sized for a desktop band; at this width it dominates the
+     doors instead of sitting behind them. */
+  .hero-band__watermark {
+    width: 260px;
+    height: 260px;
+    top: -40px;
+    inset-inline-end: -50px;
+  }
 }
 
 /* One plain line of AI disclosure inside the band. The handoff puts the AI
@@ -1263,6 +1558,25 @@ main {
   margin-block: var(--space-4) var(--space-5);
 }
 
+/* Same treatment as the feed filters: full-width stacked blocks so the ZIP
+   field and its buttons never end up sharing a cramped row. This is the form a
+   reader fills in one-handed, on a phone, to find a trial near them. */
+@media (max-width: 40rem) {
+  .trial-near {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .trial-near input[type="text"],
+  .trial-near button,
+  .trial-near .button,
+  .trial-near .button-secondary {
+    inline-size: 100%;
+    min-block-size: var(--tap-target);
+  }
+}
+
 .button-secondary {
   background: var(--color-paper);
   color: var(--color-accent);
@@ -1342,6 +1656,21 @@ main {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  /* The whole label is the target, not just the box, so the row is comfortably
+     tappable even where the box itself is small. */
+  min-block-size: var(--tap-target);
+}
+
+/* A default checkbox renders about 13px square — a third of the 44px floor, and
+   the hardest thing on the page to hit for someone whose treatment has affected
+   their fine motor control. Scaling the control keeps the native widget (and
+   its focus ring, its checked state, and its behaviour with assistive tech)
+   rather than replacing it with a styled div that only looks like one. */
+.checkbox input[type="checkbox"] {
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
+  flex: none;
+  accent-color: var(--color-accent);
 }
 
 /* Filter bars (/research, /trials, /search). Without a layout rule these are
@@ -1364,6 +1693,37 @@ main {
    reads. */
 .feed-filters .checkbox {
   flex-basis: 100%;
+}
+
+/* On a phone the wrapped row separated labels from their controls: "Kind" and
+   its select landed on one line while "Sort by" was pushed to the end of it and
+   its select dropped to the next — so the page read "Kind [Everything] Sort by"
+   then "[Newest first]". A label beside the wrong control is worse than no
+   label, and this is a form a reader uses to find the thing that is about them.
+
+   Below 40rem each label+control becomes its own full-width block. Grid rather
+   than more flex-wrapping, so pairing is structural and cannot come apart at
+   some width nobody tested. */
+@media (max-width: 40rem) {
+  .feed-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+
+  .feed-filters label:not(.checkbox) {
+    margin-block-end: calc(-1 * var(--space-2));
+    font-weight: 700;
+  }
+
+  .feed-filters select,
+  .feed-filters input[type="text"],
+  .feed-filters input[type="search"],
+  .feed-filters button {
+    inline-size: 100%;
+    min-block-size: var(--tap-target);
+  }
 }
 
 /* The registry's own words, visibly not ours. */

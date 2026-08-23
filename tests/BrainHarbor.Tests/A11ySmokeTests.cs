@@ -71,6 +71,88 @@ public sealed class A11ySmokeTests : IClassFixture<KestrelWebApplicationFactory>
         await context.DisposeAsync();
     }
 
+    /// <summary>
+    /// WI-440: the phone layout, including the collapsed nav OPEN.
+    ///
+    /// Every other scan here runs at the default desktop viewport, where the
+    /// hamburger is display:none — so the menu button and its panel were real,
+    /// reader-facing UI that axe had never once looked at. A whole layout
+    /// existing outside the accessibility gate is the gap this closes.
+    /// </summary>
+    [Fact]
+    public async Task ThePhoneLayoutAndItsOpenMenuHaveNoSeriousOrCriticalAxeViolations()
+    {
+        var context = await _browser!.NewContextAsync(new()
+        {
+            ViewportSize = new() { Width = 390, Height = 844 },
+            IsMobile = true,
+            HasTouch = true,
+        });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(_factory.ServerAddress);
+
+        // Guard against a false green: if the breakpoint moved and the toggle
+        // never rendered, this would be scanning the desktop layout twice and
+        // reporting it as mobile coverage.
+        Assert.True(await page.Locator(".nav-collapse__toggle").IsVisibleAsync(),
+            "the menu toggle should be visible at 390px");
+
+        await AssertNoSeriousViolations(page, "/ (390px, menu closed)");
+
+        await page.Locator(".nav-collapse__toggle").ClickAsync();
+        Assert.True(await page.Locator(".site-nav a[href='/research']").IsVisibleAsync(),
+            "opening the menu should reveal the nav links");
+
+        await AssertNoSeriousViolations(page, "/ (390px, menu open)");
+
+        // The two form-heavy pages at the same width. Filter controls are where
+        // a narrow layout usually comes apart — on /research the wrapped row
+        // separated every label from its control ("Kind [Everything] Sort by"
+        // on one line, "[Newest first]" on the next), which axe cannot see but
+        // which makes the form unusable. The scan is here for the things axe
+        // CAN see; the stacking itself is held by the CSS grid.
+        foreach (var path in new[] { "/research", "/trials" })
+        {
+            var response = await page.GotoAsync(_factory.ServerAddress + path);
+            Assert.True(response!.Ok, $"Expected 2xx from {path}, got {response.Status}");
+            await AssertNoSeriousViolations(page, $"{path} (390px)");
+        }
+
+        await context.DisposeAsync();
+    }
+
+    /// <summary>
+    /// PLAN.md §3 is "always one tap to a human". The collapsed nav must never
+    /// swallow the crisis route: Get Help Now stays visible WITHOUT opening the
+    /// menu, at every width. This is a design decision worth pinning, because
+    /// tidying it into the menu alongside the other links is the obvious-looking
+    /// change for anyone who does not know why it is outside.
+    /// </summary>
+    [Fact]
+    public async Task TheCrisisRouteIsNeverHiddenBehindTheMobileMenu()
+    {
+        var context = await _browser!.NewContextAsync(new()
+        {
+            ViewportSize = new() { Width = 390, Height = 844 },
+            IsMobile = true,
+            HasTouch = true,
+        });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(_factory.ServerAddress);
+
+        // Menu still shut.
+        Assert.False(await page.Locator(".nav-collapse[open]").CountAsync() > 0);
+
+        var cta = page.Locator(".nav-cta");
+        Assert.True(await cta.IsVisibleAsync(), "Get Help Now must be visible with the menu closed");
+        Assert.Equal("/get-help-now", await cta.GetAttributeAsync("href"));
+
+        // And the helpline band's phone number, likewise always present.
+        Assert.True(await page.Locator(".helpline-band a.tel").IsVisibleAsync());
+
+        await context.DisposeAsync();
+    }
+
     [Fact]
     public async Task TrialFinderHasNoSeriousOrCriticalAxeViolations()
     {

@@ -465,6 +465,59 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-440 Make the site work on a phone, starting with the home page**
+  (done 2026-08-23 — Dan: "it looks pretty good on mobile for the most part,
+  but the home page needs the little hamburger menu instead of all the links at
+  the top. Things like that.")
+  Goal: the layout most readers will actually use should not be the one nobody
+  looked at.
+  **What the measurements showed.** No horizontal overflow anywhere and no text
+  under the 16px floor — the body content was already sound. The damage was all
+  in chrome and forms: on a 390px phone a reader scrolled past **1107px** before
+  reaching `<main>`, more than a full viewport, on every page.
+  Delivered:
+  - **Hamburger nav** using `<details>`/`<summary>`, so it needs no JavaScript —
+    the site's standing constraint. Full-width dropdown panel; each link a
+    full-width row rather than a word-sized target.
+  - **Icon-only masthead** below 40rem. The lockup is ~200px wide and was single-
+    handedly forcing the menu button onto its own row.
+  - **"Get Help Now" stays OUTSIDE the menu** at every width. PLAN.md §3 is
+    "always one tap to a human"; putting the crisis route behind a disclosure
+    makes it two taps for the reader least able to spare one. Pinned by a test,
+    because tidying it in with the other links is the obvious-looking change for
+    anyone who does not know why it is out.
+  - Helpline band and hero band tightened; `main` padding and heading margins
+    trimmed on narrow screens (they were stacking into ~150px of nothing above
+    every `h1`).
+  - **Filter forms stack**: on `/research` the wrapped row separated every label
+    from its control — the page read "Kind [Everything] Sort by" then
+    "[Newest first]". A label beside the wrong control is worse than no label.
+    Now a grid, so the pairing is structural.
+  - **Checkboxes** went from 13px to 22px with a 44px label row, keeping the
+    native control so its focus ring and assistive-tech behaviour survive.
+  Result: 1107px → ~890px before content, header 245px → 137px.
+  **The gap this closed in the gate:** every axe scan ran at the default desktop
+  viewport, where the hamburger is `display: none`. The entire phone layout —
+  including a menu panel that did not exist before — was outside the
+  accessibility gate. Scans now run at 390px, menu closed and open, on `/`,
+  `/research` and `/trials`.
+  **Three bugs hit while doing it, none of which a test could see:**
+  1. *A tap-target regression I introduced:* shaved the band links to 40.5px
+     chasing four pixels, breaking the 44px floor on the two most important
+     links on the site. The space came from padding instead.
+  2. *Specificity:* `.site-name img { display: block }` (0-1-1) outranked
+     `.site-name__lockup { display: none }` (0-1-0), so BOTH logos rendered and
+     the masthead stayed 242px wide. The markup and the media query were both
+     correct; the toggle simply never won.
+  3. *`display: contents` on `<details>`* broke the desktop nav — links laid out
+     0px wide, spilling below the header. Fixed by restructuring rather than
+     patching: the nav is now a SIBLING of the toggle, so desktop never has to
+     fight the element's built-in content hiding.
+  Desktop is unchanged; every rule is scoped to `max-width: 40rem` except the
+  checkbox sizing, which was too small at every width.
+  806 tests, ContentCheck 50/0. Refs: Pages/Shared/_Layout.cshtml,
+  wwwroot/css/site.css, A11ySmokeTests.
+
 - [ ] **WI-439 The Kestrel test host must start deterministically, or retry**
   (Dan, 2026-08-21, after it blocked a production deploy)
   Goal: a red `main` always means something is actually wrong.
