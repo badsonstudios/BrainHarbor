@@ -21,20 +21,41 @@ public class BrandAssetsTests : IClassFixture<WebApplicationFactory<Program>>
             builder.UseSetting("ConnectionStrings:BrainHarbor", TestDatabase.ConnectionString));
     }
 
+    /// <summary>
+    /// The masthead carries the brand NAME as its accessible name, never "logo"
+    /// — a screen reader should hear what a sighted reader reads.
+    ///
+    /// The name moved from the image's alt to the link's aria-label when the
+    /// masthead gained a second image (the icon-only mark for phones, WI-440).
+    /// Both images are alt="" and the LINK is named, so the accessible name is
+    /// the same one whichever image the CSS resolves to — and it stays correct
+    /// even if a CSS fault shows both, which is not hypothetical: the first
+    /// version of that rule lost on specificity and rendered both at once. With
+    /// two alt-bearing images that would have announced the brand twice.
+    /// </summary>
     [Fact]
     [Trait("Category", "Database")]
-    public async Task TheHeaderShowsTheLockupWithTheBrandNameAsItsAltText()
+    public async Task TheMastheadIsNamedForTheBrandAndOffersBothMarks()
     {
         var html = await _factory.CreateClient().GetStringAsync("/");
 
-        // The path carries a content fingerprint (.NET rewrites ~/ asset URLs
-        // for cache-busting), so match around it rather than on the bare name.
+        // Paths carry a content fingerprint (.NET rewrites ~/ asset URLs for
+        // cache-busting), so match around it rather than on the bare name.
         Assert.Matches(@"/img/brand/lockup-no-tagline(\.[a-z0-9]+)?\.svg", html);
-        Assert.Contains("alt=\"Brain Harbor\"", html, StringComparison.Ordinal);
+        Assert.Matches(@"/img/brand/mark-color(\.[a-z0-9]+)?\.svg", html);
 
-        // "logo" as alt text describes the medium, not the thing — a screen
-        // reader should hear the name a sighted reader reads.
-        Assert.DoesNotContain("alt=\"logo\"", html, StringComparison.OrdinalIgnoreCase);
+        var masthead = System.Text.RegularExpressions.Regex.Match(
+            html, @"<a class=""site-name""[^>]*>.*?</a>",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
+        Assert.True(masthead.Success, "the masthead link should still be there");
+
+        Assert.Contains("Brain Harbor", masthead.Value, StringComparison.Ordinal);
+
+        // Exactly one accessible name, on the link — not one per image.
+        Assert.DoesNotContain("alt=\"Brain Harbor\"", masthead.Value, StringComparison.Ordinal);
+
+        // "logo" describes the medium, not the thing.
+        Assert.DoesNotContain("logo", masthead.Value, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

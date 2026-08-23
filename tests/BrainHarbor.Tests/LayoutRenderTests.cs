@@ -32,9 +32,13 @@ public class LayoutRenderTests : IClassFixture<WebApplicationFactory<Program>>
         response.EnsureSuccessStatusCode();
         var html = await response.Content.ReadAsStringAsync();
 
-        // Skip link + landmarks
+        // Skip link + landmarks. Matched on the attributes that carry meaning
+        // rather than on an exact tag string: the nav gained an id when the
+        // mobile menu toggle needed something to point aria-controls at, and
+        // an assertion that breaks because an attribute was inserted in the
+        // middle is testing the markup's punctuation, not the landmark.
         Assert.Contains("class=\"skip-link\" href=\"#main-content\"", html);
-        Assert.Contains("<nav class=\"site-nav\" aria-label=\"Main\">", html);
+        Assert.Matches(@"<nav[^>]*class=""site-nav""[^>]*aria-label=""Main""", html);
         Assert.Contains("<main id=\"main-content\"", html);
         Assert.Contains("<footer class=\"site-footer\">", html);
 
