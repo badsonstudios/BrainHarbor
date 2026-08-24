@@ -4,8 +4,8 @@ slug: privacy
 description: "What we collect, what we do not, and the promises we keep."
 tags: [legal, privacy]
 sources: []
-reviewed: 2026-07-19
-review_due: 2027-01-19
+reviewed: 2026-08-23
+review_due: 2027-02-23
 disclaimers: []
 ---
 
@@ -16,8 +16,10 @@ anyone, ever.
 
 ## What we collect
 
-**When you read the site:** nothing that names you. We do not run analytics
-and we do not build a profile of you.
+**When you read the site:** nothing that names you. We count how many times
+each page is opened, with nothing attached to it. We do not know who opened
+it, where you are, or which pages the same person read. We do not build a
+profile of you.
 
 **When you change text size:** a small cookie remembers your choice for a
 year. It holds one word, large or standard, and nothing else.
@@ -40,6 +42,8 @@ else. Sign-up is not open yet, so we hold no addresses today.
 
 - No ad networks. No tracking pixels. No third-party analytics that follow
   you to other sites.
+- No cookies or hidden marks to tell one reader from another. Our page counts
+  cannot tell a new reader from someone coming back, and we chose it that way.
 - No selling, renting, or sharing your email.
 - We never ask for your diagnosis, your medical records, or your date of
   birth.
