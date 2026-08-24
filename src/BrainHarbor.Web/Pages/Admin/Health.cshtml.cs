@@ -1,9 +1,10 @@
+using BrainHarbor.Web.Analytics;
 using BrainHarbor.Web.Api;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BrainHarbor.Web.Pages.Admin;
 
-public class HealthModel(SyncRepository sync) : PageModel
+public class HealthModel(SyncRepository sync, PageViewRepository pageViews) : PageModel
 {
     /// <summary>Sources expected to report; anything missing is called out.</summary>
     public static readonly string[] ExpectedSources =
@@ -44,8 +45,22 @@ public class HealthModel(SyncRepository sync) : PageModel
         }
     }
 
+    /// <summary>
+    /// How far back the view counts look. Four weeks is enough to see a trend
+    /// without the page becoming a wall of numbers.
+    /// </summary>
+    public const int ViewWindowDays = 28;
+
+    public IReadOnlyList<PageViewRow> DailyViews { get; private set; } = [];
+    public IReadOnlyList<PageViewRow> TopPages { get; private set; } = [];
+    public long TotalViews { get; private set; }
+
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
+        DailyViews = await pageViews.DailyTotalsAsync(ViewWindowDays, cancellationToken);
+        TopPages = await pageViews.TopPathsAsync(ViewWindowDays, 12, cancellationToken);
+        TotalViews = await pageViews.TotalAsync(ViewWindowDays, cancellationToken);
+
         var state = await sync.GetStateAsync(cancellationToken);
 
         Sources =

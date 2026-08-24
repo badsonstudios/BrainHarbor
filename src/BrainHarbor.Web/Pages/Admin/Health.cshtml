@@ -61,4 +61,70 @@
     </div>
 }
 
+@* WI-441. Admin-only by Dan's decision: the numbers are for running the site,
+   not something readers need to see.
+
+   Read this as PAGE OPENINGS, not visitors. Nothing here identifies anyone —
+   no IP, no cookie, no session — so there is no way to tell one person opening
+   four pages from four people opening one each, and deliberately so. Assets,
+   htmx fragments, bots, the deploy smoke check and the admin area are all
+   excluded, so these are closer to real reading than the Azure "Requests"
+   metric, which counts every stylesheet and every health poll. *@
+<h2>Page views</h2>
+
+<p class="text-muted">
+    How many times each page was opened in the last @HealthModel.ViewWindowDays
+    days. Not visitors: nothing is stored about who opened them.
+</p>
+
+@if (Model.TotalViews == 0)
+{
+    <p>
+        Nothing counted yet. Counts flush about a minute after a page is
+        opened, and only real page loads count.
+    </p>
+}
+else
+{
+    <p><strong>@Model.TotalViews.ToString("N0")</strong> page opens in @HealthModel.ViewWindowDays days.</p>
+
+    <table>
+        <caption class="text-muted">Most-opened pages, busiest first.</caption>
+        <thead>
+            <tr>
+                <th scope="col">Page</th>
+                <th scope="col">Opens</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.TopPages)
+            {
+                <tr>
+                    <td><a href="@row.Path">@row.Path</a></td>
+                    <td>@row.Views.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <table>
+        <caption class="text-muted">By day, newest first.</caption>
+        <thead>
+            <tr>
+                <th scope="col">Day</th>
+                <th scope="col">Opens</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.DailyViews)
+            {
+                <tr>
+                    <td>@row.ViewedOn.ToString("ddd d MMM", System.Globalization.CultureInfo.InvariantCulture)</td>
+                    <td>@row.Views.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 <p><a href="/admin/queue">Review queue</a></p>
