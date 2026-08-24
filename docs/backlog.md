@@ -465,6 +465,49 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   and says nothing about curated pages. Worth deciding whether curated pages
   should disclose authorship the way summaries do.
 
+- [x] **WI-441 Count page opens, on the admin page only** (done 2026-08-23 —
+  Dan: "I just want to know how many people are coming to the site. I don't
+  want to track anything.")
+  **The question, and the honest answer to it.** Nothing was being tracked: no
+  analytics package, no App Insights linked to the app (the
+  `app-shamoody-insights-prod-eus2` component in the subscription is
+  Moodathon's), just App Service HTTP logs on a 3-day filesystem retention that
+  nothing read. Azure's built-in `Requests` metric IS available with no setup
+  and 93-day retention — but it counts every stylesheet, image, bot and deploy
+  smoke-check poll, so it measures load rather than readers.
+  **The constraint that shaped this.** `/privacy` promised "We do not run
+  analytics and we do not build a profile of you", live. So the question was
+  never only technical.
+  **Told Dan the part he could not have:** distinguishing new from repeat
+  visitors REQUIRES persisting an identifier across days. There is no
+  privacy-preserving trick around it — even Plausible and Umami deliberately
+  cannot do it, rotating their salt every 24 hours precisely so yesterday's
+  visitor cannot be linked to today's. Dan's call: give up repeat-visitor
+  counting rather than weaken the promise.
+  Delivered: `page_views (viewed_on date, path text, views bigint)` and nothing
+  else — no IP hashed or otherwise, no user agent, no session or device id, no
+  referrer, no sub-day timestamp. Counts buffer in a singleton and flush every
+  60s, so serving a page never waits on a database write. Shown on
+  `/admin/health` only; readers never see it.
+  Excluded from the count so the number is worth trusting: assets, htmx
+  fragments, bots, curl, the deploy smoke check, requests with no user agent,
+  `/admin`, `/api`, `/dev`, redirects and errors. **The user agent is read to
+  make that decision and then discarded** — never stored.
+  **The query string is dropped before anything is written.** On `/trials` it
+  can carry a reader's ZIP or coordinates; a test is named for this.
+  Day granularity is a privacy choice as much as a storage one: per-hour counts
+  on a site this small would start to expose WHEN a single reader was here,
+  which is the shape of a profile without a name on it.
+  Privacy copy rewritten to match, and made STRONGER rather than merely
+  accurate: the new "What we do not do" bullet states that the counts cannot
+  tell a new reader from a returning one and that this was chosen. Reading
+  grade 4.0; review date bumped.
+  Verified end-to-end against a running site, not just in tests: 4 real page
+  loads plus 5 pieces of noise produced exactly `/`=2, `/research`=1,
+  `/trials`=1. 821 tests, ContentCheck 50/0.
+  Refs: Analytics/, Database/Scripts/0008_page_views.sql,
+  Pages/Admin/Health.cshtml, Content/pages/privacy.md.
+
 - [x] **WI-440 Make the site work on a phone, starting with the home page**
   (done 2026-08-23 — Dan: "it looks pretty good on mobile for the most part,
   but the home page needs the little hamburger menu instead of all the links at

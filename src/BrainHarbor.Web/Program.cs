@@ -93,6 +93,14 @@ builder.Services.Configure<PublishingOptions>(
 builder.Services.AddScoped<BrainHarbor.Web.Feed.FeedRepository>();
 builder.Services.AddSingleton<BrainHarbor.Web.Feed.CardImages>();
 
+// Page-view tally (WI-441): how many times each page was opened, and nothing
+// else. No identifier of any kind is recorded — see PageViewCounter for what
+// is deliberately absent and why. Counts live in a singleton and are flushed
+// on a timer so serving a page never waits on a database write.
+builder.Services.AddSingleton<BrainHarbor.Web.Analytics.PageViewCounter>();
+builder.Services.AddScoped<BrainHarbor.Web.Analytics.PageViewRepository>();
+builder.Services.AddHostedService<BrainHarbor.Web.Analytics.PageViewFlusher>();
+
 // Trial finder (WI-403). The ZIP table is read-only reference data, loaded once.
 builder.Services.AddScoped<BrainHarbor.Web.Trials.TrialsRepository>();
 builder.Services.AddSingleton(provider =>
@@ -195,6 +203,11 @@ app.UseWhen(
 app.UseHttpsRedirection();
 
 app.UseMiddleware<TextSizeMiddleware>();
+
+// After TextSize (which redirects, and a redirect is not a page view) and
+// before routing, so it wraps the whole pipeline and can read the final
+// status and content type on the way back out.
+app.UseMiddleware<BrainHarbor.Web.Analytics.PageViewMiddleware>();
 
 app.UseRouting();
 
