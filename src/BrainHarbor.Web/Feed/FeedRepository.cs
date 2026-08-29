@@ -78,7 +78,14 @@ public sealed record FeedQuery(
     string? Kind = null,
     bool IncludeEarlyStage = false,
     int Page = 0,
-    string? Sort = null)
+    string? Sort = null,
+    /// <summary>
+    /// Leave trial updates out (WI-460, Dan). `/research` sets this: trials
+    /// have their own page with filters research does not need — country,
+    /// recruiting status, phase — and showing them in both places made the
+    /// feed answer two questions at once.
+    /// </summary>
+    bool ExcludeTrials = false)
 {
     public const int PageSize = 20;
 
@@ -185,10 +192,23 @@ public sealed class FeedRepository(IDbConnectionFactory connectionFactory, Taxon
             where.Add("a.tumor_tags && @tagFilter");
         }
 
+        // Asking for trials on a feed that excludes them would return an empty
+        // page the reader cannot explain, so the kind is dropped rather than
+        // fought with the exclusion below (WI-460).
         var kind = NormalizeKind(query.Kind);
+        if (query.ExcludeTrials && kind == "trial_update")
+        {
+            kind = null;
+        }
+
         if (kind is not null)
         {
             where.Add("a.source_kind = @kind");
+        }
+
+        if (query.ExcludeTrials)
+        {
+            where.Add("a.source_kind <> 'trial_update'");
         }
 
         var whereClause = string.Join(" AND ", where);

@@ -33,51 +33,64 @@
     <p><a class="button" href="/trials">Find a clinical trial</a></p>
 </div>
 
-<form method="get" class="feed-filters" hx-get="/research" hx-target="#feed-results"
-      hx-select="#feed-results" hx-swap="outerHTML" hx-push-url="true">
+@* Stacked label-above-control, matching /trials (WI-460, Dan). Each pair is
+   its own block so a wrap can never separate a label from the thing it
+   labels. *@
+<form method="get" class="feed-filters feed-filters--stacked"
+      hx-get="/research" hx-target="#feed-results"
+      hx-select="#feed-results" hx-swap="outerHTML show:none" hx-push-url="true">
     @* Marks a real form submit, so an unchecked "early" box is read as "off"
        and remembered — distinct from a plain visit that uses the saved choice. *@
     <input type="hidden" name="applied" value="true" />
-    <label for="tumor">Tumor type</label>
-    <select id="tumor" name="tumor">
-        <option value="">All types</option>
-        @foreach (var type in Model.TumorTypes)
-        {
-            <option value="@type.Slug" selected="@(Model.Query.TumorType == type.Slug)">@type.Label</option>
-        }
-    </select>
 
-    <label for="kind">Kind</label>
-    <select id="kind" name="kind">
-        <option value="">Everything</option>
-        <option value="research" selected="@(Model.Query.Kind == "research")">Research</option>
-        <option value="news" selected="@(Model.Query.Kind == "news")">News</option>
-        <option value="trial_update" selected="@(Model.Query.Kind == "trial_update")">Trials</option>
-        <option value="preprint" selected="@(Model.Query.Kind == "preprint")">Preprints</option>
-    </select>
+    <div class="filter-field">
+        <label for="tumor">Tumor type</label>
+        <select id="tumor" name="tumor">
+            <option value="">All types</option>
+            @foreach (var type in Model.TumorTypes)
+            {
+                <option value="@type.Slug" selected="@(Model.Query.TumorType == type.Slug)">@type.Label</option>
+            }
+        </select>
+    </div>
+
+    @* Trials are gone from this list (WI-460, Dan): they live on /trials,
+       which filters by country, recruiting status and phase — things this feed
+       has no use for. Leaving the option here would offer a filter whose
+       results are deliberately empty. *@
+    <div class="filter-field">
+        <label for="kind">Research kind</label>
+        <select id="kind" name="kind">
+            <option value="">Everything</option>
+            <option value="research" selected="@(Model.Query.Kind == "research")">Research</option>
+            <option value="news" selected="@(Model.Query.Kind == "news")">News</option>
+            <option value="preprint" selected="@(Model.Query.Kind == "preprint")">Preprints</option>
+        </select>
+    </div>
 
     @* Impersonal on purpose: "helping you" would promise this reader an
-       outcome (anti-hype rules). "Kind" matches the filter above — one word
-       per concept. Group order mirrors FeedRepository.OrderByFor. *@
-    <label for="sort">Sort by</label>
-    <select id="sort" name="sort">
-        <option value="">Newest first</option>
-        @* "Most ready to use" described the 1-to-10 readiness score, which the
-           journey handoff retired. This now sorts by the four-stage ladder the
-           cards actually show, so the words match what the reader sees. The
-           value stays "readiness" so shared links keep working. *@
-        <option value="readiness" selected="@(Model.Query.Sort == "readiness")">Furthest along</option>
-        <option value="type" selected="@(Model.Query.Sort == "type")">By kind</option>
-    </select>
+       outcome (anti-hype rules). Group order mirrors FeedRepository.OrderByFor. *@
+    <div class="filter-field">
+        <label for="sort">Sort by</label>
+        <select id="sort" name="sort">
+            <option value="">Newest first</option>
+            @* "Most ready to use" described the 1-to-10 readiness score, which the
+               journey handoff retired. This now sorts by the four-stage ladder the
+               cards actually show, so the words match what the reader sees. The
+               value stays "readiness" so shared links keep working. *@
+            <option value="readiness" selected="@(Model.Query.Sort == "readiness")">Furthest along</option>
+            <option value="type" selected="@(Model.Query.Sort == "type")">By kind</option>
+        </select>
+    </div>
 
-    <button type="submit">Apply</button>
-
-    @* Below the controls, not among them: it changes which items appear, and
-       the sentence is too long to sit in the control row. *@
+    @* Above the button, with the filters it belongs to — it changes which
+       items appear, so it is a filter, not an afterthought. *@
     <label class="checkbox">
         <input type="checkbox" name="early" value="true" checked="@Model.Query.IncludeEarlyStage" />
         Show early-stage research (animal and lab studies)
     </label>
+
+    <button class="feed-filters__submit" type="submit">Apply</button>
 </form>
 
 @* WI-412: when a reader has filtered to a type, offer the plain-English

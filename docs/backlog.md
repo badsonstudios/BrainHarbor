@@ -1690,6 +1690,85 @@ digest (**WI-404**/**WI-405**).
   volumes against current pipeline capacity.
   Depends on: the local-model question. Blocks nothing.
 
+- [x] **WI-461 Trials page: sections, headings, and the search button**
+  (done 2026-08-29 — Dan, reviewing locally)
+  "Trials near you" and "Trials by countries" are two different jobs and ran
+  together as bare headings on a white page. Each is now a tinted panel holding
+  **only its heading and its controls** — the results sit below on the page
+  background, so the panel reads as "here is how you ask" and the cards as
+  "here is the answer". Cards stay white inside, so the nesting reads.
+  Headings renamed to match each other: "Browse trials" → "Browse trials by
+  countries" → **"Trials by countries"**, since "Trials near you" above does
+  not say "browse" either. Naming the country in the heading is also what tells
+  a reader outside the US that this page has something for them; the ZIP box
+  does not. Button "Show trials" → **"Search trials"**.
+  **The wiring detail worth knowing:** the htmx swap region wraps BOTH the
+  panel and the results even though only the panel is tinted. It has to —
+  submitting must update the country summary inside the form as well as the
+  trials. Verified the cards and count line sit outside the tint, the form
+  inside it, and paging still holds scroll position.
+  Refs: Pages/Trials/Index.cshtml, wwwroot/css/site.css (`.trial-section`).
+
+- [x] **WI-460 Trials off the research feed, and stacked research filters**
+  (done 2026-08-29 — Dan: "remove trials from the kind drop-down and don't show
+  trials in the lists, since we're going to just show them separately")
+  `/research` no longer returns trial updates, and "Trials" is gone from the
+  kind filter — leaving it would have offered a filter whose results are
+  deliberately empty. A link shared before this carrying `?kind=trial_update`
+  falls back to the whole feed rather than an empty page the reader cannot
+  explain; pinned by a test.
+  New `FeedQuery.ExcludeTrials`, set only by `/research`. **The home page still
+  shows trials in Latest updates — Dan's call, asked and answered ("Join trials
+  on the home page is fine").**
+  Filters restacked to match `/trials`: Tumor type, **Research kind**, Sort by,
+  the early-stage toggle, then Apply at its own size. Label above each control,
+  each pair its own block so a wrap can never separate them — the fault
+  `/research` had before WI-440.
+  Refs: Feed/FeedRepository.cs, Pages/Research/Index.cshtml(.cs).
+
+- [x] **WI-459 Trials as cards** (done 2026-08-29 — Dan: "it just doesn't look
+  that great")
+  The trial list was rows separated by hairlines; it is now the same card and
+  grid the research feed uses, minus the photo. Status and phase lead, then the
+  title, then a sentence or two, then where it runs — pinned to the bottom so
+  the meta lines up across a row however long the titles are.
+  **What the description had to be, and why it is not what was asked for.**
+  Checked before building: **zero of the 518 cached trials have a
+  plain-language summary; all 518 have the registry's own text.** So the
+  description would have been blank on every card. It falls back to the
+  registry's brief summary, labelled **"From the trial team:"** — this site's
+  rule is that ClinicalTrials.gov's words are visibly theirs. When plain-language
+  trial summaries do land they take precedence and the label disappears.
+  The fallback **cuts at a sentence end, never mid-sentence**. This is clinical
+  prose, and truncating "...did not improve survival" halfway is how a card
+  comes to say the opposite of the study. If no sentence break falls inside the
+  220-character budget it takes the whole first sentence however long — a
+  taller card beats a misleading one.
+  Refs: Trials/TrialsRepository.cs (`CardBlurb`), Pages/Trials/Index.cshtml.
+
+- [x] **WI-458 Country picker: layout, closing, and in-place updates**
+  (done 2026-08-29 — Dan, after using WI-457)
+  Three complaints, all fair. The picker **auto-opened whenever a filter was
+  active**, so it stayed sprawled across the page after every search and had to
+  be dismissed by hand — my call in WI-457, and the reasoning ("a shared link
+  should explain itself") did not survive contact with actually using it,
+  because you submit far more often than you follow a shared link. It now
+  always starts closed and the summary line carries the state. The control
+  moved up beside the other two filters and the button moved below them.
+  **Submitting no longer jumps to the top:** the browse form had no htmx at all
+  and was doing a full page load. It now swaps in place, and the pager gets the
+  `HxTarget` the partial was built to take and had been passing null.
+  Labels above controls, "Select" until countries are picked then up to three
+  then "...", checkbox above the button, button sized to its words.
+  **Two corrections to my own work, both from measuring instead of trusting
+  myself.** I first "fixed" the scroll jump with `show:none` and wrote a comment
+  claiming that was the fix — it was not; **my test was causing the jump**,
+  because Playwright scrolls an element into view before clicking it. And I
+  thought the country control looked washed out beside the selects; computed
+  styles said identical border, width, colour and background. I had been
+  looking at a stale screenshot.
+  Refs: Pages/Trials/Index.cshtml(.cs), wwwroot/css/site.css.
+
 - [x] **WI-457 Pick several countries, and point research readers at trials**
   (done 2026-08-29 — Dan, after using WI-455: "I may want to search in China
   and Japan and a few other countries", plus "on the research page… make it
