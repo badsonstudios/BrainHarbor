@@ -81,8 +81,11 @@ public class IndexModel(FeedRepository feed, TaxonomyStore taxonomy) : PageModel
         // Ask once with the requested page, then clamp against the real total.
         // A stale or hand-typed ?page=99 must land on the last page rather than
         // show an empty list with no way back.
+        // ExcludeTrials (WI-460, Dan): trials live on /trials, where they get
+        // the filters they actually need — country, recruiting status, phase.
+        // This feed is what has been FOUND; that page is what you could JOIN.
         var firstAttempt = new FeedQuery(tumor, kind, includeEarly,
-            Math.Max(0, pageNumber - 1), normalizedSort);
+            Math.Max(0, pageNumber - 1), normalizedSort, ExcludeTrials: true);
         Result = await feed.GetAsync(firstAttempt, cancellationToken);
         Pages = Pagination.For(Result.TotalCount, FeedQuery.PageSize, pageNumber);
 

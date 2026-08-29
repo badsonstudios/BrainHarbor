@@ -24,6 +24,12 @@
     </p>
 </div>
 
+@* WI-461, Dan: the two ways of finding a trial are separate jobs — "what is
+   close to me" and "what exists, filtered" — and as bare headings on a white
+   page they ran together. A panel each so the boundary is visible rather than
+   inferred from a heading level. *@
+<section class="trial-section" aria-labelledby="near-me">
+
 <h2 id="near-me">Trials near you</h2>
 <p>
     Enter your ZIP code to see open trials with a site within
@@ -135,28 +141,64 @@ else if (Model.Nearby is { } nearby)
     }
 }
 
-<h2 id="browse">Browse trials</h2>
+</section>
 
-<form method="get" action="/trials" class="feed-filters">
-    <label for="tumorType">Tumor type</label>
-    <select id="tumorType" name="tumorType">
-        <option value="">All types</option>
-        @foreach (var type in Model.TumorTypes)
-        {
-            <option value="@type.Slug" selected="@(Model.TumorType == type.Slug)">@type.Label</option>
-        }
-    </select>
 
-    <label for="phase">Stage of testing</label>
-    <select id="phase" name="phase">
-        <option value="">Any stage</option>
-        @foreach (var phase in Model.Phases)
-        {
-            <option value="@phase" selected="@(Model.Phase == phase)">@phase</option>
-        }
-    </select>
+@* WI-458. Everything from the form down to the pager swaps in place, so
+   submitting no longer throws the reader back to the top of the page — Dan's
+   report, and the same htmx pattern /research has always used. The FORM is
+   inside the swapped region deliberately: the country summary and the selected
+   options are part of the answer, so replacing the results without the
+   controls would leave the button still saying "Select" after a search.
 
-    <button type="submit">Show trials</button>
+   Plain method="get" underneath, so with JavaScript off this is an ordinary
+   form submit and a normal page load. *@
+@* The swap region wraps BOTH the panel and the results, because submitting has
+   to update the country summary in the form as well as the trials — but only
+   the controls get the tinted panel (WI-461, Dan). The trials sit below it on
+   the page background, the same way "Trials near you" is a panel of controls
+   with its results underneath. *@
+<div id="browse-panel">
+
+<section class="trial-section" aria-labelledby="browse">
+
+@* "by countries", matching "Trials near you" above — both are named for what
+   they do, neither says "browse" (WI-461, Dan). Naming the country here is
+   also what tells a reader outside the US that this page has something for
+   them; the ZIP box above does not. *@
+<h2 id="browse">Trials by countries</h2>
+
+<form method="get" action="/trials" class="feed-filters feed-filters--stacked"
+      hx-get="/trials" hx-target="#browse-panel" hx-select="#browse-panel"
+      @* show:none pins "do not move the viewport" rather than relying on the
+         default. Measured either way: submitting and paging both leave scrollY
+         exactly where it was. (The jump Dan reported was a full page reload —
+         this form had no htmx at all until now.) *@
+      hx-swap="outerHTML show:none" hx-push-url="true">
+    @* Label ABOVE each control (WI-458, Dan). Each pair is its own block so
+       the two can never be separated by a wrap — the failure /research had
+       before WI-440, where "Kind" ended a line and its select began the next. *@
+    <div class="filter-field">
+        <label for="tumorType">Tumor type</label>
+        <select id="tumorType" name="tumorType">
+            <option value="">All types</option>
+            @foreach (var type in Model.TumorTypes)
+            {
+                <option value="@type.Slug" selected="@(Model.TumorType == type.Slug)">@type.Label</option>
+            }
+        </select>
+    </div>
+
+    <div class="filter-field">
+        <label for="phase">Stage of testing</label>
+        <select id="phase" name="phase">
+            <option value="">Any stage</option>
+            @foreach (var phase in Model.Phases)
+            {
+                <option value="@phase" selected="@(Model.Phase == phase)">@phase</option>
+            }
+        </select>
+    </div>
 
     @* WI-457: pick several countries, not one. Dan's ask — "I may want to
        search in China and Japan and a few other countries."
@@ -167,30 +209,49 @@ else if (Model.Nearby is { } nearby)
        pattern as the mobile menu, which the browser handles for free —
        keyboard, expanded state and all.
 
-       Collapsed by default because there are around forty of these and they
-       would otherwise push the trials themselves off the screen. The summary
-       says what is picked, so the state is readable without opening it.
+       Sits inline with the other two filters, and ALWAYS starts closed
+       (WI-458, Dan): it shipped auto-opening whenever a filter was active, so
+       after submitting a search the panel stayed sprawled across the page and
+       had to be dismissed by hand every time. The summary line carries the
+       state — "Country: China, Japan" — which is what the open panel was
+       there to communicate.
 
        Countries are ordered by trial count, so the ones worth picking are at
        the top rather than buried under alphabetical accidents. *@
-    <details class="country-picker" open="@(Model.SelectedCountries.Count > 0)">
-        <summary class="country-picker__toggle">
-            Country
-            <span class="country-picker__state">
-                @if (Model.SelectedCountries.Count == 0)
-                {
-                    <text>Any country</text>
+    <div class="filter-field">
+        @* A label element would need a `for`, and there is no single control to
+           point it at — the thing being labelled is a disclosure holding forty
+           checkboxes. The <fieldset>'s own legend carries the accessible
+           grouping; this is the visible heading that matches the two beside
+           it. *@
+        <span class="filter-field__label" aria-hidden="true">Country</span>
+        <details class="country-picker">
+            <summary class="country-picker__toggle">
+                @* "Select" until something is picked, then the names — up to
+                   three, then an ellipsis (WI-458, Dan). Three is where the
+                   button stops fitting beside the other two filters. *@
+                @{
+                    var picked = Model.SelectedCountries
+                        .OrderBy(c => c, StringComparer.Ordinal).ToList();
                 }
-                else if (Model.SelectedCountries.Count <= 3)
-                {
-                    @string.Join(", ", Model.SelectedCountries.OrderBy(c => c, StringComparer.Ordinal))
-                }
-                else
-                {
-                    <text>@Model.SelectedCountries.Count countries</text>
-                }
-            </span>
-        </summary>
+                <span class="country-picker__state @(picked.Count == 0 ? "country-picker__state--empty" : null)">
+                    @if (picked.Count == 0)
+                    {
+                        <text>Select</text>
+                    }
+                    else if (picked.Count <= 3)
+                    {
+                        @string.Join(", ", picked)
+                    }
+                    else
+                    {
+                        @* Three plain dots, not an ellipsis character: this
+                           file has been mangled by encoding round-trips before
+                           and "…" came out as a single stray period. *@
+                        @($"{string.Join(", ", picked.Take(3))}...")
+                    }
+                </span>
+            </summary>
 
         <fieldset class="country-picker__list">
             <legend class="visually-hidden">Countries to include</legend>
@@ -204,20 +265,27 @@ else if (Model.Nearby is { } nearby)
             }
         </fieldset>
 
-        @if (Model.SelectedCountries.Count > 0)
-        {
-            @* Unticking forty boxes by hand is not a reasonable ask. Plain
-               link, no JavaScript: it just drops every country from the URL. *@
-            <p><a href="@Model.FilterUrlWithoutCountries()">Clear countries</a></p>
-        }
-    </details>
+            @if (Model.SelectedCountries.Count > 0)
+            {
+                @* Unticking forty boxes by hand is not a reasonable ask. Plain
+                   link, no JavaScript: it just drops every country from the URL. *@
+                <p><a href="@Model.FilterUrlWithoutCountries()">Clear countries</a></p>
+            }
+        </details>
+    </div>
 
-    @* Same shape as /research: the long toggle sits under the controls. *@
+    @* Order below the filters (WI-458, Dan): the toggle changes WHICH trials
+       are searched, so it belongs with the filters and above the button that
+       runs the search — not stranded underneath it. *@
     <label class="checkbox">
         <input type="checkbox" name="includeClosed" value="true" checked="@Model.IncludeClosed" />
         Include trials that are not taking new patients
     </label>
+
+    <button class="feed-filters__submit" type="submit">Search trials</button>
 </form>
+
+</section>
 
 <p class="trial-note">
     Showing @Model.Results.TotalCount trial@(Model.Results.TotalCount == 1 ? "" : "s").
@@ -241,11 +309,40 @@ else
     <ul class="trial-list">
         @foreach (var trial in Model.Results.Items)
         {
-            <li class="trial-list__item">
-                <h3><a href="/trials/@trial.NctId">@trial.Heading</a></h3>
-                <p class="trial-list__meta">
+            @* WI-459, Dan: the same card as the research feed, minus the photo.
+               Status and phase lead, the way the journey path leads there —
+               "can I still join, and how far along is it" is the first thing a
+               reader is sorting on. Then the title, then a sentence or two,
+               then where it runs, pinned to the bottom so the meta lines up
+               across a row however long the titles are. *@
+            <li class="card card--plain">
+                <p class="card__tags">
                     <span class="tag">@(trial.OverallStatus ?? "Status unknown")</span>
                     @if (trial.Phase is not null) { <span class="tag">@trial.Phase</span> }
+                </p>
+
+                <h3><a href="/trials/@trial.NctId">@trial.Heading</a></h3>
+
+                @if (trial.HasClosed)
+                {
+                    <p class="card__hook">This trial is not taking new patients.</p>
+                }
+                else if (trial.CardBlurb is { Length: > 0 } blurb)
+                {
+                    @* Labelled when it is the registry's own words, which today
+                       is every trial — none has a plain-language summary yet.
+                       The site's rule is that registry text is visibly the
+                       registry's, never presented as ours. *@
+                    <p class="card__hook">
+                        @if (trial.BlurbIsRegistryText)
+                        {
+                            <span class="card__source-note">From the trial team:</span>
+                        }
+                        @blurb
+                    </p>
+                }
+
+                <p class="card__meta">
                     @if (trial.StateSummary.Count > 0)
                     {
                         <span>@string.Join(", ", trial.StateSummary.Take(4))@(trial.StateSummary.Count > 4 ? ", and more" : "")</span>
@@ -265,23 +362,19 @@ else
                         <span>@trial.CountrySummary[0]</span>
                     }
                 </p>
-                @if (trial.HasClosed)
-                {
-                    <p>This trial is not taking new patients.</p>
-                }
-                else if (trial.PlainSummary is not null)
-                {
-                    <p>@trial.PlainSummary</p>
-                }
             </li>
         }
     </ul>
 
-    @* The same pager /research uses (WI-438). No HxTarget: this page has no
-       swappable results container, so the links navigate normally. *@
+    @* The same pager /research uses (WI-438). It now gets an HxTarget too:
+       WI-458 gave this page a swappable region, so paging updates in place
+       instead of reloading and jumping to the top. The partial was built to
+       take this and had been passing null. *@
     <partial name="_Pagination" model="Model.Pages"
-             view-data='new ViewDataDictionary(ViewData) { ["PageUrl"] = (Func<int, string>)Model.PageUrl }' />
+             view-data='new ViewDataDictionary(ViewData) { ["PageUrl"] = (Func<int, string>)Model.PageUrl, ["HxTarget"] = "#browse-panel" }' />
 }
+
+</div>
 
 <p class="provenance">
     Trial information comes from
