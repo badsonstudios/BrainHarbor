@@ -116,7 +116,12 @@ public sealed record TrialQuery(
     string? Phase = null,
     bool IncludeClosed = false,
     int Page = 0,
-    string? Country = null)
+    /// <summary>
+    /// Countries to include, ORed together (WI-457). Empty means every country.
+    /// A reader comparing options often wants two or three at once — "China and
+    /// Japan and a few others" — which a single choice cannot express.
+    /// </summary>
+    IReadOnlyList<string>? Countries = null)
 {
     public const int PageSize = 20;
 
@@ -226,19 +231,32 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             where.Add("lower(t.phase) = lower(@phase)");
         }
 
-        // Country matches ANY of the trial's sites (WI-455). A trial running in
-        // eight countries belongs under all eight — treating the first location
-        // as "the" country would hide most international trials from most
-        // readers, and would be wrong about the one it did show.
-        var country = string.IsNullOrWhiteSpace(query.Country) ? null : query.Country.Trim();
-        if (country is not null)
+        // Country matches ANY of the trial's sites, against ANY of the chosen
+        // countries (WI-455, multi-select in WI-457). Two "anys" and both are
+        // deliberate:
+        //   * a trial running in eight countries belongs under all eight —
+        //     treating the first location as "the" country would hide most
+        //     international trials and be wrong about the one it showed;
+        //   * picking China and Japan means "either", not "both". A trial has
+        //     to run somewhere the reader can reach, not everywhere.
+        var countries = query.Countries?
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Select(c => c.Trim().ToLowerInvariant())
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        if (countries is { Length: > 0 })
         {
             where.Add("""
                 EXISTS (
                     SELECT 1 FROM jsonb_array_elements(t.locations) loc
-                    WHERE lower(loc->>'country') = lower(@country)
+                    WHERE lower(loc->>'country') = ANY(@countries)
                 )
                 """);
+        }
+        else
+        {
+            countries = null;
         }
 
         var whereClause = where.Count == 0 ? "TRUE" : string.Join(" AND ", where);
@@ -248,7 +266,7 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             unknownStatuses = UnknownStatuses,
             conditionPatterns,
             phase,
-            country,
+            countries,
             limit = TrialQuery.PageSize,
             offset = query.Offset,
         };

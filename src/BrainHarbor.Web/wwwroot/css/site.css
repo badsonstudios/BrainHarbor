@@ -1577,6 +1577,97 @@ main {
   }
 }
 
+/* ---------- Cross-link between research and trials (WI-457) ----------
+   A signpost, not a call to action: it must be findable without competing with
+   the feed it sits above. Surface fill and an accent rule, in the same family
+   as .means-block and .trial-status, rather than anything louder. */
+
+.cross-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  margin-block: var(--space-4) var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-inline-start: 5px solid var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.cross-link p {
+  margin: 0;
+  max-width: 55ch;
+}
+
+/* The button keeps its own width on a phone rather than stretching edge to
+   edge — this is a signpost beside the feed, not the page's primary action. */
+.cross-link .button {
+  white-space: nowrap;
+}
+
+/* ---------- Country picker (WI-457) ----------
+   A <details> holding ~40 checkboxes. Collapsed by default so the trials stay
+   on screen; opened automatically when a filter is active, because a reader
+   arriving on a shared link should see WHY the list is short. */
+
+.country-picker {
+  flex-basis: 100%;   /* its own row in the filter bar, never squeezed beside a select */
+}
+
+.country-picker__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--tap-target);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.country-picker__toggle:hover {
+  border-color: var(--color-accent);
+}
+
+/* What is picked, readable without opening the list. */
+.country-picker__state {
+  font-weight: 400;
+  color: var(--color-ink-muted);
+}
+
+.country-picker__list {
+  /* Columns rather than one long strip: forty countries in a single column is
+     a scroll, and this is a control the reader is scanning, not reading. */
+  columns: 3;
+  column-gap: var(--space-5);
+  margin-block: var(--space-3) 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  max-inline-size: none;
+}
+
+.country-picker__item {
+  /* break-inside stops a label being split across a column boundary, which
+     puts the box in one column and its name in the next. */
+  break-inside: avoid;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* One column on a phone. Three would be about 110px each — narrower than most
+   country names, so every label would wrap. */
+@media (max-width: 48rem) {
+  .country-picker__list { columns: 2; }
+}
+
+@media (max-width: 30rem) {
+  .country-picker__list { columns: 1; }
+}
+
 .button-secondary {
   background: var(--color-paper);
   color: var(--color-accent);
