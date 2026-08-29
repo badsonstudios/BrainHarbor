@@ -127,6 +127,167 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Contains(page.Items, t => t.NctId == "NCT77770003");
     }
 
+    // ---------- WI-455: filtering by country ----------
+
+    /// <summary>Sites in the shape trials_cache.locations actually stores.</summary>
+    private static string SitesIn(params string[] countries) =>
+        "[" + string.Join(",", countries.Select(c =>
+            $$"""{"facility":"A hospital","city":"A city","state":null,"country":"{{c}}","lat":1.0,"lon":2.0}""")) + "]";
+
+    [Fact]
+    public async Task FilteringByCountryFindsTrialsWithASiteThere()
+    {
+        await InsertTrialAsync("NCT77771001", locations: SitesIn("Germany"));
+        await InsertTrialAsync("NCT77771002", locations: SitesIn("United States"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Country: "Germany"), CancellationToken.None);
+        var mine = page.Items.Where(t => t.NctId.StartsWith("NCT77771", StringComparison.Ordinal)).ToList();
+
+        Assert.Equal("NCT77771001", Assert.Single(mine).NctId);
+    }
+
+    /// <summary>
+    /// The trap this feature exists around: a trial running in eight countries
+    /// belongs under all eight. Matching only the first location would hide most
+    /// international trials from most readers.
+    /// </summary>
+    [Fact]
+    public async Task AMultiCountryTrialIsFoundUnderEveryCountryItRunsIn()
+    {
+        await InsertTrialAsync("NCT77772001",
+            locations: SitesIn("United States", "Germany", "Japan"));
+
+        foreach (var country in new[] { "United States", "Germany", "Japan" })
+        {
+            var page = await _trials.BrowseAsync(
+                new TrialQuery(Country: country), CancellationToken.None);
+
+            Assert.Contains(page.Items, t => t.NctId == "NCT77772001");
+        }
+    }
+
+    /// <summary>
+    /// The registry's own casing is not something a reader should have to
+    /// reproduce, and a filter that silently matches nothing because of a
+    /// capital letter is worse than an unfiltered list — the same reasoning the
+    /// phase filter already follows.
+    /// </summary>
+    [Fact]
+    public async Task CountryMatchingIsCaseInsensitive()
+    {
+        await InsertTrialAsync("NCT77773001", locations: SitesIn("United Kingdom"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Country: "united kingdom"), CancellationToken.None);
+
+        Assert.Contains(page.Items, t => t.NctId == "NCT77773001");
+    }
+
+    [Fact]
+    public async Task ATrialWithNoLocationsIsNotClaimedByAnyCountry()
+    {
+        await InsertTrialAsync("NCT77774001", locations: "[]");
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Country: "United States"), CancellationToken.None);
+
+        Assert.DoesNotContain(page.Items, t => t.NctId == "NCT77774001");
+    }
+
+    /// <summary>
+    /// The count beside a country in the menu has to match what picking it
+    /// shows. A trial with forty US sites is ONE trial in the United States —
+    /// counting rows instead of trials would promise forty and deliver one.
+    /// </summary>
+    [Fact]
+    public async Task TheCountryListCountsTrialsNotSites()
+    {
+        await InsertTrialAsync("NCT77775001",
+            locations: SitesIn("Iceland", "Iceland", "Iceland"));
+
+        var countries = await _trials.AvailableCountriesAsync(
+            includeClosed: false, CancellationToken.None);
+
+        Assert.Equal(1, countries.Single(c => c.Name == "Iceland").Trials);
+    }
+
+    /// <summary>
+    /// The menu is built from the cache so it can never offer a dead choice,
+    /// and it honours the same "not known to be closed" default as the list —
+    /// a country whose only trial is closed must not appear with a count of 1
+    /// and then show nothing.
+    /// </summary>
+    [Fact]
+    public async Task ClosedOnlyCountriesAreNotOfferedByDefault()
+    {
+        await InsertTrialAsync("NCT77776001", status: "Completed",
+            locations: SitesIn("Liechtenstein"));
+
+        var byDefault = await _trials.AvailableCountriesAsync(
+            includeClosed: false, CancellationToken.None);
+        Assert.DoesNotContain(byDefault, c => c.Name == "Liechtenstein");
+
+        var withClosed = await _trials.AvailableCountriesAsync(
+            includeClosed: true, CancellationToken.None);
+        Assert.Contains(withClosed, c => c.Name == "Liechtenstein");
+    }
+
+    [Fact]
+    public async Task CountryCombinesWithTheOtherFilters()
+    {
+        await InsertTrialAsync("NCT77777001", phase: "Phase 3",
+            conditions: ["Glioblastoma"], locations: SitesIn("Canada"));
+        await InsertTrialAsync("NCT77777002", phase: "Phase 1",
+            conditions: ["Glioblastoma"], locations: SitesIn("Canada"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(TumorType: "glioblastoma", Phase: "Phase 3", Country: "Canada"),
+            CancellationToken.None);
+        var mine = page.Items.Where(t => t.NctId.StartsWith("NCT77777", StringComparison.Ordinal)).ToList();
+
+        Assert.Equal("NCT77777001", Assert.Single(mine).NctId);
+    }
+
+    /// <summary>
+    /// A hand-typed or stale country must fall back to "every country" rather
+    /// than an empty list the reader cannot explain — the page model validates
+    /// against the cache, exactly as it does for phase.
+    /// </summary>
+    [Fact]
+    public async Task AnUnknownCountryInTheUrlShowsEverythingRatherThanNothing()
+    {
+        await InsertTrialAsync("NCT77778001", locations: SitesIn("United States"));
+
+        var html = await _factory.CreateClient().GetStringAsync("/trials?country=Wakanda");
+
+        Assert.Contains("NCT77778001", html);
+
+        // The select falls back to "Any country" rather than offering a phantom.
+        // Scoped to the <select>: the text-size toggle legitimately echoes the
+        // whole current URL, bogus query and all, so asserting the word is
+        // absent from the entire page tests the wrong thing.
+        var select = System.Text.RegularExpressions.Regex.Match(
+            html, @"<select id=""country"".*?</select>",
+            System.Text.RegularExpressions.RegexOptions.Singleline).Value;
+
+        Assert.DoesNotContain("Wakanda", select, StringComparison.Ordinal);
+        Assert.DoesNotContain("selected", select, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TheCountryFilterRendersAndTheChoiceSticks()
+    {
+        await InsertTrialAsync("NCT77779001", locations: SitesIn("Australia"));
+
+        var html = await _factory.CreateClient().GetStringAsync("/trials?country=Australia");
+
+        Assert.Contains("id=\"country\"", html);
+        Assert.Matches(@"<option value=""Australia""[^>]*selected", html);
+        // Non-US readers are told the ZIP box is not for them.
+        Assert.Contains("US ZIP codes only", html);
+    }
+
     [Fact]
     public async Task FilteringByAParentTumorTypeFindsItsDescendants()
     {

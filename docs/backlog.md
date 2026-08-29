@@ -1690,7 +1690,7 @@ digest (**WI-404**/**WI-405**).
   volumes against current pipeline capacity.
   Depends on: the local-model question. Blocks nothing.
 
-- [ ] **WI-455 Filter TRIALS by country** (Dan, 2026-08-26 — "sorted by country
+- [x] **WI-455 Filter TRIALS by country** (Dan, 2026-08-26 — "sorted by country
   as well, with the ability to filter by country". **Next up.**)
   Goal: a reader outside the US, or in a particular country, can see the trials
   they could actually reach.
@@ -1719,6 +1719,30 @@ digest (**WI-404**/**WI-405**).
   Refs: Database/Scripts/0007_trials_cache.sql, Trials/TrialsRepository.cs,
   Pages/Trials/Index.cshtml, Sources/CtGovFetcher.cs. Depends on: nothing.
   **A day, roughly.**
+
+  **Done 2026-08-29.** Country filter on `/trials`, built from the cache (41
+  countries with trial counts), matching ANY site. GIN index
+  (`jsonb_path_ops`) on `locations` since the filter unnests on every browse.
+  **The multi-country trap was real, not theoretical:** of the 20 trials under
+  Germany in the live cache, **17 run in more than one country** and the first
+  is a 14-country study. Matching only the first location would have hidden or
+  mislabelled most of them; cards say "Runs in N countries" instead of implying
+  one. Menu counts are trials not sites (a trial with 40 US hospitals is one),
+  and honour the closed filter so a count of 12 never leads to a list of 3.
+  Non-US readers are told the ZIP box is US-only and pointed here, with the
+  honest caveat that it gives no distances. `?country=Wakanda` falls back to
+  every country. Verified against the real 8,900-trial cache: menu count and
+  filter result agree exactly; 0.02s filtered. 830 tests, ContentCheck 50/0.
+  **Two stale comments fixed while in here, both mine.** `PageUrl` claimed it
+  deliberately strips the reader's ZIP from pager links — it does not, it is
+  built from `FilterUrl` which appends one. A false comment about a privacy
+  property is worse than none; corrected to describe reality, with the real
+  open question noted (the handler sets `no-store`/`no-referrer` because the
+  URL carries a location, but that does not stop a reader SHARING the URL —
+  worth deciding deliberately, not changed here). And `StateSummary` was
+  documented as "US states"; with non-US trials now surfacing, a card can
+  legitimately read "Gelderland, Rome" — the registry's own words, which is the
+  rule this page follows everywhere.
 
   **Country on RESEARCH items: decided against, 2026-08-26.** Dan asked for both
   and then dropped the research half once the cost was clear. Recorded so it is
