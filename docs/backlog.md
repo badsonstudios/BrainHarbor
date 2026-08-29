@@ -1690,6 +1690,39 @@ digest (**WI-404**/**WI-405**).
   volumes against current pipeline capacity.
   Depends on: the local-model question. Blocks nothing.
 
+- [x] **WI-457 Pick several countries, and point research readers at trials**
+  (done 2026-08-29 — Dan, after using WI-455: "I may want to search in China
+  and Japan and a few other countries", plus "on the research page… make it
+  clear they can go to the trials page")
+  **Multi-select.** The single dropdown could not express "China and Japan",
+  which is what a reader comparing options actually wants. Now a checkbox group:
+  `?country=China&country=Japan`, ORed — several countries mean EITHER, not
+  both, because a trial has to run somewhere the reader can reach, not
+  everywhere they ticked. The URL key did not change, so single-country links
+  shared before this still work (pinned by a test).
+  **Why `<details>` and not a widget.** The site works with JavaScript off, so a
+  JS multi-select was out; `<select multiple>` means ctrl-click on desktop and a
+  cramped scroller on a phone. A disclosure gives keyboard handling and expanded
+  state for free, and it is the pattern the mobile nav already uses. Collapsed
+  by default (44 countries would otherwise push the trials off screen), opened
+  automatically when a filter is active so a reader following a shared link sees
+  WHY the list is short. The summary states the selection without opening.
+  Ordered by trial count, so the countries worth picking are at the top rather
+  than buried under alphabetical accident. Three columns on desktop, one on a
+  phone — two would put wrapped labels beside checkboxes, and tap accuracy
+  matters more than scroll length for this audience. A "clear countries" link,
+  because unticking forty boxes by hand is not a reasonable ask.
+  **Research → trials signpost.** `/research` and `/trials` answer different
+  questions — "what has been found" versus "what could I join" — and a reader
+  who lands on the feed looking for the second had no way to know. Placed ABOVE
+  the filters, not below the feed: nobody should read twenty research cards
+  before discovering they are on the wrong page. A test pins that ordering.
+  Verified against the real cache: China+Japan returns 38 where the two alone
+  are 32 and 10, so overlapping trials are counted once rather than duplicated.
+  837 tests, ContentCheck 50/0. Screenshotted desktop and phone.
+  Refs: Trials/TrialsRepository.cs, Pages/Trials/Index.cshtml(.cs),
+  Pages/Research/Index.cshtml, wwwroot/css/site.css.
+
 - [x] **WI-455 Filter TRIALS by country** (Dan, 2026-08-26 — "sorted by country
   as well, with the ability to filter by country". **Next up.**)
   Goal: a reader outside the US, or in a particular country, can see the trials

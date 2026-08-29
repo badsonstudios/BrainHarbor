@@ -31,8 +31,13 @@ public class IndexModel(
     public string? Phase { get; private set; }
     public bool IncludeClosed { get; private set; }
 
-    /// <summary>The chosen country filter, or null for every country (WI-455).</summary>
-    public string? Country { get; private set; }
+    /// <summary>
+    /// The chosen countries, empty for every country (WI-455, multi in WI-457).
+    /// Held as a set because the view asks "is this one ticked?" once per
+    /// country, and there are around forty of them.
+    /// </summary>
+    public IReadOnlySet<string> SelectedCountries { get; private set; } =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Countries that actually have trial sites, with counts, built from the
@@ -69,7 +74,10 @@ public class IndexModel(
         string? tumorType, string? phase, bool includeClosed = false,
         [FromQuery(Name = "page")] int pageNumber = 1,
         string? zip = null, double? lat = null, double? lon = null,
-        string? country = null,
+        // Repeated in the query string — ?country=China&country=Japan. Kept as
+        // the same key a single choice used, so links shared before WI-457
+        // still work.
+        [FromQuery(Name = "country")] string[]? country = null,
         CancellationToken cancellationToken = default)
     {
         TumorType = taxonomy.Resolve(tumorType ?? "");
@@ -86,15 +94,21 @@ public class IndexModel(
         IncludeClosed = includeClosed;
 
         // Validated against the countries the cache actually holds, the same way
-        // the phase is (WI-455). A hand-typed ?country=Wakanda becomes "every
-        // country" rather than an empty list the reader cannot explain.
+        // the phase is (WI-455). A hand-typed ?country=Wakanda is dropped rather
+        // than emptying the list, and the canonical spelling from the cache is
+        // kept so the checkbox it belongs to renders ticked whatever casing the
+        // URL used.
         Countries = await trials.AvailableCountriesAsync(includeClosed, cancellationToken);
-        Country = Countries
-            .FirstOrDefault(c => string.Equals(c.Name, country?.Trim(),
-                StringComparison.OrdinalIgnoreCase))?.Name;
+        SelectedCountries = new HashSet<string>(
+            Countries
+                .Where(known => country is not null && country.Any(asked =>
+                    string.Equals(known.Name, asked?.Trim(), StringComparison.OrdinalIgnoreCase)))
+                .Select(known => known.Name),
+            StringComparer.OrdinalIgnoreCase);
 
         var query = new TrialQuery(
-            TumorType, Phase, IncludeClosed, Math.Max(0, pageNumber - 1), Country);
+            TumorType, Phase, IncludeClosed, Math.Max(0, pageNumber - 1),
+            [.. SelectedCountries]);
 
         // Browse always runs, so a failed or empty near-me search still leaves
         // the reader with something to read rather than an empty page.
@@ -173,8 +187,7 @@ public class IndexModel(
     /// <summary>Rebuilds the querystring for a filter link, keeping whatever
     /// else the reader had chosen.</summary>
     public string FilterUrl(
-        string? tumorType = null, string? phase = null, bool? includeClosed = null,
-        string? country = null)
+        string? tumorType = null, string? phase = null, bool? includeClosed = null)
     {
         var parts = new List<string>();
 
@@ -184,10 +197,32 @@ public class IndexModel(
         var chosenPhase = phase ?? Phase;
         if (!string.IsNullOrWhiteSpace(chosenPhase)) parts.Add($"phase={Uri.EscapeDataString(chosenPhase)}");
 
-        var chosenCountry = country ?? Country;
-        if (!string.IsNullOrWhiteSpace(chosenCountry)) parts.Add($"country={Uri.EscapeDataString(chosenCountry)}");
+        // One key repeated per country, which is what a checkbox group posts
+        // and what the handler binds (WI-457). Ordered so the same selection
+        // always produces the same URL — otherwise a shared link and a
+        // bookmarked one for the same filter would differ by set ordering.
+        foreach (var country in SelectedCountries.OrderBy(c => c, StringComparer.Ordinal))
+        {
+            parts.Add($"country={Uri.EscapeDataString(country)}");
+        }
 
         if (includeClosed ?? IncludeClosed) parts.Add("includeClosed=true");
+        if (Zip is not null) parts.Add($"zip={Zip}");
+
+        return parts.Count == 0 ? "/trials" : $"/trials?{string.Join("&", parts)}";
+    }
+
+    /// <summary>
+    /// The current filters with every country dropped — the "clear countries"
+    /// link (WI-457). Unticking forty boxes by hand is not a reasonable ask,
+    /// and a plain link keeps it working with JavaScript off.
+    /// </summary>
+    public string FilterUrlWithoutCountries()
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(TumorType)) parts.Add($"tumorType={Uri.EscapeDataString(TumorType)}");
+        if (!string.IsNullOrWhiteSpace(Phase)) parts.Add($"phase={Uri.EscapeDataString(Phase)}");
+        if (IncludeClosed) parts.Add("includeClosed=true");
         if (Zip is not null) parts.Add($"zip={Zip}");
 
         return parts.Count == 0 ? "/trials" : $"/trials?{string.Join("&", parts)}";
