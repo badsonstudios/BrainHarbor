@@ -1417,6 +1417,362 @@ abstracts admin-only (pinned by a test). Do not change that behaviour.
 
 ---
 
+## Phase P4 — Depth for the brain tumor reader (2026-08-26)
+
+From Dan's ask for ways to improve or expand the site, and a web survey of what
+comparable sites actually do. **The survey's headline finding, which shapes this
+whole phase: nobody else runs a daily plain-language brain tumor research feed.**
+ABTA, National Brain Tumor Society and The Brain Tumour Charity all offer
+CareLines, support groups, mentor matching, financial aid and conferences — real
+services, none of them this one. The niche is uncontested, so the strategy is to
+go DEEPER for this audience rather than broader across cancers (see the volume
+measurements under WI-454).
+
+Two other findings worth carrying:
+
+- **The approach is now validated in the literature.** A 2026 blinded randomised
+  non-inferiority trial found ChatGPT-4o wrote Cochrane plain-language summaries
+  at least as well as human researchers, with a second trial underway
+  (PMC12302524; J Clin Epi vol 191). Worth citing on `/how-we-write` — it turns
+  "AI writes these" from something to apologise for into something with evidence
+  behind it.
+- **Forum research names the gap.** "We are a club none of us wanted to join"
+  (PMC12119380) found information-seeking clusters around chemo, imaging,
+  surgery and fear, and that CAREGIVERS carry high unmet needs. Several items
+  below come straight out of that.
+
+Three ideas from the same discussion are already tracked and are NOT duplicated
+here: the retraction check (**WI-406**), the glossary (**WI-434**) and the
+digest (**WI-404**/**WI-405**).
+
+---
+
+- [ ] **WI-442 Show the reader's own words in the review queue**
+  Goal: when a reader tells us a summary is wrong, the person who can fix it
+  reads what they said.
+  **Problem (found 2026-08-26, reading the code).** The loop is three-quarters
+  built and silently broken at the last step. `/research/{slug}` shows a report
+  form with a `reason` textarea; `FeedRepository.ReportProblemAsync` stores it
+  (`INSERT INTO review_events (action='reported', actor='reader', note)`, capped
+  at 1,000 chars) and sets `summary_flagged`. The item duly appears in the admin
+  queue — **with no automated reason and no sign of what the reader actually
+  wrote.** The only "note" field on `_ReviewRow` is the REVIEWER's correction
+  note, an empty input.
+  So a reader who spots that a summary says a drug worked when the study says it
+  did not gets their message stored in a table nobody reads, and the reviewer
+  sees an item flagged for no stated reason.
+  This matters more here than it would anywhere else: publishing is Auto, no
+  person reads each summary before it goes up, and the reader may be the only
+  human who has compared the summary against the source.
+  Acceptance: the queue shows every reader report on an item — the note text,
+  when it was sent, newest first — and a COUNT of reports (Dan's call
+  2026-08-16: count reports, not people; no identity is stored and none should
+  start being). Reports are visibly distinct from automated flags. An item with
+  a report but no failing check must not read as "nothing wrong here", which is
+  what it currently reads as. Notes are rendered as text, never as markup.
+  A test proves a reported item surfaces its note to a signed-in reviewer.
+  Refs: Pages/Research/Item.cshtml(.cs) (`OnPostReportAsync`),
+  Feed/FeedRepository.cs (`ReportProblemAsync`), Admin/ReviewRepository.cs,
+  Pages/Shared/_ReviewRow.cshtml, Database/Scripts/0006_reader_reports.sql.
+  Depends on: nothing. **Hours, not days.**
+
+- [ ] **WI-443 Rehearse a production database restore**
+  Goal: know the backups work before needing them to.
+  **Problem.** This is one line inside WI-407's checklist and it is the most
+  dangerous item in the whole backlog. The production database holds every
+  published summary, the append-only review audit trail, the trials cache and
+  now the page-view counts. **A restore has never been performed.** Untested
+  backups are not backups; they are an assumption.
+  Also worth confirming while in there: the database is a role on Moodathon's
+  shared PG17 server (WI-401), so the blast radius of a mistake reaches another
+  project.
+  Acceptance: confirm what Azure is actually retaining and for how long (PITR
+  window, backup frequency); restore prod to a scratch database and verify row
+  counts on `aggregated_items`, `review_events` and `page_views`; write the
+  steps down in `docs/run-local.md` or an ops note so it can be done under
+  stress by someone who is not calm; record how long it took, because "how long
+  until we are back" is the question that will actually be asked.
+  Refs: WI-401, WI-407. Depends on: nothing. **Do this before WI-408.**
+
+- [ ] **WI-444 "What your pathology report says"**
+  Goal: translate the words on the report a patient is holding.
+  **Why this one first among the content ideas.** IDH mutation, MGMT promoter
+  methylation, 1p/19q co-deletion and WHO grade are not trivia — they are the
+  markers that DRIVE treatment decisions under WHO CNS5, and a newly diagnosed
+  person is handed them with no translation whatsoever. Johns Hopkins has an
+  "Understanding My Report" page; almost nobody else does, and none of it is
+  reading-level gated. It is also the single most-searched thing this audience
+  types after a diagnosis.
+  Acceptance: a curated page (or short set) explaining, in plain words at the
+  6.0 gate: WHO grade 1-4 and what "grade" means; IDH-mutant vs IDH-wildtype;
+  MGMT methylated vs unmethylated; 1p/19q co-deletion; Ki-67 / proliferation
+  index; and "molecular" vs "under the microscope" diagnosis. Each term joins
+  the glossary so the tooltips fire across the whole site. Deep-linkable
+  (`/pathology#mgmt`) so `/tumors` and feed items can point at the exact term.
+  **The hard constraint, and the reason this needs care rather than speed:**
+  explain what the WORDS mean, never what the reader's own result means. No
+  survival figures, no prognosis, no "this is the good one". The line to hold is
+  the same one `/tumors` holds — describe, do not interpret — and it is under
+  more pressure here, because these markers genuinely do carry prognostic
+  weight and the temptation to say so will be strong. Every page ends with
+  questions to ask the care team.
+  WHO CNS5 naming throughout (WI-201's lesson: grade 4 glioma ≠ glioblastoma).
+  Refs: Content/pages/, Content/glossary/, GlossaryMarker, WI-412, WI-434.
+  Depends on: nothing (WI-434 makes it better, not possible).
+
+- [ ] **WI-445 Filter research by molecular marker, not only tumor type**
+  Goal: let a reader find research about the disease they actually have.
+  Problem: the feed filters by tumor type, but modern neuro-oncology is
+  organised by molecular status — "IDH-mutant astrocytoma" is a different
+  disease from "IDH-wildtype", with different research, and our taxonomy already
+  respects WHO CNS5. A reader whose report says IDH-mutant currently cannot ask
+  the feed for that.
+  Acceptance: the classifier extracts marker mentions (IDH, MGMT, 1p/19q, EGFR,
+  H3 K27M, BRAF) from title+abstract into a closed vocabulary, exactly as it
+  already does for tumor tags — closed list, never invented, absent when not
+  stated. A marker filter on `/research` alongside tumor type. Markers shown on
+  the item page link to WI-444's explanation of them.
+  **Do not infer.** A marker is recorded only when the source names it; guessing
+  IDH status from a tumor type would be inventing a fact about someone's
+  disease, which is the exact failure the numeral post-check exists to prevent.
+  Refs: Prompts/classify.md, Content/taxonomy.yml, Feed/FeedRepository.cs,
+  Pages/Research/Index.cshtml. Depends on: WI-444 (for the links to land
+  somewhere), WI-416 ideally.
+
+- [ ] **WI-446 A caregiver path**
+  Goal: speak to the other person in the room.
+  Problem: every page on the site addresses the patient. Forum research
+  (PMC12119380) found caregivers of people with high-grade glioma carry high
+  unmet support needs, and they are often the ones doing the reading — the
+  person with the tumor may have trouble concentrating, which is the premise
+  the whole site is built on.
+  Acceptance: a `/caregivers` path covering what to expect, going to
+  appointments and what to write down, seizures and what to do, personality and
+  cognitive change (the thing carers say blindsides them), practical help, and
+  looking after yourself — including permission to. Links to CancerCare's free
+  caregiver social workers and the ABTA CareLine. Curated pages at the 6.0 gate;
+  no pipeline work. Reachable from the nav or the home page doors, not buried.
+  Refs: Content/pages/, docs/sitemap.md. Depends on: nothing.
+
+- [ ] **WI-447 "What else has been found on this"**
+  Goal: stop a single study reading like a verdict.
+  Problem: every item stands alone. One mouse study, presented by itself in
+  confident plain language, reads as news — which is the exact false-hope
+  failure the anti-hype rules, the stage badges and the journey path all exist
+  to prevent. The one thing that reliably deflates a lone finding is the six
+  that came before it.
+  Acceptance: each item page shows a few related items — same tumor tag, and
+  ideally same marker once WI-445 lands — with their journey stage visible, so
+  a reader sees where this one sits. Ordered to be useful rather than flattering
+  (a human trial on the same topic outranks another mouse study). Says plainly
+  when there is nothing related rather than padding with loosely-matched items.
+  Costs no pipeline work: the tags, stages and dates are already stored.
+  Refs: Feed/FeedRepository.cs, Pages/Research/Item.cshtml, WI-437.
+  Depends on: nothing.
+
+- [ ] **WI-448 The appointment print-out**
+  Goal: build the thing people are already printing.
+  Problem: `print.css` says twice, in its own comments, that patients print
+  these pages for appointments — WI-437 and WI-438 both went out of their way to
+  keep the journey path and the pager legible on paper. The site has been
+  designed *for* printing without anything being designed *as* a print-out.
+  Acceptance: a per-item view (or print stylesheet variant) carrying the plain
+  title, what it means and what it does not, the stage in words, the full source
+  citation with its URL written out, the date, and blank ruled space for the
+  reader's own questions. No site chrome, no navigation, no dead controls.
+  One page where it fits on one page.
+  Refs: wwwroot/css/print.css, Pages/Research/Item.cshtml. Depends on: nothing.
+  **Small.**
+
+- [ ] **WI-449 Plain-English trial eligibility**
+  Goal: tell someone whether a trial is even worth asking about.
+  Problem: `/trials` lists trials and links out; the eligibility criteria that
+  decide whether a person can join are left in registry language, which is
+  where most readers stop. Leal Health and Massive Bio do AI trial MATCHING —
+  a regulated, clinical, well-funded space we should stay out of — but nobody
+  translates the fine print, and we already fetch it.
+  Acceptance: for each cached trial, a plain-language rendering of the key
+  eligibility facts a reader can self-check: age range, whether it is for newly
+  diagnosed or recurrent disease, prior-treatment requirements, and required
+  molecular status. Same guardrails as summaries (sources-only, no invented
+  numerals, banned phrases, reading gate).
+  **Framing is the whole risk here.** This must never read as "you qualify" —
+  it is "here is what the trial says it is looking for, ask your team". The
+  existing "talk to your care team before you contact a trial" panel stays and
+  gets stronger. A trial that has closed must not get a friendly eligibility
+  summary (WI-402's lesson).
+  Refs: Sources/CtGovFetcher.cs, Trials/, Prompts/. Depends on: nothing.
+
+- [ ] **WI-450 Finish `/start` as a real first-week path**
+  Goal: the page for the worst day should not describe itself as a draft.
+  Problem: `/start` says, in its own copy, "This is the first, short draft of
+  this page. A fuller step-by-step guide is coming." It is the primary door on
+  the home page and the destination for anyone searching "just diagnosed brain
+  tumor".
+  Acceptance: a sequenced path rather than one page — the first 48 hours, the
+  first week, the first month; what happens at each step (scans, surgery or
+  biopsy, pathology, the treatment plan conversation); what to bring, what to
+  ask, who to call. Links into WI-444 at the pathology step and WI-446 for the
+  person who came with them. The emergency block stays exactly where it is, at
+  the top, unchanged. The "this is a draft" line goes only when it is no longer
+  true.
+  Refs: Content/pages/start.md, WI-436. Depends on: WI-444, WI-446 ideally.
+
+- [ ] **WI-451 Survivorship and late effects**
+  Goal: the site currently stops at treatment.
+  Problem: nothing covers life after it — fatigue, seizures and what they mean
+  for driving, memory and concentration, returning to work, scan anxiety,
+  follow-up schedules. For low-grade glioma and meningioma especially, that
+  period is measured in years and is where most of a reader's life with this
+  actually happens.
+  Acceptance: curated pages at the 6.0 gate covering the above, with the
+  driving/seizure page especially careful — rules are jurisdictional, so it must
+  say "your rules depend on where you live, here is who to ask" rather than
+  stating any. Practical, not cheerful.
+  Refs: Content/pages/, docs/sitemap.md (P2d). Depends on: nothing.
+
+- [ ] **WI-452 Spanish**
+  Goal: the largest expansion available in WHO the site helps.
+  Roughly one in five people in the US speaks Spanish at home, NCI publishes in
+  Spanish so the sources exist, and the pipeline already writes to a reading
+  target — a second language is a prompt plus a second grader, not a rewrite.
+  **The catch, and it is a real one:** Flesch-Kincaid is English-only. A Spanish
+  reading gate needs INFLESZ or Fernández-Huerta, which means the "≤6th grade"
+  promise has to be re-expressed rather than translated. And a golden set in
+  Spanish needs a Spanish speaker; shipping unreviewed medical Spanish to
+  frightened readers on the strength of an automated score would be worse than
+  shipping nothing.
+  Acceptance: decide scope first (curated pages only, or summaries too — the
+  latter doubles pipeline cost per item); `lang` handling and hreflang;
+  Spanish-appropriate readability gate wired into ContentCheck; a Spanish golden
+  set; a way to switch that survives with JavaScript off.
+  Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs, WI-414, WI-416.
+  Depends on: WI-416 (one grader, not two — do not fork a third).
+  **Weeks. A project, not an evening.**
+
+- [ ] **WI-454 `[user]` PARKED: a sister site for cancer generally**
+  Dan asked (2026-08-26) whether the platform could serve all cancers, then
+  said to hold off. Parked here so the research is not lost and does not have to
+  be redone.
+  **The data is not the obstacle — you already have all of it.** Every source is
+  a general cancer source narrowed by a query string: PubMed E-utilities (MeSH
+  query), ClinicalTrials.gov v2 (condition query), medRxiv/bioRxiv (subject
+  filter), ScienceDaily (a `cancer.xml` feed exists alongside `brain_tumor.xml`,
+  60 items when checked), and the NCI news feed **which is already all-cancer
+  and unfiltered**. Roughly four string constants.
+  **Volume is the obstacle.** Measured 2026-08-26, PubMed, 30 days:
+  | Scope | Records | Per day |
+  |---|---|---|
+  | Brain tumor (today) | 470 | ~16 |
+  | All cancer (`Neoplasms`[MeSH]) | **8,331** | **~278** |
+  | Breast alone | 850 | ~28 |
+  | Lung alone | 665 | ~22 |
+  Recruiting trials: 900 brain vs **19,129** all-cancer. That is ~18× through a
+  Claude Code CLI on Dan's PC, and it makes the local-model question
+  (see the 2026-08-21 discussion) load-bearing rather than optional. Breast
+  cancer ALONE is nearly twice BrainHarbor's entire current scope.
+  Two more costs: `taxonomy.yml` would grow from 24 types to hundreds, and it is
+  rendered into the classifier prompt on every call, so it is a per-item token
+  cost. And the editorial surface — staging systems, screening guidance, drug
+  classes across dozens of diseases — is judgment that does not scale the way
+  the automated guardrails do.
+  **The strategic argument against, recorded because it is the real reason:**
+  plain-language all-cancer information is crowded and well funded (NCI, ACS,
+  Cancer Research UK, Macmillan, all with medical staff). BrainHarbor's edge is
+  that nobody was doing daily plain-language brain tumor research. A general
+  site would compete head-on with cancer.gov — which is one of the sources it
+  would be summarising.
+  **If this is ever revisited, the better shape is a second UNDERSERVED specific
+  cancer** (pancreatic, sarcoma, cholangiocarcinoma, rare/orphan) where the same
+  gap exists and volume stays in the tens per day. Same code, new query strings,
+  new taxonomy.
+  Acceptance: a decision, not a build. If yes, first step is measuring candidate
+  volumes against current pipeline capacity.
+  Depends on: the local-model question. Blocks nothing.
+
+- [x] **WI-455 Filter TRIALS by country** (Dan, 2026-08-26 — "sorted by country
+  as well, with the ability to filter by country". **Next up.**)
+  Goal: a reader outside the US, or in a particular country, can see the trials
+  they could actually reach.
+  **The data is already here.** `trials_cache.locations` is jsonb holding one
+  entry per site with `{facility, city, state, country, lat, lon}` — verified
+  against real cached rows. Nothing new needs fetching; CtGov already returns it
+  and the near-me search already reads it.
+  Acceptance: a country filter on `/trials` beside tumor type and phase, listing
+  only countries that actually appear in the cache (never a hard-coded world
+  list — an empty filter option is a dead end a reader has to discover by
+  clicking); the count of trials per country visible so the control is
+  informative before it is used; combines with the existing filters and with
+  paging (WI-438), and rides the URL so a filtered view can be shared; works
+  with JavaScript off.
+  Sorting: group by country, then the existing order within a group.
+  **Two things to get right, both about not misleading someone:**
+  - A trial with sites in eight countries is not "a US trial". Filtering must
+    match ANY of its locations, and the card should say how many countries it
+    runs in rather than implying one.
+  - This must not quietly become "trials near you" for people outside the US.
+    The ZIP box is US-only (ZCTA centroids); a reader in Germany filtering to
+    Germany still gets no distance, and the page should not pretend otherwise.
+  Query shape: `locations @> '[{"country": "..."}]'` with a GIN index on
+  `locations`, or a normalized country array column populated on sync if the
+  jsonb containment query proves slow at 8,900+ rows.
+  Refs: Database/Scripts/0007_trials_cache.sql, Trials/TrialsRepository.cs,
+  Pages/Trials/Index.cshtml, Sources/CtGovFetcher.cs. Depends on: nothing.
+  **A day, roughly.**
+
+  **Done 2026-08-29.** Country filter on `/trials`, built from the cache (41
+  countries with trial counts), matching ANY site. GIN index
+  (`jsonb_path_ops`) on `locations` since the filter unnests on every browse.
+  **The multi-country trap was real, not theoretical:** of the 20 trials under
+  Germany in the live cache, **17 run in more than one country** and the first
+  is a 14-country study. Matching only the first location would have hidden or
+  mislabelled most of them; cards say "Runs in N countries" instead of implying
+  one. Menu counts are trials not sites (a trial with 40 US hospitals is one),
+  and honour the closed filter so a count of 12 never leads to a list of 3.
+  Non-US readers are told the ZIP box is US-only and pointed here, with the
+  honest caveat that it gives no distances. `?country=Wakanda` falls back to
+  every country. Verified against the real 8,900-trial cache: menu count and
+  filter result agree exactly; 0.02s filtered. 830 tests, ContentCheck 50/0.
+  **Two stale comments fixed while in here, both mine.** `PageUrl` claimed it
+  deliberately strips the reader's ZIP from pager links — it does not, it is
+  built from `FilterUrl` which appends one. A false comment about a privacy
+  property is worse than none; corrected to describe reality, with the real
+  open question noted (the handler sets `no-store`/`no-referrer` because the
+  URL carries a location, but that does not stop a reader SHARING the URL —
+  worth deciding deliberately, not changed here). And `StateSummary` was
+  documented as "US states"; with non-US trials now surfacing, a card can
+  legitimately read "Gelderland, Rome" — the registry's own words, which is the
+  rule this page follows everywhere.
+
+  **Country on RESEARCH items: decided against, 2026-08-26.** Dan asked for both
+  and then dropped the research half once the cost was clear. Recorded so it is
+  not re-proposed: nothing in the pipeline knows where a paper came from —
+  `FetchedItem` carries no affiliation at any layer — so it would need PubMed's
+  `AffiliationInfo` parsed out of the EFetch XML, a country inferred from free
+  text ("…Boston, MA 02114, USA" vs "…Beijing, China" vs nothing at all, often
+  first author only), a new column, a filter and a backfill of 1,000+ published
+  items. And the payoff is weak: for a trial, country answers "can I get to it";
+  for a paper it is where the authors work, which tells a reader little about
+  whether the finding applies to them. Asking the classifier to guess it from
+  the abstract is not an option — that is the invented-fact failure the numeral
+  post-check exists to prevent.
+
+- [ ] **WI-453 `[user]` Pediatric brain tumors: section, or sister site?**
+  Goal: decide before building either.
+  The audience is not the patient — it is a parent. Different tumors
+  (medulloblastoma, DIPG, ATRT, ependymoma), different vocabulary, different
+  fears, and a voice this site does not currently have. The taxonomy already
+  carries the types and the pipeline needs nothing, so the question is
+  editorial, not technical: a `/children` section speaking to parents inside a
+  site written for patients, or a separate site on the same platform.
+  My read: separate. The voice difference is the whole thing, and one site
+  trying to speak to both will speak well to neither. But it is Dan's call and
+  it is not urgent.
+  Acceptance: a decision, written down here, with the reason.
+  Depends on: nothing. Blocks nothing.
+
+---
+
 ## Phase P2a — Benefits & Disability (static hub) — not yet itemized
 ## Phase P2b — Newly Diagnosed pathway — not yet itemized
 ## Phase P2c — Tumor types + glossary expansion — not yet itemized

@@ -30,6 +30,17 @@
     @Model.RadiusMiles miles. We use your ZIP only to run that search. We do
     not store it.
 </p>
+@* WI-455. The country filter makes the site usable outside the US for the
+   first time, which makes this limit worth stating rather than leaving a
+   reader to work out why the box does nothing for them. ZIP codes are US-only
+   here (ZCTA centroids), so "near you" is a US feature and the country filter
+   below is what everyone else has. Saying so is kinder than a box that
+   silently fails. *@
+<p class="text-muted">
+    This box works for US ZIP codes only. Outside the US, use the country
+    filter below to see trials in your country. It will not tell you how far
+    away they are.
+</p>
 
 <form method="get" action="/trials" class="trial-near" id="near-form">
     @if (Model.TumorType is not null)
@@ -43,6 +54,10 @@
     @if (Model.IncludeClosed)
     {
         <input type="hidden" name="includeClosed" value="true" />
+    }
+    @if (Model.Country is not null)
+    {
+        <input type="hidden" name="country" value="@Model.Country" />
     }
     <label for="zip">ZIP code</label>
     <input type="text" id="zip" name="zip" value="@Model.Zip" inputmode="numeric"
@@ -139,6 +154,20 @@ else if (Model.Nearby is { } nearby)
         }
     </select>
 
+    @* WI-455. Only countries that actually have sites, with their trial counts,
+       so the reader can see what a choice is worth before making it. The count
+       is trials, not sites — a trial with forty US hospitals is one trial. *@
+    <label for="country">Country</label>
+    <select id="country" name="country">
+        <option value="">Any country</option>
+        @foreach (var country in Model.Countries)
+        {
+            <option value="@country.Name" selected="@(Model.Country == country.Name)">
+                @country.Name (@country.Trials)
+            </option>
+        }
+    </select>
+
     <button type="submit">Show trials</button>
 
     @* Same shape as /research: the long toggle sits under the controls. *@
@@ -178,6 +207,20 @@ else
                     @if (trial.StateSummary.Count > 0)
                     {
                         <span>@string.Join(", ", trial.StateSummary.Take(4))@(trial.StateSummary.Count > 4 ? ", and more" : "")</span>
+                    }
+                    @* WI-455: say how many countries it runs in rather than
+                       naming the filtered one. A trial found by filtering to
+                       Germany may also run in six other places, and showing
+                       only "Germany" would tell a reader something untrue about
+                       the study. Said only when there is more than one, because
+                       "runs in 1 country" is noise. *@
+                    @if (trial.CountrySummary.Count > 1)
+                    {
+                        <span>Runs in @trial.CountrySummary.Count countries</span>
+                    }
+                    else if (trial.CountrySummary.Count == 1 && trial.StateSummary.Count == 0)
+                    {
+                        <span>@trial.CountrySummary[0]</span>
                     }
                 </p>
                 @if (trial.HasClosed)

@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. (2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. (2026-08-29: **WI-455 done** — trials filterable by 41 countries; the research half was dropped once the cost was clear.) (2026-08-26: **Phase P4 filed** — WI-442…WI-454, depth for the brain tumor reader. My own ranking after WI-455: **WI-442** reader-report notes (hours), **WI-443** restore rehearsal, **WI-444** pathology-report explainer. 2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -111,6 +111,81 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   them automatically — before spending on Standard tier. The previous release
   had no window at all, so one sample of two minutes is not a trend, and buying
   a tier on it would be guessing with money.
+
+- **2026-08-29** — **WI-455 done — filter trials by country.** 41 countries with
+  trial counts, built from the cache so the menu can never offer a dead choice.
+  Matches ANY of a trial's sites.
+  **The multi-country trap was real, not theoretical.** Of the 20 trials under
+  Germany in the live cache, **17 run in more than one country** — the first is
+  a 14-country study. Matching only the first location would have hidden or
+  mislabelled most of them. Cards say "Runs in N countries" rather than
+  implying the filtered one.
+  Counts are trials not sites (40 US hospitals is one US trial) and honour the
+  closed filter, so a count of 12 never leads to a list of 3. Non-US readers are
+  now told the ZIP box is US-only and pointed at the country filter, with the
+  honest caveat that it gives no distances — the first time this site has been
+  usable outside the US. GIN index (`jsonb_path_ops`) on `locations`, migration
+  0009. Verified against the real 8,900-trial cache, not just seeds: menu count
+  and filter result agree exactly, 0.02s filtered. 830 tests, ContentCheck 50/0.
+  **A bug in a comment I wrote, worth recording because it was about privacy.**
+  `PageUrl` claimed it deliberately strips the reader's ZIP from pager links. It
+  does not — it is built from `FilterUrl`, which appends one. Corrected to
+  describe reality, and the real question named: the handler sets
+  `no-store`/`no-referrer` because the URL carries a location, but nothing stops
+  a reader SHARING that URL. Not changed, just no longer misdescribed.
+
+- **2026-08-26** — **WI-455 filed: filter trials by country. This is next.**
+  Dan asked for country filtering on research AND trials. Checked the data
+  first, and the two halves are not the same job:
+  - **Trials: already there.** `trials_cache.locations` is jsonb with
+    `{facility, city, state, country, lat, lon}` per site — verified against
+    real rows. Nothing new to fetch; a filter, a control and an index.
+  - **Research: no location data anywhere.** `FetchedItem` carries no
+    affiliation at any layer, so it would mean parsing PubMed's
+    `AffiliationInfo`, inferring a country from free text, a new column and a
+    backfill of 1,000+ items — for a weak payoff, since a paper's country is
+    where the authors work, not whether the finding applies to the reader.
+  **Dan's call once he saw the cost: trials only.** The research half is
+  recorded as decided-against under WI-455 rather than left as an open ticket,
+  so it does not get re-proposed.
+  Two traps written into the ticket: a trial with sites in eight countries is
+  not "a US trial" (match ANY location, and say how many countries it runs in),
+  and this must not become "trials near you" for non-US readers — the ZIP box is
+  US-only ZCTA centroids, so a reader in Germany filtering to Germany still gets
+  no distance and the page must not imply otherwise.
+
+- **2026-08-26** — **Phase P4 filed: 13 new tickets (WI-442…WI-454)** from Dan's
+  ask for ways to improve or expand the site, after a web survey of comparable
+  sites.
+  **The finding that shaped the whole phase: nobody else runs a daily
+  plain-language brain tumor research feed.** ABTA, National Brain Tumor Society
+  and The Brain Tumour Charity all offer CareLines, support groups, mentor
+  matching, financial aid and conferences — real services, none of them this
+  one. So the strategy recorded is DEEPER for this audience, not broader across
+  cancers.
+  Also worth carrying: a 2026 blinded randomised trial found ChatGPT-4o wrote
+  Cochrane plain-language summaries at least as well as human researchers
+  (PMC12302524) — citable on `/how-we-write`, and it turns "AI writes these"
+  from an apology into a claim with evidence behind it. And forum research
+  (PMC12119380) documents that CAREGIVERS carry high unmet needs, which is where
+  WI-446 comes from.
+  **Found while surveying, not asked for: the reader-report loop is broken at
+  the last step (WI-442).** A reader types why a summary is wrong,
+  `ReportProblemAsync` stores it in `review_events.note`, the item is flagged —
+  and the queue never displays the note. On an Auto-publish medical site the
+  reader may be the only human who compared the summary against the source, and
+  their message goes into a table nobody reads. Hours to fix; my pick for next.
+  **WI-443 splits the database-restore rehearsal out of WI-407's checklist**
+  because it is the most dangerous line in the backlog: 1,000+ published
+  summaries, the audit trail and the view counts, on a shared PG17 server, and a
+  restore has never once been performed.
+  WI-454 parks the general-cancer sister site WITH its measurements, so the
+  research is not redone: all sources already cover every cancer (~4 query
+  strings), but volume is 8,331 PubMed records/month vs 470 — ~18× — and the
+  space is crowded by NCI, ACS and Cancer Research UK. Better shape if revisited
+  is another underserved SPECIFIC cancer.
+  Not duplicated as new tickets, since already tracked: **WI-406** (retraction
+  check), **WI-434** (glossary), **WI-404/405** (digest).
 
 - **2026-08-23** — **WI-441 — page-open counts, admin-only.** Dan asked whether
   visitors were being tracked. They were not: no analytics package, no App

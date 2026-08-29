@@ -19,6 +19,9 @@ public sealed record TrialSite(
         new[] { City, State ?? Country }.Where(p => !string.IsNullOrWhiteSpace(p)));
 }
 
+/// <summary>A country with trial sites, and how many trials it holds.</summary>
+public sealed record TrialCountry(string Name, int Trials);
+
 /// <summary>One trial as the browse list and the trial page render it.</summary>
 public sealed class TrialRow
 {
@@ -63,10 +66,29 @@ public sealed class TrialRow
 
     public IReadOnlyList<TrialSite> Sites => _sites ??= ParseSites(LocationsJson);
 
-    /// <summary>US states with a site, deduplicated — the cheap "is this near
-    /// me at all?" signal on a browse card.</summary>
+    /// <summary>
+    /// Regions with a site, deduplicated — the cheap "is this near me at all?"
+    /// signal on a browse card.
+    ///
+    /// Written for US states, and it still is that for US trials. But the
+    /// country filter (WI-455) surfaces trials the browse list rarely showed
+    /// before, and the registry puts whatever a country calls its subdivision
+    /// in this field — so a card can now legitimately read "Gelderland, Rome".
+    /// That is the registry's own words, which is the rule this page follows
+    /// everywhere else; it is not a bug to normalize away.
+    /// </summary>
     public IReadOnlyList<string> StateSummary =>
         [.. Sites.Select(s => s.State).Where(s => !string.IsNullOrWhiteSpace(s))
+            .Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase)!];
+
+    /// <summary>
+    /// Countries with a site, deduplicated (WI-455). The card uses the COUNT of
+    /// these rather than naming one: a trial filtered to Germany may also run in
+    /// six other countries, and showing only the filtered one would tell a
+    /// reader something untrue about the study they are looking at.
+    /// </summary>
+    public IReadOnlyList<string> CountrySummary =>
+        [.. Sites.Select(s => s.Country).Where(c => !string.IsNullOrWhiteSpace(c))
             .Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase)!];
 
     private static IReadOnlyList<TrialSite> ParseSites(string? json)
@@ -93,7 +115,8 @@ public sealed record TrialQuery(
     string? TumorType = null,
     string? Phase = null,
     bool IncludeClosed = false,
-    int Page = 0)
+    int Page = 0,
+    string? Country = null)
 {
     public const int PageSize = 20;
 
@@ -203,6 +226,21 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             where.Add("lower(t.phase) = lower(@phase)");
         }
 
+        // Country matches ANY of the trial's sites (WI-455). A trial running in
+        // eight countries belongs under all eight — treating the first location
+        // as "the" country would hide most international trials from most
+        // readers, and would be wrong about the one it did show.
+        var country = string.IsNullOrWhiteSpace(query.Country) ? null : query.Country.Trim();
+        if (country is not null)
+        {
+            where.Add("""
+                EXISTS (
+                    SELECT 1 FROM jsonb_array_elements(t.locations) loc
+                    WHERE lower(loc->>'country') = lower(@country)
+                )
+                """);
+        }
+
         var whereClause = where.Count == 0 ? "TRUE" : string.Join(" AND ", where);
         var parameters = new
         {
@@ -210,6 +248,7 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             unknownStatuses = UnknownStatuses,
             conditionPatterns,
             phase,
+            country,
             limit = TrialQuery.PageSize,
             offset = query.Offset,
         };
@@ -275,6 +314,46 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             cancellationToken: cancellationToken));
 
         return [.. phases];
+    }
+
+    /// <summary>
+    /// Countries with at least one trial site, and how many trials each has
+    /// (WI-455). Read from the data for the same reason the phases are: a menu
+    /// built from a hard-coded world list would offer choices that match
+    /// nothing, and a reader only discovers a dead option by picking it and
+    /// getting an empty page.
+    ///
+    /// Counted with DISTINCT nct_id, not by row: a trial with forty US sites is
+    /// one trial in the United States, not forty.
+    ///
+    /// Honours the same "not known to be closed" default as the browse list, so
+    /// the count beside a country matches what picking it will show. A count
+    /// that says 12 and then lists 3 is worse than no count.
+    /// </summary>
+    public async Task<IReadOnlyList<TrialCountry>> AvailableCountriesAsync(
+        bool includeClosed, CancellationToken cancellationToken)
+    {
+        await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
+        var countries = await connection.QueryAsync<TrialCountry>(new CommandDefinition(
+            """
+            -- Cast: count() is bigint, and Dapper matches a record's
+            -- constructor by exact type — an int property against a bigint
+            -- column fails materialization rather than converting.
+            SELECT loc->>'country' AS "Name", count(DISTINCT t.nct_id)::int AS "Trials"
+            FROM trials_cache t, jsonb_array_elements(t.locations) loc
+            WHERE loc->>'country' IS NOT NULL
+              AND loc->>'country' <> ''
+              AND (@includeClosed
+                   OR t.overall_status IS NULL
+                   OR t.overall_status = ANY(@openStatuses)
+                   OR t.overall_status = ANY(@unknownStatuses))
+            GROUP BY loc->>'country'
+            ORDER BY count(DISTINCT t.nct_id) DESC, loc->>'country'
+            """,
+            new { includeClosed, openStatuses = OpenStatuses, unknownStatuses = UnknownStatuses },
+            cancellationToken: cancellationToken));
+
+        return [.. countries];
     }
 
     /// <summary>
