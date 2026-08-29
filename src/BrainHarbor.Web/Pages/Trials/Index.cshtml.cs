@@ -31,6 +31,16 @@ public class IndexModel(
     public string? Phase { get; private set; }
     public bool IncludeClosed { get; private set; }
 
+    /// <summary>The chosen country filter, or null for every country (WI-455).</summary>
+    public string? Country { get; private set; }
+
+    /// <summary>
+    /// Countries that actually have trial sites, with counts, built from the
+    /// cache rather than a fixed world list — so the menu can never offer a
+    /// choice that returns nothing.
+    /// </summary>
+    public IReadOnlyList<TrialCountry> Countries { get; private set; } = [];
+
     // Near-me state
     public string? Zip { get; private set; }
     public NearbyResult? Nearby { get; private set; }
@@ -59,6 +69,7 @@ public class IndexModel(
         string? tumorType, string? phase, bool includeClosed = false,
         [FromQuery(Name = "page")] int pageNumber = 1,
         string? zip = null, double? lat = null, double? lon = null,
+        string? country = null,
         CancellationToken cancellationToken = default)
     {
         TumorType = taxonomy.Resolve(tumorType ?? "");
@@ -74,7 +85,16 @@ public class IndexModel(
         Phase = TrialsRepository.NormalizePhase(phase, Phases);
         IncludeClosed = includeClosed;
 
-        var query = new TrialQuery(TumorType, Phase, IncludeClosed, Math.Max(0, pageNumber - 1));
+        // Validated against the countries the cache actually holds, the same way
+        // the phase is (WI-455). A hand-typed ?country=Wakanda becomes "every
+        // country" rather than an empty list the reader cannot explain.
+        Countries = await trials.AvailableCountriesAsync(includeClosed, cancellationToken);
+        Country = Countries
+            .FirstOrDefault(c => string.Equals(c.Name, country?.Trim(),
+                StringComparison.OrdinalIgnoreCase))?.Name;
+
+        var query = new TrialQuery(
+            TumorType, Phase, IncludeClosed, Math.Max(0, pageNumber - 1), Country);
 
         // Browse always runs, so a failed or empty near-me search still leaves
         // the reader with something to read rather than an empty page.
@@ -152,7 +172,9 @@ public class IndexModel(
 
     /// <summary>Rebuilds the querystring for a filter link, keeping whatever
     /// else the reader had chosen.</summary>
-    public string FilterUrl(string? tumorType = null, string? phase = null, bool? includeClosed = null)
+    public string FilterUrl(
+        string? tumorType = null, string? phase = null, bool? includeClosed = null,
+        string? country = null)
     {
         var parts = new List<string>();
 
@@ -161,6 +183,9 @@ public class IndexModel(
 
         var chosenPhase = phase ?? Phase;
         if (!string.IsNullOrWhiteSpace(chosenPhase)) parts.Add($"phase={Uri.EscapeDataString(chosenPhase)}");
+
+        var chosenCountry = country ?? Country;
+        if (!string.IsNullOrWhiteSpace(chosenCountry)) parts.Add($"country={Uri.EscapeDataString(chosenCountry)}");
 
         if (includeClosed ?? IncludeClosed) parts.Add("includeClosed=true");
         if (Zip is not null) parts.Add($"zip={Zip}");
@@ -172,10 +197,16 @@ public class IndexModel(
     /// The URL for a 1-based page, keeping the current filters. Page 1 is left
     /// bare so the canonical /trials URL has no redundant ?page=1 on it.
     ///
-    /// Deliberately NOT carrying a ZIP or coordinates: those responses are
-    /// marked private/no-store and the near-me results are rendered separately,
-    /// so a pager link that dragged a reader's location into a shareable URL
-    /// would leak it for no benefit.
+    /// **This DOES carry the ZIP**, because it is built from
+    /// <see cref="FilterUrl"/>, which appends one when the reader has searched
+    /// near them. An earlier version of this comment (WI-438) claimed the
+    /// opposite; it was wrong, and a false comment about a privacy property is
+    /// worse than none. The ZIP has to ride along or paging the browse list
+    /// throws away the near-me panel above it — and the handler already marks
+    /// those responses `private, no-store` with `Referrer-Policy: no-referrer`
+    /// precisely because the URL carries a location.
+    /// What that does NOT protect against is a reader sharing the URL itself.
+    /// Worth deciding deliberately rather than by accident; not changed here.
     /// </summary>
     public string PageUrl(int pageNumber)
     {
