@@ -1690,6 +1690,49 @@ digest (**WI-404**/**WI-405**).
   volumes against current pipeline capacity.
   Depends on: the local-model question. Blocks nothing.
 
+- [ ] **WI-455 Filter TRIALS by country** (Dan, 2026-08-26 — "sorted by country
+  as well, with the ability to filter by country". **Next up.**)
+  Goal: a reader outside the US, or in a particular country, can see the trials
+  they could actually reach.
+  **The data is already here.** `trials_cache.locations` is jsonb holding one
+  entry per site with `{facility, city, state, country, lat, lon}` — verified
+  against real cached rows. Nothing new needs fetching; CtGov already returns it
+  and the near-me search already reads it.
+  Acceptance: a country filter on `/trials` beside tumor type and phase, listing
+  only countries that actually appear in the cache (never a hard-coded world
+  list — an empty filter option is a dead end a reader has to discover by
+  clicking); the count of trials per country visible so the control is
+  informative before it is used; combines with the existing filters and with
+  paging (WI-438), and rides the URL so a filtered view can be shared; works
+  with JavaScript off.
+  Sorting: group by country, then the existing order within a group.
+  **Two things to get right, both about not misleading someone:**
+  - A trial with sites in eight countries is not "a US trial". Filtering must
+    match ANY of its locations, and the card should say how many countries it
+    runs in rather than implying one.
+  - This must not quietly become "trials near you" for people outside the US.
+    The ZIP box is US-only (ZCTA centroids); a reader in Germany filtering to
+    Germany still gets no distance, and the page should not pretend otherwise.
+  Query shape: `locations @> '[{"country": "..."}]'` with a GIN index on
+  `locations`, or a normalized country array column populated on sync if the
+  jsonb containment query proves slow at 8,900+ rows.
+  Refs: Database/Scripts/0007_trials_cache.sql, Trials/TrialsRepository.cs,
+  Pages/Trials/Index.cshtml, Sources/CtGovFetcher.cs. Depends on: nothing.
+  **A day, roughly.**
+
+  **Country on RESEARCH items: decided against, 2026-08-26.** Dan asked for both
+  and then dropped the research half once the cost was clear. Recorded so it is
+  not re-proposed: nothing in the pipeline knows where a paper came from —
+  `FetchedItem` carries no affiliation at any layer — so it would need PubMed's
+  `AffiliationInfo` parsed out of the EFetch XML, a country inferred from free
+  text ("…Boston, MA 02114, USA" vs "…Beijing, China" vs nothing at all, often
+  first author only), a new column, a filter and a backfill of 1,000+ published
+  items. And the payoff is weak: for a trial, country answers "can I get to it";
+  for a paper it is where the authors work, which tells a reader little about
+  whether the finding applies to them. Asking the classifier to guess it from
+  the abstract is not an option — that is the invented-fact failure the numeral
+  post-check exists to prevent.
+
 - [ ] **WI-453 `[user]` Pediatric brain tumors: section, or sister site?**
   Goal: decide before building either.
   The audience is not the patient — it is a parent. Different tumors
