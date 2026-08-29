@@ -98,7 +98,11 @@ public class IndexModel(
         // than emptying the list, and the canonical spelling from the cache is
         // kept so the checkbox it belongs to renders ticked whatever casing the
         // URL used.
-        Countries = await trials.AvailableCountriesAsync(includeClosed, cancellationToken);
+        // Counts reflect the tumor type and stage as well as includeClosed
+        // (WI-462), so the number beside a country is what picking it will
+        // actually return. Built from the same filters as the list.
+        var countingQuery = new TrialQuery(TumorType, Phase, includeClosed);
+        Countries = await trials.AvailableCountriesAsync(countingQuery, cancellationToken);
         SelectedCountries = new HashSet<string>(
             Countries
                 .Where(known => country is not null && country.Any(asked =>

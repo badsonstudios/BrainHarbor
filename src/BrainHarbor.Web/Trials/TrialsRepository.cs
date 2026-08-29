@@ -243,7 +243,23 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
           ON a.source = 'ctgov' AND a.external_id = t.nct_id AND a.status = 'published'
         """;
 
-    public async Task<TrialPage> BrowseAsync(TrialQuery query, CancellationToken cancellationToken)
+    /// <summary>
+    /// The WHERE clauses and their parameters for a query, built once and used
+    /// by both the trial list and the country counts (WI-462).
+    ///
+    /// Shared deliberately. The counts beside each country were originally
+    /// their own query that ignored tumor type and phase, so picking
+    /// "Glioblastoma" left them showing all-tumor numbers — a count that
+    /// disagrees with the list it produces is worse than no count. Building
+    /// both from one place is what stops that drifting apart again.
+    ///
+    /// <paramref name="includeCountryFilter"/> is false for the counts: the
+    /// numbers answer "how many trials are in this country, given your OTHER
+    /// filters", so folding the country selection in would be circular —
+    /// picking China would drop every other country to zero.
+    /// </summary>
+    private (string Where, object Parameters) BuildFilter(
+        TrialQuery query, bool includeCountryFilter)
     {
         // Filters are a fixed set of clauses with parameters — nothing a reader
         // types is ever concatenated into SQL.
@@ -295,7 +311,7 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             .Distinct(StringComparer.Ordinal)
             .ToArray();
 
-        if (countries is { Length: > 0 })
+        if (includeCountryFilter && countries is { Length: > 0 })
         {
             where.Add("""
                 EXISTS (
@@ -309,17 +325,23 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             countries = null;
         }
 
-        var whereClause = where.Count == 0 ? "TRUE" : string.Join(" AND ", where);
-        var parameters = new
-        {
-            openStatuses = OpenStatuses,
-            unknownStatuses = UnknownStatuses,
-            conditionPatterns,
-            phase,
-            countries,
-            limit = TrialQuery.PageSize,
-            offset = query.Offset,
-        };
+        return (
+            where.Count == 0 ? "TRUE" : string.Join(" AND ", where),
+            new
+            {
+                openStatuses = OpenStatuses,
+                unknownStatuses = UnknownStatuses,
+                conditionPatterns,
+                phase,
+                countries,
+                limit = TrialQuery.PageSize,
+                offset = query.Offset,
+            });
+    }
+
+    public async Task<TrialPage> BrowseAsync(TrialQuery query, CancellationToken cancellationToken)
+    {
+        var (whereClause, parameters) = BuildFilter(query, includeCountryFilter: true);
 
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
 
@@ -399,11 +421,17 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
     /// that says 12 and then lists 3 is worse than no count.
     /// </summary>
     public async Task<IReadOnlyList<TrialCountry>> AvailableCountriesAsync(
-        bool includeClosed, CancellationToken cancellationToken)
+        TrialQuery query, CancellationToken cancellationToken)
     {
+        // The SAME clauses the trial list uses, minus the country filter
+        // (WI-462). This query used to consider only includeClosed, so picking
+        // a tumor type left every count showing all-tumor numbers — the menu
+        // promised 27 and the list delivered 4.
+        var (whereClause, parameters) = BuildFilter(query, includeCountryFilter: false);
+
         await using var connection = await connectionFactory.OpenConnectionAsync(cancellationToken);
         var countries = await connection.QueryAsync<TrialCountry>(new CommandDefinition(
-            """
+            $"""
             -- Cast: count() is bigint, and Dapper matches a record's
             -- constructor by exact type — an int property against a bigint
             -- column fails materialization rather than converting.
@@ -411,14 +439,11 @@ public sealed class TrialsRepository(IDbConnectionFactory connectionFactory, Tax
             FROM trials_cache t, jsonb_array_elements(t.locations) loc
             WHERE loc->>'country' IS NOT NULL
               AND loc->>'country' <> ''
-              AND (@includeClosed
-                   OR t.overall_status IS NULL
-                   OR t.overall_status = ANY(@openStatuses)
-                   OR t.overall_status = ANY(@unknownStatuses))
+              AND ({whereClause})
             GROUP BY loc->>'country'
             ORDER BY count(DISTINCT t.nct_id) DESC, loc->>'country'
             """,
-            new { includeClosed, openStatuses = OpenStatuses, unknownStatuses = UnknownStatuses },
+            parameters,
             cancellationToken: cancellationToken));
 
         return [.. countries];

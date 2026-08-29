@@ -207,7 +207,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
             locations: SitesIn("Iceland", "Iceland", "Iceland"));
 
         var countries = await _trials.AvailableCountriesAsync(
-            includeClosed: false, CancellationToken.None);
+            new TrialQuery(IncludeClosed: false), CancellationToken.None);
 
         Assert.Equal(1, countries.Single(c => c.Name == "Iceland").Trials);
     }
@@ -225,11 +225,11 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
             locations: SitesIn("Liechtenstein"));
 
         var byDefault = await _trials.AvailableCountriesAsync(
-            includeClosed: false, CancellationToken.None);
+            new TrialQuery(IncludeClosed: false), CancellationToken.None);
         Assert.DoesNotContain(byDefault, c => c.Name == "Liechtenstein");
 
         var withClosed = await _trials.AvailableCountriesAsync(
-            includeClosed: true, CancellationToken.None);
+            new TrialQuery(IncludeClosed: true), CancellationToken.None);
         Assert.Contains(withClosed, c => c.Name == "Liechtenstein");
     }
 
@@ -295,6 +295,62 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
 
         // Non-US readers are told the ZIP box is not for them.
         Assert.Contains("US ZIP codes only", html);
+    }
+
+    /// <summary>
+    /// WI-462, Dan: the number beside a country must be what picking it
+    /// returns. The counts query originally considered only includeClosed, so
+    /// choosing a tumor type left every count showing all-tumor numbers — the
+    /// menu promised one thing and the list delivered another.
+    ///
+    /// Asserted as agreement between the two queries rather than a fixed
+    /// number, because that IS the property: whatever the filters, the count
+    /// and the list have to say the same thing.
+    /// </summary>
+    [Fact]
+    public async Task CountryCountsAgreeWithTheListUnderEveryFilter()
+    {
+        await InsertTrialAsync("NCT77770701", conditions: ["Glioblastoma"],
+            phase: "Phase 3", locations: SitesIn("Finland"));
+        await InsertTrialAsync("NCT77770702", conditions: ["Meningioma"],
+            phase: "Phase 3", locations: SitesIn("Finland"));
+        await InsertTrialAsync("NCT77770703", conditions: ["Glioblastoma"],
+            phase: "Phase 1", locations: SitesIn("Finland"));
+
+        foreach (var query in new[]
+        {
+            new TrialQuery(),
+            new TrialQuery(TumorType: "glioblastoma"),
+            new TrialQuery(Phase: "Phase 3"),
+            new TrialQuery(TumorType: "glioblastoma", Phase: "Phase 3"),
+        })
+        {
+            var counts = await _trials.AvailableCountriesAsync(query, CancellationToken.None);
+            var promised = counts.FirstOrDefault(c => c.Name == "Finland")?.Trials ?? 0;
+
+            var listed = await _trials.BrowseAsync(
+                query with { Countries = ["Finland"] }, CancellationToken.None);
+
+            Assert.Equal(promised, listed.TotalCount);
+        }
+    }
+
+    /// <summary>
+    /// The counts must NOT fold in the country selection — they answer "how
+    /// many are in this country given your other filters". Including it would
+    /// be circular: picking Finland would drop every other country to zero and
+    /// the reader could never widen their search from the menu.
+    /// </summary>
+    [Fact]
+    public async Task CountryCountsIgnoreTheCountrySelectionItself()
+    {
+        await InsertTrialAsync("NCT77770801", locations: SitesIn("Estonia"));
+        await InsertTrialAsync("NCT77770802", locations: SitesIn("Latvia"));
+
+        var counts = await _trials.AvailableCountriesAsync(
+            new TrialQuery(Countries: ["Estonia"]), CancellationToken.None);
+
+        Assert.Contains(counts, c => c.Name == "Latvia" && c.Trials > 0);
     }
 
     /// <summary>
