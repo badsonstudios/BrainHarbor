@@ -1690,6 +1690,37 @@ digest (**WI-404**/**WI-405**).
   volumes against current pipeline capacity.
   Depends on: the local-model question. Blocks nothing.
 
+- [x] **WI-462 Country counts follow the other filters, live**
+  (done 2026-08-29 — Dan: "the numbers next to each country aren't updated when
+  I select a tumor type or stage of testing")
+  **The bug.** `AvailableCountriesAsync` was its own query that considered only
+  `includeClosed`, so picking a tumor type left every count showing all-tumor
+  numbers. The menu promised 27 and the list delivered 4. **A count that
+  disagrees with the list it produces is worse than no count** — it is the one
+  thing on that control a reader might act on.
+  Dan offered two options — hide the numbers, or update them — and preferred
+  updating, live on change. Taken, but not by patching the second query:
+  **both the counts and the list now build from one shared `BuildFilter`**, so
+  they cannot drift apart again by construction. The test asserts the AGREEMENT
+  rather than fixed numbers — for four filter combinations, what the menu
+  promises equals what the list returns. That is the actual property; a fixed
+  number would pass while the two silently diverged.
+  **Two judgment calls:**
+  - The counts deliberately ignore the COUNTRY selection (`includeCountryFilter:
+    false`). They answer "how many are in this country given your OTHER
+    filters"; folding the country in would be circular — picking Finland would
+    drop every other country to zero and a reader could never widen their
+    search from the menu. Pinned by its own test.
+  - The live refresh fires on tumor type, stage and include-closed — **not the
+    country checkboxes**. Re-rendering on each tick would close the picker under
+    the reader's hand mid-selection. Countries still apply on the button, which
+    is also the whole no-JavaScript path.
+  htmx `hx-trigger="submit, change from:#tumorType, change from:#phase, change
+  from:#includeClosed"`. Verified against the real cache: all → 311 (US 210);
+  glioblastoma → 88 (US 64); glioblastoma + Phase 3 → 5 (US 4), and ticking US
+  then listed exactly 4.
+  Refs: Trials/TrialsRepository.cs (`BuildFilter`), Pages/Trials/Index.cshtml(.cs).
+
 - [x] **WI-461 Trials page: sections, headings, and the search button**
   (done 2026-08-29 — Dan, reviewing locally)
   "Trials near you" and "Trials by countries" are two different jobs and ran
