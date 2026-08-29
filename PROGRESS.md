@@ -125,8 +125,10 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   top; it now swaps in place, and the pager finally gets the `HxTarget` the
   partial was built to take.
   **WI-459** trials render as cards like the research feed, minus the photo.
-  Found while building it: **zero of 518 cached trials have a plain-language
-  summary**, so the description falls back to the registry's own text, labelled
+  Found while building it: in the LOCAL dev database zero of 518 trials had a
+  plain-language summary. **Corrected after deploying: on PRODUCTION 54 of 60
+  do** — the fallback fires on ~10%, not 100%. I generalised one database to
+  the system. The description falls back to the registry's own text, labelled
   "From the trial team:" and cut at a sentence end — never mid-sentence, since
   truncating "...did not improve survival" halfway is how a card says the
   opposite of the study.

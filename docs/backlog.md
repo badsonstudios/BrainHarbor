@@ -1732,10 +1732,15 @@ digest (**WI-404**/**WI-405**).
   grid the research feed uses, minus the photo. Status and phase lead, then the
   title, then a sentence or two, then where it runs — pinned to the bottom so
   the meta lines up across a row however long the titles are.
-  **What the description had to be, and why it is not what was asked for.**
-  Checked before building: **zero of the 518 cached trials have a
-  plain-language summary; all 518 have the registry's own text.** So the
-  description would have been blank on every card. It falls back to the
+  **What the description had to be.** Checked before building: in the LOCAL dev
+  database zero of 518 cached trials had a plain-language summary, so the blurb
+  would have been blank on every card there.
+  **Correction, measured on production after deploying:** 54 of 60 trials
+  across three pages DO have our plain-language summary — the registry fallback
+  fires on roughly 10%, not 100%. The original claim generalised one database
+  to the system and was stated with more confidence than it had earned. The
+  code is right either way; the fallback covers the gap and gets out of the way
+  when a summary exists. It falls back to the
   registry's brief summary, labelled **"From the trial team:"** — this site's
   rule is that ClinicalTrials.gov's words are visibly theirs. When plain-language
   trial summaries do land they take precedence and the label disappears.
