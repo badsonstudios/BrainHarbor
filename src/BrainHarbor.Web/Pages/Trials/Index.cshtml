@@ -55,9 +55,11 @@
     {
         <input type="hidden" name="includeClosed" value="true" />
     }
-    @if (Model.Country is not null)
+    @* One hidden field per chosen country, so a near-me search does not
+       silently discard the country filter the reader set (WI-457). *@
+    @foreach (var country in Model.SelectedCountries)
     {
-        <input type="hidden" name="country" value="@Model.Country" />
+        <input type="hidden" name="country" value="@country" />
     }
     <label for="zip">ZIP code</label>
     <input type="text" id="zip" name="zip" value="@Model.Zip" inputmode="numeric"
@@ -154,21 +156,61 @@ else if (Model.Nearby is { } nearby)
         }
     </select>
 
-    @* WI-455. Only countries that actually have sites, with their trial counts,
-       so the reader can see what a choice is worth before making it. The count
-       is trials, not sites — a trial with forty US hospitals is one trial. *@
-    <label for="country">Country</label>
-    <select id="country" name="country">
-        <option value="">Any country</option>
-        @foreach (var country in Model.Countries)
-        {
-            <option value="@country.Name" selected="@(Model.Country == country.Name)">
-                @country.Name (@country.Trials)
-            </option>
-        }
-    </select>
-
     <button type="submit">Show trials</button>
+
+    @* WI-457: pick several countries, not one. Dan's ask — "I may want to
+       search in China and Japan and a few other countries."
+
+       A <details> rather than a JS widget or <select multiple>: the site works
+       with JavaScript off, and a native multi-select means ctrl-click on
+       desktop and a cramped scroller on a phone. This is the same disclosure
+       pattern as the mobile menu, which the browser handles for free —
+       keyboard, expanded state and all.
+
+       Collapsed by default because there are around forty of these and they
+       would otherwise push the trials themselves off the screen. The summary
+       says what is picked, so the state is readable without opening it.
+
+       Countries are ordered by trial count, so the ones worth picking are at
+       the top rather than buried under alphabetical accidents. *@
+    <details class="country-picker" open="@(Model.SelectedCountries.Count > 0)">
+        <summary class="country-picker__toggle">
+            Country
+            <span class="country-picker__state">
+                @if (Model.SelectedCountries.Count == 0)
+                {
+                    <text>Any country</text>
+                }
+                else if (Model.SelectedCountries.Count <= 3)
+                {
+                    @string.Join(", ", Model.SelectedCountries.OrderBy(c => c, StringComparer.Ordinal))
+                }
+                else
+                {
+                    <text>@Model.SelectedCountries.Count countries</text>
+                }
+            </span>
+        </summary>
+
+        <fieldset class="country-picker__list">
+            <legend class="visually-hidden">Countries to include</legend>
+            @foreach (var country in Model.Countries)
+            {
+                <label class="checkbox country-picker__item">
+                    <input type="checkbox" name="country" value="@country.Name"
+                           checked="@Model.SelectedCountries.Contains(country.Name)" />
+                    <span>@country.Name <span class="text-muted">(@country.Trials)</span></span>
+                </label>
+            }
+        </fieldset>
+
+        @if (Model.SelectedCountries.Count > 0)
+        {
+            @* Unticking forty boxes by hand is not a reasonable ask. Plain
+               link, no JavaScript: it just drops every country from the URL. *@
+            <p><a href="@Model.FilterUrlWithoutCountries()">Clear countries</a></p>
+        }
+    </details>
 
     @* Same shape as /research: the long toggle sits under the controls. *@
     <label class="checkbox">

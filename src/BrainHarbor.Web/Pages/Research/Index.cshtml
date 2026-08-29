@@ -15,6 +15,24 @@
     tested more.
 </p>
 
+@* WI-457, Dan's ask. This page and /trials answer two different questions —
+   "what has been found" and "what could I join" — and a reader who lands here
+   looking for the second has no way to know the first page is not it. The nav
+   has a Trials link, but a nav link is a thing you scan past; this is the
+   question stated in the words someone would use to ask it.
+
+   Sits above the filters rather than below the feed: someone whose real
+   question is "can I get into a trial" should not have to read 20 research
+   cards to discover they are on the wrong page. *@
+<div class="cross-link">
+    <p>
+        <strong>Looking for a trial you could join?</strong>
+        Research is what has been found. Trials are studies you can take part
+        in now.
+    </p>
+    <p><a class="button" href="/trials">Find a clinical trial</a></p>
+</div>
+
 <form method="get" class="feed-filters" hx-get="/research" hx-target="#feed-results"
       hx-select="#feed-results" hx-swap="outerHTML" hx-push-url="true">
     @* Marks a real form submit, so an unchecked "early" box is read as "off"

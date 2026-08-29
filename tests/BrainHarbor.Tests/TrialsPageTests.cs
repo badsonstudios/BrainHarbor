@@ -141,7 +141,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         await InsertTrialAsync("NCT77771002", locations: SitesIn("United States"));
 
         var page = await _trials.BrowseAsync(
-            new TrialQuery(Country: "Germany"), CancellationToken.None);
+            new TrialQuery(Countries: ["Germany"]), CancellationToken.None);
         var mine = page.Items.Where(t => t.NctId.StartsWith("NCT77771", StringComparison.Ordinal)).ToList();
 
         Assert.Equal("NCT77771001", Assert.Single(mine).NctId);
@@ -161,7 +161,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         foreach (var country in new[] { "United States", "Germany", "Japan" })
         {
             var page = await _trials.BrowseAsync(
-                new TrialQuery(Country: country), CancellationToken.None);
+                new TrialQuery(Countries: [country]), CancellationToken.None);
 
             Assert.Contains(page.Items, t => t.NctId == "NCT77772001");
         }
@@ -179,7 +179,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         await InsertTrialAsync("NCT77773001", locations: SitesIn("United Kingdom"));
 
         var page = await _trials.BrowseAsync(
-            new TrialQuery(Country: "united kingdom"), CancellationToken.None);
+            new TrialQuery(Countries: ["united kingdom"]), CancellationToken.None);
 
         Assert.Contains(page.Items, t => t.NctId == "NCT77773001");
     }
@@ -190,7 +190,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         await InsertTrialAsync("NCT77774001", locations: "[]");
 
         var page = await _trials.BrowseAsync(
-            new TrialQuery(Country: "United States"), CancellationToken.None);
+            new TrialQuery(Countries: ["United States"]), CancellationToken.None);
 
         Assert.DoesNotContain(page.Items, t => t.NctId == "NCT77774001");
     }
@@ -242,7 +242,7 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
             conditions: ["Glioblastoma"], locations: SitesIn("Canada"));
 
         var page = await _trials.BrowseAsync(
-            new TrialQuery(TumorType: "glioblastoma", Phase: "Phase 3", Country: "Canada"),
+            new TrialQuery(TumorType: "glioblastoma", Phase: "Phase 3", Countries: ["Canada"]),
             CancellationToken.None);
         var mine = page.Items.Where(t => t.NctId.StartsWith("NCT77777", StringComparison.Ordinal)).ToList();
 
@@ -282,10 +282,144 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
 
         var html = await _factory.CreateClient().GetStringAsync("/trials?country=Australia");
 
-        Assert.Contains("id=\"country\"", html);
-        Assert.Matches(@"<option value=""Australia""[^>]*selected", html);
+        Assert.Contains("country-picker", html);
+        Assert.Matches(@"name=""country"" value=""Australia""[^>]*checked", html);
+
+        // Opened on arrival when a filter is active: a reader following a
+        // shared link should see WHY the list is short, not a closed control.
+        Assert.Matches(@"<details class=""country-picker""[^>]*open", html);
+
         // Non-US readers are told the ZIP box is not for them.
         Assert.Contains("US ZIP codes only", html);
+    }
+
+    // ---------- WI-457: several countries at once ----------
+
+    /// <summary>
+    /// Dan's ask: "I may want to search in China and Japan and a few other
+    /// countries." Several countries mean EITHER, not both — a trial has to run
+    /// somewhere the reader can reach, not everywhere they picked.
+    /// </summary>
+    [Fact]
+    public async Task PickingSeveralCountriesReturnsTrialsFromAnyOfThem()
+    {
+        await InsertTrialAsync("NCT77770101", locations: SitesIn("China"));
+        await InsertTrialAsync("NCT77770102", locations: SitesIn("Japan"));
+        await InsertTrialAsync("NCT77770103", locations: SitesIn("Brazil"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Countries: ["China", "Japan"]), CancellationToken.None);
+        var mine = page.Items
+            .Where(t => t.NctId.StartsWith("NCT7777010", StringComparison.Ordinal))
+            .Select(t => t.NctId).Order(StringComparer.Ordinal).ToArray();
+
+        Assert.Equal(["NCT77770101", "NCT77770102"], mine);
+    }
+
+    [Fact]
+    public async Task AnEmptyCountrySelectionMeansEveryCountry()
+    {
+        await InsertTrialAsync("NCT77770201", locations: SitesIn("Norway"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Countries: []), CancellationToken.None);
+
+        Assert.Contains(page.Items, t => t.NctId == "NCT77770201");
+    }
+
+    /// <summary>
+    /// A trial in two of the chosen countries is still ONE result. Without the
+    /// EXISTS this would be a join that multiplies a trial by its matching
+    /// sites, and a reader would see the same study listed twice.
+    /// </summary>
+    [Fact]
+    public async Task ATrialMatchingTwoChosenCountriesAppearsOnce()
+    {
+        await InsertTrialAsync("NCT77770301", locations: SitesIn("China", "Japan"));
+
+        var page = await _trials.BrowseAsync(
+            new TrialQuery(Countries: ["China", "Japan"]), CancellationToken.None);
+
+        Assert.Single(page.Items, t => t.NctId == "NCT77770301");
+    }
+
+    [Fact]
+    public async Task TickingSeveralCountriesRoundTripsThroughTheUrl()
+    {
+        await InsertTrialAsync("NCT77770401", locations: SitesIn("China"));
+        await InsertTrialAsync("NCT77770402", locations: SitesIn("Japan"));
+
+        var html = await _factory.CreateClient()
+            .GetStringAsync("/trials?country=China&country=Japan");
+
+        Assert.Contains("NCT77770401", html);
+        Assert.Contains("NCT77770402", html);
+
+        // Both boxes come back ticked, so the control shows what is in force.
+        Assert.Matches(@"value=""China""[^>]*checked", html);
+        Assert.Matches(@"value=""Japan""[^>]*checked", html);
+
+        // And the summary says so without needing to be opened.
+        Assert.Contains("China, Japan", html);
+    }
+
+    /// <summary>
+    /// Links shared before multi-select existed used a single `country=` value.
+    /// The key did not change, so they must still work.
+    /// </summary>
+    [Fact]
+    public async Task ASingleCountryLinkStillWorks()
+    {
+        await InsertTrialAsync("NCT77770501", locations: SitesIn("Sweden"));
+
+        var html = await _factory.CreateClient().GetStringAsync("/trials?country=Sweden");
+
+        Assert.Contains("NCT77770501", html);
+        Assert.Matches(@"value=""Sweden""[^>]*checked", html);
+    }
+
+    /// <summary>
+    /// Unticking forty boxes by hand is not a reasonable ask, and the escape
+    /// has to work with JavaScript off — so it is a plain link that drops the
+    /// countries while keeping every other filter.
+    /// </summary>
+    [Fact]
+    public async Task ClearingCountriesKeepsTheOtherFilters()
+    {
+        await InsertTrialAsync("NCT77770601",
+            phase: "Phase 3", conditions: ["Glioblastoma"], locations: SitesIn("Denmark"));
+
+        var html = await _factory.CreateClient().GetStringAsync(
+            "/trials?tumorType=glioblastoma&phase=Phase+3&country=Denmark");
+
+        var clear = System.Text.RegularExpressions.Regex.Match(
+            html, @"href=""(/trials\?[^""]*)""[^>]*>\s*Clear countries").Groups[1].Value
+            .Replace("&amp;", "&", StringComparison.Ordinal);
+
+        Assert.DoesNotContain("country=", clear, StringComparison.Ordinal);
+        Assert.Contains("tumorType=glioblastoma", clear, StringComparison.Ordinal);
+        Assert.Contains("phase=Phase", clear, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// WI-457, Dan's ask: /research and /trials answer different questions —
+    /// "what has been found" versus "what could I join" — and a reader who
+    /// lands on the feed looking for the second needs telling. Above the
+    /// filters, so nobody reads twenty research cards before discovering they
+    /// are on the wrong page.
+    /// </summary>
+    [Fact]
+    public async Task TheResearchPagePointsReadersAtTrials()
+    {
+        var html = await _factory.CreateClient().GetStringAsync("/research");
+
+        var link = html.IndexOf("cross-link", StringComparison.Ordinal);
+        var filters = html.IndexOf("feed-filters", StringComparison.Ordinal);
+
+        Assert.True(link > 0, "the research page should point at /trials");
+        Assert.True(link < filters,
+            "the signpost belongs above the filters, not below the feed");
+        Assert.Contains("href=\"/trials\"", html, StringComparison.Ordinal);
     }
 
     [Fact]
