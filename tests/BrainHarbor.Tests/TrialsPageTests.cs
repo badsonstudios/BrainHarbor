@@ -285,12 +285,36 @@ public sealed class TrialsPageTests : IClassFixture<WebApplicationFactory<Progra
         Assert.Contains("country-picker", html);
         Assert.Matches(@"name=""country"" value=""Australia""[^>]*checked", html);
 
-        // Opened on arrival when a filter is active: a reader following a
-        // shared link should see WHY the list is short, not a closed control.
-        Assert.Matches(@"<details class=""country-picker""[^>]*open", html);
+        // ALWAYS starts closed, even with a filter active (WI-458, Dan). It
+        // first shipped auto-opening whenever countries were picked, which
+        // meant the panel stayed sprawled across the page after every search
+        // and had to be dismissed by hand. The summary carries the state
+        // instead.
+        Assert.DoesNotMatch(@"<details class=""country-picker""[^>]*\bopen\b", html);
+        Assert.Contains("Australia", html, StringComparison.Ordinal);
 
         // Non-US readers are told the ZIP box is not for them.
         Assert.Contains("US ZIP codes only", html);
+    }
+
+    /// <summary>
+    /// The button is the last thing a reader touches, so it belongs after
+    /// every control it acts on — not wedged between two filters and a third
+    /// (WI-458, Dan).
+    /// </summary>
+    [Fact]
+    public async Task TheSubmitButtonComesAfterAllThreeFilters()
+    {
+        var html = await _factory.CreateClient().GetStringAsync("/trials");
+
+        var tumor = html.IndexOf("id=\"tumorType\"", StringComparison.Ordinal);
+        var phase = html.IndexOf("id=\"phase\"", StringComparison.Ordinal);
+        var country = html.IndexOf("country-picker", StringComparison.Ordinal);
+        var submit = html.IndexOf("feed-filters__submit", StringComparison.Ordinal);
+
+        Assert.True(tumor > 0 && phase > tumor && country > phase,
+            "filters should read tumor type, then stage, then country");
+        Assert.True(submit > country, "the button should come after the country picker");
     }
 
     // ---------- WI-457: several countries at once ----------

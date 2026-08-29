@@ -87,6 +87,56 @@ public sealed class TrialRow
     /// six other countries, and showing only the filtered one would tell a
     /// reader something untrue about the study they are looking at.
     /// </summary>
+    /// <summary>
+    /// A sentence or two for the browse card (WI-459). Prefers OUR plain-language
+    /// summary; falls back to the registry's own brief description, which the
+    /// card labels as the trial team's words rather than passing off as ours.
+    ///
+    /// The fallback is not an edge case: every one of the 518 cached trials has
+    /// registry text and none currently has a plain-language summary, so
+    /// without it the description Dan asked for would be blank on every card.
+    ///
+    /// **Cut at a sentence end, never mid-sentence.** This is clinical prose,
+    /// and truncating "...did not improve survival" halfway is how a summary
+    /// comes to say the opposite of the study. If no sentence break falls
+    /// inside the budget, the whole first sentence is used however long it is —
+    /// better a long card than a misleading one.
+    /// </summary>
+    public string? CardBlurb
+    {
+        get
+        {
+            if (!string.IsNullOrWhiteSpace(PlainSummary))
+            {
+                return PlainSummary;
+            }
+
+            var text = Summary?.Trim();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            const int budget = 220;
+            if (text.Length <= budget)
+            {
+                return text;
+            }
+
+            var cut = text.LastIndexOfAny(['.', '!', '?'], Math.Min(budget, text.Length - 1));
+            if (cut > 0)
+            {
+                return text[..(cut + 1)];
+            }
+
+            var firstEnd = text.IndexOfAny(['.', '!', '?']);
+            return firstEnd > 0 ? text[..(firstEnd + 1)] : text;
+        }
+    }
+
+    /// <summary>True when the blurb is the registry's words, not ours.</summary>
+    public bool BlurbIsRegistryText => string.IsNullOrWhiteSpace(PlainSummary);
+
     public IReadOnlyList<string> CountrySummary =>
         [.. Sites.Select(s => s.Country).Where(c => !string.IsNullOrWhiteSpace(c))
             .Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase)!];

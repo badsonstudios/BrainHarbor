@@ -1550,6 +1550,36 @@ main {
 
 /* ---------- Trial finder (WI-403) ---------- */
 
+/* The two ways of finding a trial, each in its own panel (WI-461, Dan). They
+   answer different questions — what is near me, versus what exists — and as
+   bare headings they ran together into one long page.
+
+   Surface fill rather than a border alone: on a white page a hairline reads as
+   a divider, and the point here is that these are two THINGS, not one thing
+   with a line through it. Cards inside stay white, so the nesting reads. */
+.trial-section {
+  background: var(--color-surface);
+  border-radius: var(--card-radius);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  margin-block-end: var(--space-6);
+}
+
+/* The heading is the panel's label, so it sits at the top with no extra space
+   above it — the padding already put it there. */
+.trial-section > h2:first-of-type {
+  margin-block-start: 0;
+}
+
+@media (max-width: 40rem) {
+  .trial-section {
+    /* Full-bleed on a phone: 24px of padding each side inside a 390px screen
+       costs more than the separation is worth, and the fill alone is enough to
+       show where one section ends. */
+    padding-inline: var(--space-3);
+    margin-inline: calc(-1 * var(--space-2));
+  }
+}
+
 .trial-near {
   display: flex;
   flex-wrap: wrap;
@@ -1611,19 +1641,80 @@ main {
    on screen; opened automatically when a filter is active, because a reader
    arriving on a shared link should see WHY the list is short. */
 
-.country-picker {
-  flex-basis: 100%;   /* its own row in the filter bar, never squeezed beside a select */
+/* ---------- Stacked filter fields (WI-458, Dan) ----------
+   Label above its control, each pair its own block. Scoped to
+   .feed-filters--stacked rather than applied to every filter bar: /research
+   and /search were not part of this ask and are not being changed under it. */
+
+.feed-filters--stacked {
+  align-items: end;   /* controls line up along the bottom whatever the label wraps to */
 }
 
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 14rem;    /* share the row, wrap when they no longer fit */
+}
+
+.filter-field > label,
+.filter-field__label {
+  font-weight: 700;
+}
+
+.filter-field select {
+  inline-size: 100%;
+}
+
+/* The checkbox takes a full row. That is also what pushes the button onto the
+   next line: a flex item at 100% basis fills its line, so whatever follows
+   starts a new one — no spacer element needed. */
+.feed-filters--stacked > .checkbox {
+  flex-basis: 100%;
+}
+
+/* Sized to its words, not to the row (WI-458, Dan: "way too wide"). An earlier
+   pass gave it flex-basis:100% to force the line break and got a button
+   stretched across the whole desktop — basis IS the width, and align-self only
+   moves a flex item on the cross axis, so it did nothing. The checkbox above
+   breaks the line; this just stays its own size. The 44px floor is about
+   height, which the base button rule already carries. */
+.feed-filters--stacked > .feed-filters__submit {
+  flex: 0 0 auto;
+  inline-size: auto;
+}
+
+/* Inside a stacked field the picker fills its column, so the summary button
+   lines up with the two selects beside it. It still needs the whole row once
+   OPENED, or the 3-column checkbox list is crammed into a third of the width. */
+.country-picker {
+  flex-basis: auto;
+  inline-size: 100%;
+}
+
+.country-picker__toggle {
+  justify-content: space-between;
+  inline-size: 100%;
+}
+
+/* Escapes its column to span the form when open. */
+.filter-field:has(.country-picker[open]) {
+  flex-basis: 100%;
+}
+
+/* Styled as the SELECTS beside it, not as a button (WI-458). It sits in a row
+   with two dropdowns and does the same job, so --color-border like they use:
+   at --color-border-subtle it read as a disabled control next to two live
+   ones. Same padding, radius, min-height and background, for the same reason. */
 .country-picker__toggle {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   min-block-size: var(--tap-target);
   padding: var(--space-2) var(--space-3);
-  border: 2px solid var(--color-border-subtle);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius);
-  font-weight: 700;
+  background: var(--color-paper);
   cursor: pointer;
 }
 
@@ -1631,9 +1722,16 @@ main {
   border-color: var(--color-accent);
 }
 
-/* What is picked, readable without opening the list. */
+/* What is picked, readable without opening the list. Full ink, matching the
+   text in the selects beside it — this is the control's VALUE, not a hint. */
 .country-picker__state {
   font-weight: 400;
+  color: var(--color-ink);
+}
+
+/* "Select" with nothing chosen reads as a placeholder, so it is muted the way
+   a placeholder is — the one case where the softer colour is right. */
+.country-picker__state--empty {
   color: var(--color-ink-muted);
 }
 
@@ -1683,21 +1781,49 @@ main {
   color: var(--color-ink-muted);
 }
 
+/* Cards, like the research feed (WI-459, Dan: "it just doesn't look that
+   great"). Was a stack of rows separated by hairlines; now the same grid the
+   feed uses, so the two lists read as one site. 340px minimum matches
+   .feed-grid — narrower and the status and phase tags wrap apart. */
 .trial-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-4);
   list-style: none;
   padding: 0;
   margin-block: var(--space-4);
   max-width: none;
 }
 
-.trial-list__item {
-  border-bottom: 1px solid var(--color-border-subtle);
-  padding-block: var(--space-4);
+/* A card with no photo (Dan: "don't need the image"). Everything else comes
+   from .card — same background, border, radius, shadow and column flow — so a
+   change to the feed card carries here rather than drifting. */
+.card--plain {
+  padding: var(--space-4) var(--space-5);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  max-width: none;
+}
+
+/* Marks a blurb as the registry's words rather than ours. Quiet, but present
+   on every card that uses registry text — the attribution is the point, so it
+   does not get to be invisible. */
+.card__source-note {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-ink-muted);
 }
 
 .trial-list__item h3,
-.trial-list__item h4 {
-  margin-block: 0 var(--space-2);
+.trial-list__item h4,
+.card--plain h3 {
+  margin-block: 0;
   font-size: var(--text-lg);
 }
 

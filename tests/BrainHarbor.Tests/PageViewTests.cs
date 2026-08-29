@@ -225,6 +225,16 @@ public class PageViewTests : IClassFixture<WebApplicationFactory<Program>>
         using var scope = factory.Services.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<PageViewRepository>();
         var path = $"/seen-{Guid.NewGuid():N}";
+
+        // Clear anything an earlier run left behind BEFORE seeding.
+        //
+        // This test used to leak its row every run. The admin page lists the
+        // top 12 paths by views DESC, path — and every leaked row held the same
+        // 42 views, so they all tied and the tiebreaker was the random GUID.
+        // After 45 accumulated runs, whether THIS run's row made the top 12 was
+        // a coin flip, and the odds got worse every time. It read as a mystery
+        // flake; it was the test poisoning its own database.
+        await PurgeSeededRowsAsync();
         await repository.AddAsync(
             [new((DateOnly.FromDateTime(DateTime.UtcNow), path), 42)], CancellationToken.None);
 
@@ -250,6 +260,23 @@ public class PageViewTests : IClassFixture<WebApplicationFactory<Program>>
         // The framing matters as much as the number: these are openings, and
         // the page must not let anyone read them as visitors.
         Assert.Contains("Not visitors", html);
+
+        await PurgeSeededRowsAsync();
+    }
+
+    /// <summary>
+    /// Removes this test's seeded rows. Called before AND after: before so an
+    /// earlier crashed run cannot crowd this one out of the admin page's
+    /// top-12 list, after so this run leaves the database as it found it.
+    /// </summary>
+    private async Task PurgeSeededRowsAsync()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var connections = scope.ServiceProvider
+            .GetRequiredService<BrainHarbor.Web.Services.IDbConnectionFactory>();
+        await using var connection = await connections.OpenConnectionAsync(CancellationToken.None);
+        await Dapper.SqlMapper.ExecuteAsync(connection,
+            "DELETE FROM page_views WHERE path LIKE '/seen-%' OR path LIKE '/test-%'");
     }
 
     /// <summary>
@@ -269,5 +296,10 @@ public class PageViewTests : IClassFixture<WebApplicationFactory<Program>>
 
         var top = await repository.TopPathsAsync(2, 500, CancellationToken.None);
         Assert.Equal(7, top.Single(r => r.Path == path).Views);
+
+        // Leaves the database as it found it. These rows are low-count so they
+        // would not have crowded the admin page's top-12 the way the other
+        // test's did, but a test that litters is a flake waiting for a reason.
+        await PurgeSeededRowsAsync();
     }
 }

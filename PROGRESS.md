@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. (2026-08-29: **WI-457** multi-select country picker + a research→trials signpost; **WI-455** trials filterable by country, research half dropped once the cost was clear.) (2026-08-26: **Phase P4 filed** — WI-442…WI-454, depth for the brain tumor reader. My own ranking after WI-455: **WI-442** reader-report notes (hours), **WI-443** restore rehearsal, **WI-444** pathology-report explainer. 2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. **Reader-facing work now gets a local review before deploy** (Dan's rule, 2026-08-29 — see memory `test-locally-before-deploy`). (2026-08-29: **WI-458…461** trials/research review round; **WI-457** multi-select country picker + a research→trials signpost; **WI-455** trials filterable by country, research half dropped once the cost was clear.) (2026-08-26: **Phase P4 filed** — WI-442…WI-454, depth for the brain tumor reader. My own ranking after WI-455: **WI-442** reader-report notes (hours), **WI-443** restore rehearsal, **WI-444** pathology-report explainer. 2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
 | **Next up** | **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
@@ -111,6 +111,48 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   them automatically — before spending on Standard tier. The previous release
   had no window at all, so one sample of two minutes is not a trend, and buying
   a tier on it would be guessing with money.
+
+- **2026-08-29** — **WI-458…WI-461 — a review round on trials and research, all
+  reviewed locally before deploying.** Dan asked for that process change after
+  four releases went out in one session on my screenshots alone: *"let me test
+  locally before we deploy… you're a big fuck-up today."* Fair. Written to
+  memory as a standing rule for reader-facing work.
+  **WI-458** the country picker: always starts closed (it auto-opened after
+  every search — my call in WI-457, and the reasoning did not survive contact
+  with using it), moved beside the other filters, button below and sized to its
+  words, labels above controls, "Select" then up to three countries then "...".
+  **The browse form had no htmx at all**, which is why submitting jumped to the
+  top; it now swaps in place, and the pager finally gets the `HxTarget` the
+  partial was built to take.
+  **WI-459** trials render as cards like the research feed, minus the photo.
+  Found while building it: **zero of 518 cached trials have a plain-language
+  summary**, so the description falls back to the registry's own text, labelled
+  "From the trial team:" and cut at a sentence end — never mid-sentence, since
+  truncating "...did not improve survival" halfway is how a card says the
+  opposite of the study.
+  **WI-460** trials removed from `/research` and its filter; old
+  `?kind=trial_update` links fall back to the whole feed. Home still shows them
+  — asked, and Dan said fine. Research filters restacked to match trials.
+  **WI-461** each of the two trial-finding methods gets its own tinted panel
+  holding only heading + controls, with the results below on the page
+  background. Headings now "Trials near you" / "Trials by countries"; button
+  "Search trials".
+  **Two corrections to my own work this round, both from measuring instead of
+  trusting myself.** I "fixed" the scroll jump with `show:none` and wrote a
+  comment claiming that was the fix — it was not; **my Playwright test was
+  causing the jump** by scrolling to an element before clicking it. And I
+  thought the country control looked washed out beside the selects; computed
+  styles said identical. I was looking at a stale screenshot.
+  **And a real bug I had twice waved away as "intermittent".**
+  `TheAdminHealthPageShowsTheCounts` seeded a `/seen-<guid>` row with 42 views
+  and never cleaned up. The admin page lists the **top 12** by
+  `views DESC, path` — after 45 accumulated runs there were 45 rows all tied at
+  42, so the tiebreaker was the random GUID and whether this run's row made the
+  cut was a coin flip that got worse every run. It read as a mystery flake; it
+  was the test poisoning its own database. Purged, cleanup added at both ends,
+  and a second littering test fixed too. **Seven consecutive green suites, zero
+  rows leaked.** The lesson: "passes in isolation" is not a diagnosis.
+  840 tests, ContentCheck 50/0.
 
 - **2026-08-29** — **WI-457 done — multi-select countries, and a signpost from
   research to trials.** Dan after using WI-455: he wants China AND Japan AND a

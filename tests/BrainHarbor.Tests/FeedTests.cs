@@ -847,6 +847,46 @@ public sealed class FeedTests : IClassFixture<WebApplicationFactory<Program>>, I
     public void OnlyDocumentedSortsAreAccepted(string? input, string? expected) =>
         Assert.Equal(expected, FeedRepository.NormalizeSort(input));
 
+    /// <summary>
+    /// WI-460, Dan: trials live on /trials, which filters by country,
+    /// recruiting status and phase — things this feed has no use for. Showing
+    /// them in both places made the research page answer two questions at once.
+    /// </summary>
+    [Fact]
+    public async Task TheResearchFeedLeavesTrialsOut()
+    {
+        await InsertAsync("ex-trial", sourceKind: "trial_update", slug: "study-ex-trial");
+        await InsertAsync("ex-paper", sourceKind: "research", slug: "study-ex-paper");
+
+        var html = await _factory.CreateClient().GetStringAsync("/research");
+
+        Assert.Contains("study-ex-paper", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("study-ex-trial", html, StringComparison.Ordinal);
+
+        // And the option is gone from the filter, so nobody can ask for a
+        // result set that is deliberately empty.
+        var kindSelect = System.Text.RegularExpressions.Regex.Match(
+            html, @"<select id=""kind"".*?</select>",
+            System.Text.RegularExpressions.RegexOptions.Singleline).Value;
+        Assert.DoesNotContain("trial_update", kindSelect, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A link shared before this change could still carry ?kind=trial_update.
+    /// It must show the feed, not an empty page the reader cannot explain.
+    /// </summary>
+    [Fact]
+    public async Task AnOldTrialsKindLinkFallsBackToTheWholeFeed()
+    {
+        await InsertAsync("ex-old", sourceKind: "research", slug: "study-ex-old");
+
+        var html = await _factory.CreateClient()
+            .GetStringAsync("/research?kind=trial_update&applied=true");
+
+        Assert.Contains("study-ex-old", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("Nothing matches yet", html, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task PagerLinksKeepTheChosenSortAndFilters()
     {
