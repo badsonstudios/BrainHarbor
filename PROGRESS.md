@@ -90,6 +90,31 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-30** — **WI-502 done — the tumor-guide editorial standard is
+  written down, at `docs/content-pipeline.md` §12.** Appended as §12 rather
+  than inserted near the curated-content rules, because §2/§3/§4/§5/§6/§9/§10
+  are cited by number from CLAUDE.md, the backlog and the startup references;
+  renumbering would have broken every one of them silently.
+  Covers source precedence, the 12-item shared contract, the 17-section order
+  with the evidence for each position, the R1/R2/R3 number rulings,
+  prognosis-without-figures plus the reader-choice gate, and the writing rules
+  specific to these pages.
+  **Two things came out of reading the NCCN guideline instead of the research
+  summary of it.** (1) **It is CNS5-aligned**, verified against the document:
+  Arabic grades throughout, `IDH-mutant`, and neither "anaplastic astrocytoma"
+  nor "oligoastrocytoma" appears anywhere in 76 pages. That gives the
+  precedence rule a clean shape — **NCCN governs naming and grading, NCI
+  patient PDQ is framing-only** — and a page that cites NCI for a tumor name is
+  now documented as a defect. (2) **It is not "licensing-clean", which is what
+  the research reports call it three times.** Its copyright page forbids
+  reproducing text or illustrations in any form without written permission. The
+  safe reading is also how the site already works: read for facts, write every
+  sentence ourselves, cite with a URL, never copy one. §12.1 states it, beside
+  the existing NCI-images and AHFS rules from PLAN.md §5. **Worth a line in
+  WI-433** (the lawyer questions) if that ever gets picked up.
+  Also merged **PR #68** (WI-501 + the WI-504 record) into `develop` first, so
+  the block mechanism is in before anything is written on top of it.
+
 - **2026-08-30** — **WI-504 done — Wave 1 is UNBLOCKED.** Dan fetched the
   403-blocked sources by hand into `.claude/work_files/research/sources/`
   (git-ignored; third-party documents). Got: the **NCCN Guidelines for

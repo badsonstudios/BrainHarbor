@@ -2099,7 +2099,7 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   block must be spliced with blank lines around it, or the crosswalk TABLE
   fuses into the neighbouring paragraph as pipe-mangled prose.
 
-- [ ] **WI-502 The tumor-guide editorial standard**
+- [x] **WI-502 The tumor-guide editorial standard** *(done 2026-08-30)*
   Goal: write the rules down where a future session will find them, not in a
   chat log.
   Acceptance: a new section in `docs/content-pipeline.md` covering the standard
@@ -2111,6 +2111,24 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   be findable.
   Refs: docs/content-pipeline.md, docs/research/tumor-guides/SYNTHESIS.md §7.1.
   Depends on: nothing.
+  **Done — `docs/content-pipeline.md` §12**, appended rather than inserted
+  because §2/§3/§4/§5/§6/§9/§10 are cited by name from CLAUDE.md, the backlog
+  and the startup references, and renumbering would break all of them.
+  Covers: source precedence (§12.1), the 12-item shared contract (§12.2), the
+  17-section order with the reason for each position (§12.3), R1/R2/R3
+  (§12.4), prognosis-without-figures and the gate (§12.5), and the
+  page-specific writing rules (§12.6).
+  **Two findings from reading the NCCN guideline rather than the research
+  summary of it.** (1) It **is** CNS5-aligned — checked its actual vocabulary:
+  Arabic grades throughout, `IDH-mutant`, and neither "anaplastic astrocytoma"
+  nor "oligoastrocytoma" appears anywhere. That makes the precedence rule
+  clean: NCCN governs naming and grading, NCI patient PDQ is framing-only.
+  (2) **It is NOT "licensing-clean"**, which is what the research reports call
+  it three times. Its copyright page forbids reproduction of text or
+  illustrations in any form without written permission. Read it, write our own
+  sentences, cite it. §12.1 says so explicitly, because a drafting session with
+  a 76-page plain-language PDF open is exactly where phrasing gets borrowed
+  without anyone deciding to.
 
 - [ ] **WI-503 Reader-choice gate for the outlook section**
   Goal: let a reader decide whether to read the frightening part.
