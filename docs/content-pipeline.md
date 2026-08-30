@@ -430,6 +430,44 @@ off.
 > would rather not. You can skip it and come back another day. Nothing else on
 > this page depends on it."
 
+**How to write it (WI-503, shipped).** The gate is a Markdig custom container.
+The heading stays OUTSIDE it, so the page outline is complete and the reader
+meets heading → warning → choice in that order (§12.6, "warn before you
+disclose"):
+
+```markdown
+## What might happen over time
+
+:::outlook
+Doctors use numbers that describe a large group of people…
+:::
+```
+
+Everything inside renders inside a `<details>` that is **closed on load**. The
+warning sentence above and the Show/Hide label are emitted by the component,
+not typed per page — 24 tumor hubs cannot each soften them. Nothing else needs
+writing.
+
+Three things that follow from the implementation and are worth knowing before
+you author one:
+
+- **`:::outlook` is the only container name the site renders**, and the fence
+  has to be written exactly: **three colons** (not two), the opener flush with
+  the surrounding text (four spaces or a tab makes it a code block), and a
+  closing `:::` on a line of its own. Anything else — `:::outlok`,
+  `:::Outlook`, `::outlook`, an indented or unclosed fence, `::outlook::`
+  inline — **fails the page build**, naming the page and the line.
+  That strictness is the point: every one of those renders the outlook section
+  as ordinary visible prose (Markdig turns an unknown container into a plain
+  `<div>`, and drops the near-misses entirely), with no error and a green
+  build. **A gate that fails open is worse than no gate**, so the build
+  refuses rather than guesses.
+- **The 6.0 reading limit reaches inside the gate.** Content behind a choice is
+  still content, and ContentCheck grades the composed page.
+- **Printing reflects the reader's choice.** A gate left closed stays closed on
+  paper; forcing it open would hand the outlook section to someone who
+  declined it.
+
 When explaining *median*, use positive framing plus the explicit right tail
 (the Kirkebøen framework, which raised hopefulness and realism at the same
 time): establish that it describes a **group**, present the distribution rather

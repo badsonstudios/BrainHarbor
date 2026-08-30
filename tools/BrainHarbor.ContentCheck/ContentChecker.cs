@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using BrainHarbor.Web.Content;
+using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
@@ -25,6 +26,14 @@ public static partial class ContentChecker
     // feed rather than improve it.
     public const double FailGrade = 6.0;
     public const double WarnGrade = 5.5;
+
+    // WI-503: custom containers ONLY. Without this the ':::outlook' fence
+    // parses as a paragraph and is graded as a sentence, so a reader-choice
+    // gate would move the page's grade without changing a word of its prose.
+    // Deliberately not UseAdvancedExtensions(): that would also restructure
+    // tables and definition lists, silently re-grading every shipped page.
+    private static readonly MarkdownPipeline TextPipeline =
+        new MarkdownPipelineBuilder().UseCustomContainers().Build();
 
     /// <summary>Flags _Disclaimers.cshtml knows how to render.</summary>
     public static readonly string[] KnownDisclaimers = ["medical", "benefits", "legal"];
@@ -282,7 +291,7 @@ public static partial class ContentChecker
     /// </summary>
     public static string ExtractSentences(string markdown)
     {
-        var document = Markdig.Markdown.Parse(markdown);
+        var document = Markdig.Markdown.Parse(markdown, TextPipeline);
         var result = new StringBuilder();
 
         foreach (var block in document.Descendants().OfType<LeafBlock>())

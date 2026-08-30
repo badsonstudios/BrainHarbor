@@ -32,11 +32,21 @@ public sealed partial class ContentStore(
     // DisableHtml: curated pages are pure Markdown; raw HTML in a source file
     // renders escaped. The glossary extension still emits markup — it renders
     // through its own object renderer, not raw HTML inlines.
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
-        .UseAdvancedExtensions()
-        .DisableHtml()
-        .Use<GlossaryTooltipExtension>()
-        .Build();
+    // ReaderGateExtension must come AFTER UseAdvancedExtensions (which brings
+    // the custom containers) or Markdig's own renderer wins and a gate renders
+    // as an open <div>. ReaderGate.Verify proves that here rather than leaving
+    // it to a comment nobody re-reads — a mis-ordered pipeline fails at
+    // start-up instead of publishing prognosis to a reader who did not ask.
+    private static readonly MarkdownPipeline Pipeline = ReaderGateExtension.Verify(
+        new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .DisableHtml()
+            .Use<GlossaryTooltipExtension>()
+            .Use<ReaderGateExtension>()
+            .Build());
+
+    /// <summary>The render pipeline, exposed so tests can hold it to the gate's guarantees.</summary>
+    internal static MarkdownPipeline RenderPipeline => Pipeline;
 
     private static readonly IDeserializer Yaml = new DeserializerBuilder()
         .IgnoreUnmatchedProperties()
@@ -239,6 +249,12 @@ public sealed partial class ContentStore(
         }
 
         var document = Markdig.Markdown.Parse(body, Pipeline);
+
+        // WI-503: before anything renders. An unknown ':::' container would
+        // otherwise render as a plain div — the gated content fully visible,
+        // with no error anywhere — so a typo has to fail the page instead.
+        ReaderGate.Validate(document, body, urlPath);
+
         GlossaryMarker.Mark(document, glossaryTerms);
 
         using var writer = new StringWriter();

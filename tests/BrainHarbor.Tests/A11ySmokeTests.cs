@@ -184,6 +184,97 @@ public sealed class A11ySmokeTests : IClassFixture<KestrelWebApplicationFactory>
         await AssertNoSeriousViolations(page, "/dev/styleguide");
     }
 
+    /// <summary>
+    /// WI-503: the reader-choice gate, at both widths and in BOTH states. An
+    /// open disclosure is different markup from a closed one, which is the gap
+    /// WI-440 found with the mobile menu — the panel axe had never looked at.
+    ///
+    /// Axe needs JavaScript to run, so the no-script promise is checked
+    /// separately below rather than folded in here.
+    /// </summary>
+    [Theory]
+    [InlineData(1280, 900, "desktop")]
+    [InlineData(390, 844, "390px")]
+    public async Task TheReaderChoiceGateHasNoSeriousOrCriticalAxeViolations(
+        int width, int height, string label)
+    {
+        var context = await _browser!.NewContextAsync(new()
+        {
+            ViewportSize = new() { Width = width, Height = height },
+        });
+
+        // try/finally, unlike the older tests in this file: a failing
+        // assertion would otherwise leak a browser context for the rest of the
+        // run, and this file now opens three more of them than it used to.
+        try
+        {
+            var page = await context.NewPageAsync();
+            var response = await page.GotoAsync(_factory.ServerAddress + "/dev/styleguide");
+
+            // Guard against a false green: a 404 would scan the error page.
+            Assert.True(response!.Ok, $"Expected 2xx from /dev/styleguide, got {response.Status}");
+            Assert.True(await page.Locator(".reader-gate__disclosure").CountAsync() > 0,
+                "the style guide should render a reader-choice gate");
+
+            await AssertNoSeriousViolations(page, $"/dev/styleguide gate closed ({label})");
+
+            await page.Locator(".reader-gate__toggle").ClickAsync();
+            Assert.True(await page.Locator(".reader-gate__body").IsVisibleAsync(),
+                $"the toggle should reveal the gated content ({label})");
+
+            await AssertNoSeriousViolations(page, $"/dev/styleguide gate open ({label})");
+        }
+        finally
+        {
+            await context.DisposeAsync();
+        }
+    }
+
+    /// <summary>
+    /// WI-503: the gate is a &lt;details&gt; precisely so it survives with no
+    /// script, like the hamburger (WI-440) and the country picker (WI-457).
+    /// A component that needs JavaScript would fail the reader it exists for.
+    /// </summary>
+    [Fact]
+    public async Task TheReaderChoiceGateOpensAndClosesWithJavaScriptDisabled()
+    {
+        var context = await _browser!.NewContextAsync(new() { JavaScriptEnabled = false });
+
+        try
+        {
+            var page = await context.NewPageAsync();
+            var response = await page.GotoAsync(_factory.ServerAddress + "/dev/styleguide");
+            Assert.True(response!.Ok, $"Expected 2xx from /dev/styleguide, got {response.Status}");
+
+            // Closed on load is the item. Checked as rendered visibility, not
+            // as the attribute — CSS could re-open what the markup left shut.
+            Assert.Equal(0, await page.Locator(".reader-gate__disclosure[open]").CountAsync());
+            Assert.False(await page.Locator(".reader-gate__body").IsVisibleAsync(),
+                "the gated content must be hidden on load");
+            Assert.True(await page.Locator(".reader-gate__warning").IsVisibleAsync(),
+                "the warning must be visible before the choice");
+            Assert.True(await page.Locator(".reader-gate__show").IsVisibleAsync());
+            Assert.False(await page.Locator(".reader-gate__hide").IsVisibleAsync());
+
+            await page.Locator(".reader-gate__toggle").ClickAsync();
+
+            Assert.True(await page.Locator(".reader-gate__body").IsVisibleAsync(),
+                "clicking the toggle must reveal the gated content with JavaScript off");
+
+            // And the label has to stop lying: "Show" is wrong once it is on screen.
+            Assert.True(await page.Locator(".reader-gate__hide").IsVisibleAsync());
+            Assert.False(await page.Locator(".reader-gate__show").IsVisibleAsync());
+
+            await page.Locator(".reader-gate__toggle").ClickAsync();
+            Assert.False(await page.Locator(".reader-gate__body").IsVisibleAsync(),
+                "a reader must be able to put it away again");
+        }
+        finally
+        {
+            await context.DisposeAsync();
+        }
+    }
+
     private static async Task AssertNoSeriousViolations(IPage page, string label)
     {
         var results = await page.RunAxe();
