@@ -1,0 +1,18 @@
+Shared content blocks (WI-501) live here, one Markdown fragment per file.
+
+A curated page includes one with a line whose entire content is the block
+name in brackets: [CROSSWALK] pulls in crosswalk.md.
+
+Rules:
+  - No title, no slug, no disclaimers. A block is a fragment of a page, not
+    a page, and is never served on its own.
+  - Front matter is optional and may carry only `sources`. Those merge into
+    the front matter of every page that includes the block, so the block's
+    sources live in one place too.
+  - ContentCheck grades the COMPOSED page. A block is never graded alone,
+    because a fragment can sit under 6.0 on its own while the assembled page
+    goes over it.
+  - A block no page includes is reported as a warning: nothing grades it.
+
+Empty until WI-513 writes the first one (the retired-name crosswalk) together
+with the tumor page that includes it.

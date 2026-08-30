@@ -51,6 +51,46 @@ disclaimers: [medical, benefits]
 
 A CI script walks all pages and reports: overdue reviews, missing sources, `volatile_figures` pages every December (SSA COLA lands October, effective January), broken outbound links (monthly).
 
+### 3a. Shared blocks (WI-501)
+
+Some passages belong on many pages and must say the same thing on all of them
+— the WHO CNS5 retired-name crosswalk above all, because WHO and cIMPACT-NOW
+move and a copy-pasted crosswalk means 24 places to correct. Those live once,
+under `src/BrainHarbor.Web/Content/blocks/`, one Markdown file per block.
+
+A page includes one with a line whose **entire content** is the block name in
+brackets:
+
+```markdown
+## Old names you may still see
+
+[CROSSWALK]
+```
+
+Rules worth knowing before writing one:
+
+- **A block is a fragment, not a page.** No title, no slug, no disclaimers, no
+  URL; it is never served on its own.
+- **Front matter is optional and may carry only `sources`.** Those merge into
+  the front matter of every including page, so a block's citations live in one
+  place too. A source with no URL (a print edition) is carried through, not
+  dropped.
+- **The composed page is what gets graded.** ContentCheck measures reading
+  level after includes are resolved. A fragment can sit under 6.0 alone while
+  the assembled page goes over it, and the reader only ever meets the assembled
+  page.
+- **Uppercase, on its own line.** `[crosswalk]` is not a directive and renders
+  as literal text; ContentCheck fails the build when a lowercase whole-line
+  token names a real block, because that is a typo rather than prose. Inline
+  `[text](url)` links and bracketed asides are untouched, and directives inside
+  fenced code blocks are left alone so this section can show the syntax.
+- **A missing or unreadable block fails the build.** It never renders as an
+  empty section: on a medical page, silence reads as "there is nothing to say
+  here". At runtime only the pages that include the bad block fail — a typo in
+  one block must not take down `/privacy`.
+- **A block no page includes is warned about**, because nothing grades it.
+- Blocks may include blocks, up to five deep.
+
 ## 4. Plain-language style guide (both pipelines)
 
 - Sentences under ~20 words. One idea per paragraph. Question-style headers.

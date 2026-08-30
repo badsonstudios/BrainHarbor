@@ -2071,7 +2071,7 @@ what is specific to that page.
 
 Small, and everything downstream inherits it. Do not start Wave 1 first.
 
-- [ ] **WI-501 Shared content blocks for curated pages**
+- [x] **WI-501 Shared content blocks for curated pages** *(done 2026-08-30)*
   Goal: write the repeated blocks once so 24 pages cannot drift apart.
   Problem: curated content is flat Markdown with **no include mechanism**. Six
   blocks recur across the tumor hubs — `[CROSSWALK]` (retired names),
@@ -2087,6 +2087,17 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   than rendering an empty section.
   Refs: `Content/ContentStore.cs`, `tools/BrainHarbor.ContentCheck/`,
   docs/research/tumor-guides/SYNTHESIS.md §3.2. Depends on: nothing.
+  **Done.** Directive is a whole line reading `[BLOCK-NAME]`; blocks live in
+  `Content/blocks/`, ship EMPTY (WI-513 writes the crosswalk together with the
+  page that includes it). A block may carry `sources` front matter, which
+  merges into every including page — otherwise the drift problem just moves to
+  the citation list. Mechanism documented in content-pipeline.md §3a.
+  **Two review findings worth carrying into Wave 1:** matching must be line
+  based, not one regex over the document (`core.autocrlf=true`, and .NET's
+  multiline `$` will not match before `\r`, so on a fresh clone every directive
+  rendered as literal bracket text with no error while CI stayed green); and a
+  block must be spliced with blank lines around it, or the crosswalk TABLE
+  fuses into the neighbouring paragraph as pipe-mangled prose.
 
 - [ ] **WI-502 The tumor-guide editorial standard**
   Goal: write the rules down where a future session will find them, not in a
