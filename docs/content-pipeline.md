@@ -375,7 +375,7 @@ every frightening block.**
 | 6 | What do the words on my report mean? | The clearest content gap across every comparator. |
 | 7 | How is it usually treated? (links to the treatment library) | Surgery, radiation and chemo are ~78% of forum treatment discussion. |
 | 8 | What is treatment actually like, and what is normal afterwards? | The loudest gap in the qualitative literature: "the real fight started after I woke up". |
-| 9 | Everyday life: driving, work, money, seizures, tiredness, memory | Financial and logistical strain dominated real forum discussion. |
+| 9 | Everyday life: driving, work, money, seizures, tiredness, memory | Financial and logistical strain dominated real forum discussion. **Seizures, activities and driving belong to WI-560 — link, do not restate.** Driving rules are jurisdictional, so a per-tumor page must never carry a duration. |
 | 10 | Follow-up scans, and what to do while you wait | Scanxiety is common, severe (mean 6/10), and peaks in the wait. |
 | 11 | If it comes back | A distinct, named question set. |
 | 12 | Outlook — behind a reader-choice gate, no numbers | See §12.5. By here the reader has everything actionable before meeting anything frightening. |

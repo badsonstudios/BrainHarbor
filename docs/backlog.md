@@ -1587,7 +1587,10 @@ digest (**WI-404**/**WI-405**).
   with somebody with a tumor and they need to know what they need to deal with."*
   His example — a partner with a tumor who has seizures — produced **WI-559**
   ("what to do when someone has a seizure"), which is life-safety content the
-  site did not have at all.
+  site did not have at all, and later the same day **WI-560** (living with
+  seizures day to day: activities, triggers, water, driving). The caregiver
+  block links to both — a caregiver needs the emergency steps AND the everyday
+  ones, and it is often the caregiver doing the over-restricting.
   So: **WI-558** sets the standard and the shared block, every P5 tumor hub
   carries a section, treatment pages with real aftercare carry one too
   (WI-510 heaviest), and **this item is now the fuller path they all link into**
@@ -1673,12 +1676,13 @@ digest (**WI-404**/**WI-405**).
   Refs: Content/pages/start.md, WI-436. Depends on: WI-507/WI-508, WI-446
   ideally.
 
-- [ ] **WI-451 Survivorship and late effects** *(re-scoped 2026-08-30 by P5)*
+- [ ] **WI-451 Survivorship and late effects** *(re-scoped 2026-08-30 by P5, twice)*
   **Scope change:** Phase P5's **WI-521** now owns follow-up scans, the
   surveillance rhythm, RANO, pseudoprogression, radiation necrosis and
-  scanxiety. This item keeps fatigue, seizures and driving, memory and
-  concentration, returning to work, and the years-long picture. Do not write
-  scan content here — link to WI-521.
+  scanxiety. **WI-560 now owns seizures day to day — triggers, activities,
+  water and driving.** This item keeps fatigue, memory and concentration,
+  returning to work, and the years-long picture. Do not write scan content here
+  (link to WI-521) and do not write driving rules here (link to WI-560).
   Goal: the site currently stops at treatment.
   Problem: nothing covers life after it — fatigue, seizures and what they mean
   for driving, memory and concentration, returning to work, scan anxiety,
@@ -1991,7 +1995,7 @@ committed at **`docs/research/tumor-guides/`** and are the source material for
 every item below. **Read `SYNTHESIS.md` first** — it holds the page inventory,
 the resolved conflicts and the rulings.
 
-**The strategic finding, which is why this phase is worth 57 items.** The
+**The strategic finding, which is why this phase is worth 60 items.** The
 readability gap is measured and published: across 91 US brain tumor centers and
 8 patient organizations, mean Flesch-Kincaid grade level is **11**; fewer than
 10% of center sites reach 8th grade and **no patient organization does**
@@ -2046,7 +2050,7 @@ Dan's calls, 2026-08-29/30:
 ### Shared acceptance contract
 
 **Every content item in this phase must satisfy all of the following.** Stated
-once here so 57 items do not each repeat it; item-level Acceptance lists only
+once here so 60 items do not each repeat it; item-level Acceptance lists only
 what is specific to that page.
 
 1. Reading grade **≤ 6.0** measured by ContentCheck (CI-gated).
@@ -2221,7 +2225,16 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   `pdftotext -f 1 -l 20 <file> -`. The `Read` tool cannot — it needs poppler's
   `pdftoppm`, which is not installed.
 
-- [ ] **WI-505 Glossary terms for the new vocabulary**
+- [x] **WI-505 Glossary terms for the new vocabulary** *(done 2026-08-30, PR #71)*
+  40 new terms, 43 total. Glossary front matter gained a `sources:` field —
+  the glossary was the one content surface where a medical claim could ship
+  with nowhere to record where it came from.
+  **Read this before adding a term.** Nine of the thirteen StatPearls
+  citations in the first draft were wrong: written from memory, they resolved
+  to real but unrelated chapters (`NBK534244`, cited on four surgery terms, is
+  *Carbon Dioxide Angiography*). **A wrong citation that resolves is worse than
+  no citation, because nothing looks broken.** Every URL here was fetched and
+  its title read before use. Do the same.
   Goal: the tooltips fire before the pages that need them ship.
   Acceptance: roughly 40 terms added — extra-axial, dural tail, mass effect,
   vasogenic edema, gross total resection, debulking, frozen section, integrated
@@ -2408,6 +2421,96 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: WI-525 (medicines, a different page — this is what to DO),
   docs/research/tumor-guides/patient-questions-and-ia.md §(c)D.
   Depends on: WI-558. **Before WI-513** — the template links to it.
+  **Pairs with WI-560**, which is the rest of the time.
+
+- [ ] **WI-560 Living with seizures: what you can do, and what to be careful about**
+  *(Dan, 2026-08-30, from his own example)*
+  Goal: the day-to-day question WI-559 does not answer — not "what do I do
+  during a seizure" but "what am I allowed to do for the other 364 days".
+  **Why it exists.** Dan: his ex-wife has a low-grade glioma with seizures,
+  controlled on medication, and she has worked out for herself that anything
+  strenuous can bring on small ones — so she manages what she does. She cannot
+  drive. Nothing on this site helps with any of that, and the phase as filed
+  did not cover it: **WI-559** is the emergency, **WI-451** is late effects,
+  **WI-525** is the medicines, and section 9 of a tumor hub is one paragraph per
+  tumor. Nobody owned the practical list. This item does.
+
+  **The finding that decides the whole shape of this page, and it cuts both
+  ways.** Most of the restriction people with seizures are handed is not
+  evidence-based. People with epilepsy are measurably less active than the
+  general population because of "prejudice, overprotection, unawareness, stigma,
+  fear of seizure induction and lack of knowledge of health professionals";
+  exercise generally *reduces* seizure frequency; the guidance position is
+  individualised, risk-stratified counselling **instead of** blanket restriction
+  (ILAE; `sciencedirect.com/science/article/pii/S1059131114002660`).
+  **And exercise-triggered seizures are still real for a minority.** In a series
+  of 400 people with epilepsy only **two** could identify physical activity as a
+  precipitant — but where it happens it is reproducible, and the degree of
+  exertion tracks the likelihood (`neurology.org/doi/10.1212/WNL.38.4.633`).
+  **So the page has to hold both, and the order matters.** A page that only says
+  "exercise is good for you, go and live your life" tells the reader in that
+  minority that she is wrong about her own body — and she is not; she has
+  observed it repeatedly. A page that only lists prohibitions makes everyone
+  else's life smaller for no reason. Say: most people are told to do less than
+  they need to, **and** if you have noticed a pattern in yourself, you are not
+  imagining it and it is worth writing down and taking to your team.
+
+  **The organising principle, which is the actually useful idea here: it is
+  rarely the activity that is dangerous, it is what you would fall into, onto,
+  or from.** Give the reader that sentence and they can reason about activities
+  nobody wrote a page on. A list of banned things cannot do that, and it goes
+  stale the moment someone asks about a hobby that is not on it.
+
+  Acceptance, beyond the shared contract:
+  - **Water is the one to state most plainly**, because it is where seizures
+    kill people. Shower rather than bath; do not lock the bathroom door and hang
+    a sign instead; a door that opens outward cannot be blocked by someone who
+    falls against it; non-slip strips; a fabric curtain rather than a glass
+    screen; never swim alone, and a companion who knows what to do beats a
+    lifeguard who does not.
+  - **Small changes that keep the activity**: back burners and a microwave
+    rather than reaching over a gas flame; a food processor rather than knives
+    when alone; care on ladders, at heights and near open water. Framed as
+    "keep doing it, change how", never as "do not".
+  - **Triggers worth acting on**, with the honest caveat that they differ per
+    person: a regular sleep schedule (sleep loss is the best-attested one),
+    alcohol — including that the risk peaks while it wears off, not while
+    drinking — dehydration, heat, and missed doses.
+  - **A seizure diary, and why it is worth the bother**: it is the thing that
+    actually changes a medication decision, and it is how you find out whether
+    your own suspected trigger is real.
+  - **Being the one who over-restricts yourself** is a real cost too, as is a
+    family member doing it for you. Say so.
+  - **Practical kit**: medical ID, a written seizure action plan for work and
+    family, spare medication in a bag, alarms for doses.
+  - **Work**: what to tell an employer, and that adjustments exist.
+
+  **Driving gets its own section and NEVER a number.** It is the loss people
+  feel hardest and the thing this page most needs to handle honestly. US rules
+  vary enormously: 28 states set a fixed seizure-free period (median 6 months,
+  range 3 to 12), 23 leave it to clinical judgement, and Florida requires 2
+  years with reconsideration possible at 6; every state requires notifying the
+  DMV and some place the reporting duty on the doctor
+  (`epilepsy.com/lifestyle/driving-and-transportation/laws`). So: explain the
+  shape of the rules, link the state-by-state tool, say plainly that this is one
+  to ask the care team about rather than guess, and **do not print a duration on
+  the page**. Same line WI-451, WI-525 and WI-559 already hold.
+  Then say the part nobody says: losing the licence is usually the biggest
+  practical change, it is a legitimate grief, and there are workarounds worth
+  knowing about. Per §12.6 this section must not end on the loss.
+
+  **Sources first-tier and cited** (Epilepsy Foundation, ILAE, NBTS), and note
+  for whoever writes it: `braintumor.org/news/9-tips-for-managing-seizures-caused-by-brain-tumors/`
+  is good on medication routine and useless on daily activities — the activity
+  material has to come from the epilepsy sources, not the brain-tumor ones.
+  **Not US-only in tone.** WI-455/457 put non-US readers on this site
+  deliberately; a page written as though every reader has a DMV fails them.
+  Refs: WI-559 (the emergency; cross-link both ways), WI-558 (the caregiver
+  block links here), WI-525 (medicines), WI-451 (which now sheds "seizures and
+  driving" to this item). Depends on: nothing — it needs no tumor content.
+  **Wave 0**, beside WI-559: the two are one subject split by whether it is
+  happening right now, and writing them together is how that split gets decided
+  once instead of twice.
 
 - [ ] **WI-513 Low-grade glioma, deepened — the template proof**
   Goal: one tumor hub taken all the way, reviewed, before the pattern is copied.
