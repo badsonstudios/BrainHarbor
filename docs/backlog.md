@@ -2126,7 +2126,7 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   Refs: `Pages/Shared/`, wwwroot/css/site.css, WI-440 (disclosure pattern),
   docs/research/tumor-guides/SYNTHESIS.md §5. Depends on: nothing.
 
-- [ ] **WI-504 `[user]` Fetch the sources that block automated access**
+- [x] **WI-504 `[user]` Fetch the sources that block automated access** *(done 2026-08-30 — Wave 1 UNBLOCKED)*
   Goal: get the best available source into the repo.
   Three separate research tracks independently named **NCCN Guidelines for
   Patients: Gliomas** as the best CNS5-aligned, patient-level, licensing-clean
@@ -2138,6 +2138,42 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   `.claude/work_files/research/sources/` (git-ignored — they are third-party
   documents, not ours to commit). A note here listing what was retrieved.
   Depends on: nothing. **Blocks Wave 1.**
+
+  **Retrieved 2026-08-30**, in `.claude/work_files/research/sources/`:
+  - `brain-gliomas-patient.pdf` — **NCCN Guidelines for Patients: Brain Cancer
+    — Glioma, 2024.** ~76 pages. The blocker; Wave 1 is now unblocked. Also the
+    model for the "questions to ask your care team" section every P5 page ends
+    with.
+  - `kurokawa-et-al-2022-...-who-classification...pdf` — RadioGraphics
+    `10.1148/rg.210236`, Kurokawa et al. **"Major Changes in 2021 WHO
+    Classification of CNS Tumors."** The single best crosswalk source for
+    WI-501's `[CROSSWALK]` block: CNS5 renames, cIMPACT-NOW, Roman→Arabic.
+    **Note for anyone re-reading the research reports:** `tests-library.md`
+    §13 calls the blocked RSNA item "the RSNA fMRI review". That is a DIFFERENT
+    article whose URL was never captured. `rg.210236` is the CNS5 paper, filed
+    correctly under "WHO CNS5 classification and grading" in
+    `glioma-family.md`. Do not deprioritise it on the strength of the tests
+    report's label.
+  - `jhu-understanding-my-report.pdf` — Johns Hopkins Pathology, the model for
+    WI-508. Its sample report reads *"Glioblastoma, IDH wildtype (WHO grade
+    IV)"* — a Roman numeral, retired by CNS5 in 2021 precisely to stop
+    II/III/IV transcription errors. Useful **because** it is dated: it is a
+    real example of the confusion WI-508 has to walk a reader through.
+  - `what-causes-brain-tumours.pdf` — The Brain Tumour Charity. Feeds
+    `[CAUSES]`. Carries the line that block exists for: only ~3% of UK brain
+    tumours are thought preventable, and *"there's nothing you could have done,
+    or not done, to prevent brain cancer."* **The URL in the research reports
+    is dead** — the live one has an extra `/brain-tumour-biology/` segment:
+    `.../how-brain-tumours-are-diagnosed/brain-tumour-biology/what-causes-brain-tumours/`
+  - **ABTA pages: deliberately NOT retrieved.** Their naming is pre-CNS5, and
+    §4 of the shared contract already bars them from governing naming or
+    grading. That leaves tone and "what patients ask", which the NCCN guideline
+    covers better. Recorded as decided-against so it is not re-proposed.
+
+  **All four are text-extractable** with `pdftotext` (already on this machine at
+  `/mingw64/bin/pdftotext`), so a session can read them directly:
+  `pdftotext -f 1 -l 20 <file> -`. The `Read` tool cannot — it needs poppler's
+  `pdftoppm`, which is not installed.
 
 - [ ] **WI-505 Glossary terms for the new vocabulary**
   Goal: the tooltips fire before the pages that need them ship.

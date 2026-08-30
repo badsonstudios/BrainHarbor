@@ -90,6 +90,29 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-08-30** — **WI-504 done — Wave 1 is UNBLOCKED.** Dan fetched the
+  403-blocked sources by hand into `.claude/work_files/research/sources/`
+  (git-ignored; third-party documents). Got: the **NCCN Guidelines for
+  Patients: Brain Cancer — Glioma 2024** (~76 pages — the blocker, and the
+  model for the "questions to ask" section every P5 page ends with);
+  **Kurokawa et al. 2022 "Major Changes in 2021 WHO Classification of CNS
+  Tumors"**; **Johns Hopkins "Understanding My Report"**; and **The Brain
+  Tumour Charity "What causes brain tumours?"**. ABTA deliberately dropped —
+  pre-CNS5 naming, already barred by §4 of the shared contract from governing
+  naming or grading, and NCCN covers the rest better.
+  **Two corrections to my own instructions, both of which cost Dan time.**
+  (1) I labelled RadioGraphics `rg.210236` "the RSNA fMRI review" and told him
+  to skip it if it was paywalled. It is the **CNS5 changes paper** — the single
+  best crosswalk source in the set, and exactly what WI-501's `[CROSSWALK]`
+  block is for. `tests-library.md` §13 uses that wrong label for a different,
+  un-URL'd article; `glioma-family.md` files it correctly. He saved it anyway.
+  (2) I gave him a dead URL for the causes page and a table whose `.pdf`
+  filenames read as things to download — ABTA and BTC publish no PDFs, the
+  pages have to be printed to one. Fixed both in the checklist.
+  **Worth knowing for Wave 1: all four extract with `pdftotext`** (already at
+  `/mingw64/bin/pdftotext`) — `pdftotext -f 1 -l 20 <file> -`. The `Read` tool
+  cannot open them; it needs poppler's `pdftoppm`, which is not installed here.
+
 - **2026-08-30** — **WI-501 done — curated pages can include shared blocks, so
   the retired-name crosswalk lives in one file instead of 24.** P5 Wave 0; a
   code item, no tumor content written. A directive is a line whose entire
