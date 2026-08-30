@@ -123,6 +123,26 @@ public static partial class ContentBlocks
     /// </summary>
     private static IEnumerable<(int Line, string Name, string Indent)> Directives(string markdown)
     {
+        foreach (var (index, line) in LinesOutsideFencedCode(markdown))
+        {
+            var match = DirectivePattern().Match(line);
+            if (match.Success)
+            {
+                yield return (index, ToBlockName(match.Groups[2].Value), match.Groups[1].Value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Every line of a fragment that is NOT inside a fenced code block (the
+    /// fence delimiters themselves are excluded too), paired with its 0-based
+    /// index. Line ending agnostic, which is the whole reason this is one
+    /// shared walker rather than a regex per caller: .NET's multiline
+    /// <c>$</c> does not match before <c>\r</c>, and this repo hands every
+    /// working tree CRLF while CI sees LF (WI-501).
+    /// </summary>
+    internal static IEnumerable<(int Number, string Text)> LinesOutsideFencedCode(string markdown)
+    {
         var lines = SplitLines(markdown);
         var fence = default(FenceState);
 
@@ -145,11 +165,7 @@ public static partial class ContentBlocks
                 continue;
             }
 
-            var match = DirectivePattern().Match(line);
-            if (match.Success)
-            {
-                yield return (index, ToBlockName(match.Groups[2].Value), match.Groups[1].Value);
-            }
+            yield return (index, line);
         }
     }
 

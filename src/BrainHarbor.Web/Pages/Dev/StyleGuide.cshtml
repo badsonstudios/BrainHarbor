@@ -54,6 +54,18 @@
     @Html.Raw(Model.TooltipSampleHtml)
 </div>
 
+@* WI-503. Two things to check by eye, because no test can: the gate must not
+   read as an alarm (it is a considerate pause, not a danger sign), and the
+   toggle label must flip between "Show" and "Hide" with JavaScript off. *@
+<h2>Reader-choice gate</h2>
+<p>
+    Written in a curated page as a <code>:::outlook</code> block. It is closed
+    on load, opens on click or Enter, and works with JavaScript off.
+</p>
+<div class="container--read">
+    @Html.Raw(Model.ReaderGateSampleHtml)
+</div>
+
 <h2>Feed cards</h2>
 <div class="section-head">
     <h3>Latest updates</h3>

@@ -2294,6 +2294,69 @@ main {
   opacity: 0.8;
 }
 
+/* ---------- Reader-choice gate (WI-503) ----------
+   Outlook, behind an explicit choice (content-pipeline.md §12.5). The NOTICE
+   palette, not CAUTION and not an alarm colour: this is "take care", not
+   "danger" and not "the AI wrote this". Nothing in here is red — a reader
+   deciding whether to read about their own prognosis should not also be
+   handled a warning sign.
+
+   No JavaScript, like the hamburger (WI-440) and the country picker (WI-457).
+   <details> supplies the disclosure, the keyboard handling and the state. */
+.reader-gate {
+  margin-block: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-notice);
+  border: 1px solid var(--color-notice-border);
+  border-inline-start: 4px solid var(--color-notice-edge);
+  border-radius: var(--card-radius);
+}
+
+.reader-gate__warning {
+  margin-block: 0 var(--space-4);
+  max-inline-size: var(--measure);
+}
+
+.reader-gate__toggle {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--tap-target);
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-paper);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+  color: var(--color-accent-strong);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;     /* kill the default disclosure triangle */
+}
+
+/* Safari needs the -webkit pseudo-element too, or the triangle survives. */
+.reader-gate__toggle::-webkit-details-marker { display: none; }
+
+.reader-gate__toggle:hover {
+  background: var(--color-surface);
+  border-color: var(--color-accent-strong);
+}
+
+/* The label has to match the state, or a reader with JavaScript off is told
+   to "show" something already on screen. CSS reads [open] directly, so this
+   costs no script. */
+.reader-gate__hide { display: none; }
+.reader-gate__disclosure[open] .reader-gate__show { display: none; }
+.reader-gate__disclosure[open] .reader-gate__hide { display: inline; }
+
+.reader-gate__body {
+  margin-block-start: var(--space-5);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-notice-border);
+}
+
+.reader-gate__body > :first-child { margin-block-start: 0; }
+.reader-gate__body > :last-child { margin-block-end: 0; }
+
+/* Print rules for the gate live in print.css with the rest of them. */
+
 /* ---------- Motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

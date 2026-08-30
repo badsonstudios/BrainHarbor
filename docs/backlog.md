@@ -592,6 +592,24 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   would spin on the same dead cached host. A retry has to dispose the factory
   and build a fresh one, which is why this needs doing properly rather than
   wrapping the call in a `for` loop.
+  **CONTRADICTED 2026-08-30 (WI-503), with a captured trx.** "The factory
+  poisons itself" is not the whole story, and the paragraph above should not be
+  acted on as written. Reproduced locally at **3 failures in ~16 full-suite
+  runs** (~1 in 5, matching the 2026-08-29 sighting) and captured the message
+  from a `.trx` rather than inferring it: same `EnsureServer()` →
+  `CreateClient()` → *"The server has not been started"*, thrown from
+  `InitializeAsync`. **But in that same run, 9 of the other 10 `A11ySmokeTests`
+  passed** — and `A11ySmokeTests` holds the factory as an
+  `IClassFixture`, so every one of them called `EnsureServer()` on the **same
+  instance** either side of the failure. A permanently poisoned factory would
+  have failed all ten. So the bad state is **transient**, and a plain retry may
+  in fact be enough. Establish which before building the dispose-and-rebuild
+  machinery — it is the more expensive fix and the evidence no longer clearly
+  demands it.
+  Worth noting for whoever picks this up: it lands on whichever test in the
+  class draws the short straw, so it reads as "that new test is flaky" and
+  invites blaming the wrong change. It attached to WI-503's new no-JS gate test
+  twice, which is how it was caught here.
   Also suspect (in `CreateHost`, which is order-dependent by design): if
   `_kestrelHost.Start()` throws — a port race on `127.0.0.1:0`, or the database
   not being ready — `testHost.Start()` never runs, and the factory is left in
@@ -2130,7 +2148,17 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   a 76-page plain-language PDF open is exactly where phrasing gets borrowed
   without anyone deciding to.
 
-- [ ] **WI-503 Reader-choice gate for the outlook section**
+- [x] **WI-503 Reader-choice gate for the outlook section** *(done 2026-08-30)*
+  Shipped as a Markdig custom container, `:::outlook`, because curated pages
+  render with `DisableHtml()` — a `<details>` typed into a .md file renders
+  escaped, so this could never have been "just write the HTML". Authoring
+  syntax and the three rules that follow from it are in
+  `docs/content-pipeline.md` §12.5.
+  **The safety property is that a typo fails rather than falls open.** Markdig
+  renders an unknown `:::name` as an anonymous `<div>`, so `:::outlok` would
+  have published the outlook section wide open, with no error and a green
+  build. `ReaderGate.Validate` fails the page by name instead, and ContentCheck
+  turns that into a build failure for free.
   Goal: let a reader decide whether to read the frightening part.
   The evidence says some patients want full honesty, some want generalities, and
   some want only positive information — so outlook sits at position 12, behind

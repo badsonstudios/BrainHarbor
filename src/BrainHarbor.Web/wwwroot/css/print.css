@@ -269,3 +269,42 @@ a[href^="http"]::after {
   margin-top: 12pt;
   color: #000;
 }
+
+/* The reader-choice gate (WI-503). The printed page reflects what the reader
+   CHOSE: a gate left closed stays closed on paper. Forcing it open would hand
+   the outlook section to someone who explicitly declined it, which is the
+   entire point of the component. */
+.reader-gate {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1pt solid #000 !important;
+}
+
+/* Only worth keeping whole while it is closed — that is a short warning plus
+   one label. An OPEN gate can be a page of prognosis, and an unbreakable
+   block that tall prints a mostly-blank sheet or gets clipped. */
+.reader-gate:not(:has([open])) {
+  break-inside: avoid;
+}
+
+/* The toggle is a control, and on paper it cannot be operated. Closed, its
+   words still earn their space: they tell the reader there is a section here
+   they did not open. Open, they are an instruction already carried out sitting
+   directly above the thing it offers to reveal — so it goes. The
+   "What might happen over time" heading is outside the gate, so the printed
+   section keeps its label either way. */
+.reader-gate__toggle {
+  border: 0 !important;
+  background: none !important;
+  color: #000 !important;
+  padding-inline: 0 !important;
+  min-block-size: 0 !important;
+}
+
+.reader-gate__disclosure[open] .reader-gate__toggle {
+  display: none !important;
+}
+
+.reader-gate__body {
+  border-block-start-color: #000 !important;
+}
