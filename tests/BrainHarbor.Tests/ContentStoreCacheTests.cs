@@ -24,10 +24,15 @@ public sealed class ContentStoreCacheTests : IDisposable
             {
                 ["Content:Root"] = _root,
                 ["Glossary:Root"] = Path.Combine(_root, "no-glossary"),
+                ["Content:BlocksRoot"] = Path.Combine(_root, "no-blocks"),
             })
             .Build();
         var environment = new StubEnvironment();
-        _store = new ContentStore(environment, configuration, new GlossaryStore(environment, configuration));
+        _store = new ContentStore(
+            environment,
+            configuration,
+            new GlossaryStore(environment, configuration),
+            new ContentBlockStore(environment, configuration));
     }
 
     public void Dispose() => Directory.Delete(_root, recursive: true);
