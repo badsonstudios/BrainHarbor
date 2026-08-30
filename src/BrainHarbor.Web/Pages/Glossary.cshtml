@@ -37,6 +37,24 @@
             {
                 <p class="text-muted">Also called: @string.Join(", ", term.Aliases).</p>
             }
+            @* WI-505: a definition is a medical claim, so it points at where it
+               came from — the same rule, and the same markup, as the curated
+               pages (see ContentPage.cshtml). A <ul> announces the item count
+               to a screen reader; the inline comma-separated version did not. *@
+            @if (term.Sources.Count > 0)
+            {
+                <p class="text-muted">Where this came from:</p>
+                <ul class="term-sources">
+                    @foreach (var source in term.Sources)
+                    {
+                        @* Never render a link with no text: an empty title is
+                           a focusable control with no accessible name, which
+                           fails WCAG 2.4.4 on a site where AA is a hard
+                           requirement. Fall back to the host. *@
+                        <li><a href="@source.Url">@GlossaryModel.LinkText(source)</a></li>
+                    }
+                </ul>
+            }
         }
     }
 </div>

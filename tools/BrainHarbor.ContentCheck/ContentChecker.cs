@@ -331,10 +331,44 @@ public static partial class ContentChecker
         {
             var term = GlossaryStore.ParseTerm(raw, slug);
             var words = term.Definition.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
-            return words > 40
-                ? [new(FindingLevel.Fail, $"glossary/{slug}.md",
-                    $"definition is {words} words — the editorial limit is 40 (content-pipeline §6)")]
-                : [new(FindingLevel.Info, $"glossary/{slug}.md", $"ok ({words} words)")];
+
+            var findings = new List<Finding>
+            {
+                words > 40
+                    ? new(FindingLevel.Fail, $"glossary/{slug}.md",
+                        $"definition is {words} words — the editorial limit is 40 (content-pipeline §6)")
+                    : new(FindingLevel.Info, $"glossary/{slug}.md", $"ok ({words} words)"),
+            };
+
+            // WI-505: same rule and same severity as a curated page — a
+            // definition a reader is handed as fact should say where it came
+            // from. Warn rather than fail, matching CheckPage.
+            if (term.Sources.Count == 0)
+            {
+                findings.Add(new(FindingLevel.Warn, $"glossary/{slug}.md",
+                    "no sources in front matter — every claim must trace (content-pipeline §1)"));
+            }
+
+            // A source with a URL and no title renders as a link with no
+            // accessible name (WCAG 2.4.4). The page falls back to the host so
+            // nothing ships nameless, but that is a patch, not the fix.
+            foreach (var source in term.Sources.Where(s => string.IsNullOrWhiteSpace(s.Title)))
+            {
+                findings.Add(new(FindingLevel.Warn, $"glossary/{slug}.md",
+                    $"source '{source.Url}' has no title — the link would have no readable text"));
+            }
+
+            // Reported, not gated. Flesch-Kincaid on a 25-word definition is
+            // too noisy to fail a build on — the same reason CheckRazorPage
+            // refuses to grade under 25 words — but a definition drifting to
+            // grade 9 should still be visible to whoever runs this.
+            if (words >= 20)
+            {
+                findings.Add(new(FindingLevel.Info, $"glossary/{slug}.md",
+                    $"reading grade {ReadabilityAnalyzer.FleschKincaidGrade(term.Definition):0.0} (not gated)"));
+            }
+
+            return findings;
         }
         catch (FormatException exception)
         {

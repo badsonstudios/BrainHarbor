@@ -2221,7 +2221,16 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   `pdftotext -f 1 -l 20 <file> -`. The `Read` tool cannot — it needs poppler's
   `pdftoppm`, which is not installed.
 
-- [ ] **WI-505 Glossary terms for the new vocabulary**
+- [x] **WI-505 Glossary terms for the new vocabulary** *(done 2026-08-30)*
+  40 new terms, 43 total. Glossary front matter gained a `sources:` field —
+  the glossary was the one content surface where a medical claim could ship
+  with nowhere to record where it came from.
+  **Read this before adding a term.** Nine of the thirteen StatPearls
+  citations in the first draft were wrong: written from memory, they resolved
+  to real but unrelated chapters (`NBK534244`, cited on four surgery terms, is
+  *Carbon Dioxide Angiography*). **A wrong citation that resolves is worse than
+  no citation, because nothing looks broken.** Every URL here was fetched and
+  its title read before use. Do the same.
   Goal: the tooltips fire before the pages that need them ship.
   Acceptance: roughly 40 terms added — extra-axial, dural tail, mass effect,
   vasogenic edema, gross total resection, debulking, frozen section, integrated

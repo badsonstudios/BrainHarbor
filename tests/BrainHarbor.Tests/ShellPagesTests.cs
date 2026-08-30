@@ -185,8 +185,14 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
         string[] shellPages =
             ["about.md", "how-we-write.md", "start.md", "digest.md", "privacy.md", "terms.md"];
 
+        // Scoped to page files. WI-505 made ContentCheck report a reading
+        // grade for glossary definitions too (ungated — see CheckGlossaryTerm),
+        // so "every finding that mentions a grade" is no longer the same set
+        // as "every page". The assertion below is about pages, and counting 42
+        // glossary terms into it made it fail while nothing was wrong.
         var graded = findings
             .Where(f => f.Message.StartsWith("reading grade"))
+            .Where(f => !f.File.StartsWith("glossary/", StringComparison.OrdinalIgnoreCase))
             .Select(f => f.File)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
