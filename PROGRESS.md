@@ -92,7 +92,7 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 - **2026-08-30** — **WI-503 done — outlook now sits behind a choice the reader
   makes, and a mistyped gate fails the build instead of publishing the
-  prognosis.** P5 Wave 0. Authors write `:::outlook` … `:::` in a curated page;
+  prognosis.** P5 Wave 0. **PR #70.** Authors write `:::outlook` … `:::` in a curated page;
   it renders as a `<details>` that is **closed on load**, with the §12.5
   warning sentence and the Show/Hide label emitted by the component rather than
   typed per page, so 24 tumor hubs cannot each soften them.

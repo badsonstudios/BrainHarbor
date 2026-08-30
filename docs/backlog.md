@@ -2148,7 +2148,7 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   a 76-page plain-language PDF open is exactly where phrasing gets borrowed
   without anyone deciding to.
 
-- [x] **WI-503 Reader-choice gate for the outlook section** *(done 2026-08-30)*
+- [x] **WI-503 Reader-choice gate for the outlook section** *(done 2026-08-30, PR #70)*
   Shipped as a Markdig custom container, `:::outlook`, because curated pages
   render with `DisableHtml()` — a `<details>` typed into a .md file renders
   escaped, so this could never have been "just write the HTML". Authoring
