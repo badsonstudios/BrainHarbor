@@ -2221,7 +2221,7 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   `pdftotext -f 1 -l 20 <file> -`. The `Read` tool cannot — it needs poppler's
   `pdftoppm`, which is not installed.
 
-- [x] **WI-505 Glossary terms for the new vocabulary** *(done 2026-08-30)*
+- [x] **WI-505 Glossary terms for the new vocabulary** *(done 2026-08-30, PR #71)*
   40 new terms, 43 total. Glossary front matter gained a `sources:` field —
   the glossary was the one content surface where a medical claim could ship
   with nowhere to record where it came from.

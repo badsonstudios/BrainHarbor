@@ -91,7 +91,7 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 ## Log (newest first)
 
 - **2026-08-30** — **WI-505 done — 40 glossary terms, 43 in total, and the
-  glossary can now cite its sources.** P5 Wave 0. The P5 vocabulary a reader
+  glossary can now cite its sources.** P5 Wave 0. **PR #71.** The P5 vocabulary a reader
   arrives holding: the markers (IDH, MGMT, 1p/19q, ATRX, TERT, CDKN2A/B,
   H3 K27-altered, EGFR, BRAF, Ki-67, methylation profiling), the report words
   (integrated diagnosis, NOS, NEC, CNS WHO grade, frozen section,
