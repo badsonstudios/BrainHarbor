@@ -31,6 +31,10 @@ follows what works for that cancer.
 There can be one, or several in different places. Your team counts them and
 notes where they are, because that shapes the plan.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Where did this cancer start?

@@ -32,6 +32,10 @@ sits.
 A tumor in the pons, a part of the brain stem, may be called %%DIPG%%. DIPG is
 one kind of diffuse midline glioma, not another word for all of them.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Where exactly is mine?

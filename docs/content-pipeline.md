@@ -353,7 +353,7 @@ only what is specific to that page.
     lot of aftercare, and someone living with a person who has a tumor needs to
     know what they will have to deal with. Every comparable site silos
     caregivers into a separate support area; none gives them a lane inside the
-    tumor page.
+    tumor page. **See §12.7 for how one is built.**
 12. **Every treatment page with meaningful aftercare carries a caregiver
     section too** — what the person at home actually has to do, what to watch
     for, and when to call.
@@ -495,3 +495,47 @@ a picture of a group and not a prediction about one person.
   movement away right after surgery and gives them back over days to weeks;
   cognition feels worse on day 2 to 3 after surgery and then improves.
   Unwarned, people read every one of these as the tumor winning.
+
+### 12.7 The caregiver section (WI-558)
+
+Contract items 11 and 12 say every tumor hub, and every treatment page with
+meaningful aftercare, carries a caregiver section. This is how one is built, so
+53 pages do not each invent it.
+
+**The shared half is a block.** `[CAREGIVER]` (`Content/blocks/caregiver.md`,
+WI-501 mechanism) holds what is true whatever the tumor is: you are allowed to
+ask questions; ask who your first call is; get the two phone numbers and know
+which is "call today" and which is "call an ambulance"; ask to be shown
+anything you are sent home to do; say what you notice; look after yourself, and
+let people help. It ends by pointing at `/get-help-now`.
+
+**Every tumor hub includes it under the same heading**, section 13 of §12.3:
+
+```markdown
+## For the person caring for someone with this
+
+[CAREGIVER]
+```
+
+**The per-page half is what the page adds around it.** Page-specific caregiver
+material goes *after* the directive, in the same section, and covers only what
+is true for this tumor or this treatment: the aftercare that actually falls to
+someone else, what "normal" looks like week by week, the changes to expect and
+which of them are the drug rather than the tumor, and what to watch for. WI-510
+(craniotomy) carries the fullest one on the site; a hub whose reader lives
+alongside seizures for years links to `/seizures/what-to-do` and
+`/seizures/living-with` rather than restating them.
+
+**Write to the caregiver, in the second person.** A section that says
+"caregivers often find..." has already failed the person reading it at 2am. The
+one place the block breaks that rule is where it reports a study finding, and
+it does so to give the reader permission ("in one study, family carers said
+they were afraid of annoying the doctor"), not to describe them from outside.
+
+**Why it is inside the tumor page and not a support silo.** Care coordination
+and advocacy are raised almost exclusively by caregivers; caregivers perform
+dressing changes and give medicines with no formal instruction; several feared
+offending the physician by asking too many questions. No comparator site puts
+caregiver content inside the tumor page. Sources are cited in the block's own
+front matter and merge into every including page (§3a), so the citations live
+in one file too.

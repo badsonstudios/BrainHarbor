@@ -29,6 +29,10 @@ watched is a real plan, not a delay.
 Some low-grade gliomas change over time and start growing faster. That is why
 your team keeps checking.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - What grade is mine, and what does that mean for me?

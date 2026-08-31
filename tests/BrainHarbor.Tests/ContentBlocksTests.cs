@@ -432,31 +432,76 @@ public sealed class ContentBlocksTests : IDisposable
     }
 
     /// <summary>
-    /// The claim this mechanism rests on: adding it cannot change how any
-    /// page that existed before it renders. Asserted over the REAL shipped
-    /// pages rather than three hand-picked strings, so it keeps being true as
-    /// pages are added.
+    /// The claim this mechanism rests on: it is inert on a page that includes
+    /// nothing. Asserted over the REAL shipped pages rather than three
+    /// hand-picked strings, so it keeps being true as pages are added.
+    ///
+    /// This used to cover every shipped page, because none of them included a
+    /// block. WI-558 put [CAREGIVER] on all 18 tumor hubs, and those pages
+    /// SHOULD now render differently with blocks available — rendering the
+    /// same would mean the include did nothing. The property splits in two:
+    /// blockless pages are unaffected (here), and a page that includes a block
+    /// fails loudly without it (below) rather than quietly losing a section.
     /// </summary>
     [Fact]
-    public void NoShippedPageRendersDifferentlyWithBlocksAvailable()
+    public void APageThatIncludesNoBlockRendersIdenticallyEitherWay()
     {
-        var pagesRoot = Path.Combine(
-            AppContext.BaseDirectory, "Content", "pages");
-        var files = Directory.EnumerateFiles(pagesRoot, "*.md", SearchOption.AllDirectories).ToList();
-        Assert.NotEmpty(files);
-
         var blocks = Set(("crosswalk", "X"), ("causes", "X"), ("mechanism", "X"),
             ("markers", "X"), ("treatments", "X"), ("prognosis-words", "X"));
 
-        foreach (var file in files)
+        var checked_ = 0;
+        foreach (var (raw, urlPath) in ShippedPages())
         {
-            var raw = File.ReadAllText(file);
-            var urlPath = Path.GetRelativePath(pagesRoot, file).Replace('\\', '/')[..^3];
+            if (ContentBlocks.DirectBlockNames(raw).Count > 0)
+            {
+                continue;
+            }
 
             Assert.Equal(
                 ContentStore.Parse(raw, urlPath).Html,
                 ContentStore.Parse(raw, urlPath, [], blocks).Html);
+            checked_++;
         }
+
+        Assert.True(checked_ > 0, "no blockless shipped page was checked");
+    }
+
+    /// <summary>
+    /// The other half: a shipped page that includes a block must fail when the
+    /// block is missing, never render the section away. On a medical page,
+    /// silence reads as "there is nothing to say here" — and the caregiver
+    /// block is where "when to call an ambulance" lives.
+    /// </summary>
+    [Fact]
+    public void AShippedPageThatIncludesABlockFailsWithoutIt()
+    {
+        var including = 0;
+        foreach (var (raw, urlPath) in ShippedPages())
+        {
+            var names = ContentBlocks.DirectBlockNames(raw);
+            if (names.Count == 0)
+            {
+                continue;
+            }
+
+            var exception = Assert.Throws<FormatException>(() => ContentStore.Parse(raw, urlPath));
+            Assert.Contains(names[0], exception.Message, StringComparison.OrdinalIgnoreCase);
+            including++;
+        }
+
+        Assert.True(including >= 18, $"expected the 18 tumor hubs to include a block, found {including}");
+    }
+
+    /// <summary>Every curated page as shipped, with the URL path it renders at.</summary>
+    private static IEnumerable<(string Raw, string UrlPath)> ShippedPages()
+    {
+        var pagesRoot = Path.Combine(AppContext.BaseDirectory, "Content", "pages");
+        var files = Directory.EnumerateFiles(pagesRoot, "*.md", SearchOption.AllDirectories).ToList();
+        Assert.NotEmpty(files);
+
+        return files.Select(file => (
+            File.ReadAllText(file),
+            Path.GetRelativePath(pagesRoot, file).Replace('\\', '/')[..^3]));
     }
 
     private static ContentBlockSet Set(params (string Name, string Body)[] blocks) =>

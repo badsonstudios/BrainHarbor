@@ -2244,7 +2244,7 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   do not interpret** — no marker is characterised as favourable.
   Refs: `Content/glossary/`, `GlossaryMarker`, WI-434. Depends on: nothing.
 
-- [ ] **WI-558 The caregiver section: shared block and standard**
+- [x] **WI-558 The caregiver section: shared block and standard** *(done 2026-08-30, PR #72 — `[CAREGIVER]` block on all 18 tumor hubs; standard at content-pipeline §12.7; the seizure links land with WI-559/560)*
   Goal: give the other person in the room a lane on every page, consistently.
   **Dan's call, 2026-08-30**, answering the question WI-446 left open: yes,
   every tumor hub carries one, and he wants it prevalent rather than tucked

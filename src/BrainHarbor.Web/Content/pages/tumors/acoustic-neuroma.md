@@ -29,6 +29,10 @@ Many are small and are simply watched with scans over time. Treatment choices
 weigh the tumor against the hearing you still have, so the decision is often
 about more than size.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - How big is it, and is it growing?

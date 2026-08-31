@@ -35,6 +35,10 @@ affected, because each level of the cord serves different areas.
 New weakness or new bladder trouble is a reason to be seen quickly, not to wait
 for the next appointment.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Where along my spine is it, and is it inside the cord?

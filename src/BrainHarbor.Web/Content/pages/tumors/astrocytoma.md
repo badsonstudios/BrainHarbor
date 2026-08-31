@@ -29,6 +29,10 @@ in children and young adults.
 4. A grade 4 IDH-mutant astrocytoma is not the same tumor as
 %%glioblastoma%%, even though both are grade 4.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - What grade is mine?
