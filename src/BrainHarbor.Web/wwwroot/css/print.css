@@ -17,6 +17,20 @@ form {
   display: none !important;
 }
 
+/* ...but a glossary term is a WORD, not a control. It is rendered as a
+   <button> so the definition can pop over without JavaScript (WI-105), and the
+   blanket `button { display: none }` above therefore DELETED it from every
+   printed page: "if they have a rescue medicine" printed as "if they have a".
+   Found on the WI-559 seizure sheet, which people print for the fridge, where
+   the vanishing words were "rescue medicine", "seizure action plan" and
+   "glioma". The definition panel stays hidden — a popover cannot be opened on
+   paper, and printing all of them would bury the page. */
+button.term {
+  display: inline !important;
+  color: #000 !important;
+  text-decoration: none !important;
+}
+
 /* Flatten the Clear & Kind surfaces: no tint, no shadow, ink on white.
    .door--primary is white-on-accent on screen — must not print white-on-white. */
 .hub,

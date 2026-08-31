@@ -22,8 +22,15 @@ public static class SyndicationEndpoints
     // /start was reachable from the home page but absent here, so search
     // engines never saw the page a newly diagnosed person is most likely to be
     // searching for. Same orphan as /tumors, pointed the other way.
+    // /seizures/what-to-do is listed for the same reason /start is: it is a
+    // thing people type into a search box while it is happening, so it must be
+    // indexed rather than only linked (WI-559). /seizures/living-with is
+    // deliberately NOT listed — same rule as the individual tumor types, which
+    // crawlers reach by following the link from the page above them. Anything
+    // listed here has to be linked from the home page, and that is checked
+    // (TumorsPageTests.EverySitemapPathIsReachableByALinkFromTheHomePage).
     private static readonly string[] StaticPaths =
-        ["/", "/start", "/research", "/tumors", "/trials", "/search", "/get-help-now", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
+        ["/", "/start", "/research", "/tumors", "/trials", "/search", "/get-help-now", "/seizures/what-to-do", "/about", "/how-we-write", "/glossary", "/privacy", "/terms"];
 
     private const int SitemapLimit = 5000;
     private const int FeedLimit = 50;
