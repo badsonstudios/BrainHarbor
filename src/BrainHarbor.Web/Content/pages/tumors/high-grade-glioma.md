@@ -27,6 +27,10 @@ This matters when you read research. Two studies can both say "grade 4" and be
 about different diseases with different treatments. Look for the exact name on
 your report.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - What is the full name of my tumor, not just the grade?

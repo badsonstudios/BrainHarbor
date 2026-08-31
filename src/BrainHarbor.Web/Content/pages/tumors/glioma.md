@@ -29,6 +29,10 @@ more than glioma alone.
 
 Your report may also give a grade, from 1 to 4. A lower grade grows more slowly.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Which kind of glioma is mine?

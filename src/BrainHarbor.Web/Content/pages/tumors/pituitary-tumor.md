@@ -32,6 +32,10 @@ gland, so pressure there can change your vision, often at the outer edges.
 
 Blood tests and an eye check are common early steps for that reason.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Is my tumor making a hormone, and which one?

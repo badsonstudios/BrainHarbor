@@ -33,6 +33,10 @@ because this lymphoma can be in those places at the same time.
 Steroids can shrink it quickly, which can hide it on a scan. That is why teams
 often want a biopsy before starting steroids, if it is safe to wait.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Have my eyes and spinal fluid been checked?

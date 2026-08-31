@@ -14,5 +14,10 @@ Rules:
     goes over it.
   - A block no page includes is reported as a warning: nothing grades it.
 
-Empty until WI-513 writes the first one (the retired-name crosswalk) together
-with the tumor page that includes it.
+Shipped blocks:
+  - caregiver.md — the caregiver section every tumor hub carries (WI-558).
+    See content-pipeline.md §12.7 for what belongs here and what belongs on
+    the page around it.
+
+Still to come: the retired-name crosswalk, written by WI-513 together with the
+tumor page that includes it.

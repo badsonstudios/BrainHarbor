@@ -35,6 +35,10 @@ children's teams plan long follow-up from the start.
 A study in adults may not apply to a child even when the tumor name matches.
 Check who was in the study before you carry the result across.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Is my child's care led by a children's brain tumor team?
