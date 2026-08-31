@@ -20,12 +20,12 @@ sources:
     accessed: 2026-08-30
 ---
 
-If you drive to the appointments, keep track of the pills, or lie awake
-listening, this part is for you.
+If you are the one driving to the appointments, keeping track of the pills, and
+lying awake at night worrying about them, this part is for you.
 
 **You are allowed to ask questions.**
 In one study, families said they were afraid of annoying the doctor by asking
-too much. One was told to stop playing doctor. Ask anyway. Write your
+too much. One of them was told by a doctor to stop playing doctor. Ask anyway. Write your
 questions down before you go, and bring a notepad. Two people in the room hear
 more than one.
 
