@@ -2394,7 +2394,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/treatment-library.md §(e)4.
   Depends on: WI-501, WI-502, WI-504.
 
-- [ ] **WI-559 "What to do when someone has a seizure"**
+- [x] **WI-559 "What to do when someone has a seizure"** *(done 2026-08-30, with WI-560 in one PR — `/seizures/what-to-do`)*
   Goal: the one page on this site where a reader may be acting, not reading.
   **This is life-safety content and it exists nowhere on the site today.**
   Seizures are the commonest way a brain tumor announces itself and, in
@@ -2423,7 +2423,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Depends on: WI-558. **Before WI-513** — the template links to it.
   **Pairs with WI-560**, which is the rest of the time.
 
-- [ ] **WI-560 Living with seizures: what you can do, and what to be careful about**
+- [x] **WI-560 Living with seizures: what you can do, and what to be careful about** *(done 2026-08-30, with WI-559 in one PR — `/seizures/living-with`)*
   *(Dan, 2026-08-30, from his own example)*
   Goal: the day-to-day question WI-559 does not answer — not "what do I do
   during a seizure" but "what am I allowed to do for the other 364 days".

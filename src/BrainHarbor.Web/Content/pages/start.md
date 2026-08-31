@@ -30,6 +30,10 @@ These need care today, not an appointment next week.
 
 [Find the nearest emergency room →](https://www.google.com/maps/search/?api=1&query=emergency+room+near+me)
 
+Seizures are common with a brain tumor.
+[What to do when someone has a seizure](/seizures/what-to-do) has the steps in
+order. Read it before you need it.
+
 ## If none of those are happening, take a breath
 
 Most people who are newly diagnosed have days or weeks to plan. You do not

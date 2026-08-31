@@ -40,6 +40,11 @@ us today" and what counts as "call an ambulance" for this tumor, and write the
 answer down where you can see it. If you are not sure which it is, call. Nobody
 on that team will mind.
 
+**If they have seizures, read about them before you need to.**
+[What to do when someone has a seizure](/seizures/what-to-do) is the one to know
+by heart. [Living with seizures](/seizures/living-with) is about the rest of the
+time: what is safe, what to change, and driving.
+
 **Ask to be shown anything you are sent home to do.**
 In that same study, families were sent home to change dressings and give
 medicines with no training at all. That is not fair to you. Before you leave
