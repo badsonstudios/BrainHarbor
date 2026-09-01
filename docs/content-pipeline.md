@@ -51,6 +51,46 @@ disclaimers: [medical, benefits]
 
 A CI script walks all pages and reports: overdue reviews, missing sources, `volatile_figures` pages every December (SSA COLA lands October, effective January), broken outbound links (monthly).
 
+### 3a. Shared blocks (WI-501)
+
+Some passages belong on many pages and must say the same thing on all of them
+— the WHO CNS5 retired-name crosswalk above all, because WHO and cIMPACT-NOW
+move and a copy-pasted crosswalk means 24 places to correct. Those live once,
+under `src/BrainHarbor.Web/Content/blocks/`, one Markdown file per block.
+
+A page includes one with a line whose **entire content** is the block name in
+brackets:
+
+```markdown
+## Old names you may still see
+
+[CROSSWALK]
+```
+
+Rules worth knowing before writing one:
+
+- **A block is a fragment, not a page.** No title, no slug, no disclaimers, no
+  URL; it is never served on its own.
+- **Front matter is optional and may carry only `sources`.** Those merge into
+  the front matter of every including page, so a block's citations live in one
+  place too. A source with no URL (a print edition) is carried through, not
+  dropped.
+- **The composed page is what gets graded.** ContentCheck measures reading
+  level after includes are resolved. A fragment can sit under 6.0 alone while
+  the assembled page goes over it, and the reader only ever meets the assembled
+  page.
+- **Uppercase, on its own line.** `[crosswalk]` is not a directive and renders
+  as literal text; ContentCheck fails the build when a lowercase whole-line
+  token names a real block, because that is a typo rather than prose. Inline
+  `[text](url)` links and bracketed asides are untouched, and directives inside
+  fenced code blocks are left alone so this section can show the syntax.
+- **A missing or unreadable block fails the build.** It never renders as an
+  empty section: on a medical page, silence reads as "there is nothing to say
+  here". At runtime only the pages that include the bad block fail — a typo in
+  one block must not take down `/privacy`.
+- **A block no page includes is warned about**, because nothing grades it.
+- Blocks may include blocks, up to five deep.
+
 ## 4. Plain-language style guide (both pipelines)
 
 - Sentences under ~20 words. One idea per paragraph. Question-style headers.
@@ -220,3 +260,282 @@ The review gate is the primary control: **every item is approved, edited, or rej
 | Preprint presented as fact | source_kind rule: never patient_relevant, permanent badge |
 | Stale/retracted papers | link to original always primary; monthly job checks PubMed retraction notices for summarized PMIDs |
 | Model/prompt drift | versioned prompts, model id logged per item, golden set in CI |
+
+---
+
+## 12. The tumor-guide editorial standard (Phase P5)
+
+Phase P5 writes 53 curated pages: 24 tumor hubs, a 17-page treatment library,
+and a 12-page tests library. This section is the standard they are written
+against. It exists so the rules live somewhere a future session will find them
+instead of in a chat log, and so 53 items do not each re-litigate the same
+decisions.
+
+Everything in §§1–8 still applies. This section adds what is specific to the
+tumor guides. The research it rests on is committed at
+`docs/research/tumor-guides/`; read `SYNTHESIS.md` before drafting any P5 page.
+
+**Why the phase exists, in one measurement:** across 91 US brain tumor centres
+and 8 patient organizations, mean Flesch-Kincaid grade level is **11**. Under
+10% of centre sites reach 8th grade, and **no patient organization does**. A
+library that actually holds 6.0 would be, on the published record, the first.
+
+### 12.1 Source precedence
+
+**This is the rule most likely to be broken by accident, because the offending
+source is the one we would naturally lean on hardest.**
+
+| Question | Source that governs | Never use for this |
+|---|---|---|
+| Tumor **naming** and **grading** | WHO CNS5 / cIMPACT-NOW; NCCN Guidelines for Patients | NCI patient PDQ, ABTA legacy PDFs, StatPearls oligodendroglioma chapter |
+| **Brain-metastasis radiation** | ASCO-SNO-ASTRO 2022 | NCI patient PDQ |
+| Supportive care, general **framing**, tone | NCI patient PDQ is fine here | |
+| **Prognosis figures** | nothing. See §12.5 | NBTS meningioma page (publishes survival percentages) |
+
+**A page that cites NCI for a tumor name is a defect.** NCI's patient PDQ is
+pre-CNS5: it still treats "anaplastic astrocytoma" as a live diagnosis,
+describes "mixed gliomas ... called oligoastrocytomas", still says
+"hemangiopericytoma", uses Roman numeral grades, and predates both
+ASCO-SNO-ASTRO 2022 and vorasidenib. Two research tracks flagged this
+independently.
+
+Same class of problem elsewhere, so the check is per-claim and not per-domain:
+ABTA's downloadable PDFs still use "oligoastrocytoma" and "anaplastic
+astrocytoma"; StatPearls' oligodendroglioma chapter gives a correct molecular
+definition and then lapses into Roman numerals and a retired term in the same
+article.
+
+**NCCN Guidelines for Patients: Brain Cancer — Glioma (2024) is the best
+patient-level source in the set and it IS CNS5-aligned** — verified against the
+document, not assumed: Arabic grades throughout, `IDH-mutant`, and neither
+retired name appears anywhere in it. It is also the best available model for
+the "questions to ask your team" block.
+
+**Licensing, and it is not what the research reports say.** They describe NCCN
+as "licensing-clean". Its copyright page does not: *"NCCN Guidelines for
+Patients and illustrations herein may not be reproduced in any form for any
+purpose without the express written permission of NCCN."* So:
+
+- **Read it for facts. Write every sentence ourselves. Cite it with a URL.**
+- **Never** copy a sentence, a list, or an illustration from it.
+- The risk is specific: a drafting session with a 76-page plain-language PDF
+  open, writing plain-language pages, is exactly where borrowed phrasing
+  happens without anyone deciding to.
+- Same rule already applies to NCI embedded images and AHFS/MedlinePlus drug
+  monographs (PLAN.md §5).
+
+### 12.2 The shared acceptance contract
+
+Every P5 content item must satisfy all of these. Item-level acceptance lists
+only what is specific to that page.
+
+1. Reading grade **≤ 6.0**, measured by ContentCheck on the **composed** page
+   (§3a), CI-gated.
+2. **Sources-only.** Every substantive claim traceable to a source in the
+   research reports or one added and cited in the page's `sources` front
+   matter. No invented facts, no invented numbers.
+3. **WHO CNS5 naming and grading throughout.** Arabic numerals; grading happens
+   *within* a tumor type. Where an older name was retired, say so: readers
+   arrive holding old paperwork.
+4. **Source precedence per §12.1.**
+5. **No prognosis figures.** No survival statistics, no median survival, no
+   five-year rates, anywhere, on any page.
+6. **Never AHFS or MedlinePlus drug monographs; never NCI embedded images.**
+   Also: replace the manufacturer's site (avastin.com) as a side-effect source
+   before publishing.
+7. Ends with **questions to ask your care team**.
+8. Front matter carries `sources` (with `accessed` dates), `reviewed`,
+   `review_due`, and `disclaimers: [medical]`.
+9. New vocabulary joins the glossary so tooltips fire site-wide.
+10. Existing `/tumors/*` URLs are preserved. No redirects, no renames.
+11. **Every tumor hub carries a caregiver section** — a real section, not a
+    footnote. Dan's call, 2026-08-30, with the reason: after surgery there is a
+    lot of aftercare, and someone living with a person who has a tumor needs to
+    know what they will have to deal with. Every comparable site silos
+    caregivers into a separate support area; none gives them a lane inside the
+    tumor page. **See §12.7 for how one is built.**
+12. **Every treatment page with meaningful aftercare carries a caregiver
+    section too** — what the person at home actually has to do, what to watch
+    for, and when to call.
+
+### 12.3 The standard section order for a tumor hub
+
+Seventeen sections, headings phrased as questions. The design principle:
+**answer first, epidemiology never, prognosis by consent, action at the end of
+every frightening block.**
+
+| # | Section | Why here |
+|---|---|---|
+| 0 | The short version (3 to 5 sentences) | Readers consume only 20 to 28% of a page and scan in an F-pattern. PEMAT requires a purpose-evident opening plus a summary. |
+| 1 | What is a [tumor]? | The most-asked identity question. |
+| 2 | Is it cancer? What does its grade mean? | The documented core confusion. Answer in cell-behaviour terms, never survival terms. |
+| 3 | Where does it grow, and why does it cause these symptoms? | Location to symptom mapping answers "why is this happening to me"; listing symptoms alone does not. |
+| 4 | What symptoms does it cause? + When should I call for help right now? | Symptom queries outnumber treatment queries 2 to 5 times. |
+| 5 | How do doctors find out it is this? (links to the tests library) | "Tests and next steps" beats "Diagnosis" as a framing. |
+| 6 | What do the words on my report mean? | The clearest content gap across every comparator. |
+| 7 | How is it usually treated? (links to the treatment library) | Surgery, radiation and chemo are ~78% of forum treatment discussion. |
+| 8 | What is treatment actually like, and what is normal afterwards? | The loudest gap in the qualitative literature: "the real fight started after I woke up". |
+| 9 | Everyday life: driving, work, money, seizures, tiredness, memory | Financial and logistical strain dominated real forum discussion. **Seizures, activities and driving belong to WI-560 — link, do not restate.** Driving rules are jurisdictional, so a per-tumor page must never carry a duration. |
+| 10 | Follow-up scans, and what to do while you wait | Scanxiety is common, severe (mean 6/10), and peaks in the wait. |
+| 11 | If it comes back | A distinct, named question set. |
+| 12 | Outlook — behind a reader-choice gate, no numbers | See §12.5. By here the reader has everything actionable before meeting anything frightening. |
+| 13 | For the person caring for someone with this | Contract item 11. |
+| 14 | Questions to ask your team (printable) | PEMAT actionability. Every major org has good lists and files them away from the point of need. |
+| 15 | Where to get support | Peer connection was the most emphasised finding of the forum study. |
+| 16 | Where this came from / last reviewed | No site in the national evaluation met all four JAMA benchmark criteria. Provenance is cheap differentiation. |
+
+**Deliberate omissions.** "How common is it?" is cut, or demoted to one clause
+inside section 1 — filler competing for the 20 to 28% that gets read. "What
+causes it?" is demoted or cut: cause queries are under 2% of cancer search
+volume and the honest answer is usually "we don't know", which is a bad thing
+to put in a frightened reader's first three screens. The self-blame block still
+appears; it just is not near the top. "What does it look like on an MRI?" is
+cut from the patient page — it serves clinicians.
+
+### 12.4 Numbers: the three rulings
+
+Stated once so they are not re-argued per page.
+
+- **R1 — orienting durations are IN.** "Radiation is usually Monday to Friday
+  for about six weeks." "Optune at least 18 hours a day" (that one IS the
+  decision). "Staples out roughly 1 to 2 weeks." All Gy and mg figures stay
+  out. Where an interval only makes sense with its reason, give the reason
+  instead: lomustine is *"taken only occasionally, not every day, because it
+  lowers blood counts for weeks after you take it."*
+- **R2 — procedural risk percentages are qualitative.** "Bleeding is uncommon,
+  but it is the main risk." The source spread is too wide to state a number
+  honestly: awake-craniotomy seizure risk is reported anywhere from 2.9% to
+  54%.
+- **R3 — the two numbers most likely to mislead get direction only.** No
+  percentages for the whole-brain-radiation cognitive figures, because most
+  people in **both** arms declined and the raw numbers mislead in the reader's
+  favour. None for the ~90% glioblastoma relapse rate: *"recurrence is expected
+  and is planned for"* carries the useful part.
+
+### 12.5 Prognosis without figures, and the reader-choice gate
+
+**Explain the concepts, publish no figures.** This is a deliberate change from
+what `/tumors` currently says, and it is validated rather than squeamish:
+prognosis disclosure requires negotiation, readiness-checking and staged
+disclosure across visits, three things a web page structurally cannot do.
+Interviews with 25 newly diagnosed glioma patients produced *"not all patients
+want to know it all, one size does not fit all"* — some wanted full honesty,
+some generalities, some only positive information.
+
+That mandates a **mechanism**, not just a policy: outlook sits at position 12
+behind an explicit choice (WI-503), closed by default, working with JavaScript
+off.
+
+> "The next part is about outlook. Some people want to read it. Some people
+> would rather not. You can skip it and come back another day. Nothing else on
+> this page depends on it."
+
+**How to write it (WI-503, shipped).** The gate is a Markdig custom container.
+The heading stays OUTSIDE it, so the page outline is complete and the reader
+meets heading → warning → choice in that order (§12.6, "warn before you
+disclose"):
+
+```markdown
+## What might happen over time
+
+:::outlook
+Doctors use numbers that describe a large group of people…
+:::
+```
+
+Everything inside renders inside a `<details>` that is **closed on load**. The
+warning sentence above and the Show/Hide label are emitted by the component,
+not typed per page — 24 tumor hubs cannot each soften them. Nothing else needs
+writing.
+
+Three things that follow from the implementation and are worth knowing before
+you author one:
+
+- **`:::outlook` is the only container name the site renders**, and the fence
+  has to be written exactly: **three colons** (not two), the opener flush with
+  the surrounding text (four spaces or a tab makes it a code block), and a
+  closing `:::` on a line of its own. Anything else — `:::outlok`,
+  `:::Outlook`, `::outlook`, an indented or unclosed fence, `::outlook::`
+  inline — **fails the page build**, naming the page and the line.
+  That strictness is the point: every one of those renders the outlook section
+  as ordinary visible prose (Markdig turns an unknown container into a plain
+  `<div>`, and drops the near-misses entirely), with no error and a green
+  build. **A gate that fails open is worse than no gate**, so the build
+  refuses rather than guesses.
+- **The 6.0 reading limit reaches inside the gate.** Content behind a choice is
+  still content, and ContentCheck grades the composed page.
+- **Printing reflects the reader's choice.** A gate left closed stays closed on
+  paper; forcing it open would hand the outlook section to someone who
+  declined it.
+
+When explaining *median*, use positive framing plus the explicit right tail
+(the Kirkebøen framework, which raised hopefulness and realism at the same
+time): establish that it describes a **group**, present the distribution rather
+than the midpoint alone, name the right skew, and say plainly that the line is
+a picture of a group and not a prediction about one person.
+
+### 12.6 Writing rules specific to these pages
+
+- **Say the outcome, then name the word.** Not "a craniotomy is..." but what
+  happens, then the term.
+- **Answer in the first sentence under the heading.** Most readers never reach
+  the second.
+- **Never end a section on a frightening sentence.** Follow it with a concrete
+  action or something solid. This is a review rule, not a preference.
+- **Warn before you disclose.** Signal that a section contains hard information
+  before the reader is inside it.
+- **Replace nominalisations with verbs:** "resection" becomes "taking it out".
+- **Use concrete, sensory description for procedures:** what you will see,
+  feel, hear and smell.
+- **Keep the qualifier, shorten it.** Accuracy is usually lost when a hedge
+  gets cut, not when a sentence gets simplified.
+- **"Is this the tumor, or the drug?"** is a recurring frame worth repeating:
+  levetiracetam causes irritability and aggression; dexamethasone causes
+  proximal muscle weakness in ~28%; SMA syndrome takes speech and one-sided
+  movement away right after surgery and gives them back over days to weeks;
+  cognition feels worse on day 2 to 3 after surgery and then improves.
+  Unwarned, people read every one of these as the tumor winning.
+
+### 12.7 The caregiver section (WI-558)
+
+Contract items 11 and 12 say every tumor hub, and every treatment page with
+meaningful aftercare, carries a caregiver section. This is how one is built, so
+53 pages do not each invent it.
+
+**The shared half is a block.** `[CAREGIVER]` (`Content/blocks/caregiver.md`,
+WI-501 mechanism) holds what is true whatever the tumor is: you are allowed to
+ask questions; ask who your first call is; get the two phone numbers and know
+which is "call today" and which is "call an ambulance"; ask to be shown
+anything you are sent home to do; say what you notice; look after yourself, and
+let people help. It ends by pointing at `/get-help-now`.
+
+**Every tumor hub includes it under the same heading**, section 13 of §12.3:
+
+```markdown
+## For the person caring for someone with this
+
+[CAREGIVER]
+```
+
+**The per-page half is what the page adds around it.** Page-specific caregiver
+material goes *after* the directive, in the same section, and covers only what
+is true for this tumor or this treatment: the aftercare that actually falls to
+someone else, what "normal" looks like week by week, the changes to expect and
+which of them are the drug rather than the tumor, and what to watch for. WI-510
+(craniotomy) carries the fullest one on the site; a hub whose reader lives
+alongside seizures for years links to `/seizures/what-to-do` and
+`/seizures/living-with` rather than restating them.
+
+**Write to the caregiver, in the second person.** A section that says
+"caregivers often find..." has already failed the person reading it at 2am. The
+one place the block breaks that rule is where it reports a study finding, and
+it does so to give the reader permission ("in one study, family carers said
+they were afraid of annoying the doctor"), not to describe them from outside.
+
+**Why it is inside the tumor page and not a support silo.** Care coordination
+and advocacy are raised almost exclusively by caregivers; caregivers perform
+dressing changes and give medicines with no formal instruction; several feared
+offending the physician by asking too many questions. No comparator site puts
+caregiver content inside the tumor page. Sources are cited in the block's own
+front matter and merge into every including page (§3a), so the citations live
+in one file too.

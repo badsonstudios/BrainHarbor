@@ -29,6 +29,10 @@ causes no trouble may just be watched with scans.
 Because a meningioma sits on the outside, symptoms often come from where it
 presses rather than from the tumor itself.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - What grade is mine?

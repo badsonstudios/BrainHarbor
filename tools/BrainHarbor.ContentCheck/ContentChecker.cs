@@ -1,5 +1,7 @@
 using System.Text;
+using System.Text.RegularExpressions;
 using BrainHarbor.Web.Content;
+using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
@@ -14,7 +16,7 @@ public sealed record Finding(FindingLevel Level, string File, string Message);
 /// §5): reading grade (fail &gt; 6.0, warn ≥ 5.5), invalid front matter
 /// (fail), missing sources (warn), overdue review_due (warn).
 /// </summary>
-public static class ContentChecker
+public static partial class ContentChecker
 {
     // WI-414 (2026-08-13, Dan): 6th grade, everywhere a reader looks. The
     // curated pages already sat at 2.5-4.9, and only two Razor pages needed
@@ -24,6 +26,14 @@ public static class ContentChecker
     // feed rather than improve it.
     public const double FailGrade = 6.0;
     public const double WarnGrade = 5.5;
+
+    // WI-503: custom containers ONLY. Without this the ':::outlook' fence
+    // parses as a paragraph and is graded as a sentence, so a reader-choice
+    // gate would move the page's grade without changing a word of its prose.
+    // Deliberately not UseAdvancedExtensions(): that would also restructure
+    // tables and definition lists, silently re-grading every shipped page.
+    private static readonly MarkdownPipeline TextPipeline =
+        new MarkdownPipelineBuilder().UseCustomContainers().Build();
 
     /// <summary>Flags _Disclaimers.cshtml knows how to render.</summary>
     public static readonly string[] KnownDisclaimers = ["medical", "benefits", "legal"];
@@ -40,9 +50,24 @@ public static class ContentChecker
         && !Path.GetFileName(relativePath).StartsWith("_View", StringComparison.OrdinalIgnoreCase);
 
     public static List<Finding> CheckAll(
-        string pagesRoot, string? glossaryRoot, DateOnly today, string? razorRoot = null)
+        string pagesRoot, string? glossaryRoot, DateOnly today, string? razorRoot = null,
+        string? blocksRoot = null)
     {
         var findings = new List<Finding>();
+
+        // WI-501: the blocks have to load before any page is graded — a page
+        // is graded COMPOSED, so an unloadable block is a page-level failure.
+        blocksRoot ??= ContentBlockStore.DefaultBlocksRootFor(pagesRoot);
+        var blocks = ContentBlockStore.Load(blocksRoot);
+
+        // At runtime a broken block only breaks the pages that include it.
+        // Here it fails the build outright: shipping one is never intended.
+        foreach (var (name, error) in blocks.Errors.OrderBy(e => e.Key, StringComparer.Ordinal))
+        {
+            findings.Add(new(FindingLevel.Fail, $"blocks/{name}.md", error));
+        }
+
+        var usedBlocks = new HashSet<string>(StringComparer.Ordinal);
 
         // A missing/empty root must be LOUD: a silently skipped directory is
         // how a safety gate dies of a rename. (Warn, not fail — the pages
@@ -58,12 +83,24 @@ public static class ContentChecker
             foreach (var file in files)
             {
                 var relative = Path.GetRelativePath(pagesRoot, file).Replace('\\', '/');
-                findings.AddRange(CheckPage(File.ReadAllText(file), relative, today));
+                var raw = File.ReadAllText(file);
+                findings.AddRange(CheckPage(raw, relative, today, blocks));
+                findings.AddRange(CheckForMistypedDirectives(raw, relative, blocks));
+                RecordUsedBlocks(raw, blocks, usedBlocks);
             }
         }
         else
         {
             findings.Add(new(FindingLevel.Warn, pagesRoot, "pages root MISSING — no pages were checked"));
+        }
+
+        // A block no page reaches is graded by nothing — the composed-page
+        // rule means blocks have no reading level of their own.
+        foreach (var orphan in blocks.Blocks.Keys.Where(name => !usedBlocks.Contains(name))
+                     .OrderBy(name => name, StringComparer.Ordinal))
+        {
+            findings.Add(new(FindingLevel.Warn, $"blocks/{orphan}.md",
+                "no page includes this block — nothing grades its reading level"));
         }
 
         if (glossaryRoot is not null && Directory.Exists(glossaryRoot))
@@ -141,7 +178,68 @@ public static class ContentChecker
         _ => new(FindingLevel.Info, relativePath, $"reading grade {grade:0.0}"),
     };
 
-    public static List<Finding> CheckPage(string raw, string relativePath, DateOnly today)
+    /// <summary>
+    /// A whole line reading <c>[Crosswalk]</c> or <c>[crosswalk]</c> is not a
+    /// directive — the pattern is uppercase — so it renders as literal
+    /// bracket text on a patient's page with nothing else to signal it. When
+    /// the token names a block that actually exists, it is a typo rather than
+    /// prose, and the build should say so.
+    /// </summary>
+    private static List<Finding> CheckForMistypedDirectives(
+        string raw, string relativePath, ContentBlockSet blocks)
+    {
+        var findings = new List<Finding>();
+        foreach (Match match in MistypedDirectivePattern().Matches(raw))
+        {
+            var token = match.Groups[1].Value;
+            if (token == token.ToUpperInvariant())
+            {
+                continue; // a real directive, already resolved
+            }
+
+            var name = token.ToLowerInvariant();
+            if (blocks.Blocks.ContainsKey(name) || blocks.Errors.ContainsKey(name))
+            {
+                findings.Add(new(FindingLevel.Fail, relativePath,
+                    $"'[{token}]' on a line of its own looks like an include of block '{name}' but is not "
+                    + $"uppercase, so it renders as literal text — write [{name.ToUpperInvariant()}]"));
+            }
+        }
+        return findings;
+    }
+
+    [GeneratedRegex(@"^[ \t]*\[([A-Za-z0-9][A-Za-z0-9-]*)\][ \t]*\r?$", RegexOptions.Multiline)]
+    private static partial Regex MistypedDirectivePattern();
+
+    /// <summary>
+    /// Marks every block a page reaches, following blocks that include other
+    /// blocks — a block used only by another block is still used. Bounded by
+    /// the visited set, so an include cycle (already reported as a page
+    /// failure) cannot spin here.
+    /// </summary>
+    private static void RecordUsedBlocks(
+        string raw, ContentBlockSet blocks, HashSet<string> used)
+    {
+        var pending = new Queue<string>(ContentBlocks.DirectBlockNames(raw));
+        while (pending.Count > 0)
+        {
+            var name = pending.Dequeue();
+            if (!used.Add(name) || !blocks.Blocks.TryGetValue(name, out var block))
+            {
+                continue;
+            }
+            foreach (var nested in ContentBlocks.DirectBlockNames(block.Markdown))
+            {
+                pending.Enqueue(nested);
+            }
+        }
+    }
+
+    public static List<Finding> CheckPage(string raw, string relativePath, DateOnly today) =>
+        CheckPage(raw, relativePath, today, null);
+
+    public static List<Finding> CheckPage(
+        string raw, string relativePath, DateOnly today, ContentBlockSet? blocks)
     {
         var findings = new List<Finding>();
 
@@ -149,7 +247,7 @@ public static class ContentChecker
         try
         {
             var urlPath = relativePath.EndsWith(".md") ? relativePath[..^3] : relativePath;
-            page = ContentStore.Parse(raw, urlPath);
+            page = ContentStore.Parse(raw, urlPath, [], blocks);
         }
         catch (FormatException exception)
         {
@@ -193,7 +291,7 @@ public static class ContentChecker
     /// </summary>
     public static string ExtractSentences(string markdown)
     {
-        var document = Markdig.Markdown.Parse(markdown);
+        var document = Markdig.Markdown.Parse(markdown, TextPipeline);
         var result = new StringBuilder();
 
         foreach (var block in document.Descendants().OfType<LeafBlock>())
@@ -233,10 +331,44 @@ public static class ContentChecker
         {
             var term = GlossaryStore.ParseTerm(raw, slug);
             var words = term.Definition.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
-            return words > 40
-                ? [new(FindingLevel.Fail, $"glossary/{slug}.md",
-                    $"definition is {words} words — the editorial limit is 40 (content-pipeline §6)")]
-                : [new(FindingLevel.Info, $"glossary/{slug}.md", $"ok ({words} words)")];
+
+            var findings = new List<Finding>
+            {
+                words > 40
+                    ? new(FindingLevel.Fail, $"glossary/{slug}.md",
+                        $"definition is {words} words — the editorial limit is 40 (content-pipeline §6)")
+                    : new(FindingLevel.Info, $"glossary/{slug}.md", $"ok ({words} words)"),
+            };
+
+            // WI-505: same rule and same severity as a curated page — a
+            // definition a reader is handed as fact should say where it came
+            // from. Warn rather than fail, matching CheckPage.
+            if (term.Sources.Count == 0)
+            {
+                findings.Add(new(FindingLevel.Warn, $"glossary/{slug}.md",
+                    "no sources in front matter — every claim must trace (content-pipeline §1)"));
+            }
+
+            // A source with a URL and no title renders as a link with no
+            // accessible name (WCAG 2.4.4). The page falls back to the host so
+            // nothing ships nameless, but that is a patch, not the fix.
+            foreach (var source in term.Sources.Where(s => string.IsNullOrWhiteSpace(s.Title)))
+            {
+                findings.Add(new(FindingLevel.Warn, $"glossary/{slug}.md",
+                    $"source '{source.Url}' has no title — the link would have no readable text"));
+            }
+
+            // Reported, not gated. Flesch-Kincaid on a 25-word definition is
+            // too noisy to fail a build on — the same reason CheckRazorPage
+            // refuses to grade under 25 words — but a definition drifting to
+            // grade 9 should still be visible to whoever runs this.
+            if (words >= 20)
+            {
+                findings.Add(new(FindingLevel.Info, $"glossary/{slug}.md",
+                    $"reading grade {ReadabilityAnalyzer.FleschKincaidGrade(term.Definition):0.0} (not gated)"));
+            }
+
+            return findings;
         }
         catch (FormatException exception)
         {

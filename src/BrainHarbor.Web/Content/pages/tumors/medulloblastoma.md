@@ -29,6 +29,10 @@ wrong there, but to know before treatment starts.
 Doctors sort medulloblastoma into groups by the gene changes inside it. The
 group changes what treatment is chosen, so you may hear a group name.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Which group is my tumor in?

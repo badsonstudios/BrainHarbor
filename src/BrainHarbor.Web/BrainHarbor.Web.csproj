@@ -10,6 +10,9 @@
     <!-- Curated Markdown pages (WI-104) + glossary terms (WI-105) must
          survive dotnet publish. -->
     <Content Include="Content\pages\**" CopyToOutputDirectory="PreserveNewest" />
+    <!-- WI-501: shared blocks the pages include. Miss this and a composed
+         page renders locally and throws in production. -->
+    <Content Include="Content\blocks\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Content\glossary\**" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="Content\taxonomy.yml" CopyToOutputDirectory="PreserveNewest" />
     <!-- ZIP -> coordinates for the trial finder's "near me" (WI-403). Census

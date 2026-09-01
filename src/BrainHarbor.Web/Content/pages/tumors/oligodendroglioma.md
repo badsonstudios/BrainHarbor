@@ -30,6 +30,10 @@ Both must be there. If your report names this tumor, those tests were done.
 
 Seizures are a common first sign, often years before anything else shows up.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Did my tumor have both changes?

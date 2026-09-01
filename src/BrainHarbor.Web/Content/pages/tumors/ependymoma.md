@@ -28,6 +28,10 @@ children and adults, and where it sits often differs between them.
 Doctors also look at gene changes in the tumor now, because two ependymomas
 that look alike under a microscope can behave differently.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Where is mine, and is it blocking fluid?

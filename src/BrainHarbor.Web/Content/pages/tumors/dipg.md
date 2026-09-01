@@ -32,6 +32,10 @@ Some studies say DIPG, some say diffuse midline glioma, and they are not always
 about the same group of people. DIPG is the pontine kind. A study of midline
 gliomas may include tumors elsewhere.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Is the tumor in the pons, or another midline place?

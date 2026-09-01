@@ -33,6 +33,10 @@ choose treatment.
 
 Some older papers say "glioblastoma multiforme" or GBM. That is the same tumor.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Was my tumor tested for IDH and MGMT?

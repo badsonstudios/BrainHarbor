@@ -31,6 +31,10 @@ energy, thirst or weight.
 So care often needs an eye doctor and a hormone doctor as well as the surgeon.
 Hormone checks can go on for years.
 
+## For the person caring for someone with this
+
+[CAREGIVER]
+
 ## What to ask your team
 
 - Has my vision been tested?

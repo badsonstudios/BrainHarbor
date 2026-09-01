@@ -17,6 +17,20 @@ form {
   display: none !important;
 }
 
+/* ...but a glossary term is a WORD, not a control. It is rendered as a
+   <button> so the definition can pop over without JavaScript (WI-105), and the
+   blanket `button { display: none }` above therefore DELETED it from every
+   printed page: "if they have a rescue medicine" printed as "if they have a".
+   Found on the WI-559 seizure sheet, which people print for the fridge, where
+   the vanishing words were "rescue medicine", "seizure action plan" and
+   "glioma". The definition panel stays hidden — a popover cannot be opened on
+   paper, and printing all of them would bury the page. */
+button.term {
+  display: inline !important;
+  color: #000 !important;
+  text-decoration: none !important;
+}
+
 /* Flatten the Clear & Kind surfaces: no tint, no shadow, ink on white.
    .door--primary is white-on-accent on screen — must not print white-on-white. */
 .hub,
@@ -268,4 +282,43 @@ a[href^="http"]::after {
   border-top: 1pt solid #000;
   margin-top: 12pt;
   color: #000;
+}
+
+/* The reader-choice gate (WI-503). The printed page reflects what the reader
+   CHOSE: a gate left closed stays closed on paper. Forcing it open would hand
+   the outlook section to someone who explicitly declined it, which is the
+   entire point of the component. */
+.reader-gate {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1pt solid #000 !important;
+}
+
+/* Only worth keeping whole while it is closed — that is a short warning plus
+   one label. An OPEN gate can be a page of prognosis, and an unbreakable
+   block that tall prints a mostly-blank sheet or gets clipped. */
+.reader-gate:not(:has([open])) {
+  break-inside: avoid;
+}
+
+/* The toggle is a control, and on paper it cannot be operated. Closed, its
+   words still earn their space: they tell the reader there is a section here
+   they did not open. Open, they are an instruction already carried out sitting
+   directly above the thing it offers to reveal — so it goes. The
+   "What might happen over time" heading is outside the gate, so the printed
+   section keeps its label either way. */
+.reader-gate__toggle {
+  border: 0 !important;
+  background: none !important;
+  color: #000 !important;
+  padding-inline: 0 !important;
+  min-block-size: 0 !important;
+}
+
+.reader-gate__disclosure[open] .reader-gate__toggle {
+  display: none !important;
+}
+
+.reader-gate__body {
+  border-block-start-color: #000 !important;
 }

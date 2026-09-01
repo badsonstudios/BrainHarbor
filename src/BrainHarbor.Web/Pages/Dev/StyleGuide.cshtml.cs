@@ -14,6 +14,15 @@ public class StyleGuideModel(IWebHostEnvironment environment, GlossaryStore glos
     /// </summary>
     public string TooltipSampleHtml { get; private set; } = "";
 
+    /// <summary>
+    /// WI-503: the reader-choice gate, rendered through the real pipeline. No
+    /// shipped page uses it yet — WI-513 writes the first outlook section — so
+    /// without this the component has no surface to be eyeballed or scanned by
+    /// axe on. The sample text is deliberately mild: this page is a preview,
+    /// not a place to write prognosis copy.
+    /// </summary>
+    public string ReaderGateSampleHtml { get; private set; } = "";
+
     // Sample content from the design handoff — realistic items at the target
     // reading level, one per badge family.
     public IReadOnlyList<FeedCard> SampleCards { get; } =
@@ -59,6 +68,17 @@ public class StyleGuideModel(IWebHostEnvironment environment, GlossaryStore glos
         TooltipSampleHtml = ContentStore
             .Parse($"---\ntitle: Tooltip sample\n---\n{sample}", "dev/styleguide",
                 glossary.GetSnapshot().Terms)
+            .Html;
+
+        const string gateSample =
+            "## What might happen over time\n\n" +
+            ":::outlook\n" +
+            "Doctors use numbers that describe a large group of people. They cannot say what will\n" +
+            "happen to one person. Ask your care team what the numbers mean for you.\n" +
+            ":::\n";
+
+        ReaderGateSampleHtml = ContentStore
+            .Parse($"---\ntitle: Reader-choice gate sample\n---\n{gateSample}", "dev/styleguide")
             .Html;
 
         return Page();

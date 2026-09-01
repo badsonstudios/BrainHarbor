@@ -1,7 +1,7 @@
 namespace BrainHarbor.ContentCheck;
 
 // WI-106: the readability promise, machine-enforced (content-pipeline §5).
-// Usage: BrainHarbor.ContentCheck <pagesRoot> [glossaryRoot]
+// Usage: BrainHarbor.ContentCheck <pagesRoot> [glossaryRoot] [razorRoot] [blocksRoot]
 // Exit 0 = clean (warnings allowed), 1 = at least one FAIL.
 // (Named entry class, not top-level statements — a generated Program class
 // would collide with BrainHarbor.Web's in the shared test project.)
@@ -15,9 +15,13 @@ public static class Cli
             : Path.Combine("src", "BrainHarbor.Web", "Content", "glossary");
         var razorRoot = args.Length > 2 ? args[2]
             : Path.Combine("src", "BrainHarbor.Web", "Pages");
+        // Defaults to the blocks directory beside whatever pages root we were
+        // given, so the gate can never grade one content tree's pages against
+        // another's blocks.
+        var blocksRoot = args.Length > 3 ? args[3] : null;
 
         var findings = ContentChecker.CheckAll(
-            pagesRoot, glossaryRoot, DateOnly.FromDateTime(DateTime.UtcNow), razorRoot);
+            pagesRoot, glossaryRoot, DateOnly.FromDateTime(DateTime.UtcNow), razorRoot, blocksRoot);
 
         var failures = 0;
         foreach (var finding in findings)

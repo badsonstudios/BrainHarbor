@@ -20,7 +20,10 @@ public sealed record ContentPage(
 /// /about → {root}/about.md, /benefits/fast-track → {root}/benefits/fast-track.md.
 /// </summary>
 public sealed partial class ContentStore(
-    IWebHostEnvironment environment, IConfiguration configuration, GlossaryStore glossary)
+    IWebHostEnvironment environment,
+    IConfiguration configuration,
+    GlossaryStore glossary,
+    ContentBlockStore blocks)
 {
     // section/slug segments only — blocks traversal and anything non-slug.
     [GeneratedRegex("^[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*)?$")]
@@ -29,17 +32,37 @@ public sealed partial class ContentStore(
     // DisableHtml: curated pages are pure Markdown; raw HTML in a source file
     // renders escaped. The glossary extension still emits markup — it renders
     // through its own object renderer, not raw HTML inlines.
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
-        .UseAdvancedExtensions()
-        .DisableHtml()
-        .Use<GlossaryTooltipExtension>()
-        .Build();
+    // ReaderGateExtension must come AFTER UseAdvancedExtensions (which brings
+    // the custom containers) or Markdig's own renderer wins and a gate renders
+    // as an open <div>. ReaderGate.Verify proves that here rather than leaving
+    // it to a comment nobody re-reads — a mis-ordered pipeline fails at
+    // start-up instead of publishing prognosis to a reader who did not ask.
+    private static readonly MarkdownPipeline Pipeline = ReaderGateExtension.Verify(
+        new MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .DisableHtml()
+            .Use<GlossaryTooltipExtension>()
+            .Use<ReaderGateExtension>()
+            .Build());
+
+    /// <summary>The render pipeline, exposed so tests can hold it to the gate's guarantees.</summary>
+    internal static MarkdownPipeline RenderPipeline => Pipeline;
 
     private static readonly IDeserializer Yaml = new DeserializerBuilder()
         .IgnoreUnmatchedProperties()
         .Build();
 
-    private readonly ConcurrentDictionary<string, (DateTime WriteTimeUtc, string GlossaryVersion, ContentPage Page)> _cache = new();
+    /// <summary>
+    /// Two citations are the same one when their URLs match — falling back to
+    /// the title for a print source that has no URL, so a page and a block
+    /// citing the same book do not list it twice.
+    /// </summary>
+    private static bool SameSource(ContentSource left, ContentSource right) =>
+        string.IsNullOrWhiteSpace(left.Url) || string.IsNullOrWhiteSpace(right.Url)
+            ? string.Equals(left.Title, right.Title, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(left.Url, right.Url, StringComparison.OrdinalIgnoreCase);
+
+    private readonly ConcurrentDictionary<string, (DateTime WriteTimeUtc, string GlossaryVersion, string BlocksVersion, ContentPage Page)> _cache = new();
 
     private string Root =>
         configuration["Content:Root"]
@@ -125,16 +148,20 @@ public sealed partial class ContentStore(
             }
 
             var snapshot = glossary.GetSnapshot();
+            // WI-501: a page that includes a shared block is stale when that
+            // block changes, not only when the page file does.
+            var blockSnapshot = blocks.GetSnapshot();
             var writeTime = File.GetLastWriteTimeUtc(file);
             if (_cache.TryGetValue(urlPath, out var cached) &&
                 cached.WriteTimeUtc == writeTime &&
-                cached.GlossaryVersion == snapshot.Version)
+                cached.GlossaryVersion == snapshot.Version &&
+                cached.BlocksVersion == blockSnapshot.Version)
             {
                 return cached.Page;
             }
 
-            var page = Parse(File.ReadAllText(file), urlPath, snapshot.Terms);
-            _cache[urlPath] = (writeTime, snapshot.Version, page);
+            var page = Parse(File.ReadAllText(file), urlPath, snapshot.Terms, blockSnapshot.Blocks);
+            _cache[urlPath] = (writeTime, snapshot.Version, blockSnapshot.Version, page);
             return page;
         }
         catch (IOException)
@@ -154,7 +181,21 @@ public sealed partial class ContentStore(
     public static ContentPage Parse(string raw, string urlPath) => Parse(raw, urlPath, []);
 
     /// <summary>Parse with glossary terms: first occurrences get tooltips (WI-105).</summary>
-    public static ContentPage Parse(string raw, string urlPath, IReadOnlyList<GlossaryTerm> glossaryTerms)
+    public static ContentPage Parse(string raw, string urlPath, IReadOnlyList<GlossaryTerm> glossaryTerms) =>
+        Parse(raw, urlPath, glossaryTerms, null);
+
+    /// <summary>
+    /// Parse with glossary terms and shared blocks (WI-501). Includes are
+    /// resolved BEFORE Markdig sees the body, which is what makes block text
+    /// ordinary page text everywhere downstream: glossary tooltips mark it,
+    /// site search finds it, and ContentCheck grades the composed page rather
+    /// than a fragment that could pass on its own while the whole page fails.
+    /// </summary>
+    public static ContentPage Parse(
+        string raw,
+        string urlPath,
+        IReadOnlyList<GlossaryTerm> glossaryTerms,
+        ContentBlockSet? blocks)
     {
         raw = raw.TrimStart('﻿'); // BOM
         if (!raw.StartsWith("---"))
@@ -187,7 +228,33 @@ public sealed partial class ContentStore(
             throw new FormatException($"Content page '{urlPath}' is missing a title.");
         }
 
+        // WI-501: resolve [BLOCK] includes, and fold the blocks' own sources
+        // into this page's front matter. A block's sources belong with the
+        // block for the same reason its words do — copying them into every
+        // including page would just move the drift.
+        var (composed, blockSources) = ContentBlocks.Compose(
+            body, blocks ?? ContentBlockSet.Empty, urlPath);
+        body = composed;
+        if (blockSources.Count > 0)
+        {
+            // Replace the list rather than adding into the deserialized one,
+            // so the front matter this page caches is never a list some other
+            // caller is also holding.
+            var declared = frontMatter.Sources;
+            frontMatter.Sources =
+            [
+                .. declared,
+                .. blockSources.Where(s => !declared.Any(existing => SameSource(existing, s))),
+            ];
+        }
+
         var document = Markdig.Markdown.Parse(body, Pipeline);
+
+        // WI-503: before anything renders. An unknown ':::' container would
+        // otherwise render as a plain div — the gated content fully visible,
+        // with no error anywhere — so a typo has to fail the page instead.
+        ReaderGate.Validate(document, body, urlPath);
+
         GlossaryMarker.Mark(document, glossaryTerms);
 
         using var writer = new StringWriter();

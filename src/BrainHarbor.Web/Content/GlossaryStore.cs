@@ -13,7 +13,17 @@ public sealed record GlossaryTerm(
     string Term,
     IReadOnlyList<string> Aliases,
     string? Pronunciation,
-    string Definition);
+    string Definition,
+    IReadOnlyList<ContentSource>? Sources = null)
+{
+    /// <summary>
+    /// Where the definition came from. Optional at the constructor so the
+    /// callers that only care about tooltip matching stay readable, but never
+    /// null to a consumer — a citation list that is sometimes null is how a
+    /// "sources" section silently disappears from a page.
+    /// </summary>
+    public IReadOnlyList<ContentSource> Sources { get; init; } = Sources ?? [];
+}
 
 public sealed class GlossaryFrontMatter
 {
@@ -25,6 +35,13 @@ public sealed class GlossaryFrontMatter
 
     [YamlMember(Alias = "pronunciation")]
     public string? Pronunciation { get; set; }
+
+    // WI-505: a glossary definition is a medical claim, and content-pipeline
+    // §1 is that every one of them must point at a source. Curated pages have
+    // carried this since WI-104; the glossary was the surface where 40
+    // definitions could land with nowhere to record where they came from.
+    [YamlMember(Alias = "sources")]
+    public List<ContentSource> Sources { get; set; } = [];
 }
 
 /// <summary>
@@ -150,6 +167,7 @@ public sealed class GlossaryStore(IWebHostEnvironment environment, IConfiguratio
             throw new FormatException($"Glossary term '{slug}' has no definition body.");
         }
 
-        return new GlossaryTerm(slug, frontMatter.Term, frontMatter.Also, frontMatter.Pronunciation, definition);
+        return new GlossaryTerm(
+            slug, frontMatter.Term, frontMatter.Also, frontMatter.Pronunciation, definition, frontMatter.Sources);
     }
 }

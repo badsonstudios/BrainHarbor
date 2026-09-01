@@ -9,6 +9,9 @@ Goal, testable Acceptance criteria, and Refs into the design docs. `[user]` =
 Dan does it, not the assistant. Work top-to-bottom within a phase unless
 *Depends on* says otherwise. `/pm` maintains this file; `/next-item` executes
 items and checks them off. **Never renumber existing items — append.**
+`[ ]` open · `[x]` done · **`[~]` absorbed** — superseded by other items, never
+built, and **not** available for `/next-item` to pick up; the item text says
+what absorbed it and why.
 
 Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 `/pm decompose <phase>` when we get there.
@@ -589,6 +592,24 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   would spin on the same dead cached host. A retry has to dispose the factory
   and build a fresh one, which is why this needs doing properly rather than
   wrapping the call in a `for` loop.
+  **CONTRADICTED 2026-08-30 (WI-503), with a captured trx.** "The factory
+  poisons itself" is not the whole story, and the paragraph above should not be
+  acted on as written. Reproduced locally at **3 failures in ~16 full-suite
+  runs** (~1 in 5, matching the 2026-08-29 sighting) and captured the message
+  from a `.trx` rather than inferring it: same `EnsureServer()` →
+  `CreateClient()` → *"The server has not been started"*, thrown from
+  `InitializeAsync`. **But in that same run, 9 of the other 10 `A11ySmokeTests`
+  passed** — and `A11ySmokeTests` holds the factory as an
+  `IClassFixture`, so every one of them called `EnsureServer()` on the **same
+  instance** either side of the failure. A permanently poisoned factory would
+  have failed all ten. So the bad state is **transient**, and a plain retry may
+  in fact be enough. Establish which before building the dispose-and-rebuild
+  machinery — it is the more expensive fix and the evidence no longer clearly
+  demands it.
+  Worth noting for whoever picks this up: it lands on whichever test in the
+  class draws the short straw, so it reads as "that new test is flaky" and
+  invites blaming the wrong change. It attached to WI-503's new no-JS gate test
+  twice, which is how it was caught here.
   Also suspect (in `CreateHost`, which is order-dependent by design): if
   `_kestrelHost.Start()` throws — a port race on `127.0.0.1:0`, or the database
   not being ready — `testHost.Start()` never runs, and the factory is left in
@@ -1494,8 +1515,20 @@ digest (**WI-404**/**WI-405**).
   until we are back" is the question that will actually be asked.
   Refs: WI-401, WI-407. Depends on: nothing. **Do this before WI-408.**
 
-- [ ] **WI-444 "What your pathology report says"**
-  Goal: translate the words on the report a patient is holding.
+- [~] **WI-444 "What your pathology report says" — ABSORBED into Phase P5
+  (WI-508 + WI-509), 2026-08-30. Do not build separately.**
+  **Why absorbed.** The P5 research found that this page and the molecular-marker
+  page are the same physical document: molecular results are *sections of* the
+  pathology report, and under WHO CNS5 the integration is mandatory — the report
+  **is** histology plus molecular findings combined into one integrated
+  diagnosis. Two pages would misrepresent how the diagnosis is actually made, and
+  would leave a report page that is a glossary of headings with the substance
+  stripped out. Split instead by LENGTH, not by topic: **WI-508** walks through
+  the report, **WI-509** is the anchor-linked marker glossary. The emotional
+  content — the wait — went to **WI-507**, which is what keeps WI-508 to a
+  manageable size.
+  Everything below is preserved because the constraints still govern WI-508/509.
+  Original goal: translate the words on the report a patient is holding.
   **Why this one first among the content ideas.** IDH mutation, MGMT promoter
   methylation, 1p/19q co-deletion and WHO grade are not trivia — they are the
   markers that DRIVE treatment decisions under WHO CNS5, and a newly diagnosed
@@ -1539,7 +1572,30 @@ digest (**WI-404**/**WI-405**).
   Pages/Research/Index.cshtml. Depends on: WI-444 (for the links to land
   somewhere), WI-416 ideally.
 
-- [ ] **WI-446 A caregiver path**
+- [ ] **WI-446 A caregiver path** *(strengthened by P5's research, 2026-08-30)*
+  **New evidence, and an open question for Dan.** P5's research confirms and
+  sharpens this item: care coordination and advocacy were raised **almost
+  exclusively by caregivers, not patients**; caregivers performed dressing
+  changes and gave medications with no formal instruction; several feared
+  "offending the physician by asking too many questions"; financial strain
+  dominated the forum data. It also found that **every comparable site silos
+  caregivers into a "support" section** — none gives them a lane *inside* the
+  tumor page itself, which is an unoccupied position.
+  **RESOLVED 2026-08-30 — both, and the tumor-page section is prominent.** Dan:
+  *"I'd like to make the caregiver section prevalent because a lot of times
+  somebody will have surgery and there's a lot of aftercare. Or somebody's living
+  with somebody with a tumor and they need to know what they need to deal with."*
+  His example — a partner with a tumor who has seizures — produced **WI-559**
+  ("what to do when someone has a seizure"), which is life-safety content the
+  site did not have at all, and later the same day **WI-560** (living with
+  seizures day to day: activities, triggers, water, driving). The caregiver
+  block links to both — a caregiver needs the emergency steps AND the everyday
+  ones, and it is often the caregiver doing the over-restricting.
+  So: **WI-558** sets the standard and the shared block, every P5 tumor hub
+  carries a section, treatment pages with real aftercare carry one too
+  (WI-510 heaviest), and **this item is now the fuller path they all link into**
+  rather than the only place caregiver content lives. Re-scope accordingly when
+  it is picked up — the "seizures and what to do" line below is now WI-559's job.
   Goal: speak to the other person in the room.
   Problem: every page on the site addresses the patient. Forum research
   (PMC12119380) found caregivers of people with high-grade glioma carry high
@@ -1612,13 +1668,21 @@ digest (**WI-404**/**WI-405**).
   Acceptance: a sequenced path rather than one page — the first 48 hours, the
   first week, the first month; what happens at each step (scans, surgery or
   biopsy, pathology, the treatment plan conversation); what to bring, what to
-  ask, who to call. Links into WI-444 at the pathology step and WI-446 for the
-  person who came with them. The emergency block stays exactly where it is, at
-  the top, unchanged. The "this is a draft" line goes only when it is no longer
-  true.
-  Refs: Content/pages/start.md, WI-436. Depends on: WI-444, WI-446 ideally.
+  ask, who to call. Links into **WI-507** (waiting for pathology) and **WI-508**
+  (the report itself) at the pathology step — WI-444 was absorbed into those —
+  and WI-446 for the person who came with them. The emergency block stays
+  exactly where it is, at the top, unchanged. The "this is a draft" line goes
+  only when it is no longer true.
+  Refs: Content/pages/start.md, WI-436. Depends on: WI-507/WI-508, WI-446
+  ideally.
 
-- [ ] **WI-451 Survivorship and late effects**
+- [ ] **WI-451 Survivorship and late effects** *(re-scoped 2026-08-30 by P5, twice)*
+  **Scope change:** Phase P5's **WI-521** now owns follow-up scans, the
+  surveillance rhythm, RANO, pseudoprogression, radiation necrosis and
+  scanxiety. **WI-560 now owns seizures day to day — triggers, activities,
+  water and driving.** This item keeps fatigue, memory and concentration,
+  returning to work, and the years-long picture. Do not write scan content here
+  (link to WI-521) and do not write driving rules here (link to WI-560).
   Goal: the site currently stops at treatment.
   Problem: nothing covers life after it — fatigue, seizures and what they mean
   for driving, memory and concentration, returning to work, scan anxiety,
@@ -1921,10 +1985,779 @@ digest (**WI-404**/**WI-405**).
 
 ---
 
+## Phase P5 — Tumor guides: what you should know about the one you have (2026-08-30)
+
+From Dan's ask: for every tumor type, research everything a newly diagnosed
+person should know — what it is, how it starts, what it does to the brain — plus
+the treatments and, specifically, **the tests you have to get through before each
+treatment**. Five parallel research tracks ran on 2026-08-30; the reports are
+committed at **`docs/research/tumor-guides/`** and are the source material for
+every item below. **Read `SYNTHESIS.md` first** — it holds the page inventory,
+the resolved conflicts and the rulings.
+
+**The strategic finding, which is why this phase is worth 60 items.** The
+readability gap is measured and published: across 91 US brain tumor centers and
+8 patient organizations, mean Flesch-Kincaid grade level is **11**; fewer than
+10% of center sites reach 8th grade and **no patient organization does**
+(`academic.oup.com/nop/article/12/5/901/8124733`). A separate study of 180
+documents from 50 academic centers found median FKGL 12.5, with treatment
+content *harder* than diagnostic content. A brain tumor library that actually
+holds 6.0 would be, on the published record, the first. Same shape as P4's
+"nobody runs a daily plain-language research feed" — an uncontested niche.
+
+**Architecture: three layers, each written once.** 24 tumor hubs at
+`/tumors/<slug>` (18 deepened in place, 6 new), a **treatment library** of 17
+pages, a **tests library** of 12 pages. A tumor hub says which treatments and
+tests apply to *that* tumor and how they differ there, then links in. Writing
+treatments into each tumor page instead would be 24× the work and 24 places to
+fix an error.
+
+### Decisions already taken (do not re-open per item)
+
+Dan's calls, 2026-08-29/30:
+
+- **Structure:** shared treatment + tests libraries, tumor hubs link in.
+- **Prognosis:** explain what *grade*, *median survival* and *five-year survival*
+  MEAN and why a population number does not predict one person — **publish no
+  figures.** This is a deliberate change from `/tumors`' current line and it is
+  validated: prognosis disclosure requires negotiation and readiness-checking
+  across visits, which a page cannot do, and 25 newly diagnosed glioma patients
+  produced *"not all patients want to know it all, one size does not fit all."*
+  Hence the reader-choice gate (WI-503).
+- **Depth:** all 24 types at full depth.
+- **Existing pages:** deepen in place, same URLs.
+- **Drugs:** name them, say what they do, describe common side effects. No doses,
+  no mg, no cycle schedules.
+- **Tests:** their own pages, because one scan serves diagnosis, planning AND
+  follow-up.
+- **`all-brain-tumors`** becomes the general "we don't have a name for it yet"
+  page.
+- **Navigation:** keep the grouped index, add an "I was diagnosed with…" picker.
+- **R1 — orienting durations: IN.** "Radiation is usually Monday to Friday for
+  about six weeks", "Optune at least 18 hours a day" (that one IS the decision),
+  "staples out roughly 1–2 weeks". Lomustine reworded to carry the reason rather
+  than the interval: *"taken only occasionally, not every day, because it lowers
+  blood counts for weeks after you take it."* All Gy and mg figures stay out.
+- **R2 — procedural risk percentages: qualitative.** "Bleeding is uncommon, but
+  it is the main risk." The source spread is too wide to state honestly —
+  awake-craniotomy seizure is reported anywhere from 2.9% to 54%.
+- **R3 — the two numbers most likely to mislead: direction only.** No percentages
+  for the whole-brain-radiation cognitive figures (most people in **both** arms
+  declined, so the raw numbers mislead in the reader's favour) and none for the
+  ~90% glioblastoma relapse rate — *"recurrence is expected and is planned for"*
+  carries the useful part.
+
+### Shared acceptance contract
+
+**Every content item in this phase must satisfy all of the following.** Stated
+once here so 60 items do not each repeat it; item-level Acceptance lists only
+what is specific to that page.
+
+1. Reading grade **≤ 6.0** measured by ContentCheck (CI-gated).
+2. **Sources-only.** Every substantive claim traceable to a source in the
+   research reports or a source added and cited in the page's `sources` front
+   matter. No invented facts, no invented numbers.
+3. **WHO CNS5 naming and grading throughout.** Arabic numerals, grading within
+   tumor type. Where an older name has been retired, say so — readers arrive
+   holding old paperwork.
+4. **NCI patient PDQ is pre-CNS5 and must not be used for naming, grading, or
+   brain-metastasis radiation recommendations.** It still says "anaplastic
+   astrocytoma", "oligoastrocytoma" and "hemangiopericytoma", uses Roman
+   numerals, and predates both ASCO-SNO-ASTRO 2022 and vorasidenib. Use it for
+   supportive-care and general framing language only. Take naming from
+   CNS5/cIMPACT-NOW. Same caution for ABTA's legacy PDFs and StatPearls'
+   oligodendroglioma chapter, both of which carry retired terms.
+5. **No prognosis figures.** No survival statistics, no median survival, no
+   five-year rates, anywhere, in any page.
+6. **Never AHFS or MedlinePlus drug monographs; never NCI embedded images**
+   (licensing — PLAN.md §5). Also: replace the manufacturer's site
+   (avastin.com) as a side-effect source before publishing.
+7. Ends with **questions to ask your care team**.
+8. Front matter carries `sources` (with `accessed` dates), `reviewed`,
+   `review_due`, and `disclaimers: [medical]`.
+9. New vocabulary joins the glossary so tooltips fire site-wide.
+10. Existing `/tumors/*` URLs are preserved. No redirects, no renames.
+11. **Every tumor hub carries a caregiver section** — "for the person caring for
+    someone with this" — and it is a real section, not a footnote. **Dan's call,
+    2026-08-30**, with the reason: after surgery there is a lot of aftercare, and
+    someone living with a person who has a tumor needs to know what they will
+    have to deal with. His own example: a partner with a tumor who has seizures.
+    Every comparable site silos caregivers into a separate "support" area and
+    none gives them a lane inside the tumor page, so this is also an unoccupied
+    position. See WI-558 for the standard and WI-446 for the fuller path.
+12. **Every treatment page with meaningful aftercare carries a caregiver
+    section too** — what the person at home actually has to do, what to watch
+    for, and when to call. Craniotomy (WI-510) is the load-bearing case.
+
+### Wave 0 — foundations
+
+Small, and everything downstream inherits it. Do not start Wave 1 first.
+
+- [x] **WI-501 Shared content blocks for curated pages** *(done 2026-08-30)*
+  Goal: write the repeated blocks once so 24 pages cannot drift apart.
+  Problem: curated content is flat Markdown with **no include mechanism**. Six
+  blocks recur across the tumor hubs — `[CROSSWALK]` (retired names),
+  `[CAUSES]` (the self-blame block), `[MECHANISM]` (how a tumor causes
+  symptoms), `[MARKERS]`, `[TREATMENTS]`, `[PROGNOSIS-WORDS]`. Copy-pasting
+  them means 24 copies of the content **most likely to need correcting later**:
+  the crosswalk changes every time WHO or cIMPACT-NOW moves.
+  Acceptance: an include directive resolved by `ContentStore`; blocks under
+  `Content/blocks/`; **ContentCheck grades the composed page, not the fragment**
+  (a fragment graded alone can pass while the assembled page fails); glossary
+  markers and site search see composed text; a test proves editing one block
+  changes every page that includes it; a missing block fails the build rather
+  than rendering an empty section.
+  Refs: `Content/ContentStore.cs`, `tools/BrainHarbor.ContentCheck/`,
+  docs/research/tumor-guides/SYNTHESIS.md §3.2. Depends on: nothing.
+  **Done.** Directive is a whole line reading `[BLOCK-NAME]`; blocks live in
+  `Content/blocks/`, ship EMPTY (WI-513 writes the crosswalk together with the
+  page that includes it). A block may carry `sources` front matter, which
+  merges into every including page — otherwise the drift problem just moves to
+  the citation list. Mechanism documented in content-pipeline.md §3a.
+  **Two review findings worth carrying into Wave 1:** matching must be line
+  based, not one regex over the document (`core.autocrlf=true`, and .NET's
+  multiline `$` will not match before `\r`, so on a fresh clone every directive
+  rendered as literal bracket text with no error while CI stayed green); and a
+  block must be spliced with blank lines around it, or the crosswalk TABLE
+  fuses into the neighbouring paragraph as pipe-mangled prose.
+
+- [x] **WI-502 The tumor-guide editorial standard** *(done 2026-08-30)*
+  Goal: write the rules down where a future session will find them, not in a
+  chat log.
+  Acceptance: a new section in `docs/content-pipeline.md` covering the standard
+  17-section order (WI-506's template), the shared acceptance contract above,
+  the R1/R2/R3 rulings with their reasoning, and — most importantly — the
+  **source-precedence rule** (§4 of the contract: which source governs naming vs
+  framing vs radiation recommendations, and which named sources carry retired
+  terminology). A page that cites NCI for a tumor name is a defect; that has to
+  be findable.
+  Refs: docs/content-pipeline.md, docs/research/tumor-guides/SYNTHESIS.md §7.1.
+  Depends on: nothing.
+  **Done — `docs/content-pipeline.md` §12**, appended rather than inserted
+  because §2/§3/§4/§5/§6/§9/§10 are cited by name from CLAUDE.md, the backlog
+  and the startup references, and renumbering would break all of them.
+  Covers: source precedence (§12.1), the 12-item shared contract (§12.2), the
+  17-section order with the reason for each position (§12.3), R1/R2/R3
+  (§12.4), prognosis-without-figures and the gate (§12.5), and the
+  page-specific writing rules (§12.6).
+  **Two findings from reading the NCCN guideline rather than the research
+  summary of it.** (1) It **is** CNS5-aligned — checked its actual vocabulary:
+  Arabic grades throughout, `IDH-mutant`, and neither "anaplastic astrocytoma"
+  nor "oligoastrocytoma" appears anywhere. That makes the precedence rule
+  clean: NCCN governs naming and grading, NCI patient PDQ is framing-only.
+  (2) **It is NOT "licensing-clean"**, which is what the research reports call
+  it three times. Its copyright page forbids reproduction of text or
+  illustrations in any form without written permission. Read it, write our own
+  sentences, cite it. §12.1 says so explicitly, because a drafting session with
+  a 76-page plain-language PDF open is exactly where phrasing gets borrowed
+  without anyone deciding to.
+
+- [x] **WI-503 Reader-choice gate for the outlook section** *(done 2026-08-30, PR #70)*
+  Shipped as a Markdig custom container, `:::outlook`, because curated pages
+  render with `DisableHtml()` — a `<details>` typed into a .md file renders
+  escaped, so this could never have been "just write the HTML". Authoring
+  syntax and the three rules that follow from it are in
+  `docs/content-pipeline.md` §12.5.
+  **The safety property is that a typo fails rather than falls open.** Markdig
+  renders an unknown `:::name` as an anonymous `<div>`, so `:::outlok` would
+  have published the outlook section wide open, with no error and a green
+  build. `ReaderGate.Validate` fails the page by name instead, and ContentCheck
+  turns that into a build failure for free.
+  Goal: let a reader decide whether to read the frightening part.
+  The evidence says some patients want full honesty, some want generalities, and
+  some want only positive information — so outlook sits at position 12, behind
+  an explicit choice: *"The next part is about outlook. Some people want to read
+  it. Some people would rather not. You can skip it and come back another day.
+  Nothing else on this page depends on it."*
+  Acceptance: a disclosure component usable from curated Markdown; **works with
+  JavaScript off** (same `<details>`/`<summary>` approach as the mobile nav and
+  the country picker); closed by default; keyboard reachable; axe clean at
+  desktop and 390px; readable in print. A test pins that it renders closed.
+  Refs: `Pages/Shared/`, wwwroot/css/site.css, WI-440 (disclosure pattern),
+  docs/research/tumor-guides/SYNTHESIS.md §5. Depends on: nothing.
+
+- [x] **WI-504 `[user]` Fetch the sources that block automated access** *(done 2026-08-30 — Wave 1 UNBLOCKED)*
+  Goal: get the best available source into the repo.
+  Three separate research tracks independently named **NCCN Guidelines for
+  Patients: Gliomas** as the best CNS5-aligned, patient-level, licensing-clean
+  source available — and it returned HTTP 403 to every automated fetch, as did
+  ABTA, The Brain Tumour Charity, Johns Hopkins "Understanding My Report", and
+  the RSNA fMRI review. The NCCN patient guideline is also the best available
+  model for the "questions to ask" blocks.
+  Acceptance: Dan opens them in a browser and saves them to
+  `.claude/work_files/research/sources/` (git-ignored — they are third-party
+  documents, not ours to commit). A note here listing what was retrieved.
+  Depends on: nothing. **Blocks Wave 1.**
+
+  **Retrieved 2026-08-30**, in `.claude/work_files/research/sources/`:
+  - `brain-gliomas-patient.pdf` — **NCCN Guidelines for Patients: Brain Cancer
+    — Glioma, 2024.** ~76 pages. The blocker; Wave 1 is now unblocked. Also the
+    model for the "questions to ask your care team" section every P5 page ends
+    with.
+  - `kurokawa-et-al-2022-...-who-classification...pdf` — RadioGraphics
+    `10.1148/rg.210236`, Kurokawa et al. **"Major Changes in 2021 WHO
+    Classification of CNS Tumors."** The single best crosswalk source for
+    WI-501's `[CROSSWALK]` block: CNS5 renames, cIMPACT-NOW, Roman→Arabic.
+    **Note for anyone re-reading the research reports:** `tests-library.md`
+    §13 calls the blocked RSNA item "the RSNA fMRI review". That is a DIFFERENT
+    article whose URL was never captured. `rg.210236` is the CNS5 paper, filed
+    correctly under "WHO CNS5 classification and grading" in
+    `glioma-family.md`. Do not deprioritise it on the strength of the tests
+    report's label.
+  - `jhu-understanding-my-report.pdf` — Johns Hopkins Pathology, the model for
+    WI-508. Its sample report reads *"Glioblastoma, IDH wildtype (WHO grade
+    IV)"* — a Roman numeral, retired by CNS5 in 2021 precisely to stop
+    II/III/IV transcription errors. Useful **because** it is dated: it is a
+    real example of the confusion WI-508 has to walk a reader through.
+  - `what-causes-brain-tumours.pdf` — The Brain Tumour Charity. Feeds
+    `[CAUSES]`. Carries the line that block exists for: only ~3% of UK brain
+    tumours are thought preventable, and *"there's nothing you could have done,
+    or not done, to prevent brain cancer."* **The URL in the research reports
+    is dead** — the live one has an extra `/brain-tumour-biology/` segment:
+    `.../how-brain-tumours-are-diagnosed/brain-tumour-biology/what-causes-brain-tumours/`
+  - **ABTA pages: deliberately NOT retrieved.** Their naming is pre-CNS5, and
+    §4 of the shared contract already bars them from governing naming or
+    grading. That leaves tone and "what patients ask", which the NCCN guideline
+    covers better. Recorded as decided-against so it is not re-proposed.
+
+  **All four are text-extractable** with `pdftotext` (already on this machine at
+  `/mingw64/bin/pdftotext`), so a session can read them directly:
+  `pdftotext -f 1 -l 20 <file> -`. The `Read` tool cannot — it needs poppler's
+  `pdftoppm`, which is not installed.
+
+- [x] **WI-505 Glossary terms for the new vocabulary** *(done 2026-08-30, PR #71)*
+  40 new terms, 43 total. Glossary front matter gained a `sources:` field —
+  the glossary was the one content surface where a medical claim could ship
+  with nowhere to record where it came from.
+  **Read this before adding a term.** Nine of the thirteen StatPearls
+  citations in the first draft were wrong: written from memory, they resolved
+  to real but unrelated chapters (`NBK534244`, cited on four surgery terms, is
+  *Carbon Dioxide Angiography*). **A wrong citation that resolves is worse than
+  no citation, because nothing looks broken.** Every URL here was fetched and
+  its title read before use. Do the same.
+  Goal: the tooltips fire before the pages that need them ship.
+  Acceptance: roughly 40 terms added — extra-axial, dural tail, mass effect,
+  vasogenic edema, gross total resection, debulking, frozen section, integrated
+  diagnosis, NOS, NEC, methylation profiling, pseudoprogression, radiation
+  necrosis, fractionation, eloquent cortex, and the markers (IDH, MGMT, 1p/19q,
+  ATRX, TERT, CDKN2A/B, H3 K27M, EGFR, BRAF, Ki-67). **Definitions describe, they
+  do not interpret** — no marker is characterised as favourable.
+  Refs: `Content/glossary/`, `GlossaryMarker`, WI-434. Depends on: nothing.
+
+- [x] **WI-558 The caregiver section: shared block and standard** *(done 2026-08-30, PR #72 — `[CAREGIVER]` block on all 18 tumor hubs; standard at content-pipeline §12.7; the seizure links land with WI-559/560)*
+  Goal: give the other person in the room a lane on every page, consistently.
+  **Dan's call, 2026-08-30**, answering the question WI-446 left open: yes,
+  every tumor hub carries one, and he wants it prevalent rather than tucked
+  away. Two reasons he gave, both concrete: surgery is followed by a lot of
+  aftercare that falls to someone else, and a person living with someone who has
+  a tumor needs to know what they will have to deal with — his example was a
+  partner with a tumor who has seizures.
+  This is the standard, not the content: each page writes its own specifics.
+  Acceptance: a `[CAREGIVER]` shared block (WI-501 mechanism) holding what is
+  genuinely common across every tumor — you are allowed to ask questions; who
+  coordinates care and how to get one named contact; what to write down at
+  appointments; **when to call, and what "call today" versus "call an ambulance"
+  looks like**; looking after yourself, including permission to. Plus a
+  documented per-page pattern for the specifics each hub adds.
+  **The evidence this is built on:** care coordination and advocacy were raised
+  almost exclusively by caregivers, not patients; caregivers performed dressing
+  changes and gave medications with **no formal instruction**; several feared
+  "offending the physician by asking too many questions"; six of 25 families
+  regretted not accepting hospice sooner.
+  **Written to the caregiver, in the second person, not about them.** A section
+  that says "caregivers often find..." has already failed the person reading it
+  at 2am.
+  Refs: docs/research/tumor-guides/patient-questions-and-ia.md §(c)H and §(d)2,
+  SYNTHESIS.md §3.9. Depends on: WI-501. **Before WI-513 — it is part of the
+  template that gets proven.**
+
+### Wave 1 — the spine, proven end to end
+
+Six library pages plus **one** tumor hub taken all the way, so the template is
+tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
+(standing rule since 2026-08-29) before Wave 2 starts.
+
+- [ ] **WI-506 T1 MRI — what it's like and what to ask** *(defines the page template)*
+  Goal: the scan every reader has, explained by someone who has been in the room.
+  This item also **establishes the 17-section tumor-page template** and the
+  10-section library-page template that every later content item follows: what it
+  is in one sentence · why you might have it · what happens step by step · how
+  long · what it feels like · side effects soon · side effects later · what you
+  need first · questions to ask · related pages.
+  Acceptance, beyond the shared contract: covers the machine, the noise, holding
+  still, and **claustrophobia with what can actually be done about it** (coaching,
+  music, sedation arranged in advance — not "you can't have an MRI"); contrast
+  and the questions people ask about it; **implant screening framed as "bring
+  your device card"**, since MRI-compatible pacemakers and cochlear implants
+  exist; the **navigation/"stealth" scan the day before surgery**, which baffles
+  people; the scan right after surgery. Serves diagnosis, planning and
+  surveillance in one page — deliberately not split.
+  Refs: docs/research/tumor-guides/tests-library.md,
+  patient-questions-and-ia.md §(b). Depends on: WI-501, WI-502, WI-504.
+
+- [ ] **WI-507 T5 Waiting for pathology results**
+  Goal: the highest-value page in the phase, and nobody else has one.
+  The wait is fully explainable and completely unexplained. Frozen section
+  ~20–26 minutes, agreeing with the final diagnosis ~90% of the time. Formalin
+  fixation alone 6–72 hours before processing starts. Gene panel ~23 days.
+  Methylation array ~23 days — **batched in groups of about 8, so samples
+  queue**. Integrated diagnosis median 15 days (2021) rising to 21 (2024),
+  against a 14-day benchmark only 30% of centres meet.
+  Acceptance, beyond the shared contract: states plainly that **the answer
+  arrives in layers and the name of the diagnosis can legitimately change
+  between them — and that this is the system working correctly, not someone
+  changing their story.** Explains batching as the mundane cause. Covers
+  addendums and amended reports, what "sent out to another lab" means, second
+  opinions on the pathology itself, and what to do while waiting. Deliberately
+  split from the biopsy page (WI-519) so a reader who is already home and
+  already waiting does not scroll past surgical technique to reach it.
+  Refs: docs/research/tumor-guides/tests-library.md §(b)5,
+  meningioma-mets-general.md. Depends on: WI-501, WI-502, WI-504.
+
+- [ ] **WI-508 T6a Your pathology report — the walkthrough** *(absorbs WI-444)*
+  Goal: translate the document the reader is holding.
+  Acceptance, beyond the shared contract: what the report is and who wrote it;
+  the report's layout section by section; **why molecular results change the
+  NAME of the diagnosis** under CNS5 (the safe, non-prognostic editorial spine —
+  these tests rename, they do not predict); grades and why the numbering changed
+  in 2021; how long results take. Deep-linkable so `/tumors` and feed items can
+  point at an exact term.
+  Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(d).
+  Depends on: WI-501, WI-502, WI-504, WI-505.
+
+- [ ] **WI-509 T6b The molecular marker glossary** *(absorbs WI-444)*
+  Goal: one entry per word on the report, as an anchor-linked reference.
+  Acceptance, beyond the shared contract: IDH · 1p/19q · ATRX · TERT ·
+  CDKN2A/B · EGFR · chromosome 7 and 10 · H3 K27M · H3 G34 · BRAF · MGMT ·
+  Ki-67 · TP53, plus NGS panels and methylation profiling. Three lines each:
+  what it is / what your team does with it / **what it does not mean**. Every
+  entry individually anchor-linked so a reader searching "what is 1p/19q" lands
+  on it. Each entry collapsible so the default view is a scannable list.
+  **The hardest line on the site, and it must hold: describe what is measured,
+  never characterise a result.** Sources say this out loud — ACS literally
+  writes "better outlook" for IDH and MGMT — so the drafting prompt has to
+  forbid it explicitly or it will drift back in. MGMT is the hardest case
+  because it is genuinely treatment-selecting rather than merely prognostic:
+  say what is measured, say the team uses it as one input when choosing
+  chemotherapy, and route "what does *my* result mean" to the reader's own team.
+  Includes the somatic-vs-germline block — *"the labels are about the tumor, not
+  about you. You did not do anything to cause them, and you cannot pass them on
+  to your children"* — which is the #1 family question and is answered clearly
+  nowhere on the consumer web.
+  Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(e)1–2.
+  Depends on: WI-508.
+
+- [ ] **WI-510 X2 Craniotomy**
+  Goal: the operation, from arriving at the hospital to being back at home.
+  Acceptance, beyond the shared contract: the step-by-step from the patient's
+  side; ICU, hospital stay, the incision, hair, headaches, the recovery
+  timeline; risks by location; 5-ALA and navigation; LITT as a section, not a
+  page. Two specific things that prevent real distress: **"gross total
+  resection" is defined by the post-op MRI, not by cure** (microscopic disease
+  remains in diffuse glioma), and **cognition often feels worse on day 2–3 and
+  then improves** — one sentence that prevents a panic. Also SMA syndrome:
+  transient loss of speech initiation and one-sided movement after surgery near
+  the supplementary motor area, recovering over days to weeks; unwarned patients
+  believe they have been permanently disabled.
+  **Carries the fullest caregiver section on the site** (contract item 12) —
+  this is the aftercare Dan named. What the person at home actually does: wound
+  and staple care they were never taught, medication schedules, what "normal"
+  looks like day by day, when to call the team and when to call an ambulance,
+  and how long they should expect to be doing it. A caregiver is discharged into
+  this job with no training; the research found them performing dressing changes
+  and giving medicines with none.
+  Refs: docs/research/tumor-guides/treatment-library.md.
+  Depends on: WI-501, WI-502, WI-504, WI-558.
+
+- [ ] **WI-511 X5 Radiation therapy**
+  Goal: the hub page for every form of radiation.
+  Acceptance, beyond the shared contract: the simulation appointment and
+  **mask-making, which is a distinct and under-acknowledged fear point**;
+  fractionation in plain words; what a daily session is actually like (lead with
+  the sensory experience, then the mechanism, then the schedule); acute side
+  effects and late effects. **Somnolence syndrome gets its own named
+  subsection** — profound drowsiness 4–6 weeks *after* radiation ends,
+  self-resolving, and families read it as the tumor growing. Absorbs IMRT,
+  conformal, and whole-brain radiation including hippocampal avoidance and
+  memantine; R3 applies to the cognitive comparison.
+  Refs: docs/research/tumor-guides/treatment-library.md.
+  Depends on: WI-501, WI-502, WI-504.
+
+- [ ] **WI-512 X8 Chemotherapy**
+  Goal: one page for the drugs, because the shared content is where the value is.
+  Acceptance, beyond the shared contract: temozolomide, PCV, lomustine and
+  carmustine wafers as sections; oral vs IV; which tumors use which; **blood-count
+  monitoring and the fever rule**; anti-nausea support. R1's lomustine wording is
+  mandatory here. Carmustine wafers get a brief, neutral mention — a 2022 review
+  is literally titled *"Is It Still an Option?"* — and current practice should be
+  re-verified before publishing.
+  Refs: docs/research/tumor-guides/treatment-library.md §(e)4.
+  Depends on: WI-501, WI-502, WI-504.
+
+- [x] **WI-559 "What to do when someone has a seizure"** *(done 2026-08-30, with WI-560 in one PR — `/seizures/what-to-do`)*
+  Goal: the one page on this site where a reader may be acting, not reading.
+  **This is life-safety content and it exists nowhere on the site today.**
+  Seizures are the commonest way a brain tumor announces itself and, in
+  low-grade glioma and oligodendroglioma, the symptom a person lives with for
+  years. Every caregiver section written under WI-558 links here, so it must
+  exist early rather than at the end of the phase.
+  Acceptance, beyond the shared contract: what to do, in order, as short
+  imperative steps a frightened person can follow while it is happening — time
+  it, cushion the head, nothing in the mouth, turn them on their side once the
+  movements stop, stay until they are fully aware. **What NOT to do**, since the
+  folk advice is actively harmful. **When to call an ambulance**, stated
+  unmistakably: over five minutes, one seizure straight into another, injury,
+  trouble breathing, first-ever seizure, or it happens in water. What happens
+  afterwards and why the person may be confused, exhausted or not remember. What
+  to write down for the care team, because that record changes treatment.
+  **Format is the safety feature.** It must be scannable in a panic, legible in
+  print (people put this on a fridge), and readable with the stylesheet dead.
+  The steps must not sit behind a disclosure, ever. Print layout is part of the
+  acceptance, not a nicety.
+  **Do not state driving rules** — they are jurisdictional. "Your rules depend
+  on where you live, here is who to ask." Same line WI-451 and WI-525 hold.
+  Sources must be first-tier for this one (Epilepsy Foundation, NHS, CDC) and
+  cited on the page.
+  Refs: WI-525 (medicines, a different page — this is what to DO),
+  docs/research/tumor-guides/patient-questions-and-ia.md §(c)D.
+  Depends on: WI-558. **Before WI-513** — the template links to it.
+  **Pairs with WI-560**, which is the rest of the time.
+
+- [x] **WI-560 Living with seizures: what you can do, and what to be careful about** *(done 2026-08-30, with WI-559 in one PR — `/seizures/living-with`)*
+  *(Dan, 2026-08-30, from his own example)*
+  Goal: the day-to-day question WI-559 does not answer — not "what do I do
+  during a seizure" but "what am I allowed to do for the other 364 days".
+  **Why it exists.** Dan: his ex-wife has a low-grade glioma with seizures,
+  controlled on medication, and she has worked out for herself that anything
+  strenuous can bring on small ones — so she manages what she does. She cannot
+  drive. Nothing on this site helps with any of that, and the phase as filed
+  did not cover it: **WI-559** is the emergency, **WI-451** is late effects,
+  **WI-525** is the medicines, and section 9 of a tumor hub is one paragraph per
+  tumor. Nobody owned the practical list. This item does.
+
+  **The finding that decides the whole shape of this page, and it cuts both
+  ways.** Most of the restriction people with seizures are handed is not
+  evidence-based. People with epilepsy are measurably less active than the
+  general population because of "prejudice, overprotection, unawareness, stigma,
+  fear of seizure induction and lack of knowledge of health professionals";
+  exercise generally *reduces* seizure frequency; the guidance position is
+  individualised, risk-stratified counselling **instead of** blanket restriction
+  (ILAE; `sciencedirect.com/science/article/pii/S1059131114002660`).
+  **And exercise-triggered seizures are still real for a minority.** In a series
+  of 400 people with epilepsy only **two** could identify physical activity as a
+  precipitant — but where it happens it is reproducible, and the degree of
+  exertion tracks the likelihood (`neurology.org/doi/10.1212/WNL.38.4.633`).
+  **So the page has to hold both, and the order matters.** A page that only says
+  "exercise is good for you, go and live your life" tells the reader in that
+  minority that she is wrong about her own body — and she is not; she has
+  observed it repeatedly. A page that only lists prohibitions makes everyone
+  else's life smaller for no reason. Say: most people are told to do less than
+  they need to, **and** if you have noticed a pattern in yourself, you are not
+  imagining it and it is worth writing down and taking to your team.
+
+  **The organising principle, which is the actually useful idea here: it is
+  rarely the activity that is dangerous, it is what you would fall into, onto,
+  or from.** Give the reader that sentence and they can reason about activities
+  nobody wrote a page on. A list of banned things cannot do that, and it goes
+  stale the moment someone asks about a hobby that is not on it.
+
+  Acceptance, beyond the shared contract:
+  - **Water is the one to state most plainly**, because it is where seizures
+    kill people. Shower rather than bath; do not lock the bathroom door and hang
+    a sign instead; a door that opens outward cannot be blocked by someone who
+    falls against it; non-slip strips; a fabric curtain rather than a glass
+    screen; never swim alone, and a companion who knows what to do beats a
+    lifeguard who does not.
+  - **Small changes that keep the activity**: back burners and a microwave
+    rather than reaching over a gas flame; a food processor rather than knives
+    when alone; care on ladders, at heights and near open water. Framed as
+    "keep doing it, change how", never as "do not".
+  - **Triggers worth acting on**, with the honest caveat that they differ per
+    person: a regular sleep schedule (sleep loss is the best-attested one),
+    alcohol — including that the risk peaks while it wears off, not while
+    drinking — dehydration, heat, and missed doses.
+  - **A seizure diary, and why it is worth the bother**: it is the thing that
+    actually changes a medication decision, and it is how you find out whether
+    your own suspected trigger is real.
+  - **Being the one who over-restricts yourself** is a real cost too, as is a
+    family member doing it for you. Say so.
+  - **Practical kit**: medical ID, a written seizure action plan for work and
+    family, spare medication in a bag, alarms for doses.
+  - **Work**: what to tell an employer, and that adjustments exist.
+
+  **Driving gets its own section and NEVER a number.** It is the loss people
+  feel hardest and the thing this page most needs to handle honestly. US rules
+  vary enormously: 28 states set a fixed seizure-free period (median 6 months,
+  range 3 to 12), 23 leave it to clinical judgement, and Florida requires 2
+  years with reconsideration possible at 6; every state requires notifying the
+  DMV and some place the reporting duty on the doctor
+  (`epilepsy.com/lifestyle/driving-and-transportation/laws`). So: explain the
+  shape of the rules, link the state-by-state tool, say plainly that this is one
+  to ask the care team about rather than guess, and **do not print a duration on
+  the page**. Same line WI-451, WI-525 and WI-559 already hold.
+  Then say the part nobody says: losing the licence is usually the biggest
+  practical change, it is a legitimate grief, and there are workarounds worth
+  knowing about. Per §12.6 this section must not end on the loss.
+
+  **Sources first-tier and cited** (Epilepsy Foundation, ILAE, NBTS), and note
+  for whoever writes it: `braintumor.org/news/9-tips-for-managing-seizures-caused-by-brain-tumors/`
+  is good on medication routine and useless on daily activities — the activity
+  material has to come from the epilepsy sources, not the brain-tumor ones.
+  **Not US-only in tone.** WI-455/457 put non-US readers on this site
+  deliberately; a page written as though every reader has a DMV fails them.
+  Refs: WI-559 (the emergency; cross-link both ways), WI-558 (the caregiver
+  block links here), WI-525 (medicines), WI-451 (which now sheds "seizures and
+  driving" to this item). Depends on: nothing — it needs no tumor content.
+  **Wave 0**, beside WI-559: the two are one subject split by whether it is
+  happening right now, and writing them together is how that split gets decided
+  once instead of twice.
+
+- [ ] **WI-513 Low-grade glioma, deepened — the template proof**
+  Goal: one tumor hub taken all the way, reviewed, before the pattern is copied.
+  Chosen deliberately: the short version already exists to compare against.
+  Acceptance, beyond the shared contract: the full 17-section order; **"low
+  grade" is not "benign", and grade 1 is not grade 2** (grade 1 gliomas are
+  circumscribed and often curable by surgery; grade 2 diffuse gliomas are
+  malignant and incurable — and WHO actively recommends against the term
+  "low-grade glioma", which is why the page leads with the caveat and routes to
+  the actual diagnosis); why a "low-grade-looking" tumor can be called grade 4
+  (molecular glioblastoma, CDKN2A/B); watch-and-wait; transformation;
+  **vorasidenib** (FDA 6 Aug 2024 — the first glioma approval in decades, absent
+  from most existing patient material including NCI's, and the clearest single
+  proof this library is current); the age-40 line presented as trial eligibility
+  criteria, **not** as a rule.
+  Also proves the **caregiver section** (contract item 11, WI-558) in place —
+  for this tumor that means living alongside seizures over years, linking to
+  WI-559.
+  **Ends with a localhost URL for Dan and an explicit stop** — the template gets
+  adjusted here, not after 23 more pages exist.
+  Refs: docs/research/tumor-guides/glioma-family.md §(b)2,
+  patient-questions-and-ia.md §(b). Depends on: WI-506…WI-512, WI-558, WI-559.
+
+### Wave 2 — the glioma family and what it pulls in
+
+Start only after Dan has signed off WI-513's template.
+
+- [ ] **WI-514 Glioma (umbrella), deepened** — the family tree and the router:
+  which of the specific pages does the reader actually need. Canonical home for
+  the `[CROSSWALK]` and `[MECHANISM]` blocks. Diffuse vs circumscribed;
+  "adult-type" and "pediatric-type" mean biology, not the reader's age; grade,
+  not stage. Depends on: WI-513.
+- [ ] **WI-515 High-grade glioma, deepened** — grades 3 and 4 as a grouping, not
+  a diagnosis; two tumors can both be grade 4 and be very different; there is no
+  grade 4 oligodendroglioma; de novo vs transformed. Depends on: WI-513.
+- [ ] **WI-516 Astrocytoma, deepened** — three different families share the name;
+  **personality and behaviour change**, which can precede diagnosis by months;
+  the crosswalk slice that matters most (both directions of the
+  "secondary glioblastoma" rename). Depends on: WI-514.
+- [ ] **WI-517 Oligodendroglioma, deepened** — why both halves of the name
+  matter; seizures as the hallmark; calcification on the scan; **why PCV is the
+  oligodendroglioma chemotherapy** (the 1p/19q co-deletion that *defines* the
+  tumor also *predicts* PCV benefit — label and treatment are two consequences
+  of one biological fact, which is also why the test is worth waiting for);
+  PCV vs temozolomide presented as genuinely open; what to ask if the report
+  does not mention 1p/19q. Depends on: WI-514.
+- [ ] **WI-518 Glioblastoma, deepened** — the growth story in one paragraph
+  (outgrows its blood supply → necrosis → starving cells force leaky new vessels
+  → expansion), which explains necrosis, ring enhancement, edema and relentless
+  growth at once; "but my tumor didn't look grade 4"; why surgery cannot remove
+  all of it; the expanded self-blame block; R3 applies to relapse.
+  Depends on: WI-514.
+- [ ] **WI-519 T4 Biopsy — how tissue is taken** — needle vs open, frame vs
+  frameless, the chance it does not give an answer. R2 applies. Sits between
+  nothing and WI-507 in a deliberate three-page sequence with WI-508.
+  Depends on: WI-507.
+- [ ] **WI-520 T7 Getting ready for surgery — tests and clearance** — bloods,
+  ECG, chest imaging, the anesthesia consult, **the 2-hour clear-fluid rule**
+  (patients routinely go dry all night unnecessarily), which medicines continue,
+  and **never stop blood thinners on your own**. Depends on: WI-506.
+- [ ] **WI-521 T11 Follow-up scans and what the results mean** — the canonical
+  home for RANO in plain terms, **pseudoprogression** (10–30% of glioblastoma
+  patients on chemoradiation see the MRI get worse within 12 weeks of finishing
+  radiation, from treatment effect, with real new symptoms), **radiation
+  necrosis**, and scanxiety. On scanxiety the honest position is that no
+  intervention has proven effective, so promise nothing and give logistics
+  (book the scan and the results close together). Depends on: WI-506.
+- [ ] **WI-522 X1 Watch and wait** — that it is a plan, not a delay; what is
+  monitored and how often; the reassuring growth data; **and the measured cost**
+  — watch-and-wait carries 4.26× higher risk of a pathological depression score,
+  which every other site treats as a footnote. Depends on: WI-502.
+- [ ] **WI-523 X3 Awake craniotomy and brain mapping** — split from WI-510
+  because the patient has a job to do. **"During mapping you may briefly lose a
+  word or the use of a limb, and it comes back — that is the test working."**
+  Nobody says this, and it is the sentence that removes the most fear on the
+  page. R2 applies to the seizure risk. Depends on: WI-510.
+- [ ] **WI-524 X11 Steroids** — its own URL because of one message: **this might
+  be the drug, not the tumor.** Dexamethasone causes proximal muscle weakness in
+  ~28%, routinely mistaken for progression. Also why you feel better without the
+  tumor shrinking (they treat the swelling, not the mass), and why they are
+  tapered. Depends on: WI-502.
+- [ ] **WI-525 X12 Anti-seizure medicines** — same reason: **levetiracetam
+  causes irritability and aggression**, and families attribute the personality
+  change to the tumor. Also answers "why won't they give me seizure medicine?" —
+  there is a Level A recommendation *not* to give them prophylactically to
+  someone who has not had a seizure, and readers experience that as being denied
+  something. Driving is jurisdictional: say "your rules depend on where you live,
+  here is who to ask", never state any. Depends on: WI-502.
+- [ ] **WI-526 X17 Clinical trials as an option** — how to think about them,
+  framed as "ask your team". **Never matching** — Leal Health and Massive Bio do
+  AI trial matching and that is a regulated space this site stays out of (see
+  WI-449). Depends on: WI-502.
+
+### Wave 3 — meningioma, metastases, and the general page
+
+- [ ] **WI-527 Meningioma, deepened** — it starts on the covering, not in the
+  brain, and the CSF cleft on the scan is the visible proof (genuinely
+  reassuring, and explained nowhere) — with the honest limit that compression
+  still causes real damage; **location matters more than size**; why so many are
+  found by accident; grade 1–3 and what "atypical" changes; defusing "brain
+  invasion" on a report; the hormone findings at their three different evidence
+  levels (high-dose progestogens accepted causal by European regulators and must
+  be stopped on diagnosis; HRT mixed; **standard combined oral contraceptives do
+  not increase risk**) — these must not be merged into "hormones cause
+  meningioma". Depends on: WI-513.
+- [ ] **WI-528 Brain metastases, deepened** — **this is your cancer in a new
+  place, not a new cancer**, and it is still named for where it started, which
+  is the single most confusing thing for these readers and decides the
+  treatment; your original oncologist still leads; the one-way traffic and why;
+  one spot or many; focused vs whole-brain radiation with **R3 applied**;
+  CNS-penetrant drugs framed as *"ask whether your cancer has been tested for a
+  marker with a brain-active drug"*, never "there are pills for brain mets";
+  leptomeningeal disease as its own signposted section, including that a
+  negative spinal tap does not rule it out. 33–66% of brain metastases are the
+  first sign of cancer, which bridges to WI-529. Depends on: WI-513.
+- [ ] **WI-529 `all-brain-tumors` — "we don't have a name for it yet"** — the
+  page for someone told there is something on their scan. The 7-step pathway,
+  which converts silence into "step 3 of 7"; why imaging alone often cannot say
+  (the ring-enhancing differential includes an abscess, demyelination and an
+  infarct — things that are not cancer at all); **why "benign" is the wrong
+  comfort word in the brain** and why registries say *non-malignant* instead;
+  there is no stage; primary vs secondary; the tumor board the patient does not
+  attend; second opinions including on the tissue itself. Depends on: WI-507.
+- [ ] **WI-530 T2 CT + T3 Extra scans for planning** — two pages, one item. CT
+  is deliberately short and mostly retrospective: it explains the ER scan that
+  started everything. The planning page merges fMRI, DTI, MR spectroscopy,
+  perfusion and PET, because patients are never offered "an fMRI" in isolation —
+  they are told "we're adding some sequences". fMRI gets the longest section, as
+  the only one where the patient has a task. Depends on: WI-506.
+- [ ] **WI-531 X6 Proton therapy + X7 Stereotactic radiosurgery** — two pages,
+  one item. Proton splits out because **the reader's real question is access,
+  not physics** (~50 US centres, travel, and insurance denial as a routine
+  appealable step rather than a verdict). SRS splits out because **the name
+  misleads** — people think it is surgery — and the day is entirely different.
+  Do not state that frame or frameless is standard; the literature is actively
+  arguing it. Depends on: WI-511.
+- [ ] **WI-532 X9 Targeted and other systemic drugs** — led by "your tumor's test
+  result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant
+  drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it
+  improved progression-free survival but not overall survival in newly diagnosed
+  glioblastoma — it helps the scan, not the outcome. Depends on: WI-512.
+- [ ] **WI-533 X10 Tumor Treating Fields (Optune)** — a lived-experience decision
+  rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying
+  the device, caregiver dependency. R1 keeps the 18 hours because it *is* the
+  decision. Depends on: WI-502.
+- [ ] **WI-534 X13 Shunts and hydrocephalus** — obstructive vs communicating in
+  plain words; what a shunt is and what living with one means. R2 applies to
+  failure rates. Depends on: WI-502.
+
+### Wave 4 — the remaining tumor types
+
+Each inherits complete libraries, so these are writing items rather than
+research items. Same shared contract throughout.
+
+- [ ] **WI-535 Diffuse midline glioma + DIPG, deepened** — written as one item
+  because DIPG is the pontine subset of DMG and writing them apart is how they
+  drift (WI-412 already had to pin this with a test). H3 K27M. If dordaviprone
+  is mentioned, mention that its approval is contested. Depends on: WI-515.
+- [ ] **WI-536 Ependymoma, deepened.** Depends on: WI-514.
+- [ ] **WI-537 Medulloblastoma, deepened** — including craniospinal radiation and
+  the 14-day rule before staging lumbar puncture. Depends on: WI-513.
+- [ ] **WI-538 Pediatric brain tumor, deepened** — **the audience is a parent,
+  not the patient.** Coordinate with WI-453, which asks whether children get a
+  section or a sister site; this item writes the page that exists either way.
+  Depends on: WI-513.
+- [ ] **WI-539 Pituitary tumor, deepened** — links to WI-553 (transsphenoidal)
+  and WI-551 (vision and hormone tests) as its primary paths. Depends on: WI-513.
+- [ ] **WI-540 Craniopharyngioma, deepened.** Depends on: WI-539.
+- [ ] **WI-541 Acoustic neuroma, deepened** — NF2-related schwannomatosis, renamed
+  2022; links to WI-551 (hearing) and WI-531 (SRS). Depends on: WI-513.
+- [ ] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
+  caveat that steroids given before biopsy can obscure the diagnosis (verify
+  before publishing). Depends on: WI-519.
+- [ ] **WI-543 Spinal cord tumor, deepened** — stays under its own heading. The
+  taxonomy is explicit that a spinal cord tumor is not a brain tumor and must
+  never surface under a brain filter; WI-412 pinned that with a test and this
+  item must not undo it. Depends on: WI-513.
+- [ ] **WI-544 ATRT** *(new page)*. Depends on: WI-513.
+- [ ] **WI-545 Chordoma** *(new page)*. Depends on: WI-513.
+- [ ] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar
+  puncture, AFP/beta-hCG markers) as its primary path. Depends on: WI-513.
+- [ ] **WI-547 Hemangioblastoma** *(new page)*. Depends on: WI-513.
+- [ ] **WI-548 Sweep: every taxonomy type has a full guide**
+  Goal: close the phase honestly rather than approximately.
+  Acceptance: a test asserts that **every** slug in `taxonomy.yml` resolves to a
+  page carrying the full section template — not merely that a file exists.
+  WI-412 shipped with 18 of 24 written and the index said so out loud; this is
+  the item that makes that count zero, and the test is what stops a new taxonomy
+  entry silently reintroducing a stub. Any type discovered without a guide gets
+  written here. Depends on: WI-535…WI-547.
+
+### Wave 5 — the long tail
+
+- [ ] **WI-549 T8 Neurological and thinking/memory testing** — the bedside exam
+  and formal neuropsych, together because they are the same conversation and the
+  same "am I being judged?" anxiety. **There is no pass or fail**, the day is
+  long and tiring, and the results are used for rehab, work and driving.
+  Depends on: WI-502.
+- [ ] **WI-550 T9 EEG and seizure tests** — often the first test the reader ever
+  had. **A normal EEG does not mean you did not have a seizure.**
+  Depends on: WI-502.
+- [ ] **WI-551 T10 Tests for tumors in specific places** — vision, hormones,
+  hearing, as three anchor-linked parts. Readers arrive by link from WI-539 and
+  WI-541, not by browsing. Visual field testing gets the "why it feels like
+  failing" treatment. Depends on: WI-502.
+- [ ] **WI-552 T12 Lumbar puncture and spinal fluid tests** — including that
+  atraumatic needles roughly halve post-puncture headache, which gives readers a
+  concrete thing to ask for. Depends on: WI-502.
+- [ ] **WI-553 X4 Transsphenoidal (pituitary) surgery** — **nothing like a
+  craniotomy**: no head incision, no shaved head, nasal recovery, hormone
+  follow-up. Inside WI-510 it would mislead a large group of readers, which is
+  why it is its own page. Depends on: WI-510.
+- [ ] **WI-554 X14 Rehabilitation** — PT, OT, speech; what inpatient rehab is.
+  Depends on: WI-502.
+- [ ] **WI-555 X15 Palliative care — and what it is not** — the title is the
+  content: it is not hospice, and the conflation costs people months of
+  available help. Six of 25 caregiver families regretted not accepting help
+  sooner. Depends on: WI-502.
+- [ ] **WI-556 X16 Fertility and treatment** — **time-critical**: options close
+  once treatment starts, and ASCO says discuss it with every patient of
+  reproductive age. Cuts across surgery, radiation and chemo, and is
+  systematically missed. Depends on: WI-502.
+- [ ] **WI-557 The tumor picker and the /tumors index rebuild**
+  Goal: two ways in — one for the reader who knows their words, one for the
+  reader who does not.
+  Acceptance: an "I was diagnosed with…" picker that jumps straight to a tumor
+  page, on the home page and reachable from the nav, **working with JavaScript
+  off** (a form that submits, not a JS handler); the existing grouped index
+  kept and updated — the grouping answers "is mine a glioma?" before a word is
+  read, and the "we are still writing this one" state is gone once WI-548
+  passes; the index's written/total counter removed or reduced to a provenance
+  line. Every new library page reachable from somewhere (the WI-412a lesson:
+  `/tumors` shipped with nothing linking to it, and the link check was
+  structurally blind to it — the sitemap-reachability test added then must cover
+  these). Depends on: WI-548.
+
+---
+
 ## Phase P2a — Benefits & Disability (static hub) — not yet itemized
 ## Phase P2b — Newly Diagnosed pathway — not yet itemized
-## Phase P2c — Tumor types + glossary expansion — not yet itemized
-## Phase P2d — Side effects / treatments / medications-lite — not yet itemized
+## Phase P2c — Tumor types + glossary expansion — **superseded by Phase P5**
+## Phase P2d — Side effects / treatments / medications-lite — **superseded by Phase P5**
 ## Phase P3 — Patient stories — not yet itemized
+
+P2c and P2d were reserved for exactly the work Phase P5 now itemizes — tumor
+types plus glossary expansion, and treatments plus side effects. They are marked
+superseded rather than deleted so the roadmap's numbering still resolves; do not
+decompose them.
 
 Run `/pm decompose P2a` (etc.) when the preceding phase nears completion.

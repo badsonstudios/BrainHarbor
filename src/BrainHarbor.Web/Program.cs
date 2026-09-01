@@ -31,6 +31,7 @@ var connectionStringSetting = builder.Configuration.GetConnectionString("BrainHa
 builder.Services.AddNpgsqlDataSource(connectionStringSetting);
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddSingleton<GlossaryStore>();
+builder.Services.AddSingleton<ContentBlockStore>();
 builder.Services.AddSingleton<ContentStore>();
 builder.Services.AddSingleton<SummaryRenderer>();
 builder.Services.AddSingleton<TaxonomyStore>();
