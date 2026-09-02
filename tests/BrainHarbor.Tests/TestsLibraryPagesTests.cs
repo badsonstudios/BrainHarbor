@@ -1,0 +1,293 @@
+using System.Net;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.Testing;
+
+namespace BrainHarbor.Tests;
+
+/// <summary>
+/// WI-506: T1 MRI, the first page of the tests library and the page that sets
+/// the library-page template (content-pipeline §12.8).
+///
+/// The properties pinned here are the ones that would rot silently. The prose
+/// is not tested — it is reviewed. What IS tested is the small number of places
+/// where this page could give a reader actively wrong advice, and the shape the
+/// other 28 library pages inherit from it.
+/// </summary>
+public sealed class MriPageContentTests
+{
+    private static string RepoRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "BrainHarbor.slnx")))
+        {
+            directory = directory.Parent;
+        }
+        return directory?.FullName
+            ?? throw new InvalidOperationException("could not find the repo root from the test output directory");
+    }
+
+    private static string Page => File.ReadAllText(Path.Combine(
+        RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages", "tests", "mri.md"));
+
+    /// <summary>Whitespace-normalised: the source is hard-wrapped, and a sentence that happens to break across lines is not a content change.</summary>
+    private static string Flat => Regex.Replace(Page, @"\s+", " ");
+
+    /// <summary>
+    /// One "## " section, flattened. Section-scoped assertions are the whole
+    /// point: a whole-page Contains() passes when the reassuring line has
+    /// drifted into the footer, which is precisely the failure these rules
+    /// exist to catch (§12.6 is about WHERE a sentence sits, not whether it is
+    /// present somewhere).
+    /// </summary>
+    private static string Section(string heading)
+    {
+        var match = Regex.Match(
+            Page, $@"^## {Regex.Escape(heading)}\s*$(.*?)(?=^## |\z)",
+            RegexOptions.Multiline | RegexOptions.Singleline);
+
+        Assert.True(match.Success, $"the page has no '## {heading}' section");
+        return Regex.Replace(match.Groups[1].Value, @"\s+", " ").Trim();
+    }
+
+    /// <summary>Sentences of a section, so "first" and "last" mean something.</summary>
+    private static string[] SentencesOf(string section) =>
+        [.. Regex.Split(section, @"(?<=[.!?])\s+").Where(s => s.Trim().Length > 0)];
+
+    [Fact]
+    public void TheClaustrophobiaSectionNeverSendsTheReaderToAskForAnOpenScanner()
+    {
+        // The one place this page could do real harm. Open and upright scanners
+        // are generally lower field strength and are NOT equivalent for brain
+        // tumor protocol imaging, so "ask for an open MRI" is advice that can
+        // cost a reader the picture their treatment is planned from. The page
+        // says "ask what your centre has" and lets the centre choose, which is
+        // what the source supports (RadiologyInfo: some centres have systems
+        // that are "less confining or more open").
+        Assert.DoesNotContain("open MRI", Flat, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("upright", Flat, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TheClaustrophobiaSectionOffersSomethingAndDoesNotEndInDefeat()
+    {
+        // §12.6: never end a section on a frightening sentence. Scoped to the
+        // section and to its LAST sentence, because "the reassurance exists
+        // somewhere on the page" is not the property — a reader who stops
+        // reading at the end of this section has to stop on something solid.
+        var section = Section("If small spaces frighten you");
+        var sentences = SentencesOf(section);
+
+        Assert.Contains("calming medicine", section);            // ask in advance
+        Assert.Contains("come into the room with you", section); // bring a person
+        Assert.DoesNotContain("cannot have an MRI", section);
+        Assert.DoesNotContain("unable to have", section);
+
+        Assert.Contains("almost always possible", string.Join(" ", sentences[^3..]));
+    }
+
+    [Fact]
+    public void TheDeviceSectionLeadsWithBringingTheCardRatherThanWithBeingTurnedAway()
+    {
+        // Under-communicated and worth a section: many newer pacemakers, ICDs,
+        // stimulators, cochlear implants and pumps ARE acceptable for MRI
+        // provided staff know the exact make and model. Asserting only that the
+        // card advice appears would pass with it buried under three paragraphs
+        // of exclusions, which is the exact page this test exists to prevent —
+        // so it has to be in the FIRST sentence (§12.6, answer first).
+        var section = Section("Metal, implants and your device card");
+
+        Assert.Contains("card", SentencesOf(section)[0]);
+        Assert.Contains("exact make and model", section);
+    }
+
+    [Fact]
+    public void TheGadoliniumRetentionAnswerIsHonestInBothDirections()
+    {
+        // The question people actually type. Omitting it looks like hiding;
+        // overstating it frightens someone into refusing a scan they need. The
+        // source says both halves, so the page says both halves.
+        var flat = Flat;
+
+        Assert.Contains("Small amounts can stay", flat);
+        Assert.Contains("no known health effects", flat);
+    }
+
+    [Fact]
+    public void ThePageExplainsWhyASecondScanIsNotABadSign()
+    {
+        // The item's whole reason for covering the planning and post-op scans:
+        // "I just had an MRI, why another one?" is a genuinely frightening
+        // moment that has a mundane answer.
+        var flat = Flat;
+
+        Assert.Contains("Why am I having another scan?", flat);
+        Assert.Contains("navigation scan", flat);
+        Assert.Contains("is not a sign that the first was wrong", flat);
+    }
+
+    [Fact]
+    public void ThePageSaysAScanAloneCannotNameTheTumor()
+    {
+        // ACS is explicit that imaging can suggest a type but only tissue
+        // confirms it. A reader who does not know this reads the wait for
+        // pathology (WI-507) as their team stalling.
+        Assert.Contains("Only a piece of the tumor", Flat);
+    }
+
+    [Fact]
+    public void ThePageCarriesNoRiskPercentageAndNoDoseFigure()
+    {
+        // §12.4 R2: procedural risk percentages are qualitative, because the
+        // source spread is too wide to state one honestly. Tesla and millilitre
+        // figures are the same class of number as Gy and mg — they belong in a
+        // protocol, not on a patient page.
+        var body = Page[(Page.IndexOf("\n---", 3, StringComparison.Ordinal) + 4)..];
+
+        Assert.DoesNotMatch(@"\d+(\.\d+)?\s*%", body);
+        Assert.DoesNotMatch(new Regex(@"\b\d+(\.\d+)?\s*(Tesla|T\b|mg|ml|mmol)", RegexOptions.IgnoreCase), body);
+    }
+
+    [Fact]
+    public void NothingOnThePageIsBehindTheReaderChoiceGate()
+    {
+        // WI-503's gate is for outlook alone. A test page has no prognosis on
+        // it, so a fence here would mean something has drifted.
+        Assert.DoesNotContain(":::", Page);
+    }
+
+    [Fact]
+    public void ThePageEndsWithQuestionsToAskAndThenWhereToGoNext()
+    {
+        // Shared contract item 7, and the last two sections of the §12.8
+        // library-page template. Sources and "last reviewed" render from front
+        // matter, so the page does not hand-write a provenance section.
+        // The .Trim() is load-bearing on Windows, not cosmetic: `.` matches
+        // `\r`, so on a CRLF checkout the capture ends with one. If you copy
+        // this method to another library page, keep it.
+        var headings = Regex.Matches(Page, @"^## (.+)$", RegexOptions.Multiline)
+            .Select(m => m.Groups[1].Value.Trim())
+            .ToList();
+
+        Assert.Equal("What to ask your team", headings[^2]);
+        Assert.Equal("Where to go next", headings[^1]);
+        Assert.Equal("The short version", headings[0]);
+    }
+
+    [Fact]
+    public void TheFrontMatterCarriesEverythingTheContractRequires()
+    {
+        // Contract item 8. Checked here rather than trusting ContentCheck's
+        // warning level: a missing `accessed` date is only a warning there, and
+        // this phase's whole source discipline rests on it.
+        var front = Page[..Page.IndexOf("\n---", 3, StringComparison.Ordinal)];
+
+        Assert.Contains("disclaimers: [medical]", front);
+        Assert.Contains("reviewed:", front);
+        Assert.Contains("review_due:", front);
+
+        var urls = Regex.Matches(front, @"- url: (\S+)").Select(m => m.Groups[1].Value).ToList();
+        Assert.All(urls, u => Assert.StartsWith("https://", u));
+
+        // The domains the page's claims actually rest on, rather than a count
+        // that half the source set could vanish beneath. RadiologyInfo carries
+        // the safety, dye and experience content; ACS the "only tissue names
+        // it" and the pre-surgery mapping scan; NBTS the tumor board; the PMC
+        // paper the post-op baseline.
+        foreach (var domain in new[] { "radiologyinfo.org", "cancer.org", "braintumor.org", "ncbi.nlm.nih.gov" })
+        {
+            Assert.Contains(urls, u => u.Contains(domain, StringComparison.Ordinal));
+        }
+        // Indented, so the page's own `title:` is not counted as a source's.
+        // No `$` anchor: .NET's multiline `$` does not match before `\r`, and
+        // this repo has core.autocrlf=true, so an anchored version passes on
+        // LF and fails the moment the file round-trips through git (WI-501).
+        Assert.Equal(urls.Count, Regex.Matches(front, @"^[ \t]+accessed: \d{4}-\d{2}-\d{2}\s*$",
+            RegexOptions.Multiline).Count);
+        Assert.Equal(urls.Count, Regex.Matches(front, @"^[ \t]+title: \S", RegexOptions.Multiline).Count);
+    }
+}
+
+/// <summary>The page as served, and the door that leads to it.</summary>
+[Trait("Category", "Database")]
+[Collection(DatabaseCollection.Name)]
+public sealed class MriPageRenderTests : IClassFixture<WebApplicationFactory<Program>>
+{
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public MriPageRenderTests(WebApplicationFactory<Program> factory) =>
+        _factory = factory.WithWebHostBuilder(builder =>
+            builder.UseSetting("ConnectionStrings:BrainHarbor", TestDatabase.ConnectionString));
+
+    [Fact]
+    public async Task ThePageIsServed()
+    {
+        var html = await _factory.CreateClient().GetStringAsync("/tests/mri");
+
+        Assert.Contains("Your MRI scan", html);
+    }
+
+    [Fact]
+    public async Task ThePageIsReachableFromWhereANewlyDiagnosedReaderStarts()
+    {
+        // The WI-412 orphan lesson. /tests has no index yet, and the tumor hubs
+        // do not link into the library until WI-513, so /start is currently the
+        // page's only door. If that link goes, the page is invisible.
+        var html = await _factory.CreateClient().GetStringAsync("/start");
+
+        Assert.Contains("/tests/mri", html);
+    }
+
+    [Fact]
+    public async Task EveryLinkOnThePageResolves()
+    {
+        var client = _factory.CreateClient();
+        var html = await client.GetStringAsync("/tests/mri");
+
+        // Scoped to the article. The layout alone contributes ~13 links, so a
+        // whole-page count can never reach zero — deleting "Where to go next"
+        // outright would have left the canary below green, and an unrelated
+        // broken /about would have failed this test for the wrong page.
+        var start = html.IndexOf("<article", StringComparison.Ordinal);
+        var end = html.IndexOf("</article>", StringComparison.Ordinal);
+        Assert.True(start >= 0 && end > start, "the page did not render an article");
+
+        var broken = new List<string>();
+        var checkedLinks = 0;
+
+        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"#?]*)\""))
+        {
+            var target = match.Groups[1].Value;
+            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
+            {
+                continue;
+            }
+
+            checkedLinks++;
+            if ((await client.GetAsync(target)).StatusCode != HttpStatusCode.OK)
+            {
+                broken.Add(target);
+            }
+        }
+
+        Assert.True(checkedLinks >= 4, $"the page body linked to {checkedLinks} pages — did 'Where to go next' go?");
+        Assert.True(broken.Count == 0, string.Join("\n", broken.Distinct()));
+    }
+
+    [Fact]
+    public async Task TheNewVocabularyFiresAsTooltipsOnTheRealPage()
+    {
+        // Contract item 9: new words join the glossary so the tooltip fires
+        // site-wide. Asserted on the rendered page rather than on the glossary
+        // directory, because a term file that nothing matches is a term nobody
+        // ever sees.
+        var html = await _factory.CreateClient().GetStringAsync("/tests/mri");
+
+        // "def-<slug>" is the popover the tooltip button targets. Asserting the
+        // bare word would pass on prose that never got marked up at all —
+        // "radiologist" appears in the page either way.
+        foreach (var slug in new[] { "tumor-board", "radiologist", "neuronavigation" })
+        {
+            Assert.Contains($"def-{slug}", html);
+        }
+    }
+}

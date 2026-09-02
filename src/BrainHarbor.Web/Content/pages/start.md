@@ -52,6 +52,10 @@ understand each option, and can go over it as many times as you need.
 - **Find out who to contact with questions.** Most teams have a nurse
   navigator. That person is your fastest answer to most questions.
 
+Almost everyone has an MRI scan early on, and more of them later.
+[What an MRI is like, and what to ask](/tests/mri) walks through the day, the
+noise, the dye, and what to do if small spaces frighten you.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?

@@ -2277,7 +2277,16 @@ Six library pages plus **one** tumor hub taken all the way, so the template is
 tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
 (standing rule since 2026-08-29) before Wave 2 starts.
 
-- [ ] **WI-506 T1 MRI — what it's like and what to ask** *(defines the page template)*
+- [x] **WI-506 T1 MRI — what it's like and what to ask** *(defines the page template)*
+  **Done 2026-08-31.** `/tests/mri`, reading grade 4.0. The library-page
+  template is written up at content-pipeline.md **§12.8** (12 slots, with a
+  variable middle — the "ten sections" in this ticket did not survive contact
+  with the first page). URL scheme for the libraries set here: `/tests/<slug>`,
+  and `/treatments/<slug>` to follow.
+  **Revisit when T11 and a `/tests` index exist:** the page's only door today is
+  `/start`, and its "where to go next" links only to pages that already ship.
+  Pseudoprogression, radiation necrosis and scanxiety are deliberately absent —
+  SYNTHESIS §4.3 makes T11 their canonical home.
   Goal: the scan every reader has, explained by someone who has been in the room.
   This item also **establishes the 17-section tumor-page template** and the
   10-section library-page template that every later content item follows: what it
