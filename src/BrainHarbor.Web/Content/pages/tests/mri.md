@@ -266,6 +266,8 @@ and who is going to call me?
 - [Just diagnosed? Start here](/start) if this is all new.
 - [Waiting for your pathology results](/tests/waiting-for-results) if tissue has
   been taken and you are waiting to hear what it is.
+- [Your pathology report, part by part](/tests/pathology-report) once that
+  report is in your hands.
 - [Brain tumor types](/tumors) to read about your own diagnosis.
 - [What to do when someone has a seizure](/seizures/what-to-do), which is worth
   reading before you need it.
