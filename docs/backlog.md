@@ -2811,6 +2811,103 @@ research items. Same shared contract throughout.
   structurally blind to it — the sitemap-reachability test added then must cover
   these). Depends on: WI-548.
 
+- [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
+  Goal: give a curated page a way to carry an image, with everything the site's
+  existing rules already demand of one.
+  **Why it is a separate item from WI-562:** there is no image support on
+  curated pages today at all. Markdig will emit a bare `<img>` from `![]()`,
+  but nothing styles it, nothing carries a caption or a credit, nothing sizes it
+  on a phone, and `print.css` has no rule for it. Sourcing 30 images before that
+  exists means 30 images with nowhere to go.
+  Acceptance:
+  - An author writes one image per figure in Markdown; it renders as a real
+    `<figure>` with a `<figcaption>`. The caption is **content**, not
+    decoration: it is graded by ContentCheck along with the rest of the page,
+    so it obeys the 6.0 gate like every other sentence.
+  - **Alt text is required and the build fails without it.** WCAG AA is a hard
+    requirement (`.claude/CLAUDE.md`), and an empty `alt=""` must be a
+    deliberate, declared choice for a decorative image rather than the default
+    a hurried author gets. Prove the failure by removing one.
+  - **Every image carries a source and a licence, checked mechanically.** The
+    glossary learned this at WI-505 and the pages learned it at WI-502: a
+    citation nobody can follow is not a citation. Model it on
+    `wwwroot/img/cards/IMAGE-CREDITS.md`, but make it a **front-matter field on
+    the page** so the credit travels with the image and ContentCheck can see it.
+  - Sized for a phone first (the site is verified at 390px since WI-440) and
+    lazy-loaded below the fold.
+  - **Print behaviour decided deliberately, and verified by printing to PDF,
+    not by reading the CSS.** WI-560 found that `print.css` had been silently
+    deleting every glossary term from every printed page since WI-101, and it
+    was only ever visible on paper. An image that becomes a full blank page, or
+    vanishes, is the same class of bug.
+  - A page with no images renders byte-identically to today (the WI-501
+    regression property).
+  - **CRLF-safe.** Any parsing added here gets proven on a CRLF copy — this repo
+    has `core.autocrlf=true` and CI is Linux/LF, so a Windows-only break stays
+    green in CI forever (WI-501, WI-506, WI-508).
+  Out of scope: choosing or sourcing any actual image. That is WI-562.
+  Refs: docs/content-pipeline.md §5 (the automated gates), §12.8;
+  wwwroot/img/cards/IMAGE-CREDITS.md; PLAN.md §5. Depends on: nothing.
+
+- [ ] **WI-562 Images Needed — the per-page slot inventory** *(Dan sources)*
+  Goal: for every curated page, say what images it wants, what kind each one is,
+  and where on the page it goes — so Dan can go and find them without having to
+  re-read each page first.
+  **Why:** the P5 pages are walls of text. `/tests/waiting-for-results` is 2,533
+  words with no picture in it, and the audience may be cognitively impaired.
+  Dan's call, 2026-09-03: he sources the images himself, public domain or free.
+  **Density: one image per ~500 words of body text, minimum one per page.**
+  Words, not source lines — the Markdown is hard-wrapped, so a line count
+  measures the author's editor rather than the reader's screen. It also scales
+  itself: a tumor hub is ~180 words today and becomes a 17-section hub at
+  WI-513, and the rule moves it from one slot to four without anyone editing
+  this ticket. As the pages stand that gives:
+  | Page | Words | Slots |
+  |---|---|---|
+  | `/tests/waiting-for-results` | 2533 | 5 |
+  | `/tests/mri` | 2109 | 4 |
+  | `/tests/pathology-report` | 1963 | 4 |
+  | `/seizures/living-with` | 1748 | 3 |
+  | `/seizures/what-to-do` | 963 | 2 |
+  | `/start` | 577 | 1 |
+  | each `/tumors/*` (18) | ~180 | 1 |
+  **Four kinds of image, and they are not equally easy to get. Say which kind
+  each slot is, because two of them cannot be shopped for:**
+  1. **Sourceable photo** — free stock or public domain, Dan can search for it
+     directly. *Examples: an MRI scanner in a room; a lab bench with slide
+     trays; a microscope; a gloved hand holding a specimen pot; an empty
+     waiting room; hands holding paperwork at a kitchen table.*
+  2. **Mock document** — a made-up example with the parts labelled. **Never a
+     real report**: a real one carries PHI, and no stock site has one. Someone
+     has to build it. *Examples: a sample pathology report with the nine parts
+     called out (the single highest-value image on the whole site — it is
+     `/tests/pathology-report`'s entire subject); a report showing "final
+     diagnosis" at the top with the evidence underneath; a before/after of a
+     report and its addendum.*
+  3. **Simple diagram** — a line drawing we make. Highest explanatory value,
+     and it is a design job rather than a search. *Examples: tissue → fixative →
+     wax block → slide → microscope, as five boxes (this is WI-507's
+     step-by-step, which is currently nine numbered paragraphs); the layered
+     report as stacked bands; a timeline of the wait showing the quick answer,
+     the microscope answer and the gene results arriving at different points.*
+  4. **Public-domain medical imagery** — real scans and slides from Wikimedia
+     Commons or NIH open sets. **Each licence checked individually**, and
+     **never an NCI embedded image** (PLAN.md §5 bars them outright).
+     *Examples: a normal brain MRI; an H&E-stained slide; a contrast-enhanced
+     scan.*
+  Acceptance:
+  - Every curated page has its slots listed: position (which heading it follows),
+    which of the four kinds, what it should show, and one sentence of draft alt
+    text so the accessibility requirement is not an afterthought at paste time.
+  - **The mock-document and diagram slots are called out separately from the
+    photo slots**, because they are work rather than shopping and Dan should not
+    discover that halfway through.
+  - No image is chosen or committed in this item. It produces the list.
+  - **No AI-generated imagery**, consistent with the standing rule on feed cards.
+  Refs: PLAN.md §5; docs/content-pipeline.md §12.8;
+  wwwroot/img/cards/IMAGE-CREDITS.md. Depends on: WI-561 (the slots need
+  somewhere to go).
+
 ---
 
 ## Phase P2a — Benefits & Disability (static hub) — not yet itemized
