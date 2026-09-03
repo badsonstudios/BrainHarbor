@@ -11,9 +11,9 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. **P5 Wave 0 IS COMPLETE** — WI-501…WI-505 and WI-558…WI-560 are all done and on `develop`. **Release PR #74 (develop → main) is OPEN and deliberately NOT merged — waiting on Dan's local review** (his standing rule; the two seizure pages and the caregiver section on 18 tumor hubs are all reader-facing). **WI-559 + WI-560 done 2026-08-30** in one PR, **PR #73** (`/seizures/what-to-do`, `/seizures/living-with`) — see the log. **WI-558 done 2026-08-30** (PR #72 — the caregiver block, on all 18 tumor hubs; see the log). **WI-505 done 2026-08-30** (40 glossary terms; see the log — nine citations in my first draft were wrong and are now all verified by fetch). **WI-503 done 2026-08-30** (the reader-choice gate — `:::outlook`; see the log). **WI-501 done 2026-08-30** (shared content blocks — the P5 Wave 0 foundation; see the log). **Reader-facing work now gets a local review before deploy** (Dan's rule, 2026-08-29 — see memory `test-locally-before-deploy`). (2026-08-30: **Phase P5 filed** — WI-501…WI-557, tumor guides: 24 tumor hubs + a 17-page treatment library + a 12-page tests library, from five research tracks committed at `docs/research/tumor-guides/`. Start with **WI-501** (shared content blocks — a code item everything else inherits) and **WI-504** (`[user]`, fetch the 403-blocked NCCN patient guideline — it blocks Wave 1). **Caregiver question resolved 2026-08-30: yes, every tumor hub carries a prominent caregiver section** — Dan's reasons were surgery aftercare and living with someone who has seizures. That added **WI-558** (the standard + shared block) and **WI-559** ("what to do when someone has a seizure" — life-safety content the site did not have at all), both of which land BEFORE WI-513 because the template proves them. **60 items now, WI-501…WI-560** — WI-560 added 2026-08-30 from Dan's own example, see the log.) (2026-08-29: **WI-462** live country counts; **WI-458…461** trials/research review round; **WI-457** multi-select country picker + a research→trials signpost; **WI-455** trials filterable by country, research half dropped once the cost was clear.) (2026-08-26: **Phase P4 filed** — WI-442…WI-454, depth for the brain tumor reader. My own ranking after WI-455: **WI-442** reader-report notes (hours), **WI-443** restore rehearsal, **WI-444** pathology-report explainer. 2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
+| **In progress** | nothing mid-flight. **WI-508 done 2026-09-03** — `/tests/pathology-report`, the walkthrough of the document the WI-507 reader is holding; it also closed WI-507's open "amended reports" thread (see the log). **START HERE: `/next-item WI-509`** (the molecular marker glossary — the hardest line on the site to hold). **WI-507 done 2026-09-03** — `/tests/waiting-for-results`, the pathology wait; the page SYNTHESIS §3.1 calls the highest-value one in the phase (see the log). **START HERE: `/next-item WI-508`** (the pathology report walkthrough — the document the WI-507 reader is now holding). **WI-506 done 2026-08-31** — `/tests/mri`, the first library page and the template every later P5 library page inherits (see the log). **START HERE: `/next-item WI-507`** (waiting for pathology — SYNTHESIS calls it the highest-value page in the phase, and nobody else has one). **P5 WAVE 0 IS DONE AND RELEASED TO PROD** — WI-501…WI-505 and WI-558…WI-560, reviewed locally by Dan, shipped via **release PR #74** on 2026-08-31. **Wave 1 is now open: WI-506…WI-512, then WI-513** (low-grade glioma, the template proof, which ends with a localhost URL and an explicit stop before the pattern is copied 23 times). **WI-559 + WI-560 done 2026-08-30** in one PR, **PR #73** (`/seizures/what-to-do`, `/seizures/living-with`) — see the log. **WI-558 done 2026-08-30** (PR #72 — the caregiver block, on all 18 tumor hubs; see the log). **WI-505 done 2026-08-30** (40 glossary terms; see the log — nine citations in my first draft were wrong and are now all verified by fetch). **WI-503 done 2026-08-30** (the reader-choice gate — `:::outlook`; see the log). **WI-501 done 2026-08-30** (shared content blocks — the P5 Wave 0 foundation; see the log). **Reader-facing work now gets a local review before deploy** (Dan's rule, 2026-08-29 — see memory `test-locally-before-deploy`). (2026-08-30: **Phase P5 filed** — WI-501…WI-557, tumor guides: 24 tumor hubs + a 17-page treatment library + a 12-page tests library, from five research tracks committed at `docs/research/tumor-guides/`. Start with **WI-501** (shared content blocks — a code item everything else inherits) and **WI-504** (`[user]`, fetch the 403-blocked NCCN patient guideline — it blocks Wave 1). **Caregiver question resolved 2026-08-30: yes, every tumor hub carries a prominent caregiver section** — Dan's reasons were surgery aftercare and living with someone who has seizures. That added **WI-558** (the standard + shared block) and **WI-559** ("what to do when someone has a seizure" — life-safety content the site did not have at all), both of which land BEFORE WI-513 because the template proves them. **60 items now, WI-501…WI-560** — WI-560 added 2026-08-30 from Dan's own example, see the log.) (2026-08-29: **WI-462** live country counts; **WI-458…461** trials/research review round; **WI-457** multi-select country picker + a research→trials signpost; **WI-455** trials filterable by country, research half dropped once the cost was clear.) (2026-08-26: **Phase P4 filed** — WI-442…WI-454, depth for the brain tumor reader. My own ranking after WI-455: **WI-442** reader-report notes (hours), **WI-443** restore rehearsal, **WI-444** pathology-report explainer. 2026-08-23: **WI-441** — page-open counts on `/admin/health`, no identifiers of any kind, `/privacy` rewritten to match. **WI-440** — mobile layout: hamburger nav, stacked filter forms, 1107px → ~890px before content; axe now scans at 390px. 2026-08-21: **WI-438** — pagination was broken on `/research` AND `/trials` since forever, `page` being a reserved Razor Pages route key; fixed + replaced with a real pager. 2026-08-19: **WI-437** journey path replaces the dial + badge, closes WI-429; **WI-436** `/start` rewritten. Open tickets: **WI-439** the Kestrel test-host flake that blocked a deploy on 2026-08-22; **WI-435** ContentCheck exits 0 after checking nothing if its pages-root argument is swallowed.) WI-401, WI-414, WI-415 all done and **released to prod** (PRs #17, #19). **Daily scheduled task registered 2026-08-13** ('BrainHarbor Pipeline', 06:00, runs as Dan, StartWhenAvailable) — the feed now updates itself, and since **WI-417** each run leaves a log behind. |
 | **WI-401 record** | **Azure provisioning: SITE IS LIVE** at app-brainharbor-prod-eus2.azurewebsites.net (2026-08-11, shared-infra option A: web app on Moodathon's B1 plan `asp-shamoody-prod-eus2`, `brainharbor` DB + own role on `db-shamoody-prod-eus` PG17, schema owned by `brainharbor`, PUBLIC revoked). **Continuous deploy PROVEN end-to-end** (PR #11 merged 425ec9b): merge to `main` → build+test+ContentCheck → deploy → smoke check, all green live. Gotchas hit & fixed: PowerShell Compress-Archive writes backslash zip entries (Kudu chokes; workflow's ubuntu zip is fine), PG15+ public-schema perms (brainharbor now owns its schema), **SCM basic auth was disabled by default** (enabled for publish-profile deploys; OIDC upgrade deferred). Prod secrets in `.claude/.env` (BRAINHARBOR_PG_PASSWORD, SYNC_API_KEY_PROD, ADMIN_PASSWORD_PROD) + App Service settings. Plan memory 81% with both apps (77% before; escape hatch = B2 +$13/mo). **https://brainharbor.org + www LIVE with managed TLS (2026-08-11)** — Namecheap A/CNAME/asuid-TXTs verified, hostnames bound, SNI certs issued+bound (Dan still to delete Namecheap's conflicting `@` URL-Redirect record). Admin account seeded + 2FA enrolled (address in `.claude/.env` as ADMIN_EMAIL — not written down here: the repo is public and it is half of the admin login). Pipeline points at prod. **BACKFILL DONE for 5 of 6 sources (2026-08-12): 1,038 items published live**, 134 pending (114 classified + 20 one-off classify failures for a human), 106 flagged by the guardrails. Home shows real cards; /research shows 615 by default (early-stage behind the toggle). **Only `ctgov` remains** — it hit the usage limit and the new fail-fast held its cursor empty, so one more `dotnet run --project src/BrainHarbor.Pipeline -- --once` when a limit window is free finishes it. No cleanup needed. |
-| **Next up** | **The P5 Wave 0 release PR (`develop` → `main`), after Dan's local review.** Then Wave 1: **WI-506…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. Older list, for context: **WI-558** (caregiver block + standard), then **WI-559** ("what to do when someone has a seizure") and **WI-560** ("living with seizures" — activities, triggers, water, driving; write it with WI-559, they are one subject split by whether it is happening right now) — that finishes Wave 0, and then the whole wave goes to `main` as ONE release PR (one deploy window, not four — Dan's call 2026-08-30). Older list, for context: **WI-558** (caregiver block + standard) and **WI-559** ("what to do when someone has a seizure"), which finishes Wave 0. Older list, for context: **WI-505** (~40 glossary terms), **WI-558** (caregiver block + standard), **WI-559** ("what to do when someone has a seizure"), which finishes Wave 0. Then Wave 1: **WI-506…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. **WI-501, WI-502 and WI-504 are done and merged** (PRs #68, #69) — the block mechanism, the editorial standard, and the four hand-fetched sources. Older threads, unchanged: **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
+| **Next up** | **WI-509** (the molecular marker glossary), then **WI-510…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. **WI-508 is done** and added four more rules to **§12.8**, plus the correction that slots 2 and 5 are not universal — read it before drafting WI-509, and note that WI-509 is the item where "describe what is measured, never characterise a result" will be hardest: the sources say the opposite out loud, so `CuratedPage.Characterisations` (new, shared) is the machine that holds it. **A new ticket, WI-561 "Images Needed", is filed** — the P5 pages are walls of text and Dan is sourcing images himself; the ticket is the per-page slot inventory. Older list, for context: **WI-508** (the pathology report walkthrough), then **WI-509…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. **WI-507 is done** and added four rules to the library-page template at content-pipeline.md **§12.8** — read it before drafting WI-508, and note that `[TUMOR-BOARD]` is now a shared block. Older list, for context: **WI-507** (waiting for pathology), then **WI-508…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. **WI-506 is done** and its output — the library-page template at content-pipeline.md **§12.8** — is what WI-507…WI-512 follow; read it before drafting. **Read `docs/content-pipeline.md` §12 and `docs/research/tumor-guides/SYNTHESIS.md` before drafting any of them**, and fetch every source URL before citing it (`.claude/work_files/seizure-sources/fetch.sh` gets past the 403s on epilepsy.com, cdc.gov and friends). Older list, for context: **WI-558** (caregiver block + standard), then **WI-559** ("what to do when someone has a seizure") and **WI-560** ("living with seizures" — activities, triggers, water, driving; write it with WI-559, they are one subject split by whether it is happening right now) — that finishes Wave 0, and then the whole wave goes to `main` as ONE release PR (one deploy window, not four — Dan's call 2026-08-30). Older list, for context: **WI-558** (caregiver block + standard) and **WI-559** ("what to do when someone has a seizure"), which finishes Wave 0. Older list, for context: **WI-505** (~40 glossary terms), **WI-558** (caregiver block + standard), **WI-559** ("what to do when someone has a seizure"), which finishes Wave 0. Then Wave 1: **WI-506…WI-512**, and **WI-513** proves the template on low-grade glioma before it is copied 23 times. **WI-501, WI-502 and WI-504 are done and merged** (PRs #68, #69) — the block mechanism, the editorial standard, and the four hand-fetched sources. Older threads, unchanged: **WI-431** (harden the deploy smoke check — six deploys on 2026-08-15 each served 500s on the inner pages for ~a minute while `/` stayed up, so the check passed straight through it; Dan asked what it involves and has not yet said go), then the reader-report work (notes shown in the queue + a count of reports, Dan's call: count reports not people, no identity stored). Then Dan's calls: **WI-404** (digest — needs an ESP account), **WI-408** (soft launch). Assistant-buildable now: **WI-413** (classifier unavailable vs odd item — the last hole in the fail-fast, and the task now runs unattended nightly), **WI-412** (/tumors plain-English descriptions), **WI-418** (store WHY a summary was flagged), **WI-416** (one reading-level grader, not two), **WI-406** (maintenance run), **WI-407** (pre-launch hardening). |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -89,6 +89,253 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-03** — **WI-508 done — `/tests/pathology-report`, the walkthrough of
+  the document WI-507 left the reader holding.** P5 Wave 1, third of the 29
+  library pages. Reading grade **5.2**, 1018 tests (998 before), ContentCheck
+  163/0. Twelve headings; the wait, the layers, the addendum's meaning, second
+  opinions, the tumor board and the patient portal are all **links** to WI-507,
+  and a test fails if that prose reappears here.
+  **The dossier was wrong twice more, and one is the WI-505 failure mode
+  exactly.** `tests-library.md` §5.4 sources both "what a brain tumor report
+  contains" AND "one of the most important documents guiding treatment
+  decisions" to **PMC4300589**. Fetched, that paper is *"Brain tumors: Special
+  characters for research and banking"* (Adv Biomed Res, 2015) — a biobanking
+  and cytogenetics review that says neither thing. **Johns Hopkins carries both
+  sentences verbatim** and is what shipped; a test fails if PMC4300589 ever
+  appears in this page's front matter. The CAP PDF the dossier cites
+  (`documents.cap.org/.../how-to-read-pathology-report.pdf`) is **dead** —
+  returns nothing at all. **Seven bad citations across four items now.**
+  **WI-507's open thread is CLOSED, and the source is a good one.**
+  `MyPathologyReport.ca`'s "Amendment: Definition" is patient-level, written and
+  reviewed by practising pathologists, and defines an amendment against an
+  addendum. It supplies the two things WI-507 could not say: the commonest
+  reason is a **small correction such as a typing mistake**, not a wrong
+  diagnosis, and *"amendments reflect the pathology system working as
+  intended"*. That paragraph on `/tests/waiting-for-results` is now full, and
+  `amended report` is a glossary term.
+  **Every naming and grading claim rests on WHO CNS5 itself** (Louis et al,
+  PMC8328013) rather than a summary of it, including the Roman-to-Arabic reason
+  in the authors' own words, grading within a tumor type, a gene result setting
+  the grade where the cells look lower, and NOS/NEC. **Johns Hopkins is cited
+  for what a report CONTAINS and never for anything evaluative** — its own
+  glossary calls IDH "associated with a better prognosis" and its sample report
+  says "(WHO grade IV)". That is the dated paperwork this page translates, not a
+  source to write from.
+  **Review caught two of my tests being theatre, and one of them guarded the
+  most sensitive sentence on the page.** The NOS/NEC check asserted the word
+  *"worse"* was PRESENT in the opening, as a proxy for a reassurance — so
+  *"NOS usually means the tumor is worse than they first thought"* passed it.
+  That is the exact sentence the test exists to prevent. Now polarity-aware. The
+  rename test likewise did nothing to stop a retired-name crosswalk being pasted
+  in beside the mechanism, which would have given WI-513's canonical content a
+  second home.
+  **And a real editorial error in the section the page exists for.** I wrote
+  that the extra words a name gains are "not a new problem" — while the grade
+  section says a gene result can set the grade even when the cells look lower
+  grade. For the reader whose molecular results turned a grade 2 into a grade 4,
+  that reads as the site telling them nothing happened. It now says "gain words,
+  lose words, **or change grade**" and links to the grade section.
+  **Two things beyond the ticket, deliberately.** (1) A **site-wide
+  Roman-numeral grade guard** — WI-505 made that mechanical for the glossary
+  only, nothing checked the 50-odd curated pages, and this page is the first
+  that could break it (it prints "grade III" once, on purpose, to teach the old
+  notation; that is the single allow-listed sentence). Review then caught that
+  my scan read `Content/pages/` but not `Content/blocks/` — **a "grade IV" in
+  `caregiver.md` is a grade IV on eighteen tumor hubs**, invisible to a
+  pages-only scan. Fixed and proven by planting one. (2) `EveryLinkOnThePage
+  Resolves` had become **three near-identical copies that had already drifted**;
+  §12.8's own rule is "factor at the second use", so it is now a shared
+  `CuratedPage` helper. Doing that exposed a rule I had overgeneralised: "the
+  body links outside 'Where to go next'" is true of this page and **false of the
+  MRI page**, whose every link legitimately sits in that section. A rule that
+  fails a correct page is worse than no rule. Written into §12.8.
+  **The line-ending check I ran first was wrong, and it mattered.** `grep -c
+  $'\r'` told me the new files were CRLF; they were LF, and the existing
+  checkout is CRLF. So the tests had only ever been proven on LF. Re-proven on
+  both, with a binary-mode conversion — `perl -pi` on msys reads and writes in
+  text mode, so it silently did nothing. **22 breaks run, all fail correctly.**
+  **The IgnoreCase trap bit for the third time** (after WI-505 and WI-506): my
+  NOS/NEC negation regex was case-sensitive, and the page's sentence starts
+  *"Neither is a grade"* with a capital N. A negation is very often
+  sentence-initial, which is exactly where the capital letter is.
+  Also: §12.8 gained four rules and a correction — **slots 2 and 5 are not
+  universal** (both assume a day and a procedure; neither has a referent on a
+  page about a document), a document page needs a "where the answer sits"
+  section before the walkthrough and must say the layout varies, heading anchors
+  are a published interface once other pages deep-link them, and the
+  shared-prose rule applies to the tests too. 3 glossary terms (immunohisto­
+  chemistry, gross description, amended report), 10 tooltips firing on the real
+  page, all 10 surviving in print.
+
+- **2026-09-03** — **WI-507 done — `/tests/waiting-for-results`, the page
+  SYNTHESIS §3.1 says is the highest-value in the phase and that no comparator
+  has.** P5 Wave 1, second of the 29 library pages. Reading grade **4.8**, 998
+  tests (981 before), ContentCheck 156/0. The spine is the one the research
+  asked for: the answer arrives in **layers**, the name of the diagnosis can
+  legitimately change between them, and saying so in advance is what defuses
+  "they changed their story". Batching (about eight samples a run) is the
+  mundane cause the page hands the reader instead of a vacuum.
+  **The dossier was wrong twice more, and one of the errors would have put a
+  rodent-tissue figure on a patient page.** `tests-library.md` §4.5 sources
+  "6 to 72 hours" of fixation to a CellCarta guide that says on its face it
+  covers **rodent** tissue; Leica — already cited on the same page — says human
+  diagnostic specimens fix for **6 to 24 hours**, which is what shipped, and
+  CellCarta is off the page. §4.4 attributes the 504/558 (90.3%)
+  frozen-section agreement figure to **PMC4322495**, which is a different and
+  smaller study; the real source is **PMC4287923**. A test now fails if
+  PMC4322495 ever appears in this page's front matter. Also: "runs overnight"
+  and "another day or more" were the dossier's words and no cited source's, so
+  both are gone.
+  **Every turnaround number in the ticket sits behind a 403.** The
+  `academic.oup.com` audit is Cloudflare-gated; the same paper is open at
+  **PMC13161907** and every figure checks out. Worth knowing for WI-508/509:
+  when an `academic.oup.com` URL blocks, look it up by DOI in Europe PMC.
+  **Review caught a claim of mine that was backwards, in the one section the
+  page exists for.** I wrote that when the quick answer during surgery does not
+  match the final one, the difference is "more often about the grade". The
+  source's own breakdown of its 54 disagreements says 22 were grading — so a
+  *different tumor entirely* is the commoner case. Telling a frightened reader
+  to brace for the smaller shock is worse than telling them nothing. It now says
+  both, in the order the source supports.
+  **And a claim that was true only for gliomas.** "Your team cannot finish the
+  diagnosis without the gene tests" is exactly what the audit says about glioma
+  and explicitly contrasts with skull base, pituitary and metastatic disease.
+  Left as written, it told meningioma and brain-mets readers to expect three
+  weeks that were never coming.
+  **My own test was vacuous on every Windows checkout, and it took breaking it
+  twice to see.** The attribution test splits the section into paragraphs to
+  check that a UK-audit figure never drifts into a paragraph that fails to
+  attribute it — using `Split("\n\n")`. This repo has `core.autocrlf=true`, so a
+  real checkout hands it `\r\n\r\n`, **nothing splits, the whole section arrives
+  as one paragraph, and every figure finds an attribution belonging to a
+  different one.** It passed with the attribution deleted. CI is Linux/LF, so CI
+  would have stayed green forever. That is WI-501's trap in a new place: the
+  first break I wrote happened to be CRLF (Python text mode on Windows) and the
+  second happened to be LF, and the difference between the two results is the
+  only reason I looked. Now CRLF-tolerant, and re-proven **on a deliberately
+  CRLF copy of the page**.
+  **`[TUMOR-BOARD]` is now a shared block**, and the second copy had already
+  drifted before anyone noticed: my draft dropped "what they decide is advice,
+  not an order", which is the best line in the MRI version. Written out of both
+  pages into `Content/blocks/tumor-board.md` and verified composing on both
+  against the running app, with the block's NBTS citation merging into this
+  page's source list. With 29 library pages, "factor it out later" means 29
+  versions of it — so §12.8 now says the second use, not the fifth.
+  **Deliberately thinner than the ticket in one place:** it asks for "addendums
+  and amended reports". Addendum is fully sourced (ACS). **Amended** has no
+  patient-level source that defines it — the only papers that do are about
+  error rates, and citing those here would imply mistakes are common — so the
+  page names the situation and says what to ask rather than defining the
+  mechanics. Recorded in the backlog item; revisit if a source turns up.
+  Also: 3 glossary terms (neuropathologist, addendum, gene panel), 8 tooltips
+  firing on the real page, no caregiver block (a tests page — one paragraph to
+  whoever is waiting alongside, and the link), and four new rules written into
+  **§12.8**, one of which corrects a line in the template's own table that
+  contradicted slot 8's description.
+
+- **2026-08-31** — **WI-506 done — `/tests/mri`, and the library-page template
+  is now written down at content-pipeline.md §12.8.** P5 Wave 1, the first of
+  the 29 library pages. Reading grade **4.0**, 981 tests (967 before),
+  ContentCheck 149/0. URL scheme set here for the whole phase: `/tests/<slug>`
+  now, `/treatments/<slug>` to follow.
+  **The ticket said ten sections. The first real page needed thirteen, and the
+  doc now says twelve slots with a variable middle.** Three of them had no slot
+  at all, and one is universal that the ticket missed entirely: **"Who reads it,
+  and how do I get the result?"** applies to all 29 pages. Leaving it out would
+  have had 29 sessions each rediscover it. §12.8 also records the heading trap
+  underneath it — my first draft headed that section *"When will I know the
+  result?"* and then never said when, because timings are local and no source
+  gives one. The heading asked a question the section could not answer, which is
+  the same defect class as the caregiver fragment Dan caught on 2026-08-31, and
+  it took a reviewer reading the words to see it.
+  **Every source URL was fetched before it was cited, and the dossier was wrong
+  twice.** `tests-library.md` §1.6 attributes the kidney and iodine claims to
+  RadiologyInfo's *Brain MRI* page; that page was re-reviewed on 2026-06-15 and
+  **no longer mentions kidneys or iodine at all** — the claims live on the *MRI
+  Safety* page. Citing the dossier's URL would have been a link that resolves
+  and does not say it, which is the WI-505 failure mode exactly. The FDA
+  gadolinium-retention URL in the dossier **404s**.
+  **Review caught the same class of error in my own work, and it was the
+  blocker.** I wrote the navigation-scan section from `tests-library.md` and
+  cited NBTS's surgery page for it. NBTS says exactly one thing on the subject —
+  *"patients will also likely have to undergo a preoperative MRI"* — and nothing
+  about maps, markers or why there is a second scan. ACS *does* describe markers
+  on the scalp creating a map of the inside of the head, **but says it about a
+  needle biopsy, not a craniotomy.** Six attempts at a citable neuronavigation
+  source returned four 404s and one page about feminizing surgery. Fixed by
+  finding a source that does say it: **ACS's "Surgery for Brain Tumors" page** —
+  *"MRI or CT scans can be done before surgery to map the area of tumors deep in
+  the brain"* — and rewording the marker sentence to "for some procedures", which
+  is what the evidence supports.
+  **Two page-level judgement calls worth carrying to the other 28.** The page
+  never says "ask for an open MRI" — open and upright scanners are lower field
+  strength and not equivalent for tumor imaging, so that advice can cost a reader
+  the picture their treatment is planned from; it says ask what your center has,
+  and a test fails if the phrase ever appears. And it answers the gadolinium
+  question in both directions (traces do stay, there are no known health effects)
+  because dropping either half is its own kind of dishonest.
+  **R2 held itself:** the source says one in twenty people need a sedative, and
+  that number is not on the page.
+  **Two of my own tests were theatre until review, and both are now proven by
+  breaking them.** The claustrophobia and device-card tests asserted substrings
+  against the *whole page*, so the reassurance could drift into the footer and
+  the card advice could sit under three paragraphs of exclusions with both still
+  green — which is the exact page they exist to prevent. Now section-scoped, and
+  checked against the first and last sentences of that section. The link-check
+  canary had the same shape: the layout contributes ~13 links, so `checkedLinks
+  > 0` could never fire and deleting "where to go next" would have passed.
+  **WI-435 confirmed live, and it cost me a run.** `dotnet run --project
+  tools/BrainHarbor.ContentCheck --nologo` swallows `--nologo` as its positional
+  pages root and reports **"pages root MISSING — no pages were checked"** while
+  exiting on an unrelated glossary failure. I graded nothing and did not notice
+  until I read the warning line. CI invokes it with no arguments so CI is fine;
+  a human at a terminal is not.
+  **A note for WI-439, because I nearly repeated the mistake that ticket is
+  about.** `A11ySmokeTests.TheReaderChoiceGateOpensAndClosesWithJavaScript
+  Disabled` failed **three full-suite runs in a row**, which is well outside the
+  ~1-in-5 recorded. I assumed I had broken it, stashed my changes and ran clean
+  (967 green) — and the stash/pop then converted my new files to CRLF, which
+  surfaced a **real** bug in my own test: a `$`-anchored multiline regex that
+  passes on LF and fails on CRLF. That is WI-501's exact trap, and CI being
+  Linux/LF means it would have stayed green while a Windows clone failed. Fixed;
+  six consecutive green runs since. So the A11y failures were the flake after
+  all, in a longer burst than the ticket records.
+  Also: 3 glossary terms (tumor board, radiologist, neuronavigation), 4 tooltips
+  firing on the page rather than a carpet, verified at 390px and by printing to
+  PDF that all four terms survive as words.
+
+- **2026-08-31** — **P5 Wave 0 RELEASED to production — PR #74, eight items in
+  one deploy window.** WI-501 (shared blocks), WI-502 (the §12 standard), WI-503
+  (the outlook gate), WI-504 (the hand-fetched sources), WI-505 (40 glossary
+  terms), WI-558 (the caregiver section on all 18 tumor hubs), WI-559 and
+  WI-560 (the two seizure pages). One deploy for the wave rather than four, as
+  Dan called it on 2026-08-30.
+  **Dan reviewed it locally first, and found one thing**: the caregiver block
+  opened with *"or lie awake listening"* — I meant listening **for a seizure**
+  and never wrote the second half, so it reads as a fragment ("lie awake
+  listening at the doctor"). Fixed in the block, which fixed all 18 pages at
+  once (**PR #76**), along with *"One was told to stop playing doctor"*, which
+  has the same shape of defect: a real quote from the study with nobody named,
+  so it reads as a typo. **Both were invisible to every gate we have** —
+  reading grade, ContentCheck, 967 tests — because they are grammatical
+  sentences that happen not to mean anything. That is the third time a human
+  reading the words has caught what the suite cannot, after WI-412a, WI-437 and
+  WI-438 did it with screenshots.
+  Verified live after the deploy, not just green in CI: `/seizures/what-to-do`,
+  `/seizures/living-with`, `/tumors/glioma` (carrying the corrected caregiver
+  line), `/get-help-now` and `/sitemap.xml` all 200, and the new **"Seizures"
+  footer link** is on the home page.
+  **Deploy window, fourth measurement: ~92 seconds** (01:39:08 to 01:40:40 UTC,
+  seven failing rounds, clean on attempt 8 and confirmed on 9). Same signature a
+  fourth time: `/research`, `/trials`, `/search` and `/get-help-now` all 500
+  with empty bodies while `/` stays up. **Series: 2m00s, 1m23s, 1m24s, 1m32s.**
+  WI-431b's shape is settled and its precondition was already met — this is
+  Dan's call on whether to spend for Standard-tier slot swaps, and while
+  unlaunched the answer is still "batch the releases", which is exactly what
+  this one-window release did.
+  **Next is WI-506** — Dan's pick, and the right one: it sets the page template
+  the rest of Wave 1 inherits.
 
 - **2026-08-30** — **WI-559 + WI-560 done, in one PR, and that was the right
   call. P5 Wave 0 is complete. PR #73.** Two pages: `/seizures/what-to-do` (the

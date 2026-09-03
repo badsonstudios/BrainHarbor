@@ -539,3 +539,124 @@ offending the physician by asking too many questions. No comparator site puts
 caregiver content inside the tumor page. Sources are cited in the block's own
 front matter and merge into every including page (§3a), so the citations live
 in one file too.
+
+### 12.8 The library-page template (WI-506)
+
+§12.3 gives the 17-section order for a **tumor hub**. This is the order for a
+**library page** — the 12 tests pages and the 17 treatment pages. It is
+deliberately shorter and flatter: a hub answers "what is wrong with me", a
+library page answers "what is about to happen to me".
+
+Twelve slots. Most headings are questions, because most of these ARE the
+reader's question; sections 3, 5 and 7 are the exceptions, and forcing those
+into question form produces worse headings than it prevents.
+
+Sections 6a to 6c are the variable middle. **The order is fixed; which of the
+middle three a given page carries is not.** Sections 0 to 5, 9 and 10 appear on
+every page; 6a to 8 are carried when the page has the material, and 11 whenever
+there is somewhere real to send the reader.
+
+*(Corrected at WI-507: this line first said "0 to 5 and 8 to 10", which
+contradicted slot 8's own description — "any page where a reader gets sent back
+for a repeat" is a condition, not a universal. WI-507 is the first page with no
+repeat to explain.)*
+
+*(Narrowed again at WI-508: **slots 2 and 5 are not universal either.** Both
+assume a page with a day and a procedure — "why am I having this?" and "what
+does it feel like?" have no referent on a page whose subject is a **document**.
+WI-508 drops both. The genuinely universal slots are **0, 1, 3, 4, 9, 10**.)*
+
+| # | Section | Notes |
+|---|---|---|
+| 0 | The short version | 3 to 5 sentences. Same reason as §12.3: readers consume 20 to 28% of a page. |
+| 1 | What is it? | One sentence first, then the detail. Say the outcome, then name the word (§12.6). |
+| 2 | Why am I having this? | The reader's real question. For a test that serves several purposes, list them and say the machine is the same each time. |
+| 3 | What happens, step by step | A numbered list. Concrete and sensory: what you will see, feel, hear and smell. |
+| 4 | How long does it take? | R1 durations belong here (§12.4). |
+| 5 | What does it feel like? | Separate from step-by-step on purpose — a reader looking for this should not have to read the procedure to find it. |
+| 6a | What is hard about it, and what can be done | The section the comparators skip. For MRI it is claustrophobia. **Never a list of problems with no answers.** |
+| 6b | Side effects, soon / Side effects, later | Treatment pages. Usually two headings, and on a tests page there is normally no "later". |
+| 6c | The thing people ask about | One heading per genuinely-asked worry that does not fit 6a: the dye on the MRI page, and there will be others. Skip if the page has none. |
+| 7 | What you need first, or need to bring | Preparation, clearance, the device card, the things a reader can act on before the day. |
+| 8 | Why am I having another one? | Any page where a reader gets sent back for a repeat. It is a frightening moment with a mundane answer, and it is the most-skipped content in the comparators. |
+| 9 | Who reads it, and how do I get the result? | **Universal — every one of the 29 pages.** Do NOT head it "When will I know?" unless the page can answer that; timings are local, so the honest answer is "ask before you leave", and the heading must not promise more than the section delivers. |
+| 10 | What to ask your team | Shared contract item 7. |
+| 11 | Where to go next | Links only to pages that exist. A dead link on a page a frightened reader was sent to is worse than no link. |
+
+**Sources and "last reviewed" are not a section.** They render from front matter
+on every curated page, so a hand-written provenance section duplicates them and
+then drifts.
+
+**Where a tests page differs from a treatment page.** A tests page usually
+carries 6a and 6c and skips 6b; a treatment page usually carries 6b and skips
+6c. Nothing else about the order changes, and nothing moves.
+
+**Caregiver sections.** Contract item 12 puts one on every treatment page with
+meaningful aftercare, built per §12.7 and placed after section 7. Tests pages
+mostly do not carry one — nobody is discharged home to look after someone after
+an MRI. Where a test does have an aftercare tail, it gets one.
+
+**Three rules that came out of writing the first one (WI-506):**
+
+- **A library page must say what it cannot do.** MRI can suggest a tumor type;
+  only tissue can name it. A reader who does not know that reads the wait for
+  pathology as their team stalling.
+- **Where a page could send a reader to ask for the wrong thing, it says "ask
+  what your centre has" instead of naming the thing.** Open and upright
+  scanners are lower field strength and are not equivalent for tumor imaging,
+  so "ask for an open MRI" is advice that can cost a reader the picture their
+  treatment is planned from. Pinned by a test.
+- **Answer the frightening question in both directions.** Gadolinium does leave
+  traces in the body and there are no known health effects from it. Dropping
+  either half is a different kind of dishonesty.
+
+**Four more from the second one (WI-507, the pathology wait):**
+
+- **Slot 7 is a role, not a heading.** It is written as "what you need first, or
+  need to bring", which assumes a page with a day and a procedure. Its actual
+  job is *the things this reader can act on*. On a page about a wait, that is
+  **"What you can do while you wait"** — same slot, same position, different
+  heading. Expect the same on any page whose subject is not an appointment.
+- **Slot 4 may be followed immediately by a "why" section.** WI-507 carries
+  "Why some of it takes weeks" between 4 and 5. On a page whose whole subject is
+  the duration, splitting how-long from why-so-long puts the reader's actual
+  question two screens from its answer. Only do this where the duration IS the
+  topic.
+- **A number that comes from one country's audit is attributed in the sentence
+  that prints it**, not in the source list. "In one national study of 21 centres
+  in the United Kingdom…" — because R1 permits the number, and nothing else
+  stops a reader in Ohio treating it as a promise about their own hospital.
+  Pinned by a test that checks the attribution sits in the same *paragraph* as
+  the figure.
+- **Shared prose between two library pages becomes a block the second time you
+  write it, not the fifth.** The tumor-board paragraph was written for WI-506
+  and needed again by WI-507; it is now `[TUMOR-BOARD]`
+  (`Content/blocks/tumor-board.md`, §3a), and the second copy had already lost
+  the best line in the first ("what they decide is advice, not an order"). With
+  29 library pages, "we will factor it out later" means 29 versions of it.
+
+**Four more from the third one (WI-508, the report walkthrough):**
+
+- **A page about a document needs a "where the answer sits" section before the
+  walkthrough.** Slot 3 is "what happens, step by step"; on a document page it
+  becomes "what is in it, part by part", and a reader cannot use that list until
+  they know the answer is printed at the top and the evidence underneath.
+  WI-508 carries it between slots 1 and 3. It is also where the page says the
+  layout **varies** — a walkthrough read as a fixed running order sends a reader
+  looking for a section that was never there, and lets them conclude their own
+  report is incomplete.
+- **Where the page's own subject is a word the reader will search, the heading
+  anchors are a published interface.** `/tumors` and feed items are meant to
+  deep-link at an exact term, and Markdig derives anchors from heading TEXT, so
+  rewording a heading breaks every inbound link silently — the reader lands at
+  the top of a long page with no sign anything went wrong. Keep those headings
+  short, and pin their ids in a test.
+- **The shared-prose rule applies to the tests too.** `EveryLinkOnThePage
+  Resolves` had become three near-identical copies by the third library page and
+  they had already drifted. It now lives on the shared `CuratedPage` helper.
+  Same argument as `[TUMOR-BOARD]`, same threshold: the second use.
+- **A rule that fails a correct page is worse than no rule.** WI-508 generalised
+  "the body links somewhere outside 'Where to go next'" from the page that
+  happened to do it, and it failed the MRI page, whose every link is
+  legitimately in that one section. Before a per-page property is promoted to a
+  site-wide one, run it against the pages already shipped.

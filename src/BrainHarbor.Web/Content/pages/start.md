@@ -52,6 +52,16 @@ understand each option, and can go over it as many times as you need.
 - **Find out who to contact with questions.** Most teams have a nurse
   navigator. That person is your fastest answer to most questions.
 
+Almost everyone has an MRI scan early on, and more of them later.
+[What an MRI is like, and what to ask](/tests/mri) walks through the day, the
+noise, the dye, and what to do if small spaces frighten you.
+
+If a piece of your tumor has been taken and you are waiting to hear what it is,
+[waiting for your pathology results](/tests/waiting-for-results) explains what
+is happening in the lab and why the name can change while you wait. Once the
+report itself arrives, [your pathology report, part by
+part](/tests/pathology-report) goes through what each part of it is for.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?
