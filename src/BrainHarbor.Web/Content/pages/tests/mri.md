@@ -240,16 +240,9 @@ follows is who does what, so you know what the wait is made of.
 A radiologist reads the pictures. That is a doctor trained to read scans. They
 send a signed report to the doctor who ordered it, and that doctor tells you.
 
-For a brain tumor, your scan may also go to a tumor board. That is a meeting
-where specialists look at your case together: surgeons, cancer doctors, the lab,
-and the people who read scans. It tends to happen when a case is complicated or
-a scan is hard to read. You do not go to the meeting. Afterwards the doctor who
-knows you best explains what was said.
+For a brain tumor, your scan may also go to a tumor board.
 
-What they decide is advice, not an order. The choice is still yours.
-
-Because you are not in the room, tell your team what matters to you before the
-meeting happens, so it gets taken into account.
+[TUMOR-BOARD]
 
 The wait is the part most people find hardest. You can shorten the not-knowing a
 little by asking, before you leave the scan: when should the result be ready,
@@ -271,6 +264,8 @@ and who is going to call me?
 ## Where to go next
 
 - [Just diagnosed? Start here](/start) if this is all new.
+- [Waiting for your pathology results](/tests/waiting-for-results) if tissue has
+  been taken and you are waiting to hear what it is.
 - [Brain tumor types](/tumors) to read about your own diagnosis.
 - [What to do when someone has a seizure](/seizures/what-to-do), which is worth
   reading before you need it.

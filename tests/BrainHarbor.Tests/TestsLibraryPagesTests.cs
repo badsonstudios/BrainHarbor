@@ -5,15 +5,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace BrainHarbor.Tests;
 
 /// <summary>
-/// WI-506: T1 MRI, the first page of the tests library and the page that sets
-/// the library-page template (content-pipeline §12.8).
-///
-/// The properties pinned here are the ones that would rot silently. The prose
-/// is not tested — it is reviewed. What IS tested is the small number of places
-/// where this page could give a reader actively wrong advice, and the shape the
-/// other 28 library pages inherit from it.
+/// Shared reading helpers for the 29 P5 library pages (content-pipeline §12.8).
+/// WI-506 wrote these inside its own test class; WI-507 is the second page, so
+/// they move here rather than being copied 28 times.
 /// </summary>
-public sealed class MriPageContentTests
+internal static class CuratedPage
 {
     private static string RepoRoot()
     {
@@ -26,11 +22,11 @@ public sealed class MriPageContentTests
             ?? throw new InvalidOperationException("could not find the repo root from the test output directory");
     }
 
-    private static string Page => File.ReadAllText(Path.Combine(
-        RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages", "tests", "mri.md"));
+    public static string Read(params string[] pathUnderPages) => File.ReadAllText(Path.Combine(
+        [RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages", .. pathUnderPages]));
 
     /// <summary>Whitespace-normalised: the source is hard-wrapped, and a sentence that happens to break across lines is not a content change.</summary>
-    private static string Flat => Regex.Replace(Page, @"\s+", " ");
+    public static string Flatten(string page) => Regex.Replace(page, @"\s+", " ");
 
     /// <summary>
     /// One "## " section, flattened. Section-scoped assertions are the whole
@@ -39,10 +35,10 @@ public sealed class MriPageContentTests
     /// exist to catch (§12.6 is about WHERE a sentence sits, not whether it is
     /// present somewhere).
     /// </summary>
-    private static string Section(string heading)
+    public static string Section(string page, string heading)
     {
         var match = Regex.Match(
-            Page, $@"^## {Regex.Escape(heading)}\s*$(.*?)(?=^## |\z)",
+            page, $@"^## {Regex.Escape(heading)}\s*$(.*?)(?=^## |\z)",
             RegexOptions.Multiline | RegexOptions.Singleline);
 
         Assert.True(match.Success, $"the page has no '## {heading}' section");
@@ -50,8 +46,34 @@ public sealed class MriPageContentTests
     }
 
     /// <summary>Sentences of a section, so "first" and "last" mean something.</summary>
-    private static string[] SentencesOf(string section) =>
+    public static string[] SentencesOf(string section) =>
         [.. Regex.Split(section, @"(?<=[.!?])\s+").Where(s => s.Trim().Length > 0)];
+
+    /// <summary>The body, with the YAML front matter removed.</summary>
+    public static string Body(string page) => page[(page.IndexOf("\n---", 3, StringComparison.Ordinal) + 4)..];
+
+    /// <summary>The YAML front matter, without the body.</summary>
+    public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];
+}
+
+/// <summary>
+/// WI-506: T1 MRI, the first page of the tests library and the page that sets
+/// the library-page template (content-pipeline §12.8).
+///
+/// The properties pinned here are the ones that would rot silently. The prose
+/// is not tested — it is reviewed. What IS tested is the small number of places
+/// where this page could give a reader actively wrong advice, and the shape the
+/// other 28 library pages inherit from it.
+/// </summary>
+public sealed class MriPageContentTests
+{
+    private static string Page => CuratedPage.Read("tests", "mri.md");
+
+    private static string Flat => CuratedPage.Flatten(Page);
+
+    private static string Section(string heading) => CuratedPage.Section(Page, heading);
+
+    private static string[] SentencesOf(string section) => CuratedPage.SentencesOf(section);
 
     [Fact]
     public void TheClaustrophobiaSectionNeverSendsTheReaderToAskForAnOpenScanner()
