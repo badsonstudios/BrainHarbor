@@ -552,8 +552,14 @@ reader's question; sections 3, 5 and 7 are the exceptions, and forcing those
 into question form produces worse headings than it prevents.
 
 Sections 6a to 6c are the variable middle. **The order is fixed; which of the
-middle three a given page carries is not.** Only 0 to 5 and 8 to 10 appear on
-every page.
+middle three a given page carries is not.** Sections 0 to 5, 9 and 10 appear on
+every page; 6a to 8 are carried when the page has the material, and 11 whenever
+there is somewhere real to send the reader.
+
+*(Corrected at WI-507: this line first said "0 to 5 and 8 to 10", which
+contradicted slot 8's own description — "any page where a reader gets sent back
+for a repeat" is a condition, not a universal. WI-507 is the first page with no
+repeat to explain.)*
 
 | # | Section | Notes |
 |---|---|---|
@@ -598,3 +604,28 @@ an MRI. Where a test does have an aftercare tail, it gets one.
 - **Answer the frightening question in both directions.** Gadolinium does leave
   traces in the body and there are no known health effects from it. Dropping
   either half is a different kind of dishonesty.
+
+**Four more from the second one (WI-507, the pathology wait):**
+
+- **Slot 7 is a role, not a heading.** It is written as "what you need first, or
+  need to bring", which assumes a page with a day and a procedure. Its actual
+  job is *the things this reader can act on*. On a page about a wait, that is
+  **"What you can do while you wait"** — same slot, same position, different
+  heading. Expect the same on any page whose subject is not an appointment.
+- **Slot 4 may be followed immediately by a "why" section.** WI-507 carries
+  "Why some of it takes weeks" between 4 and 5. On a page whose whole subject is
+  the duration, splitting how-long from why-so-long puts the reader's actual
+  question two screens from its answer. Only do this where the duration IS the
+  topic.
+- **A number that comes from one country's audit is attributed in the sentence
+  that prints it**, not in the source list. "In one national study of 21 centres
+  in the United Kingdom…" — because R1 permits the number, and nothing else
+  stops a reader in Ohio treating it as a promise about their own hospital.
+  Pinned by a test that checks the attribution sits in the same *paragraph* as
+  the figure.
+- **Shared prose between two library pages becomes a block the second time you
+  write it, not the fifth.** The tumor-board paragraph was written for WI-506
+  and needed again by WI-507; it is now `[TUMOR-BOARD]`
+  (`Content/blocks/tumor-board.md`, §3a), and the second copy had already lost
+  the best line in the first ("what they decide is advice, not an order"). With
+  29 library pages, "we will factor it out later" means 29 versions of it.

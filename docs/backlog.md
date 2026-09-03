@@ -2304,7 +2304,25 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md,
   patient-questions-and-ia.md §(b). Depends on: WI-501, WI-502, WI-504.
 
-- [ ] **WI-507 T5 Waiting for pathology results**
+- [x] **WI-507 T5 Waiting for pathology results** *(done 2026-09-03, PR #79)*
+  **Done.** `/tests/waiting-for-results`, reading grade 4.8, 998 tests,
+  ContentCheck 156/0. Second page under the §12.8 template, which gained four
+  rules from it (slot 7 is a role not a heading; slot 4 may carry a "why"
+  section; a one-country audit figure is attributed in the paragraph that
+  prints it; shared prose becomes a block on its SECOND use, not its fifth —
+  the tumor-board paragraph is now `[TUMOR-BOARD]`).
+  **Three of the numbers in this ticket are wrong or misattributed, and the
+  next session should trust the fetched sources over the dossier.** The
+  `academic.oup.com` URL behind every turnaround figure 403s; the same paper is
+  open at **PMC13161907**. The 90% frozen-section agreement figure belongs to
+  **PMC4287923**, not the PMC4322495 that `tests-library.md` §4.4 cites. The
+  "6-72 hours" fixation figure comes from a guide that is explicitly about
+  **rodent** tissue; Leica says 6-24 hours for human diagnostic specimens, and
+  that is what shipped.
+  **"Amended reports" shipped thinner than this ticket asks**: no patient-level
+  source defines the term, and the only papers that do are about error rates,
+  which would imply mistakes are common. The page names the situation and says
+  what to ask instead of defining the mechanics. Revisit if a source turns up.
   Goal: the highest-value page in the phase, and nobody else has one.
   The wait is fully explainable and completely unexplained. Frozen section
   ~20–26 minutes, agreeing with the final diagnosis ~90% of the time. Formalin

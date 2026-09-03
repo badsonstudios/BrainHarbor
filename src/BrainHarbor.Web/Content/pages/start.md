@@ -56,6 +56,10 @@ Almost everyone has an MRI scan early on, and more of them later.
 [What an MRI is like, and what to ask](/tests/mri) walks through the day, the
 noise, the dye, and what to do if small spaces frighten you.
 
+If a piece of your tumor has been taken and you are waiting to hear what it is,
+[waiting for your pathology results](/tests/waiting-for-results) explains what
+is happening in the lab and why the name can change while you wait.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?
