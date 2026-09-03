@@ -2323,6 +2323,14 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   source defines the term, and the only papers that do are about error rates,
   which would imply mistakes are common. The page names the situation and says
   what to ask instead of defining the mechanics. Revisit if a source turns up.
+  **CLOSED at WI-508 (2026-09-03): a source turned up and the section is now
+  full.** `MyPathologyReport.ca`'s "Amendment: Definition" is patient-level, is
+  written and reviewed by practising pathologists, and defines an amendment
+  *against* an addendum. It also supplies the two things that were missing: the
+  commonest reason is a small correction such as a typing mistake, not a wrong
+  diagnosis, and *"amendments reflect the pathology system working as
+  intended"*. The paragraph and a new `amended report` glossary term ship with
+  WI-508.
   Goal: the highest-value page in the phase, and nobody else has one.
   The wait is fully explainable and completely unexplained. Frozen section
   ~20–26 minutes, agreeing with the final diagnosis ~90% of the time. Formalin
@@ -2341,7 +2349,36 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md §(b)5,
   meningioma-mets-general.md. Depends on: WI-501, WI-502, WI-504.
 
-- [ ] **WI-508 T6a Your pathology report — the walkthrough** *(absorbs WI-444)*
+- [x] **WI-508 T6a Your pathology report — the walkthrough** *(absorbs WI-444)*
+  *(done 2026-09-03)*
+  **Done.** `/tests/pathology-report`, reading grade 5.2, 1018 tests,
+  ContentCheck 163/0. Third page under the §12.8 template, which gained four
+  more rules from it (a document page needs a "where the answer sits" section
+  before the walkthrough and must say the layout varies; heading anchors are a
+  published interface once other pages deep-link them; the shared-prose rule
+  applies to the tests too; and a per-page property must be run against the
+  already-shipped pages before it is promoted to a site-wide one).
+  **Slots 2 and 5 are dropped**, and §12.8 now records that they are not
+  universal: both assume a day and a procedure, and neither has a referent on a
+  page about a document.
+  **The dossier was wrong twice more, and one is the WI-505 failure mode
+  exactly.** `tests-library.md` §5.4 sources both "what a brain tumor report
+  contains" and "one of the most important documents guiding treatment
+  decisions" to **PMC4300589**. Fetched, that paper is *"Brain tumors: Special
+  characters for research and banking"* (Adv Biomed Res, 2015), a biobanking
+  and cytogenetics review, and it says neither. Johns Hopkins carries both
+  sentences verbatim and is what shipped; a test fails if PMC4300589 ever
+  appears in this page's front matter. The CAP PDF the dossier cites
+  (`documents.cap.org/.../how-to-read-pathology-report.pdf`) is **dead** — it
+  returns nothing at all. Seven bad citations across four items now.
+  **Every naming and grading claim rests on WHO CNS5 itself** (Louis et al,
+  PMC8328013), not on a summary of it — including the Roman-to-Arabic reason in
+  the authors' own words, grading within a tumor type, a gene result setting the
+  grade where the cells look lower, and NOS/NEC.
+  **Johns Hopkins is cited for what a brain tumor report CONTAINS and never for
+  anything evaluative**: its own glossary calls IDH mutation "associated with a
+  better prognosis", and its sample report says "(WHO grade IV)". Both are the
+  dated paperwork this page exists to translate, not a source to write from.
   Goal: translate the document the reader is holding.
   Acceptance, beyond the shared contract: what the report is and who wrote it;
   the report's layout section by section; **why molecular results change the

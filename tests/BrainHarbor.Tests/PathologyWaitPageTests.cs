@@ -296,39 +296,13 @@ public sealed class PathologyWaitPageRenderTests : IClassFixture<WebApplicationF
     }
 
     [Fact]
-    public async Task EveryLinkOnThePageResolves()
-    {
-        var client = _factory.CreateClient();
-        var html = await client.GetStringAsync(Url);
-
-        // Scoped to the article: the layout alone contributes ~13 links, so a
-        // whole-page count can never reach zero and the canary below could
-        // never fire.
-        var start = html.IndexOf("<article", StringComparison.Ordinal);
-        var end = html.IndexOf("</article>", StringComparison.Ordinal);
-        Assert.True(start >= 0 && end > start, "the page did not render an article");
-
-        var broken = new List<string>();
-        var checkedLinks = 0;
-
-        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"#?]*)\""))
-        {
-            var target = match.Groups[1].Value;
-            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
-            {
-                continue;
-            }
-
-            checkedLinks++;
-            if ((await client.GetAsync(target)).StatusCode != HttpStatusCode.OK)
-            {
-                broken.Add(target);
-            }
-        }
-
-        Assert.True(checkedLinks >= 5, $"the page body linked to {checkedLinks} pages — did 'Where to go next' go?");
-        Assert.True(broken.Count == 0, string.Join("\n", broken.Distinct()));
-    }
+    public async Task EveryLinkOnThePageResolves() =>
+        // The doors this page owes its reader: on to the report itself
+        // (WI-507 -> WI-508 is a deliberate sequence), and out to a person,
+        // because its likeliest reader is waiting and frightened.
+        await CuratedPage.AssertLinksResolve(
+            _factory.CreateClient(), Url,
+            "/tests/pathology-report", "/get-help-now", "/glossary");
 
     [Fact]
     public async Task TheReportVocabularyFiresAsTooltipsOnTheRealPage()
@@ -343,6 +317,10 @@ public sealed class PathologyWaitPageRenderTests : IClassFixture<WebApplicationF
                  {
                      "neuropathologist", "addendum", "gene-panel",
                      "frozen-section", "integrated-diagnosis", "tumor-board",
+                     // WI-508 filled in this page's amended-report paragraph
+                     // and added the term. A glossary entry nothing matches is
+                     // an entry nobody ever sees.
+                     "amended-report",
                  })
         {
             Assert.Contains($"def-{slug}", html);

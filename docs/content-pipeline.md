@@ -561,6 +561,11 @@ contradicted slot 8's own description — "any page where a reader gets sent bac
 for a repeat" is a condition, not a universal. WI-507 is the first page with no
 repeat to explain.)*
 
+*(Narrowed again at WI-508: **slots 2 and 5 are not universal either.** Both
+assume a page with a day and a procedure — "why am I having this?" and "what
+does it feel like?" have no referent on a page whose subject is a **document**.
+WI-508 drops both. The genuinely universal slots are **0, 1, 3, 4, 9, 10**.)*
+
 | # | Section | Notes |
 |---|---|---|
 | 0 | The short version | 3 to 5 sentences. Same reason as §12.3: readers consume 20 to 28% of a page. |
@@ -629,3 +634,29 @@ an MRI. Where a test does have an aftercare tail, it gets one.
   (`Content/blocks/tumor-board.md`, §3a), and the second copy had already lost
   the best line in the first ("what they decide is advice, not an order"). With
   29 library pages, "we will factor it out later" means 29 versions of it.
+
+**Four more from the third one (WI-508, the report walkthrough):**
+
+- **A page about a document needs a "where the answer sits" section before the
+  walkthrough.** Slot 3 is "what happens, step by step"; on a document page it
+  becomes "what is in it, part by part", and a reader cannot use that list until
+  they know the answer is printed at the top and the evidence underneath.
+  WI-508 carries it between slots 1 and 3. It is also where the page says the
+  layout **varies** — a walkthrough read as a fixed running order sends a reader
+  looking for a section that was never there, and lets them conclude their own
+  report is incomplete.
+- **Where the page's own subject is a word the reader will search, the heading
+  anchors are a published interface.** `/tumors` and feed items are meant to
+  deep-link at an exact term, and Markdig derives anchors from heading TEXT, so
+  rewording a heading breaks every inbound link silently — the reader lands at
+  the top of a long page with no sign anything went wrong. Keep those headings
+  short, and pin their ids in a test.
+- **The shared-prose rule applies to the tests too.** `EveryLinkOnThePage
+  Resolves` had become three near-identical copies by the third library page and
+  they had already drifted. It now lives on the shared `CuratedPage` helper.
+  Same argument as `[TUMOR-BOARD]`, same threshold: the second use.
+- **A rule that fails a correct page is worse than no rule.** WI-508 generalised
+  "the body links somewhere outside 'Where to go next'" from the page that
+  happened to do it, and it failed the MRI page, whose every link is
+  legitimately in that one section. Before a per-page property is promoted to a
+  site-wide one, run it against the pages already shipped.

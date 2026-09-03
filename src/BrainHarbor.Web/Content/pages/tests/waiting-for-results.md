@@ -43,6 +43,9 @@ sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11152585/
     title: "Perspectives from neuro-oncology providers on patient access to electronic records"
     accessed: 2026-09-02
+  - url: https://www.mypathologyreport.ca/pathology-dictionary/amendment/
+    title: "MyPathologyReport: Amendment (definition)"
+    accessed: 2026-09-03
 reviewed: 2026-09-02
 review_due: 2027-03-31
 disclaimers: [medical]
@@ -184,9 +187,10 @@ The layers arrive in this order.
 - **The gene results** can change the name again, because for many brain tumors
   the genes are part of the name.
 
-So a name can gain words, lose words, or change grade while you wait. Many
-reports are written in that same shape: the final name at the top, then what the
-cells looked like, then the grade, then the gene findings underneath.
+So a name can gain words, lose words, or change grade while you wait. Reports
+are laid out in that same shape, and
+[your pathology report, part by part](/tests/pathology-report#where-the-answer-sits-on-the-page)
+walks down one.
 
 This is worth knowing in advance, because when it happens it feels like being
 told two different things by the same team. Almost always it is not a mistake
@@ -218,11 +222,20 @@ part is called an addendum.
 
 An addendum is not a correction. It is the rest of the answer.
 
-There is a second thing that can happen, and it is less common: a report is
-amended, which means something already in it has been changed. If you are told
-that, ask what changed and what it means for your treatment. A report that gets
-checked and put right is a system doing its job. You should not have to guess
-which of the two you are holding.
+There is a second thing that can happen, and it is a different thing: a report
+is amended. That means something already in it has been changed. An amended
+report is labelled as one, and it normally says what was changed and why.
+
+The commonest reason is a correction, such as a typing mistake or a measurement
+that was wrong. Sometimes it is more than that, and something learned later,
+from further testing or from a second opinion, changes the diagnosis itself. So
+what an amendment means for you depends entirely on which of those it was. Ask
+what changed. A corrected typing mistake may change nothing at all about your
+care.
+
+Being handed an amended report is unsettling, and it is worth saying what it
+actually shows. The checking worked. Something was caught and put right instead
+of being left to stand.
 
 If someone hands you a report, it is fair to ask whether it is the complete one
 and whether anything is still to come.
@@ -308,6 +321,8 @@ the top.
 
 ## Where to go next
 
+- [Your pathology report, part by part](/tests/pathology-report) once the report
+  is in your hands and you want to know what each part of it is for.
 - [Just diagnosed? Start here](/start) if this is all new.
 - [Your MRI scan](/tests/mri), the scan that started this and the ones that
   come later.

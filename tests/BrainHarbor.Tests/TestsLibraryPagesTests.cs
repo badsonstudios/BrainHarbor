@@ -25,6 +25,113 @@ internal static class CuratedPage
     public static string Read(params string[] pathUnderPages) => File.ReadAllText(Path.Combine(
         [RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages", .. pathUnderPages]));
 
+    private static string ContentRoot =>
+        Path.Combine(RepoRoot(), "src", "BrainHarbor.Web", "Content");
+
+    private static string PagesRoot => Path.Combine(ContentRoot, "pages");
+
+    /// <summary>
+    /// Every curated page AND every shared block, as (slug, raw text), for
+    /// rules that hold site-wide rather than page by page.
+    ///
+    /// Blocks are in here deliberately. A block is composed INTO the page at
+    /// render time (§3a), so text that lands in `Content/blocks/caregiver.md`
+    /// is text on eighteen tumor hubs — and a site-wide rule that reads only
+    /// `pages/` is blind to the one file with the widest blast radius.
+    /// </summary>
+    public static IEnumerable<(string Slug, string Text)> AllPages() =>
+        new[] { PagesRoot, Path.Combine(ContentRoot, "blocks") }
+            .Where(Directory.Exists)
+            .SelectMany(root => Directory.EnumerateFiles(root, "*.md", SearchOption.AllDirectories)
+                .Select(f => (
+                    Slug: Path.ChangeExtension(Path.GetRelativePath(ContentRoot, f), null)!.Replace('\\', '/'),
+                    Text: File.ReadAllText(f))));
+
+    /// <summary>
+    /// The phrasings that turn "here is what the lab measured" into "here is
+    /// whether that is good news". Shared, because 29 library pages inherit the
+    /// rule and WI-509 is where it will be hardest to hold: the sources say
+    /// these things out loud (Johns Hopkins' own glossary calls IDH mutation
+    /// "associated with a better prognosis"), so borrowed phrasing is how it
+    /// gets onto a page, not a decision anyone makes.
+    /// </summary>
+    public static readonly string[] Characterisations =
+    [
+        "better outlook", "worse outlook", "better outcome", "worse outcome",
+        "better prognosis", "worse prognosis", "favorable", "favourable",
+        "good news", "bad news", "more aggressive", "less aggressive",
+        "responds better", "respond better", "responds well", "does better",
+        "the good one", "the bad one",
+    ];
+
+    /// <summary>
+    /// Every in-site link inside the page's &lt;article&gt; resolves, and the
+    /// "Where to go next" list still offers the doors it is supposed to.
+    ///
+    /// Shared rather than copied because §12.8's own rule — factor at the
+    /// SECOND use, not the fifth — applies to the tests as much as the prose,
+    /// and the three copies this replaces had already drifted apart. The
+    /// scoping is the load-bearing part: the layout contributes ~13 links, so a
+    /// whole-page count can never fall to zero, and a canary counted over the
+    /// whole article is satisfied by the body's own links (WI-506 and WI-508
+    /// both found this the hard way).
+    /// </summary>
+    public static async Task AssertLinksResolve(
+        HttpClient client, string url, params string[] requiredOnward)
+    {
+        var html = await client.GetStringAsync(url);
+
+        var start = html.IndexOf("<article", StringComparison.Ordinal);
+        var end = html.IndexOf("</article>", StringComparison.Ordinal);
+        Assert.True(start >= 0 && end > start, $"{url} did not render an article");
+
+        var broken = new List<string>();
+        var checkedLinks = 0;
+
+        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"#?]*)\""))
+        {
+            var target = match.Groups[1].Value;
+            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
+            {
+                continue;
+            }
+
+            checkedLinks++;
+            if ((await client.GetAsync(target)).StatusCode != HttpStatusCode.OK)
+            {
+                broken.Add(target);
+            }
+        }
+
+        Assert.True(broken.Count == 0, $"{url} links to:\n" + string.Join("\n", broken.Distinct()));
+
+        var next = html.IndexOf("id=\"where-to-go-next\"", StringComparison.Ordinal);
+        Assert.True(next > 0, $"{url} has no 'Where to go next' section");
+
+        var onward = Regex.Matches(html[next..end], "href=\"(/[^\"#?]*)\"")
+            .Select(m => m.Groups[1].Value).ToList();
+
+        // Named, not counted. A floor is met by any set of links, so the door
+        // that actually matters can go while the count stays healthy — and for
+        // pages written as a deliberate sequence, the hand-off to the next page
+        // IS the content.
+        foreach (var required in requiredOnward)
+        {
+            Assert.Contains(required, onward);
+        }
+
+        Assert.True(onward.Count >= requiredOnward.Length,
+            $"'Where to go next' on {url} offers {onward.Count} doors out");
+
+        // Deliberately NOT asserting that the body links anywhere outside this
+        // section. The WI-508 page happens to (it deep-links into the wait
+        // page), and generalising that broke the MRI page, whose every link is
+        // legitimately in "Where to go next" — a rule that fails a correct page
+        // is worse than no rule. Where a mid-body link IS load-bearing, the
+        // page's own tests name it.
+        Assert.True(checkedLinks >= onward.Count, $"{url}: fewer links checked than found");
+    }
+
     /// <summary>Whitespace-normalised: the source is hard-wrapped, and a sentence that happens to break across lines is not a content change.</summary>
     public static string Flatten(string page) => Regex.Replace(page, @"\s+", " ");
 
@@ -260,40 +367,13 @@ public sealed class MriPageRenderTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task EveryLinkOnThePageResolves()
-    {
-        var client = _factory.CreateClient();
-        var html = await client.GetStringAsync("/tests/mri");
-
-        // Scoped to the article. The layout alone contributes ~13 links, so a
-        // whole-page count can never reach zero — deleting "Where to go next"
-        // outright would have left the canary below green, and an unrelated
-        // broken /about would have failed this test for the wrong page.
-        var start = html.IndexOf("<article", StringComparison.Ordinal);
-        var end = html.IndexOf("</article>", StringComparison.Ordinal);
-        Assert.True(start >= 0 && end > start, "the page did not render an article");
-
-        var broken = new List<string>();
-        var checkedLinks = 0;
-
-        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"#?]*)\""))
-        {
-            var target = match.Groups[1].Value;
-            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
-            {
-                continue;
-            }
-
-            checkedLinks++;
-            if ((await client.GetAsync(target)).StatusCode != HttpStatusCode.OK)
-            {
-                broken.Add(target);
-            }
-        }
-
-        Assert.True(checkedLinks >= 4, $"the page body linked to {checkedLinks} pages — did 'Where to go next' go?");
-        Assert.True(broken.Count == 0, string.Join("\n", broken.Distinct()));
-    }
+    public async Task EveryLinkOnThePageResolves() =>
+        // The doors named here are the ones this page owes its reader: the two
+        // pathology pages, because an MRI cannot name a tumor and only tissue
+        // can, and a person to talk to.
+        await CuratedPage.AssertLinksResolve(
+            _factory.CreateClient(), "/tests/mri",
+            "/tests/waiting-for-results", "/tests/pathology-report", "/glossary");
 
     [Fact]
     public async Task TheNewVocabularyFiresAsTooltipsOnTheRealPage()
