@@ -30,6 +30,23 @@ internal static class CuratedPage
 
     private static string PagesRoot => Path.Combine(ContentRoot, "pages");
 
+    /// <summary>Where the shared blocks live (§3a), for tests that compare a page against one.</summary>
+    public static string BlocksRoot => Path.Combine(ContentRoot, "blocks");
+
+    /// <summary>
+    /// The files whose content reaches MORE than one page: the shared blocks
+    /// (composed into every including page, §3a) and the glossary entries
+    /// (whose tooltips fire site-wide). A mistake in one of these has the
+    /// widest blast radius on the site, and neither lives under `pages/`.
+    /// </summary>
+    public static IEnumerable<(string Slug, string Text)> SharedSources() =>
+        new[] { BlocksRoot, Path.Combine(ContentRoot, "glossary") }
+            .Where(Directory.Exists)
+            .SelectMany(root => Directory.EnumerateFiles(root, "*.md", SearchOption.AllDirectories)
+                .Select(f => (
+                    Slug: Path.ChangeExtension(Path.GetRelativePath(ContentRoot, f), null)!.Replace('\\', '/'),
+                    Text: File.ReadAllText(f))));
+
     /// <summary>
     /// Every curated page AND every shared block, as (slug, raw text), for
     /// rules that hold site-wide rather than page by page.
@@ -80,6 +97,39 @@ internal static class CuratedPage
         "better response", "worse response", "poor response", "poorer response",
         "poor outcome", "poorer outcome", "longer survival", "shorter survival",
         "better type", "worse type",
+
+        // WI-510, the first treatment page. A treatment page characterises an
+        // OUTCOME rather than a lab value, so the vocabulary is different:
+        // these are the ways "here is what was done" turns into "here is
+        // whether it worked".
+        "nothing to worry about", "successful surgery", "surgery was a success",
+    ];
+
+    /// <summary>
+    /// Candidates run over the corpus (§12.8) and deliberately REJECTED, kept
+    /// here so the next page does not propose them again and re-do the work.
+    ///
+    /// All were corpus-clean; that is not sufficient. The list is a substring
+    /// check, so a phrase only belongs on it if no CORRECT sentence contains
+    /// it — and for each of these a correct sentence is easy to write, usually
+    /// a negation, which is exactly how WI-509 lost "good sign"/"bad sign":
+    ///
+    /// - "good result" — failed on the spot. WI-510's own slot 2 says "it
+    ///   changes what a good result looks like", which is the whole point of
+    ///   asking what the goal of the operation is.
+    /// - "completely gone", "all clear" — a page explaining that a clear scan
+    ///   is NOT the same as cure has to be able to print the phrase it is
+    ///   dismantling. WI-510 is that page.
+    /// - "full recovery" — "we cannot promise a full recovery" is correct.
+    /// - "back to normal" — "you may not feel back to normal for months" is
+    ///   correct, and is what WI-511 and WI-512 will need to write.
+    /// - "went well" — "even when surgery went well, recovery is hard" is
+    ///   correct, and is close to the caregiver section's actual argument.
+    /// </summary>
+    public static readonly string[] RejectedCharacterisations =
+    [
+        "good result", "completely gone", "all clear",
+        "full recovery", "back to normal", "went well",
     ];
 
     /// <summary>
@@ -162,8 +212,16 @@ internal static class CuratedPage
     /// </summary>
     public static string Section(string page, string heading)
     {
+        // The trailing `{#id}` is optional so a caller names the section by the
+        // words a reader sees, not by the anchor bolted onto it. WI-509 made
+        // explicit anchors the rule (§12.8) precisely so wording and interface
+        // move independently; a Section() that demanded the anchor in its
+        // argument would tie them straight back together.
         var match = Regex.Match(
-            page, $@"^## {Regex.Escape(heading)}\s*$(.*?)(?=^## |\z)",
+            // `\s*$` on the tail, not `[ \t]*$`: this repo is core.autocrlf=true
+            // and .NET's multiline `$` does not match before a `\r`, so the
+            // whitespace class has to be the thing that eats it (WI-501, WI-507).
+            page, $@"^## {Regex.Escape(heading)}(?:[ \t]*\{{\#[^}}]+\}})?\s*$(.*?)(?=^## |\z)",
             RegexOptions.Multiline | RegexOptions.Singleline);
 
         Assert.True(match.Success, $"the page has no '## {heading}' section");
