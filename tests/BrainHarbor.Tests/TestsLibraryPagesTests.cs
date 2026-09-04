@@ -55,6 +55,16 @@ internal static class CuratedPage
     /// "associated with a better prognosis"), so borrowed phrasing is how it
     /// gets onto a page, not a decision anyone makes.
     /// </summary>
+    /// <remarks>
+    /// This is a plain substring check, deliberately: it is predictable, and a
+    /// phrase only belongs here if there is no correct sentence that contains
+    /// it. WI-509 proposed adding "good sign" and "bad sign" and then ran the
+    /// candidate list over the pages already shipped, per §12.8 — the wait page
+    /// says "That is normal and it is <em>not</em> a bad sign", which is the
+    /// natural way to write that reassurance and is exactly right. Both were
+    /// dropped rather than ship a rule that fails a correct page. The ten
+    /// phrases added below have no occurrence anywhere in the corpus.
+    /// </remarks>
     public static readonly string[] Characterisations =
     [
         "better outlook", "worse outlook", "better outcome", "worse outcome",
@@ -62,6 +72,14 @@ internal static class CuratedPage
         "good news", "bad news", "more aggressive", "less aggressive",
         "responds better", "respond better", "responds well", "does better",
         "the good one", "the bad one",
+
+        // WI-509. The marker page is where the sources say these out loud:
+        // ACS writes "better outlook" for IDH and MGMT, and Johns Hopkins'
+        // glossary "associated with a better prognosis". These are the
+        // remaining shapes that vocabulary arrives in.
+        "better response", "worse response", "poor response", "poorer response",
+        "poor outcome", "poorer outcome", "longer survival", "shorter survival",
+        "better type", "worse type",
     ];
 
     /// <summary>
@@ -158,6 +176,19 @@ internal static class CuratedPage
 
     /// <summary>The body, with the YAML front matter removed.</summary>
     public static string Body(string page) => page[(page.IndexOf("\n---", 3, StringComparison.Ordinal) + 4)..];
+
+    /// <summary>
+    /// The body as the READER meets it: the WI-105 authoring markers removed,
+    /// the way <c>GlossaryMarker</c> removes them before anything renders.
+    ///
+    /// Not cosmetic. WI-509 suppresses fifteen tooltips with <c>!%term%</c>, and
+    /// <c>!%H3 G34%!%BRAF%</c> puts the characters "34%" into the source — which
+    /// tripped that page's own no-percentages rule on text no reader will ever
+    /// see. A prose rule asserted against raw source is asserting against
+    /// something that is not the prose.
+    /// </summary>
+    public static string ReaderText(string page) =>
+        Regex.Replace(Regex.Replace(Body(page), @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];

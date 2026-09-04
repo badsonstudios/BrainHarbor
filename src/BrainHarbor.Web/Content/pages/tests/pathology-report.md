@@ -100,7 +100,8 @@ most likely to see.
    their own part of the report or inside the microscopic description.
 7. **Gene results.** What the tests on the DNA found. Words like IDH, MGMT and
    EGFR belong here. These results may arrive as their own report, linked to
-   this one.
+   this one. [The words on your gene results](/tests/molecular-markers) takes
+   them one at a time.
 8. **Comment.** Anything the pathologist wants the treating doctor to know. It
    may raise a concern, suggest more testing, or set out other possible
    answers. It also names the tests that have not come back yet, which is often
@@ -241,6 +242,8 @@ you want to open it on your own.
 
 - [Waiting for your pathology results](/tests/waiting-for-results) if part of
   your report has not arrived yet.
+- [The words on your gene results, one by one](/tests/molecular-markers) for the
+  short words in the gene section.
 - [Just diagnosed? Start here](/start) if this is all new.
 - [Your MRI scan](/tests/mri), the scan that led to the tissue being taken.
 - [Brain tumor types](/tumors) to read about the name on your report.

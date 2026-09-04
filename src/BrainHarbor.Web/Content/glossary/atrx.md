@@ -2,7 +2,7 @@
 term: ATRX
 sources:
   - url: https://cco.amegroups.org/article/view/110414/html
-    title: "Molecular markers in adult diffuse glioma"
+    title: "Thomas et al: 2021 updates to the WHO classification of adult-type and pediatric-type diffuse gliomas - a clinical practice review"
     accessed: 2026-08-30
 ---
 
