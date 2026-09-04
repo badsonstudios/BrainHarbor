@@ -147,15 +147,17 @@ findings your team lines up beside the IDH result.
 **What is measured.** A promoter is the switch that turns a gene on. This test
 asks whether the switch for the TERT gene carries a change.
 
-**What your team does with it.** It is one of three findings that can point to a
-glioblastoma even when the cells look like a lower grade under the microscope.
+**What your team does with it.** When the IDH test shows no change, this is one
+of three findings that can point to a glioblastoma even when the cells look
+like a lower grade under the microscope. In a tumor that does have an IDH
+change, it is read differently.
 
 **What it does not tell you.** It turns up in more than one kind of tumor, so on
 its own it does not name one.
 
 ### CDKN2A/B {#cdkn2a-b}
 
-**What is measured.** Whether both copies of two neighbouring genes are gone.
+**What is measured.** Whether both copies of two neighboring genes are gone.
 Everyone has two copies of most genes. Losing both is written homozygous
 deletion.
 
@@ -171,8 +173,9 @@ explains how grades are worked out and why the numbering changed in 2021.
 **What is measured.** Whether the tumor cells carry extra copies of the EGFR
 gene. Extra copies are called amplification.
 
-**What your team does with it.** It is the second of the three findings that can
-point to a glioblastoma when the cells look like a lower grade.
+**What your team does with it.** When the IDH test shows no change, this is the
+second of three findings that can point to a glioblastoma even when the cells
+look like a lower grade.
 
 **What it does not tell you.** Extra copies in tumor cells are not a change in
 the genes you were born with. They happened in the tumor.
@@ -182,8 +185,9 @@ the genes you were born with. They happened in the tumor.
 **What is measured.** Whether the tumor cells have gained a whole copy of
 chromosome 7 and lost a whole copy of chromosome 10. It is often written +7/-10.
 
-**What your team does with it.** It is the third of the three findings that can
-point to a glioblastoma when the cells look like a lower grade.
+**What your team does with it.** When the IDH test shows no change, this is the
+third of three findings that can point to a glioblastoma even when the cells
+look like a lower grade.
 
 **What it does not tell you.** This is a count of whole chromosomes rather than a
 test of one gene, so it will not show up in a list of genes.
@@ -216,7 +220,7 @@ version of it. The two point to different tumors that sit in different places.
 ### BRAF {#braf}
 
 **What is measured.** Two different things can be looked for. One is a single
-change written V600E. The other is BRAF joined onto a neighbouring gene, which is
+change written V600E. The other is BRAF joined onto a neighboring gene, which is
 called a fusion.
 
 **What your team does with it.** It helps name some tumors. There are also drugs

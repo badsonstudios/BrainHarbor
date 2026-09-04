@@ -238,7 +238,68 @@ public sealed class MolecularMarkersPageContentTests
         // Honest in both directions (§12.8): a tumor test does occasionally
         // turn up something inherited, and NCI says so. Leaving that out would
         // make the reassurance the kind that stops being true.
-        Assert.Contains("born with", section, StringComparison.OrdinalIgnoreCase);
+        //
+        // Pins the EXCEPTION, not the words "born with". The first version was
+        // satisfied by "These are not changes you were born with" — i.e. by
+        // deleting the exception and replacing it with a flat denial, which is
+        // precisely the drift it exists to prevent. Same defect class as the
+        // WI-508 NOS/NEC test.
+        Assert.Matches(
+            new Regex(@"(Once in a while|sometimes|occasionally)[^.]*born with",
+                RegexOptions.IgnoreCase),
+            section);
+        Assert.Contains("second test", section, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TheThreeGlioblastomaFindingsNeverAppearWithoutTheirIdhWildtypeCondition()
+    {
+        // The correction an independent review found after this page had
+        // already merged, and the most harmful thing it could have said.
+        //
+        // TERT promoter mutation, EGFR amplification and +7/-10 only carry the
+        // "this is a glioblastoma even though the cells look lower grade"
+        // meaning in an IDH-WILDTYPE tumor. Both cited sources state the
+        // condition explicitly:
+        //
+        //   CAP Recommendation 9 — "For histologic grade 2-3 DG that are
+        //   IDH-WT, testing should be performed for whole chromosome 7
+        //   gain/whole chromosome 10 loss, EGFR amplification, and TERT
+        //   promoter mutation to establish the molecular diagnosis of GBM,
+        //   IDH-WT, grade 4."
+        //
+        //   WHO CNS5 — "...in IDH-wildtype diffuse astrocytomas".
+        //
+        // Dropped, the page tells oligodendroglioma readers their result points
+        // to glioblastoma. That is not a rare reader: EANO's own Table 1 lists
+        // TERT promoter under oligodendroglioma, and TERT mutation is present
+        // in a majority of them, so the report very commonly says so.
+        foreach (var heading in new[] { "TERT promoter", "EGFR", "Chromosome 7 and chromosome 10" })
+        {
+            var entry = Entry(heading);
+
+            var condition = entry.IndexOf("IDH test shows no change", StringComparison.OrdinalIgnoreCase);
+            Assert.True(condition >= 0,
+                $"the '{heading}' entry no longer states the IDH-wildtype condition");
+
+            // Each entry has to make the claim itself and stand alone, because
+            // the anchors are a published interface (§12.8) and a reader can
+            // arrive at any one of them from a deep link without having read
+            // the two above it. The first version of this fix wrote "the third
+            // of those findings ... that meaning", which only parses in order.
+            var claim = entry.IndexOf("glioblastoma", StringComparison.OrdinalIgnoreCase);
+            Assert.True(claim >= 0,
+                $"the '{heading}' entry no longer says what the finding points to, so it "
+                + "cannot be read on its own from a deep link");
+
+            // And the condition has to come BEFORE the claim. A reader who
+            // meets the claim first has already drawn the conclusion.
+            Assert.True(claim > condition,
+                $"the '{heading}' entry names glioblastoma before it states the IDH condition");
+        }
+
+        // The glossary half of this fix is pinned in ShippedGlossaryTests,
+        // where the glossary-reading machinery already lives.
     }
 
     [Fact]

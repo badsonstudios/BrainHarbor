@@ -10,6 +10,6 @@ sources:
     accessed: 2026-09-03
 ---
 
-The tumor cells have gained a whole copy of chromosome 7. They have also lost a
-whole copy of chromosome 10. It is one of the findings that can name a
-glioblastoma when the cells look like a lower grade.
+The tumor cells have gained a whole copy of chromosome 7 and lost a whole copy
+of chromosome 10. When the IDH test shows no change, it is one of the findings
+that can name a glioblastoma.
