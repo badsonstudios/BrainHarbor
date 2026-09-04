@@ -2389,7 +2389,47 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(d).
   Depends on: WI-501, WI-502, WI-504, WI-505.
 
-- [ ] **WI-509 T6b The molecular marker glossary** *(absorbs WI-444)*
+- [x] **WI-509 T6b The molecular marker glossary** *(absorbs WI-444)*
+  *(done 2026-09-03)*
+  **Done.** `/tests/molecular-markers`, reading grade 4.1, 1039 tests,
+  ContentCheck 170/0. Fifteen entries, each with an explicit `{#anchor}`.
+  **Entries are visible anchored sections with a jump list, NOT collapsibles.**
+  A `<details>` closed on load defeats deep-linking, prints empty on the one
+  page people hold beside the document, and needs a second `:::` container with
+  an argument — a new fail-open surface (WI-503 documents five) guarding words
+  that are descriptions, not prognosis. Reasoning is in §12.8 so WI-510 onward
+  do not re-argue it.
+  **One clause of the somatic/germline block is deliberately absent.** "You
+  cannot pass them on to your children" is verbatim-supported by NCI ("somatic
+  changes cause most cancers and cannot be passed on to family members"). **"You
+  did not do anything to cause them" has no source** — SYNTHESIS §3.7 presents
+  the whole paragraph as validated framing, but the cited paper (PMC8062319) is
+  a breast-cancer genetic-counselling lexicon and does not contain it. The
+  section delivers the substance without it, and adds the honest other half: a
+  tumor test can occasionally turn up something inherited, and the team tells you
+  first. Self-blame belongs to §12.3's block and WI-513.
+  **The gated source is Sahm et al, EANO, open at PMC10547522.** The dossier
+  hangs nearly every row of its §5.2 marker table on one Cloudflare-gated
+  `academic.oup.com` URL. It is Neuro-Oncology 25(10):1731-1749, found by DOI in
+  Europe PMC, and it is the backbone for what all fifteen markers measure. A test
+  fails if `academic.oup.com` ever appears in this page's front matter.
+  **Two more dossier errors.** Its Ki-67 caveat cites PMC10644968, a paper about
+  thyroid, lung and breast cancer; replaced with a neuropathology source that
+  says it of brain tumors. And §5.2's MGMT rows are fine, but the shipped
+  glossary entry for MGMT cited a **fabricated title** on an unrelated URL (see
+  below).
+  **Four wrong citation titles fixed in shipped glossary entries, 16 files.**
+  `mgmt-methylation.md` cited PMC12467656 as "MGMT promoter methylation and
+  response to alkylating chemotherapy"; that URL is *"Radiotherapy in
+  Glioblastoma Multiforme"* (Biomedicines 2025) and is now repointed to the EANO
+  guideline. Also: "Molecular markers in adult diffuse glioma" is really Thomas
+  et al's 2021 WHO update review (3 entries), "Major changes in..." is really
+  "Major **Features** of..." (11 entries), and the BRAF citation is really
+  Houghton et al on MAPK inhibitors. **Nine bad citations across five items.**
+  Also: 3 glossary terms (TP53, H3 G34, chromosome 7 gain and chromosome 10
+  loss), the 15 markers this page defines have their tooltips suppressed here
+  (`!%term%`) so 3 fire rather than 15, the shared `Characterisations` list
+  gained 10 phrases, and §12.8 gained six rules.
   Goal: one entry per word on the report, as an anchor-linked reference.
   Acceptance, beyond the shared contract: IDH · 1p/19q · ATRX · TERT ·
   CDKN2A/B · EGFR · chromosome 7 and 10 · H3 K27M · H3 G34 · BRAF · MGMT ·

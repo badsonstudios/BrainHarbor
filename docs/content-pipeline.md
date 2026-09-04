@@ -660,3 +660,60 @@ an MRI. Where a test does have an aftercare tail, it gets one.
   happened to do it, and it failed the MRI page, whose every link is
   legitimately in that one section. Before a per-page property is promoted to a
   site-wide one, run it against the pages already shipped.
+
+**Six more from the fourth one (WI-509, the marker reference list):**
+
+- **A reference list bends slot 3 into itself, and slot 4 collapses to a link.**
+  Slot 3 is "what happens, step by step"; on a page whose subject is a list of
+  words it becomes the list. Slot 4 ("how long does it take?") belongs to
+  whichever page owns the wait — but the heading still has to answer itself, so
+  it gives the shape ("weeks rather than days") and then routes. A heading that
+  asks a question and answers only "see that other page" is the WI-506 trap in
+  a new coat. Universal slots are still **0, 1, 3, 4, 9, 10**.
+- **Write entry anchors explicitly (`### MGMT … {#mgmt}`), never derived.**
+  WI-508 established that heading anchors are a published interface; this is the
+  mechanism. Markdig derives an id from heading TEXT, so a reworded heading
+  silently breaks every inbound link. `UseAdvancedExtensions` brings generic
+  attributes, so `{#id}` makes the wording and the interface independent, and a
+  test asserts every `###` entry carries one.
+- **Where a page defines a word the glossary also defines, suppress the tooltip
+  on that page.** `!%term%` (WI-105) turns one term off for one page. A popover
+  repeating the paragraph directly beneath it is noise, and fifteen of them is
+  the carpet WI-505 measured its way out of. The term still fires everywhere
+  else, which is the point of adding it. Assert both directions: absent here,
+  present on the words the page does *not* define.
+- **Assert prose rules against reader text, not raw source.** Authoring markers
+  are not prose. WI-509's own no-percentages test failed on `!%H3 G34%!%BRAF%`,
+  which puts the characters "34%" into the file and nothing on the page. Use
+  `CuratedPage.ReaderText`, which strips the WI-105 markers the way the renderer
+  does.
+- **Before adding a phrase to the shared characterisation ban list, run it over
+  the whole corpus.** WI-509 proposed "good sign" and "bad sign" and found the
+  wait page already saying *"That is normal and it is **not** a bad sign"* —
+  correct, and the natural way to write it. Both were dropped. The list is a
+  substring check, so a phrase belongs on it only if no correct sentence
+  contains it.
+- **A uniqueness claim on a page of many entries is a claim about all the
+  others.** WI-509's MGMT entry said it was "the one result on this page" used
+  for choosing treatment, while the BRAF entry two screens up says there are
+  drugs made to act on BRAF changes. That went stale inside a single draft, and
+  no gate can see it — only reading the page end to end.
+
+**Collapsible entries were considered and rejected, so WI-510 onward do not have
+to re-argue it.** The item asked for each entry behind a disclosure. Three
+reasons not to: a `<details>` closed on load defeats deep-linking (fragment
+auto-expansion is not universally supported, and the reader lands on a heading
+with nothing under it); it prints empty, on the one page people hold beside the
+document; and it needs a second `:::` container with an argument, which is a new
+fail-open surface — WI-503 documents five ways a mistyped fence publishes
+content wide open — guarding words that are descriptions, not prognosis. The
+scannability comes from a jump list of anchors at the top instead. Reserve the
+reader-choice gate for outlook.
+
+**Cloudflare-gated sources: look up the DOI in Europe PMC.** WI-507 recorded
+this; WI-509 confirms it and names the paper, because the dossier sources nearly
+every marker claim to one blocked `academic.oup.com` URL. It is Sahm et al,
+*Neuro-Oncology* 25(10):1731–1749, the EANO guideline on molecular diagnostic
+tools for WHO CNS5, open at **PMC10547522** — the backbone for what every marker
+measures and by which method. A citation nobody can open is a citation nobody
+can verify.

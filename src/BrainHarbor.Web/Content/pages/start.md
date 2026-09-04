@@ -60,7 +60,9 @@ If a piece of your tumor has been taken and you are waiting to hear what it is,
 [waiting for your pathology results](/tests/waiting-for-results) explains what
 is happening in the lab and why the name can change while you wait. Once the
 report itself arrives, [your pathology report, part by
-part](/tests/pathology-report) goes through what each part of it is for.
+part](/tests/pathology-report) goes through what each part of it is for, and
+[the words on your gene results](/tests/molecular-markers) takes the short words
+on it one at a time.
 
 ## Questions to ask your team
 
