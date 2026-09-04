@@ -64,6 +64,11 @@ part](/tests/pathology-report) goes through what each part of it is for, and
 [the words on your gene results](/tests/molecular-markers) takes the short words
 on it one at a time.
 
+If surgery has been mentioned, [brain surgery: what happens, and what comes
+after](/treatments/craniotomy) walks through the operation, the hospital stay,
+and the weeks at home that most people are least ready for. It has a long
+section for whoever is looking after you.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?

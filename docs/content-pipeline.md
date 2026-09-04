@@ -717,3 +717,60 @@ every marker claim to one blocked `academic.oup.com` URL. It is Sahm et al,
 tools for WHO CNS5, open at **PMC10547522** — the backbone for what every marker
 measures and by which method. A citation nobody can open is a citation nobody
 can verify.
+
+**Six more from the fifth one (WI-510, craniotomy — and the first TREATMENT
+page):**
+
+- **The universal-slot list is a floor, not a ceiling, and three bent pages in a
+  row is how a template quietly shrinks.** WI-507, WI-508 and WI-509 each
+  dropped slots 2, 5, 7 and 8, correctly, because a wait, a document and a
+  reference list have no day and no procedure. WI-510 has all four back and is
+  the first page since WI-506 to use all twelve. **Read this section for the
+  slot list, not the previous page.** Copying the last page written is how the
+  dropped slots would have stayed dropped for the remaining 24. A test on the
+  page asserts the four returning slots by name, for exactly this reason.
+- **A treatment page carries 6b AND may carry 6c.** §12.8 said a treatment page
+  "usually skips 6c". WI-510 carries one — "is there a way to do this without
+  opening the skull?" is a genuinely-asked worry, and the alternative (LITT) is
+  a section rather than a page by the research's own recommendation. Where a
+  treatment has a less-invasive alternative the reader has heard of, 6c is where
+  it goes, **with its limits attached in the same breath**: a description of a
+  gentler option with no limits is a page that sends readers to ask for the
+  wrong operation.
+- **The characterisation ban list needs a treatment-page vocabulary, and most
+  candidates fail.** A tests page characterises a *result*; a treatment page
+  characterises an *outcome*. Ten candidates were run over the corpus (§12.8's
+  own rule) and **six were rejected**, all because a correct sentence contains
+  them — usually a negation, the WI-509 failure mode. `"good result"` failed on
+  the spot against WI-510's own slot 2. The rejected six are recorded in
+  `CuratedPage.RejectedCharacterisations` **with the reason**, so the next page
+  does not re-do the work and re-reach the wrong answer.
+- **Promote a rule at the second page, not the first.** WI-510 wanted a
+  "never minimise the operation" rule ("routine operation", "simple operation").
+  It is corpus-clean, but it only has an obvious meaning on a page about a
+  procedure, so it is a page-local test. WI-511 or WI-512 promotes it to
+  `CuratedPage`. This is the other half of "factor at the second use": do not
+  factor at the *first* either.
+- **US spelling and US clinical words, checked explicitly.** The first draft
+  carried `anaesthetist`, `anaesthetic`, `jewellery`, `theatre`,
+  `physiotherapist`, `tablets` and "you will be got up". The corpus has **zero**
+  British forms (`center` 12, `recognize` 4, `jewelry` 1), no gate looks for
+  them, and a reader in Ohio meets a page that sounds like it is about a
+  different health system. Grep the page against the corpus before shipping.
+- **A page-specific lead-in to a shared block can contradict the block.**
+  WI-510's first draft introduced `[TUMOR-BOARD]` with "your case is very likely
+  to be discussed" while the block itself says a tumor board "tends to happen
+  when a case is complicated". The two other pages that carry it both use one
+  hedged line ("Your case may also go to a tumor board"). **Read the block
+  before writing the sentence above it**, and match the existing lead-ins:
+  the sentence introducing a block is shared prose too, even though it lives on
+  the page.
+
+**And the thing no gate caught, on this page or any of the four before it.**
+Reading WI-510 end to end found eleven defects that every automated check passed
+clean: a guessed pronoun for a real named patient in a quoted source, "we do not
+publish numbers" in a site voice used nowhere else, a bruising sentence that
+parsed and meant nothing ("which can look alarming and is not"), and a "most"
+that contradicted a "many ... some do not" two sections later. **A claim about
+how many people recover cannot have two different strengths on one page.** That
+is the fifth time a human-style read has caught what the suite cannot.

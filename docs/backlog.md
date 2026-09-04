@@ -2451,7 +2451,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(e)1–2.
   Depends on: WI-508.
 
-- [ ] **WI-510 X2 Craniotomy**
+- [x] **WI-510 X2 Craniotomy** *(done 2026-09-04 — `/treatments/craniotomy`, the first page of the treatment library)*
   Goal: the operation, from arriving at the hospital to being back at home.
   Acceptance, beyond the shared contract: the step-by-step from the patient's
   side; ICU, hospital stay, the incision, hair, headaches, the recovery
@@ -2472,6 +2472,21 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   and giving medicines with none.
   Refs: docs/research/tumor-guides/treatment-library.md.
   Depends on: WI-501, WI-502, WI-504, WI-558.
+  **Shipped notes.** Full twelve slots (§12.8) — the first page since WI-506 to
+  use them, and it carries 6c as well as 6b (LITT, with its limits attached).
+  Reading grade 5.0, 1070 tests, ContentCheck 183/0. Six glossary terms.
+  **Three more dossier citation errors**, taking the running total to twelve
+  across six items: the ICU claim is attributed to ABTA, which never mentions
+  intensive care (it is in StatPearls NBK560922); the "neurological checks
+  through the night" detail is attributed to NBTS, which says nothing about
+  them anywhere; and the gross-total-resection definition rests on PMC5358612,
+  a **conference abstract**. PMC7093492 was dropped too, being a survival
+  meta-analysis cited on a page that publishes no prognosis figures.
+  **Deliberately thinner than the ticket in one place:** "risks by location"
+  is qualitative and names SMA syndrome specifically, but publishes no figure
+  for anything, per R2 — the SMA source alone reports the deficit risk as 23%
+  to 100%. Awake craniotomy is named in one sentence and **not** linked;
+  WI-523 owns it and the page does not exist yet.
 
 - [ ] **WI-511 X5 Radiation therapy**
   Goal: the hub page for every form of radiation.
