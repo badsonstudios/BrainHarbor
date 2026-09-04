@@ -766,6 +766,38 @@ page):**
   the sentence introducing a block is shared prose too, even though it lives on
   the page.
 
+**Five more from the independent review of WI-510, which is the reason to keep
+running one:**
+
+- **Deleting a bad citation does not delete the claim it was carrying.** WI-510
+  correctly found that the "neurological checks through the night" detail was
+  attributed to a source that never mentions it, removed the citation, and left
+  the four-sentence sensory paragraph on the page. That is a *worse* state than
+  before: an uncited invented claim rather than a miscited one. **When a
+  citation falls, re-derive the sentence from what is left, or cut it.**
+- **A page's emergency list must not contradict the page it links to.** WI-510's
+  ambulance list read "A seizure", six lines above a link to
+  `/seizures/what-to-do`, which correctly says most seizures do not need an
+  ambulance. Whenever a page carries a "call an ambulance" list, diff it against
+  every other such list on the site.
+- **The overlap check for a shared block has to be a shingle check, not a
+  heading check.** WI-510 asserted the block's four bold lead-ins were absent
+  and shipped four genuine duplications that were none of them, including a
+  verbatim sentence and a duplicated link. Word shingles over the composed page,
+  excluding "Where to go next" (an index by design), catch a restatement in any
+  shape.
+- **A "both directions" assertion is only worth writing if both directions are
+  observable.** WI-510's tooltip test claimed to prove a suppressed term still
+  fires elsewhere, by fetching `/glossary` — which renders from the glossary
+  directory and cannot see any page's suppression state. No other page uses any
+  of the six words in prose, so the intended check was not available at all. It
+  now asserts the leak that *is* possible: a `!%term%` marker inside a glossary
+  entry or shared block, which would suppress that term everywhere at once.
+- **Ending a section on the reassurance is a positional property, so pin the
+  LAST sentence.** A three-sentence window only proves the reassurance is
+  nearby. WI-510's resection section passed such a window while genuinely
+  closing on "would have cost you something you would not want to lose".
+
 **And the thing no gate caught, on this page or any of the four before it.**
 Reading WI-510 end to end found eleven defects that every automated check passed
 clean: a guessed pronoun for a real named patient in a quoted source, "we do not

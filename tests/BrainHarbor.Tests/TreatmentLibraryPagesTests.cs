@@ -76,12 +76,21 @@ public sealed class CraniotomyPageContentTests
         // review rule that a test can actually hold, because the failure is
         // positional — the reassurance drifting upward as the section is
         // edited is exactly how it would break.
+        // Pins the LAST sentence, the way WI-506's original does. The first
+        // version here pinned a three-sentence window and only required a
+        // reassuring phrase somewhere inside it, so the reassurance could sit
+        // third-from-last and the section could still close on two fresh
+        // frightening sentences.
         var sentences = SentencesOf(Section(ResectionHeading));
-        var tail = string.Join(" ", sentences[^3..]);
 
-        Assert.DoesNotMatch(new Regex(@"too small|does not mean cure", RegexOptions.IgnoreCase), tail);
+        Assert.DoesNotMatch(
+            new Regex(@"too small|does not mean cure|would not want to lose",
+                RegexOptions.IgnoreCase),
+            sentences[^1]);
         Assert.Matches(
-            new Regex(@"right call|not a failed operation", RegexOptions.IgnoreCase), tail);
+            new Regex(@"right call|not a failed operation|the right decision",
+                RegexOptions.IgnoreCase),
+            string.Join(" ", sentences[^2..]));
     }
 
     [Fact]
@@ -124,8 +133,18 @@ public sealed class CraniotomyPageContentTests
         Assert.Matches(
             new Regex(@"expected to pass|usually begins to improve", RegexOptions.IgnoreCase),
             section);
-        Assert.Matches(
-            new Regex(@"permanently disabled", RegexOptions.IgnoreCase), section);
+
+        // Polarity-aware. The first version asserted "permanently disabled" was
+        // merely PRESENT, which "you may be left permanently disabled" also
+        // satisfies — the WI-508 pattern this file's header says it learned
+        // from, reintroduced. The phrase is only ever allowed to appear as
+        // something people wrongly BELIEVE.
+        foreach (Match match in Regex.Matches(section, @"permanently disabled", RegexOptions.IgnoreCase))
+        {
+            var before = section[Math.Max(0, match.Index - 80)..match.Index];
+            Assert.Matches(
+                new Regex(@"believe|think|fear|convinced", RegexOptions.IgnoreCase), before);
+        }
     }
 
     [Fact]
@@ -217,13 +236,23 @@ public sealed class CraniotomyPageContentTests
         // pages already shipped". These are clean corpus-wide today, but the
         // rule only has an obvious meaning on a page about an operation.
         // WI-511 or WI-512 is where it earns promotion to CuratedPage.
+        // Negation-aware, because "this is not a minor operation" is the
+        // natural and CORRECT sentence a treatment page wants — the identical
+        // shape that got "good sign"/"bad sign" rejected at WI-509. A bare
+        // substring ban would fail a correct page, which §12.8 says is worse
+        // than no rule at all.
         foreach (var phrase in new[]
                  {
                      "routine operation", "routine procedure", "simple operation",
                      "minor operation", "straightforward operation",
                  })
         {
-            Assert.DoesNotContain(phrase, Reader, StringComparison.OrdinalIgnoreCase);
+            foreach (Match match in Regex.Matches(Reader, Regex.Escape(phrase), RegexOptions.IgnoreCase))
+            {
+                var before = Reader[Math.Max(0, match.Index - 30)..match.Index];
+                Assert.Matches(
+                    new Regex(@"\bnot\b|\bnever\b|\bhardly\b", RegexOptions.IgnoreCase), before);
+            }
         }
     }
 
@@ -240,9 +269,10 @@ public sealed class CraniotomyPageContentTests
 
         Assert.Matches(new Regex(@"fairly new", RegexOptions.IgnoreCase), section);
         Assert.Matches(
-            new Regex(@"[Nn]ot every hospital offers it", RegexOptions.IgnoreCase), section);
+            new Regex(@"not offered everywhere", RegexOptions.IgnoreCase), section);
         Assert.Matches(
-            new Regex(@"not a gentler version", RegexOptions.IgnoreCase), section);
+            new Regex(@"not is a gentler route to the same result", RegexOptions.IgnoreCase),
+            section);
         Assert.Matches(
             new Regex(@"whether it applies to you rather than asking for it",
                 RegexOptions.IgnoreCase),
@@ -276,17 +306,69 @@ public sealed class CraniotomyPageContentTests
 
         Assert.Contains("[CAREGIVER]", section, StringComparison.Ordinal);
 
-        // Sentences that belong to the block, asserted absent from this page's
-        // own source. If one appears here the reader meets it twice.
-        foreach (var shared in new[]
-                 {
-                     "You are allowed to ask questions",
-                     "Ask who your first call is",
-                     "Get two numbers",
-                     "Look after yourself",
-                 })
+        // A real overlap check, not a check on the block's four bold headings.
+        //
+        // The first version asserted only that the block's LEAD-INS were
+        // absent. Review found four genuine duplications that were none of
+        // them — "Nobody on that team will mind", the /seizures/what-to-do
+        // link, "give them something real to do" and "Two people hear more
+        // than one" — so the reader met each of them twice, a few paragraphs
+        // apart, while the test that names this exact failure stayed green.
+        //
+        // Word shingles catch a restatement whatever shape it arrives in.
+        // Eight words is long enough that shared vocabulary ("call your team",
+        // "the hospital") does not trip it, and short enough that a lightly
+        // reworded copy still does.
+        // "Where to go next" is excluded: it is an index of onward doors by
+        // design, so a link the block also makes is expected to reappear
+        // there. Everywhere else, a repeat is the reader being told the same
+        // thing twice.
+        var body = CuratedPage.ReaderText(Page).Replace("[CAREGIVER]", " ", StringComparison.Ordinal);
+        var next = body.IndexOf("## Where to go next", StringComparison.Ordinal);
+        var page = next > 0 ? body[..next] : body;
+
+        static IEnumerable<string> Shingles(string text, int n)
         {
-            Assert.DoesNotContain(shared, CuratedPage.Body(Page), StringComparison.OrdinalIgnoreCase);
+            var words = Regex.Matches(text.ToLowerInvariant(), @"[a-z0-9']+")
+                .Select(m => m.Value).ToList();
+            for (var i = 0; i + n <= words.Count; i++)
+            {
+                yield return string.Join(' ', words.Skip(i).Take(n));
+            }
+        }
+
+        var pageShingles = Shingles(page, 8).ToHashSet();
+        var blockPath = Path.Combine(CuratedPage.BlocksRoot, "caregiver.md");
+        var overlaps = Shingles(CuratedPage.Body(File.ReadAllText(blockPath)), 8)
+            .Where(pageShingles.Contains)
+            .Distinct()
+            .ToList();
+
+        Assert.True(overlaps.Count == 0,
+            "this page restates the shared [CAREGIVER] block, so the reader meets it twice:\n  "
+            + string.Join("\n  ", overlaps));
+    }
+
+    [Fact]
+    public void TheCaregiverSectionDoesNotSendTheReaderToASeizurePageTheBlockAlreadySendsThemTo()
+    {
+        // Split out from the shingle check because a duplicated LINK is not a
+        // duplicated sentence, and this one is the most likely to come back:
+        // the block already carries both seizure links, and a treatment page
+        // writing about aftercare reaches for them naturally.
+        var block = CuratedPage.Body(
+            File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "caregiver.md")));
+
+        foreach (var link in new[] { "/seizures/what-to-do", "/seizures/living-with" })
+        {
+            if (!block.Contains(link, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var section = Section("For the person caring for someone after surgery");
+            Assert.DoesNotContain(link, section.Replace("[CAREGIVER]", " ", StringComparison.Ordinal),
+                StringComparison.Ordinal);
         }
     }
 
@@ -304,17 +386,30 @@ public sealed class CraniotomyPageContentTests
         Assert.True(today > 0, "the caregiver section has no 'call the team today' list");
         Assert.True(ambulance > today, "the ambulance list is missing, or sits before the call-today list");
 
-        // The ambulance list has to carry a seizure: it is the commonest way a
-        // brain tumor announces itself, and the caregiver block links to
-        // /seizures/what-to-do for exactly this reader.
-        Assert.Matches(
-            new Regex(@"[Aa] seizure", RegexOptions.IgnoreCase), section[ambulance..]);
-
         // "If you are not sure, call" has to sit AFTER both lists. It is the
         // instruction that makes an incomplete list safe.
         var whenUnsure = section.IndexOf("If you are not sure which list this is",
             StringComparison.Ordinal);
         Assert.True(whenUnsure > ambulance, "the 'if you are not sure, call' line is missing or misplaced");
+
+        // The ambulance list has to carry a seizure: it is the commonest way a
+        // brain tumor announces itself.
+        //
+        // Scoped to the LIST, not to the rest of the section. The first version
+        // searched from the ambulance heading to the end, which swept in a
+        // later "[what to do when someone has a seizure]" link — so deleting
+        // the seizure bullet outright left the test green.
+        var ambulanceList = section[ambulance..whenUnsure];
+        Assert.Matches(new Regex(@"[Aa] seizure", RegexOptions.IgnoreCase), ambulanceList);
+
+        // And it must be the QUALIFIED seizure, not every seizure.
+        // /seizures/what-to-do says most seizures do not need an ambulance, and
+        // this page links there six lines later. A caregiver who reads "call an
+        // ambulance: a seizure" calls one every time.
+        Assert.Matches(
+            new Regex(@"first|more than five minutes|runs straight into another",
+                RegexOptions.IgnoreCase),
+            ambulanceList);
     }
 
     [Fact]
@@ -571,10 +666,30 @@ public sealed class CraniotomyPageRenderTests : IClassFixture<WebApplicationFact
             Assert.DoesNotContain($"def-{slug}\"", page, StringComparison.Ordinal);
         }
 
-        var glossary = await client.GetStringAsync("/glossary");
-        foreach (var slug in new[] { "bone-flap", "sma-syndrome", "laser-ablation", "levetiracetam", "5-ala", "craniectomy" })
+        // The other direction, done properly.
+        //
+        // The first version fetched /glossary and asserted the six slugs
+        // appear there. But /glossary renders from the glossary directory and
+        // knows nothing about any page's suppression state, so a leaked
+        // suppression could never have failed it — it asserted that six .md
+        // files exist.
+        //
+        // The obvious replacement, "the term still fires on a page that does
+        // NOT define it", is not available: no other page in the corpus uses
+        // any of these six words in prose. /start contains "craniotomy" only
+        // inside a URL, and tooltips never fire inside links. Asserting it
+        // anyway would be a test that passes for a reason unrelated to what it
+        // claims, which is the thing this whole pass is cleaning up.
+        //
+        // So assert the leak that IS possible and IS the one the comment names:
+        // a `!%term%` marker written into a glossary entry or a shared block
+        // rather than into a page. A block composes into every including page,
+        // so a marker there suppresses the term across all of them at once,
+        // silently.
+        foreach (var (slug, text) in CuratedPage.SharedSources())
         {
-            Assert.Contains(slug, glossary, StringComparison.Ordinal);
+            Assert.DoesNotContain("!%", text, StringComparison.Ordinal);
+            _ = slug;
         }
     }
 

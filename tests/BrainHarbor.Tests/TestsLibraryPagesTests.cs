@@ -30,6 +30,23 @@ internal static class CuratedPage
 
     private static string PagesRoot => Path.Combine(ContentRoot, "pages");
 
+    /// <summary>Where the shared blocks live (§3a), for tests that compare a page against one.</summary>
+    public static string BlocksRoot => Path.Combine(ContentRoot, "blocks");
+
+    /// <summary>
+    /// The files whose content reaches MORE than one page: the shared blocks
+    /// (composed into every including page, §3a) and the glossary entries
+    /// (whose tooltips fire site-wide). A mistake in one of these has the
+    /// widest blast radius on the site, and neither lives under `pages/`.
+    /// </summary>
+    public static IEnumerable<(string Slug, string Text)> SharedSources() =>
+        new[] { BlocksRoot, Path.Combine(ContentRoot, "glossary") }
+            .Where(Directory.Exists)
+            .SelectMany(root => Directory.EnumerateFiles(root, "*.md", SearchOption.AllDirectories)
+                .Select(f => (
+                    Slug: Path.ChangeExtension(Path.GetRelativePath(ContentRoot, f), null)!.Replace('\\', '/'),
+                    Text: File.ReadAllText(f))));
+
     /// <summary>
     /// Every curated page AND every shared block, as (slug, raw text), for
     /// rules that hold site-wide rather than page by page.
