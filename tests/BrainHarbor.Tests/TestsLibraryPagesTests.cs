@@ -320,7 +320,17 @@ internal static class CuratedPage
         // up", "tablets") was never about spelling, and a reader in Ohio is
         // offered "a lift" or given fluids "through a drip" by a page that
         // sounds like it is about a different health system.
-        "a lift", "a drip", "the drip", "casualty",
+        //
+        // These are DETERMINER-BOUND on purpose, and that is a known limit
+        // rather than an oversight. Bare "drip" cannot be banned: "IV drip"
+        // and "post-nasal drip" are both standard US usage, so the rule would
+        // fail a correct page (§12.8). WI-512's break harness proved the cost
+        // of the compromise — it mutated "no IV" to "no drip" and the gate did
+        // not fire, because "no drip" was not one of the forms listed. The
+        // determiners below are the ones a sentence actually uses; extend the
+        // list when a new one turns up rather than reaching for a bare stem.
+        "a lift", "a drip", "the drip", "no drip", "on a drip", "by drip",
+        "casualty",
     ];
 
     /// <summary>
