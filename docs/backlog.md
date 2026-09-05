@@ -2673,7 +2673,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   happening right now, and writing them together is how that split gets decided
   once instead of twice.
 
-- [ ] **WI-513 Low-grade glioma, deepened — the template proof**
+- [x] **WI-513 Low-grade glioma, deepened — the template proof** *(done 2026-09-05 — `/tumors/low-grade-glioma`)*
   Goal: one tumor hub taken all the way, reviewed, before the pattern is copied.
   Chosen deliberately: the short version already exists to compare against.
   Acceptance, beyond the shared contract: the full 17-section order; **"low
@@ -2694,6 +2694,30 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   adjusted here, not after 23 more pages exist.
   Refs: docs/research/tumor-guides/glioma-family.md §(b)2,
   patient-questions-and-ia.md §(b). Depends on: WI-506…WI-512, WI-558, WI-559.
+  **Shipped notes.** 202 words and 4 sections became the full §12.3 seventeen.
+  Reading grade 5.3, 1195 tests (1163 before), ContentCheck 219/0, all 60
+  break-mutations proven on LF and CRLF. Five glossary terms. **The hub template
+  is now written down at content-pipeline.md §12.9** — read that, not §12.8,
+  before the next hub.
+  **Two firsts.** The first page ever to use the `:::outlook` reader-choice gate
+  (WI-503 built it ten items ago and nothing had used it), verified in rendered
+  HTML and in print. And the first tumor hub to link into the tests and
+  treatment libraries, which is what the seven Wave 1 pages were built for.
+  **Review found two required blocks missing from the first draft**, both now
+  added: the **self-blame block** (new shared `[CAUSES]` block, demoted per
+  §12.3) and a **retired-name crosswalk slice**. A test in that draft banned the
+  retired names outright and would have foreclosed the crosswalk on all 23 hubs
+  that copied it.
+  **Four of six citation TITLES were fabricated** — written from the dossier's
+  description rather than the fetched page — and titles render as visible link
+  text. Corrected, and §12.9 now says to paste the fetched `<title>`.
+  **Also corrected `glioma-family.md` §2.3**, which sourced "most of these
+  tumors do not cause neurologic deficits at diagnosis" to an article containing
+  zero occurrences of "deficit", so Wave 2 does not inherit it.
+  **Open question for Dan, flagged by review:** WI-501's note says blocks ship
+  empty and WI-513 writes the crosswalk, while WI-514 is named canonical home
+  for `[CROSSWALK]`. This item wrote a page-specific slice and left the
+  canonical block to WI-514, per SYNTHESIS §4.3.
 
 ### Wave 2 — the glioma family and what it pulls in
 

@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | nothing mid-flight. **WI-512 done 2026-09-04 — P5 WAVE 1 IS COMPLETE.** `/treatments/chemotherapy`, the last of the seven Wave 1 library pages. Reading grade **5.4**, **1163 tests** (1120 before), ContentCheck 209/0, all **75 break-mutations proven on LF and CRLF**. **TWO PRs ARE NOW OPEN AND BOTH MUST MERGE BEFORE THE RELEASE PR: #86 (WI-511) and #87 (WI-512).** **#87 is STACKED ON #86 and targets that branch, not `develop`** — merge #86 first, then retarget #87 to `develop` or merge straight through. **AWAITING DAN'S LOCAL REVIEW** — running at http://localhost:5177/treatments/chemotherapy. **START HERE: `/next-item WI-513`** — the template proof on low-grade glioma, which ends with a localhost URL and an explicit stop before the pattern is copied 23 times. **WI-511 done 2026-09-04, PR #86** — `/treatments/radiation-therapy`, the full twelve slots, and the first British-usage gate on the site (see the log). **Note for the release PR: the WI-511 branch also changes prose on 18 shipped tumor hubs**, via a one-word fix to `blocks/caregiver.md` ("a lift" -> "a ride"), plus `/tests/mri`. Everything below this sentence is the state before WI-511 began. |
-| **Next up** | **WI-513** — the template proof on **low-grade glioma**. This is the deliberate stop: Wave 1 built seven library pages and WI-513 turns one 180-word tumor hub into the full 17-section shape (§12.3) **before the pattern is copied 23 times**. It ends with a localhost URL and an explicit stop for Dan's call. Read §12.3 for the hub order — it is NOT §12.8's twelve-slot library template, and the two are easy to confuse now that seven pages in a row have used the library one. **Wave 1 added ~40 rules to §12.8**; the four that bear hardest on WI-513: **(1)** an escalation tier is a site-wide property — diff the tiers per symptom across the corpus, not just the lists; **(2)** a dossier claim bundled with a true one inherits its citation, so check per CLAUSE; **(3)** a source can be cited for the position it argues against, so read the conclusion; **(4)** grep the build for "error", not "error CS", and check the test COUNT moved when you add tests. Also: `CuratedPage` now carries `BritishForms`, `AssertNeverMinimises` and `Characterisations` **site-wide**, so none of those need writing per page. Older list, for context: **WI-512** (chemotherapy), which finished Wave 1. |
+| **In progress** | **WI-513 done 2026-09-05 — THE TEMPLATE IS PROVED, AND THIS IS THE STOP.** `/tumors/low-grade-glioma` went from 202 words and 4 sections to the full §12.3 seventeen. Reading grade **5.3**, **1195 tests** (1163 before), ContentCheck 219/0, all **60 break-mutations proven on LF and CRLF**. **WAVE 2 DOES NOT START UNTIL DAN HAS SIGNED OFF THE TEMPLATE** — that is the whole point of this item. Running at http://localhost:5177/tumors/low-grade-glioma. **The hub template is now written down at `docs/content-pipeline.md` §12.9** — a NEW section, separate from §12.8, because §12.8 is the LIBRARY template and seven pages in a row used it. **THREE PRs ARE OPEN AND STACKED, MERGE IN ORDER: #86 (WI-511) → #87 (WI-512) → WI-513's.** Each targets the one below it, so merging #86 first lets the others retarget to `develop` cleanly. **Note for the release PR: the WI-511 branch also changes prose on 18 shipped tumor hubs** (a one-word fix to `blocks/caregiver.md`, plus `/tests/mri`), and WI-513 adds a **new shared block** (`blocks/causes.md`) plus an explicit anchor on `/tests/pathology-report`. Everything below this sentence is the state before WI-511 began. 
+| **Next up** | **NOTHING, UNTIL DAN SIGNS OFF WI-513's TEMPLATE.** That is the item's own acceptance criterion and the reason Wave 1 stopped where it did. Once approved, **Wave 2 is WI-514** (glioma umbrella — the family tree and the router, and the **canonical home for `[CROSSWALK]` and `[MECHANISM]`**), then WI-515…WI-518 and the rest. **Read §12.9 before any hub**, and note the three things most likely to be copied wrong: **(1)** a hub follows **§12.3's seventeen sections**, not §12.8's twelve slots; **(2)** every hub owes a **self-blame block** (`[CAUSES]`, demoted) and a **retired-name crosswalk slice** — WI-513's first draft had neither and a test in it would have foreclosed the crosswalk on all 23 remaining hubs; **(3)** the **right tail belongs inside the outlook gate**, and the gate must teach *median* rather than ban the word. **One open question for Dan, raised by review:** WI-501's note says blocks ship empty and WI-513 writes the crosswalk, while WI-514 is named canonical home for `[CROSSWALK]`. WI-513 wrote a page-specific slice and left the canonical block to WI-514, per SYNTHESIS §4.3 — worth confirming before WI-514 starts. Older list, for context: **WI-513** (the template proof), which finished Wave 1's run. 
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -88,6 +88,86 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-05** — **WI-513 done — `/tumors/low-grade-glioma`, and THE TEMPLATE
+  IS PROVED. This is the stop.** 202 words and 4 sections became the full §12.3
+  seventeen. Reading grade **5.3**, 1195 tests (1163 before), ContentCheck
+  219/0. Five glossary terms. **The hub template is now written down at
+  content-pipeline.md §12.9** — a new section, deliberately separate from
+  §12.8, because §12.8 is the LIBRARY template and seven pages in a row used it.
+  **Two firsts.** This is the first page in the corpus ever to use the
+  **`:::outlook` reader-choice gate** — WI-503 built it ten items ago and
+  nothing had used it, so its five documented fail-open modes had never met a
+  real page. Verified in the rendered HTML (heading outside, closed on load, no
+  fence leaked, the words not also sitting outside) and **in print**: §12.5 says
+  a gate left closed stays closed on paper, and the PDF confirms the heading
+  prints and the body does not. It is also the **first tumor hub to link into
+  the tests and treatment libraries**, which is what the seven Wave 1 pages were
+  built for.
+  **Review found two REQUIRED blocks missing from my first draft, and this is
+  the item where that matters most.** §12.3's "Deliberate omissions" paragraph
+  says the **self-blame block** "still appears; it just is not near the top" —
+  the one instruction in that paragraph that reads like an aside, and I read it
+  as one. It is now a new shared block, `Content/blocks/causes.md`, included as
+  `[CAUSES]` and demoted to just before the outlook gate. And contract item 3's
+  **retired-name crosswalk** was absent: the readers of this page are precisely
+  the ones holding a pre-2021 report saying "oligoastrocytoma" or "grade II",
+  and the page said nothing about either.
+  **A test in that draft would have foreclosed the crosswalk on all 23 remaining
+  hubs.** It banned "oligoastrocytoma", "anaplastic" and "mixed glioma" as
+  substrings, passed, and would have been copied — forbidding the
+  highest-value block on the site with a comment saying it enforced CNS5. There
+  are two different things a retired name can be doing: used as a live
+  diagnosis, or named as retired. Same for Roman numerals, and the site-wide
+  Roman guard's allowance had to stop being pinned to one page by slug.
+  **Four of six citation TITLES were fabricated.** Every URL was fetched and
+  every claim checked against the fetched text — the discipline held on
+  content and failed on titles, which I wrote from the dossier's description of
+  each paper. Titles render as the visible link text under "Sources", so a
+  fabricated title is a fabricated citation on the reader's screen, and no test
+  can catch it. PMC10216527 is "From Theory to Practice: Implementing the WHO
+  2021 Classification", not what I called it; PMC6587541 is "On high-risk,
+  low-grade glioma"; PMC9723092 is "Major Features of the 2021 WHO
+  Classification"; PMC7527157 is the RTOG 9802 genomic analysis. All corrected.
+  **The right tail was on the wrong side of the gate.** "Some people live many
+  years with a grade 2 glioma, working and driving and raising children" sat in
+  section 2, where a reader who declined outlook met the most hope-preserving
+  sentence on the page anyway. That is exactly what the gate exists to prevent.
+  It is inside now, and the gate **teaches** *median* — my first draft's test
+  BANNED the word, which would have cemented across 23 copies a gate that
+  publishes no figures and explains none of the vocabulary §12.5 asks for.
+  **§12.1's per-claim rule bit hardest here, and mostly held.** The page's
+  bluntest content — that a grade 2 diffuse glioma is malignant and not curable,
+  and that patients are routinely told "this is the good kind" before referral —
+  comes from a source that is **pre-CNS5**: it cites the 2007 WHO edition, uses
+  Roman numerals, contains "oligoastrocytoma" and mentions IDH **zero** times.
+  It is cited for what patients get told and never for naming or grading. Review
+  found two places the line slipped (a count of tumor types, and a WHO
+  recommendation stated in the present tense) and both are now dated or
+  re-sourced. The incurability claim itself checks out against a 2025 FDA
+  review, which says it in as many words.
+  **Two more unsourced claims found by reading, and one bad dossier citation
+  corrected at source.** The radiation-then-PCV sequence and "recurrence is
+  expected" rested on nothing in this page's front matter; the first got
+  PMC7527157, the second was re-derived from the incurability claim already
+  cited. And `glioma-family.md` §2.3 attributes "most of these tumors do not
+  cause neurologic deficits at diagnosis" to an article containing **zero**
+  occurrences of "deficit" — corrected in the dossier so Wave 2 does not
+  inherit it.
+  **Two shared test helpers were quietly asserting the wrong template.**
+  `AssertLinksResolve` hard-coded §12.8's "where-to-go-next" as the onward
+  section, which a §12.3 hub does not have. Parameterised — and as a **separate
+  method, not an overload**, because adding a same-prefix `params` overload made
+  C# reinterpret every existing caller's first required link as a section id and
+  turned seven pages red at once. And nothing checked `#fragment` links at all:
+  `AssertLinksResolve`'s regex stops at the `#`, so this page's draft link to
+  `/tests/pathology-report#grade` came back a healthy 200 while landing the
+  reader at the top of a long page. That anchor is explicit now.
+  **All 60 breaks proven on an LF copy AND a CRLF copy.** The harness caught
+  five weak assertions of mine this round, including a CDKN2A/B check that
+  passed on a link paragraph, a library-door check that passed on the support
+  index, and an ordering test that used set membership rather than order — on
+  the one page whose entire purpose is to fix the shape.
 
 - **2026-09-04** — **WI-512 done — `/treatments/chemotherapy`, and P5 WAVE 1 IS
   COMPLETE.** Seventh of the 29 library pages, third treatment page. Reading

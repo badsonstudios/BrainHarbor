@@ -357,8 +357,34 @@ internal static class CuratedPage
     /// whole article is satisfied by the body's own links (WI-506 and WI-508
     /// both found this the hard way).
     /// </summary>
-    public static async Task AssertLinksResolve(
-        HttpClient client, string url, params string[] requiredOnward)
+    /// <inheritdoc cref="AssertLinksResolveIn"/>
+    public static Task AssertLinksResolve(
+        HttpClient client, string url, params string[] requiredOnward) =>
+        AssertLinksResolveIn(client, url, "where-to-go-next", requiredOnward);
+
+    /// <summary>
+    /// As above, but naming the section that holds the onward doors.
+    ///
+    /// The id was hard-coded to <c>where-to-go-next</c> until WI-513, because
+    /// every page that had used this helper was a §12.8 LIBRARY page and they
+    /// all end that way. A §12.3 tumor hub does not: its last section is
+    /// "Where to get support", section 15 of a different template. The helper
+    /// was quietly asserting the library template on any page that called it,
+    /// which is exactly the coupling this item exists to find before the shape
+    /// is copied twenty-three more times.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately a DIFFERENT NAME rather than an overload. Adding
+    /// <c>(client, url, string, params string[])</c> alongside
+    /// <c>(client, url, params string[])</c> made C# prefer the new one for
+    /// every existing caller, silently reinterpreting their first required
+    /// link as the section id — seven pages went red at once, each looking for
+    /// a section called "/tests/waiting-for-results". A params overload with a
+    /// matching prefix is a trap; the compiler resolved it exactly as
+    /// specified and the result was nonsense.
+    /// </remarks>
+    public static async Task AssertLinksResolveIn(
+        HttpClient client, string url, string onwardSectionId, params string[] requiredOnward)
     {
         var html = await client.GetStringAsync(url);
 
@@ -386,8 +412,8 @@ internal static class CuratedPage
 
         Assert.True(broken.Count == 0, $"{url} links to:\n" + string.Join("\n", broken.Distinct()));
 
-        var next = html.IndexOf("id=\"where-to-go-next\"", StringComparison.Ordinal);
-        Assert.True(next > 0, $"{url} has no 'Where to go next' section");
+        var next = html.IndexOf($"id=\"{onwardSectionId}\"", StringComparison.Ordinal);
+        Assert.True(next > 0, $"{url} has no '{onwardSectionId}' section");
 
         var onward = Regex.Matches(html[next..end], "href=\"(/[^\"#?]*)\"")
             .Select(m => m.Groups[1].Value).ToList();
@@ -411,6 +437,57 @@ internal static class CuratedPage
         // is worse than no rule. Where a mid-body link IS load-bearing, the
         // page's own tests name it.
         Assert.True(checkedLinks >= onward.Count, $"{url}: fewer links checked than found");
+    }
+
+    /// <summary>
+    /// Every <c>#fragment</c> link in the page's article points at an id that
+    /// the target page actually renders.
+    ///
+    /// <see cref="AssertLinksResolve"/> cannot see these: its regex is
+    /// <c>href="(/[^"#?]*)"</c>, which stops at the <c>#</c>, so a link to a
+    /// heading that does not exist resolves as a perfectly healthy 200 and
+    /// lands the reader at the top of a long page with no sign anything went
+    /// wrong. That is the exact failure §12.8 (WI-508) describes for heading
+    /// anchors, and the check for it did not exist until a page needed it:
+    /// WI-513 is the first page in the corpus to deep-link another one, and its
+    /// first draft pointed at <c>/tests/pathology-report#grade</c>, which was
+    /// not an anchor on that page at all.
+    /// </summary>
+    public static async Task AssertFragmentLinksResolve(HttpClient client, string url)
+    {
+        var html = await client.GetStringAsync(url);
+
+        var start = html.IndexOf("<article", StringComparison.Ordinal);
+        var end = html.IndexOf("</article>", StringComparison.Ordinal);
+        Assert.True(start >= 0 && end > start, $"{url} did not render an article");
+
+        var broken = new List<string>();
+        var checkedFragments = 0;
+
+        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"?#]*)#([^\"]+)\""))
+        {
+            var target = match.Groups[1].Value;
+            var fragment = match.Groups[2].Value;
+            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
+            {
+                continue;
+            }
+
+            checkedFragments++;
+            var targetHtml = await client.GetStringAsync(target);
+            if (!targetHtml.Contains($"id=\"{fragment}\"", StringComparison.Ordinal))
+            {
+                broken.Add($"{target}#{fragment}");
+            }
+        }
+
+        Assert.True(broken.Count == 0,
+            $"{url} deep-links anchors that do not exist on the target page:\n  "
+            + string.Join("\n  ", broken.Distinct()));
+
+        Assert.True(checkedFragments > 0,
+            $"{url} has no fragment links, so this assertion proved nothing — "
+            + "drop the call rather than leaving a green test that cannot fail");
     }
 
     /// <summary>Whitespace-normalised: the source is hard-wrapped, and a sentence that happens to break across lines is not a content change.</summary>
