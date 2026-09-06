@@ -889,3 +889,64 @@ on the page or on `/treatments/craniotomy`, and an invented reassurance closing
 the mask section (*"almost everybody gets through the course"* — no source says
 it, on the section written for the most frightened reader on the page). **The
 recorded lesson did not prevent the repeat.** Read the page.
+
+**Six more from the seventh one (WI-512, chemotherapy — and the end of Wave 1):**
+
+- **A dossier claim bundled with a true one inherits its citation.** The
+  research doc puts wafer consequences in a single bullet: *"wafers can
+  complicate later clinical-trial eligibility AND make imaging harder to
+  interpret"*, cited to PMC9259966. The trial half is in that paper verbatim.
+  The imaging half is not — the paper contains "imaging" once, in a definition
+  of progression-free survival, and "MRI" not at all. Both shipped as one
+  sentence with one citation, and a test then pinned the invented half under a
+  name calling it a consequence a reader can act on. **Check a citation against
+  each CLAUSE, not each bullet.**
+- **An escalation tier is a site-wide property, not a page-wide one.** §12.8
+  already said to diff a page's ambulance list against every other such list.
+  That is not enough. WI-512 filed chest pain and breathlessness under
+  "call your team straight away" while `/treatments/craniotomy` files chest pain
+  under **"call an ambulance — these cannot wait"**, and filed confusion under
+  "straight away" while `/treatments/radiation-therapy` files near-identical
+  wording under "the same day". Nobody had contradicted a *list*; three pages
+  had sorted the same symptom into three different **tiers**. The reader who
+  meets all three pages at once — post-craniotomy, on chemoradiation — is the
+  ordinary reader. **Diff the tiers, per symptom, across the corpus.**
+- **A source can be cited for the position it argues against.** WI-512's
+  antibiotic section cited a 2026 systematic review and then wrote "it is the
+  standard thing to do" — while that paper's whole argument is that universal
+  prophylaxis is no longer supported and roughly half the pooled patients never
+  received it. That is worse than not citing it: the citation resolves, and
+  contradicts the sentence it is attached to. **Read the conclusion, not just
+  the abstract's background.**
+- **A verbatim C# string does not process escapes, and a test regex written in
+  one will silently never match.** `@"°"` is six literal characters, not a
+  degree sign. WI-512's "only one temperature threshold" test hunted for a
+  backslash and passed on a page carrying two. The break harness caught it; no
+  amount of reading would have.
+- **Grep the build for "error", not "error CS".** WI-512 lost a full round to
+  MSB3027: a dev server held `BrainHarbor.Web.exe`, every build failed on the
+  copy step, the check in use matched C# errors only and reported zero, and
+  `dotnet test` ran the PREVIOUS assembly — returning green with 34 new tests
+  that had never been compiled. The suite was reported green twice before the
+  test count was noticed not to have moved. **Check the test COUNT changed when
+  you add tests**, and fail the harness loudly on a stale assembly.
+- **A suppression is only meaningful if the word is there to suppress.** Two of
+  WI-512's six `!%term%` markers suppressed nothing: `neutropenia` appeared
+  nowhere in reader prose on any page, and `carmustine wafer` never matched the
+  page's plural because the glossary matcher is whole-word. Both
+  `DoesNotContain("def-…")` assertions passed for the wrong reason, and both
+  glossary entries were unreachable site-wide. **Assert the term appears in the
+  prose before asserting its tooltip does not.**
+
+**And the slot that was dropped and put back.** WI-512 dropped slot 5 ("what
+does it feel like?") arguing four drugs given four ways share no answer. Review
+disagreed and was right: three of the four are capsules at home, and a CYCLE has
+one shared shape — unremarkable on the day, sick that evening, flat by the end
+of the week, and **the nadir arriving exactly when you feel finished**. The
+material was already on the page, scattered between two other sections, which is
+the WI-506 trap. It is now slot 5, headed as a role rather than copied ("What
+does a cycle feel like?", the WI-507 precedent). It would have been the first
+treatment page to drop slot 5 while both siblings carried it — and §12.8's own
+warning is that three bent pages in a row is how a template quietly shrinks.
+**When you drop a universal-ish slot, check whether the material exists anyway
+somewhere worse.**

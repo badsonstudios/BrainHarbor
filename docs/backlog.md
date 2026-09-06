@@ -2524,7 +2524,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   a third copy is a third copy to keep in step. The call-today list carries the
   first-seizure carve-out inline instead.
 
-- [ ] **WI-512 X8 Chemotherapy**
+- [x] **WI-512 X8 Chemotherapy** *(done 2026-09-04 — `/treatments/chemotherapy`)*
   Goal: one page for the drugs, because the shared content is where the value is.
   Acceptance, beyond the shared contract: temozolomide, PCV, lomustine and
   carmustine wafers as sections; oral vs IV; which tumors use which; **blood-count
@@ -2534,6 +2534,26 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   re-verified before publishing.
   Refs: docs/research/tumor-guides/treatment-library.md §(e)4.
   Depends on: WI-501, WI-502, WI-504.
+  **Shipped notes.** Reading grade 5.4, 1163 tests (1120 before), ContentCheck
+  209/0, all 75 break-mutations proven on LF and CRLF. Six glossary terms.
+  **The fever rule is the page**, and 100.4 F is published deliberately — the
+  one place the site's number discipline points toward including a figure
+  rather than omitting one, hedged with "ask your team for their number".
+  **The carmustine-wafer framing changed from the ticket.** The ticket cites the
+  2022 review's title, *"Is It Still an Option?"*, as grounds for a sceptical
+  mention. Read, that paper ANSWERS ITS OWN TITLE YES. EANO is genuinely more
+  cautious. The page prints the disagreement instead of either framing.
+  **Four sources the dossier offers are unusable**, one on licensing grounds:
+  `drugs.com` is an AHFS monograph (PLAN.md §5 forbids it outright); PMC3601076,
+  cited for TMZ lymphopenia, is a **mouse study**; the Cancer Care Ontario
+  lomustine monograph sits behind a WAF and returns 106 bytes; and NBK66023 is
+  NCI patient PDQ, whose which-drug table contains **"Anaplastic astrocytoma"**,
+  a retired CNS5 name. The lomustine timing came from EANO instead, and the
+  antibiotic section from PMC12803824.
+  **R1's lomustine wording is on the page verbatim in spirit** and now properly
+  sourced: taken only occasionally, not every day, *because it lowers blood
+  counts for weeks after each dose*.
+  **Slot 5 was dropped and put back after review** — see §12.8.
 
 - [x] **WI-559 "What to do when someone has a seizure"** *(done 2026-08-30, with WI-560 in one PR — `/seizures/what-to-do`)*
   Goal: the one page on this site where a reader may be acting, not reading.

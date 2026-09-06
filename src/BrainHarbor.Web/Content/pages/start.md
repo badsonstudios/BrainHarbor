@@ -74,6 +74,10 @@ visits, and what comes after](/treatments/radiation-therapy) goes through the
 planning visit where the mask is made, what a treatment day is like, and the
 tiredness that does not stop on the last day.
 
+If chemotherapy has been mentioned, [chemotherapy: the drugs, your blood
+counts, and the fever rule](/treatments/chemotherapy) takes the drugs one at a
+time and sets out the one rule worth knowing before you start.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?
