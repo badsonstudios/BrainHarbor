@@ -149,7 +149,7 @@ since dropped. That is worth knowing before you go looking.
 If you are holding two reports with different names on them, ask your team which
 name is the current one, and which tests it rests on.
 
-## What the grade means
+## What the grade means {#what-the-grade-means}
 
 The grade is a number from 1 to 4 for how the tumor is expected to behave. It is
 worked out from what the cells look like and from what the gene tests found, and

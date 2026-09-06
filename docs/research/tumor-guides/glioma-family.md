@@ -867,10 +867,16 @@ Same as §0.5 plus grade-2-specific mechanisms:
 Mechanistic profile of a low-grade glioma differs from a high-grade one and this
 is worth its own explanation:
 
-- **Seizures dominate.** Low-grade gliomas often present with seizures rather than
-  deficits; "most of these tumors do not cause neurologic deficits at the time of
-  diagnosis"
-  (https://www.cancernetwork.com/view/grade-ii-gliomasnot-so-low-grade).
+- **Seizures dominate.** Low-grade gliomas often present with seizures
+  (https://pmc.ncbi.nlm.nih.gov/articles/PMC9723092/ — IDH-mutant astrocytomas
+  and the pediatric-type diffuse low-grade gliomas both "present with
+  seizures").
+  `[CORRECTED AT WI-513 — this bullet previously quoted "most of these tumors do
+  not cause neurologic deficits at the time of diagnosis" and attributed it to
+  cancernetwork.com. That article contains ZERO occurrences of "seizure" and
+  ZERO of "deficit"; the sentence is not in it. The seizure half is real and is
+  now sourced to PMC9723092. The no-deficit half has no support in any fetched
+  source and must not be published until one is found.]`
   IDH-mutant status is itself an independent risk factor for epileptogenesis via
   D-2-HG (https://academic.oup.com/neuro-oncology/article/24/9/1423/6498134,
   https://www.neurology.org/doi/10.1212/WNL.0000000000003911).

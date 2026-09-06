@@ -281,7 +281,14 @@ public sealed class PathologyReportPageContentTests
 
         foreach (var (slug, text) in CuratedPage.AllPages())
         {
-            foreach (var sentence in Regex.Split(text, @"(?<=[.!?])\s+"))
+            // BODY only. The first version scanned the whole file, front matter
+            // included, and WI-513 is the first page to cite an article whose
+            // REAL TITLE carries a Roman numeral — "Grade II Gliomas: Not So
+            // Low Grade". Rewriting a citation to satisfy a house style would
+            // be a worse defect than the one this guard prevents, and it is the
+            // same lesson the British-forms gate learned at WI-511: a source
+            // title is not our prose.
+            foreach (var sentence in Regex.Split(CuratedPage.Body(text), @"(?<=[.!?])\s+"))
             {
                 if (!sentence.Contains("grade", StringComparison.OrdinalIgnoreCase))
                 {
@@ -294,14 +301,21 @@ public sealed class PathologyReportPageContentTests
                     continue;
                 }
 
-                // The one legitimate use on the site: this page shows a reader
-                // holding older paperwork what the old notation looked like, so
-                // that "grade III" and "grade 3" stop being two diagnoses. It
-                // is allowed only where the sentence says it is the old style.
-                var teachingTheOldStyle =
-                    slug == "pages/tests/pathology-report"
-                    && (sentence.Contains("older report", StringComparison.OrdinalIgnoreCase)
-                        || sentence.Contains("used to be", StringComparison.OrdinalIgnoreCase));
+                // The legitimate use: showing a reader holding older paperwork
+                // what the old notation looked like, so that "grade III" and
+                // "grade 3" stop being two diagnoses.
+                //
+                // The allowance was pinned to ONE page by slug until WI-513.
+                // That was right while only the report page taught the old
+                // style, and wrong the moment contract item 3's "where an older
+                // name was retired, say so" reached a tumor hub — every one of
+                // the 24 hubs owes its readers a crosswalk slice, and each
+                // would have had to be added here by name. It is the sentence's
+                // own content that makes the use legitimate, not its address.
+                var teachingTheOldStyle = Regex.IsMatch(
+                    sentence,
+                    @"older report|used to be|retired|no longer|old rules|older paperwork|changed in 2021|now written",
+                    RegexOptions.IgnoreCase);
 
                 if (!teachingTheOldStyle)
                 {

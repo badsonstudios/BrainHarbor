@@ -950,3 +950,83 @@ treatment page to drop slot 5 while both siblings carried it — and §12.8's ow
 warning is that three bent pages in a row is how a template quietly shrinks.
 **When you drop a universal-ish slot, check whether the material exists anyway
 somewhere worse.**
+
+### 12.9 The tumor-hub template, proved (WI-513)
+
+§12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
+**tumor hub** all the way to §12.3's seventeen sections, which is the shape the
+remaining 23 hubs inherit. Read this before drafting one, and read **§12.3** for
+the order — not §12.8, whose twelve slots the seven Wave 1 pages made familiar.
+
+**The two blocks that are easy to leave out, because nothing prompts you.**
+WI-513's first draft had neither, and both are required by the contract:
+
+- **The self-blame block.** §12.3's own "Deliberate omissions" paragraph says
+  "the self-blame block still appears; it just is not near the top", and it is
+  the one instruction in that paragraph that reads like an aside. It is now
+  `Content/blocks/causes.md`, included as `[CAUSES]`, and **demoted** — WI-513
+  places it between "if it comes back" and the outlook gate. Late enough not to
+  greet a frightened reader with "nobody knows what caused this", early enough
+  that they meet it before outlook.
+- **The retired-name crosswalk slice.** Contract item 3: "where an older name
+  was retired, say so: readers arrive holding old paperwork." Research §0.3
+  calls it the single highest-value block on the site. The canonical full
+  crosswalk belongs to the glioma umbrella page (SYNTHESIS §4.3); **every hub
+  still owes a slice** naming the retired terms its own readers are holding.
+
+**A ban list on retired names has to be negation-aware, or it forbids the
+crosswalk.** WI-513's first test banned "oligoastrocytoma", "anaplastic" and
+"mixed glioma" outright. It passed — and would have made the crosswalk
+impossible on all 23 hubs that copied it, foreclosing the highest-value block on
+the site with a test whose comment said it was enforcing CNS5. There are two
+completely different things a retired name can be doing on a page: used as a
+live diagnosis (forbidden) or NAMED as retired (required). Same for Roman
+numerals, and the site-wide Roman guard's allowance had to stop being pinned to
+one page by slug for the same reason.
+
+**The reader-choice gate, now that one page has actually used it.** WI-503 built
+it; nothing used it for ten items. What using it teaches:
+
+- **The gate is for outlook, and the right tail belongs INSIDE it.** WI-513's
+  draft put "some people live many years, working and driving and raising
+  children" in section 2, where a reader who declined outlook met the most
+  hope-preserving sentence on the page anyway. That is precisely what the gate
+  exists to put behind a choice. The section it came from still needs a landing
+  (§12.6), so give it a non-prognostic one.
+- **A gate that publishes no figures still has to teach the vocabulary.** §12.5
+  is headed "explain the concepts, publish no figures", and the Kirkebøen
+  framing wants four moves when explaining *median*: establish it describes a
+  **group**, give the **distribution** rather than the midpoint, name the
+  **right skew**, and say plainly it is not a prediction about one person.
+  WI-513's first draft did one of the four and its own test BANNED the word
+  "median" — which would have cemented, across 23 copies, a gate that explains
+  nothing.
+- **Verified rather than assumed, because every fail-open mode builds green.**
+  Check the rendered HTML (heading outside, `<details>` not open, no `:::`
+  leaked, the words not also present outside the gate) and the PDF: §12.5 says a
+  gate left closed stays closed on paper, and WI-513 is the first item that
+  could confirm it.
+
+**A shared test helper written for one template will quietly assert it on the
+other.** `AssertLinksResolve` hard-coded `id="where-to-go-next"` — §12.8's last
+section — because every caller until now was a library page. A §12.3 hub ends
+with "Where to get support". The id is a parameter now
+(`AssertLinksResolveIn`), and it is a **separate method, not an overload**:
+adding `(client, url, string, params string[])` beside
+`(client, url, params string[])` made C# prefer the new one for every existing
+caller and silently reinterpret their first required link as a section id.
+
+**`AssertLinksResolve` cannot see fragments, and the first page to deep-link
+another one proved it.** Its regex stops at the `#`, so a link to an anchor that
+does not exist resolves as a healthy 200 and lands the reader at the top of a
+long page. `AssertFragmentLinksResolve` is the check; WI-513's own draft pointed
+at `/tests/pathology-report#grade`, which was not an anchor on that page.
+
+**And the citation discipline has a second half nobody had written down.**
+"Fetch every source URL before citing it" has been the rule since WI-505, and
+WI-513 followed it — every claim was checked against the fetched text. Four of
+its six citation **titles** were still wrong, written from the research
+dossier's description of a paper rather than from the page that had just been
+fetched. Titles render as the visible link text under "Sources", so a fabricated
+title is a fabricated citation on the reader's screen, and no test can catch it.
+**Paste the `<title>` the fetch script prints. Every time.**
