@@ -2488,7 +2488,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   to 100%. Awake craniotomy is named in one sentence and **not** linked;
   WI-523 owns it and the page does not exist yet.
 
-- [ ] **WI-511 X5 Radiation therapy**
+- [x] **WI-511 X5 Radiation therapy** *(done 2026-09-04 — `/treatments/radiation-therapy`)*
   Goal: the hub page for every form of radiation.
   Acceptance, beyond the shared contract: the simulation appointment and
   **mask-making, which is a distinct and under-acknowledged fear point**;
@@ -2501,6 +2501,28 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   memantine; R3 applies to the cognitive comparison.
   Refs: docs/research/tumor-guides/treatment-library.md.
   Depends on: WI-501, WI-502, WI-504.
+  **Shipped notes.** Full twelve slots (§12.8), second treatment page. Reading
+  grade 5.4, 1120 tests (1070 before), ContentCheck 197/0. Seven glossary terms.
+  Slot 8 (re-irradiation) has **no patient-level source anywhere** — ACS, MSK
+  and NBTS are all silent — so it rests on the EANO guideline and is published
+  at that strength: an option after roughly a year, indications controversial,
+  no trial settles it.
+  **Three dossier citation errors**, taking the running total to eighteen across
+  seven items: the somnolence "resolves on its own" claim is attributed to the
+  charity's **jargon-buster** page, which is one sentence long and does not
+  contain it (the adults side-effects page does); PMC7017115, cited for the
+  cognitive late effect, is a mechanistic review largely about the **mouse**
+  brain; and `ascopubs.org` returns a JavaScript shell, so the whole-brain claim
+  rests on **PMC7106984** (NRG CC001) directly. NBK66023 stays out per §12.1.
+  **Two rules promoted to `CuratedPage`** as §12.8 asked at the second treatment
+  page: `AssertNeverMinimises` (negation-aware, clause-anchored) and
+  `BritishForms` — the first gate on the site that looks for British usage,
+  which found `"a lift"` in the shared caregiver block (eighteen tumor hubs) and
+  `standardised` in this page's own draft.
+  **Deliberately absent: a "call an ambulance" list.** The shared `[CAREGIVER]`
+  block already teaches the escalation and links the seizure page that owns it;
+  a third copy is a third copy to keep in step. The call-today list carries the
+  first-seizure carve-out inline instead.
 
 - [ ] **WI-512 X8 Chemotherapy**
   Goal: one page for the drugs, because the shared content is where the value is.

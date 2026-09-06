@@ -806,3 +806,86 @@ parsed and meant nothing ("which can look alarming and is not"), and a "most"
 that contradicted a "many ... some do not" two sections later. **A claim about
 how many people recover cannot have two different strengths on one page.** That
 is the fifth time a human-style read has caught what the suite cannot.
+
+**Seven more from the sixth one (WI-511, radiation therapy — the second
+TREATMENT page):**
+
+- **One URL can carry two claims, be wrong about one and right about the
+  other.** WI-510's rule says deleting a bad citation does not delete the
+  claim. WI-511 found the harder version: the dossier attributes *"somnolence
+  usually resolves on its own"* to the Brain Tumour Charity's **jargon-buster**
+  page, which is one sentence long and says no such thing — so the first draft
+  dropped the URL. But that same page is the **only** source anywhere in the
+  set for the **four-to-six-week timing**, which the draft kept. Dropping the
+  citation orphaned a number nobody had noticed it was also carrying. **Before
+  you drop a source, list every claim resting on it, not just the one that
+  failed.** Both pages are cited now, each for what it actually says.
+- **Where two sources disagree on a frequency, print the disagreement.** The
+  charity calls somnolence syndrome rare; the study the page cites for its
+  central finding saw it in most of a small group. The draft split the
+  difference with an unattributed "uncommon" — a third answer belonging to
+  nobody. §12.8's WI-507 rule (attribute in the sentence that prints the
+  figure) extends to this: name whose number it is, and if they conflict, say
+  so and give the reader the part both agree on.
+- **A number written as a word is still a number.** WI-511's whole-brain
+  section said "most people in both groups lost some thinking skills",
+  importing R3's reasoning about the SRS comparison and asserting it of the
+  CC001 trial, where the per-test rates run 23.3% v 40.4%. "Most" was false of
+  the arm the page recommends. The page's own no-percentages test could not see
+  it, because it only matched digits — and the corpus writes every number in
+  words. **Grade the claim, not the character class.**
+- **An escalation list under-triages as easily as it over-triages, and the
+  under-triage is the more dangerous direction.** WI-510's blocker was an
+  ambulance list that said "a seizure" where most seizures need no ambulance.
+  WI-511's was a *call-the-team-today* list that said "there is a seizure" flat,
+  six lines from a page saying a **first** seizure is a 911 call. Diff every
+  escalation list against `/seizures/what-to-do`, in both directions, whatever
+  the list is headed. A test that asserts only "no heading says ambulance"
+  proves there is no second list; it says nothing about whether the one list is
+  right.
+- **Flatten before matching, in the gates as well as the tests.** The corpus is
+  hard-wrapped, so a two-word phrase routinely has a newline inside it. WI-511's
+  new British-usage gate read raw body text and walked straight past `"a lift"`
+  in `blocks/caregiver.md`, where the wrap falls between the words — a British
+  idiom on eighteen tumor hubs, missed by the gate written to catch it. Same
+  trap as WI-509's fix test, one item later.
+- **A negation-aware ban list has to anchor to the CLAUSE.** A bare
+  N-character lookback for `not|never` fails both ways: *"it is not painful,
+  and it is a simple procedure"* passes (the negation belongs to the other
+  clause), and *"there is no such thing as a simple procedure"* fails. The
+  working form is `\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$` — close
+  AND on this side of the nearest punctuation.
+- **A substring ban list is a stemming problem, and stemming bugs read as
+  correct rules.** WI-511's British-spelling list shipped five entries that are
+  substrings of correct US words — `specialis` matches **specialist**,
+  `characteris` matches **characteristic**, `organis` matches **organism**,
+  `realis` matches **realistic**, `analyse` matches **analyses**. It also
+  carried `radiotherapy`, which is not a British spelling at all but standard US
+  vocabulary inside named techniques (Stereotactic Body Radiotherapy). Every one
+  of those would have failed a correct page. **Run a candidate list against real
+  English, not just against the corpus** — corpus-clean today says nothing about
+  the page nobody has written yet.
+
+**And run the ban lists you already have over the whole corpus, not just the
+page in hand.** §12.8 asks for a corpus scan before *adding* a phrase. Nobody
+had ever asked it of the phrases already on `CuratedPage.Characterisations`.
+WI-511 ran it and found `"bad news"` sitting over a correct sentence on
+`/seizures/what-to-do` — *"a seizure is **not** automatically bad news about the
+tumor"* — eight items after that page shipped. Only two pages assert the list
+and neither uses the phrase, so nothing ever went red. The list now defends
+itself site-wide (`CuratedProseHousekeepingTests`) instead of waiting for a page
+that happens to check it. `"bad news"` was demoted; **`"good news"` was kept** —
+review pushed back on dropping the pair, correctly, because retiring a working
+guard for symmetry with a broken one is a net loss.
+
+**Sixth consecutive item where reading the page end to end found what no gate
+could,** and the independent review found four blockers on top of that. This
+time the human-style read caught: a guessed gender for a real named patient
+(*"One **man** treated for an astrocytoma… to drive **him**"*, where the source
+names Tommy M. and states no pronouns — **the identical defect WI-510 shipped
+and recorded**), three unsourced comparative frequency claims, a caregiver
+section restating the skin rules, the hair advice and the pill-box line already
+on the page or on `/treatments/craniotomy`, and an invented reassurance closing
+the mask section (*"almost everybody gets through the course"* — no source says
+it, on the section written for the most frightened reader on the page). **The
+recorded lesson did not prevent the repeat.** Read the page.

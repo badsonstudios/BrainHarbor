@@ -69,6 +69,11 @@ after](/treatments/craniotomy) walks through the operation, the hospital stay,
 and the weeks at home that most people are least ready for. It has a long
 section for whoever is looking after you.
 
+If radiation has been mentioned, [radiation therapy: the mask, the daily
+visits, and what comes after](/treatments/radiation-therapy) goes through the
+planning visit where the mask is made, what a treatment day is like, and the
+tiredness that does not stop on the last day.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?

@@ -58,7 +58,7 @@ behind their back. It is something the team cannot learn any other way.
 **Look after yourself, and let people help.**
 Eat, sleep, and keep your own appointments. Take a little of the day back for
 yourself. When someone asks what they can do, give them a real job: a meal, a
-lift, an hour with the kids. Most people want to help and do not know how to
+ride, an hour with the kids. Most people want to help and do not know how to
 offer.
 
 You can talk to somebody about all of this today. See

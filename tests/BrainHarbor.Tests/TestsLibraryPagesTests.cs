@@ -81,12 +81,30 @@ internal static class CuratedPage
     /// natural way to write that reassurance and is exactly right. Both were
     /// dropped rather than ship a rule that fails a correct page. The ten
     /// phrases added below have no occurrence anywhere in the corpus.
+    ///
+    /// WI-511 ran the WHOLE list over the WHOLE corpus for the first time —
+    /// §12.8 asks for that before ADDING a phrase, and nobody had asked it of
+    /// the phrases already here. <c>"bad news"</c> failed, on a page shipped
+    /// eight items ago: <c>/seizures/what-to-do</c> says "a seizure is
+    /// <em>not</em> automatically bad news about the tumor", which is correct,
+    /// is the natural way to write it, and is the identical negation shape
+    /// that got "good sign"/"bad sign" rejected at WI-509. Only the marker
+    /// page and the craniotomy page asserted this list, and neither uses the
+    /// phrase, which is why a substring ban sat over a correct sentence for
+    /// eight items without a single test going red.
+    ///
+    /// <c>"bad news"</c> alone moved to <see cref="RejectedCharacterisations"/>.
+    /// <c>"good news"</c> STAYS: review pushed back on dropping it as a pair,
+    /// correctly — it has no occurrence anywhere in the corpus, and retiring a
+    /// working guard for symmetry with a broken one is a net loss. WI-509
+    /// dropped "good sign"/"bad sign" together because BOTH had correct uses
+    /// in view; here only one does.
     /// </remarks>
     public static readonly string[] Characterisations =
     [
         "better outlook", "worse outlook", "better outcome", "worse outcome",
         "better prognosis", "worse prognosis", "favorable", "favourable",
-        "good news", "bad news", "more aggressive", "less aggressive",
+        "good news", "more aggressive", "less aggressive",
         "responds better", "respond better", "responds well", "does better",
         "the good one", "the bad one",
 
@@ -125,11 +143,196 @@ internal static class CuratedPage
     ///   correct, and is what WI-511 and WI-512 will need to write.
     /// - "went well" — "even when surgery went well, recovery is hard" is
     ///   correct, and is close to the caregiver section's actual argument.
+    /// - "bad news" — WI-511 demoted this one from the live list.
+    ///   `/seizures/what-to-do` already says "a seizure is not automatically
+    ///   bad news about the tumor", which is correct and is the natural way to
+    ///   write that reassurance. Its partner "good news" stayed on the live
+    ///   list: it is corpus-clean and there is no reason to retire a working
+    ///   guard alongside a broken one.
     /// </summary>
     public static readonly string[] RejectedCharacterisations =
     [
         "good result", "completely gone", "all clear",
-        "full recovery", "back to normal", "went well",
+        "full recovery", "back to normal", "went well", "bad news",
+    ];
+
+    /// <summary>
+    /// The phrasings that tell a reader a serious treatment is nothing much.
+    /// WI-510 wrote this page-locally for the craniotomy page and §12.8 said
+    /// the SECOND treatment page promotes it; WI-511 is that page, so here it
+    /// is, generalised from "operation" to the treatment vocabulary.
+    ///
+    /// Use through <see cref="AssertNeverMinimises"/>, never as a bare
+    /// substring ban: "this is not a routine treatment" is a correct sentence
+    /// and is exactly what a page like this wants to write.
+    /// </summary>
+    public static readonly string[] Minimisations =
+    [
+        "routine operation", "routine procedure", "routine treatment",
+        "simple operation", "simple procedure", "simple treatment",
+        "minor operation", "minor procedure", "minor treatment",
+        "straightforward operation", "straightforward procedure", "straightforward treatment",
+        "easy operation", "easy procedure", "easy treatment",
+        "harmless operation", "harmless procedure", "harmless treatment",
+        "nothing to it", "no big deal", "piece of cake", "walk in the park",
+    ];
+
+    /// <summary>
+    /// Minimisation candidates run over the corpus and REJECTED, with the
+    /// reason, so the next treatment page does not re-propose them. All four
+    /// are corpus-clean; corpus-clean is not the test (§12.8).
+    ///
+    /// - "quick operation", "quick procedure", "quick treatment" — speed is a
+    ///   FACT, not a judgement. Stereotactic radiosurgery genuinely is a
+    ///   quicker treatment than six weeks of daily visits, and a page saying
+    ///   so is being accurate rather than reassuring. "Routine" is the word
+    ///   that makes a claim about how much it matters; "quick" is not.
+    /// - "painless procedure" — radiation IS painless. ACS says "the treatment
+    ///   is not painful" and NBTS says "like an X-ray, radiation is painless",
+    ///   and WI-511 prints it because a reader dreading pain deserves the
+    ///   answer. Banning it would fail the page it was written for.
+    /// - "not a big deal" — the negation-aware check would WAVE THIS THROUGH,
+    ///   because the "not" is right there, while "this is not a big deal" is
+    ///   precisely the minimising sentence the rule exists to catch. A
+    ///   negation-aware substring test cannot express it, so it is left out
+    ///   rather than shipped broken and believed.
+    /// - "easy enough" — "it is easy enough to ask" is correct and natural.
+    /// </summary>
+    public static readonly string[] RejectedMinimisations =
+    [
+        "quick operation", "quick procedure", "quick treatment",
+        "painless procedure", "not a big deal", "easy enough",
+    ];
+
+    /// <summary>
+    /// No sentence tells the reader this treatment is nothing much — unless it
+    /// is telling them the opposite, which is the point.
+    ///
+    /// Negation-aware for the WI-509 reason: a bare substring ban on this
+    /// vocabulary fails "this is not a minor operation", which is the correct
+    /// and natural sentence, and a rule that fails a correct page is worse
+    /// than no rule (§12.8).
+    /// </summary>
+    public static void AssertNeverMinimises(string readerText, string slug)
+    {
+        // Whitespace-normalised first. The corpus is hard-wrapped, so a
+        // two-word phrase routinely has a newline in the middle of it — which
+        // is how a WI-509 fix test missed the exact string it was written to
+        // catch, and how WI-511's first British-spelling gate walked straight
+        // past "a\nlift" in the shared caregiver block.
+        var text = Flatten(readerText);
+
+        foreach (var phrase in Minimisations)
+        {
+            foreach (Match match in Regex.Matches(text, Regex.Escape(phrase), RegexOptions.IgnoreCase))
+            {
+                var before = text[Math.Max(0, match.Index - 40)..match.Index];
+
+                // Anchored to the same CLAUSE, and widened to the negations
+                // English actually uses. Review found the first version broken
+                // in both directions with a bare 30-character lookback for
+                // not/never/hardly:
+                //
+                //   FALSE PASS: "it is not painful, and it is a simple
+                //   procedure" — the "not" belongs to the other clause but
+                //   sits inside the window, so the minimisation goes through.
+                //   Any nearby negation bought a free pass.
+                //
+                //   FALSE FAIL: "there is no such thing as a simple
+                //   procedure", "far from a routine treatment", "isn't a minor
+                //   procedure" — all correct, all flagged, and a rule that
+                //   fails a correct page is worse than no rule (§12.8).
+                //
+                // `[^.,;:]{0,20}$` is what does the work: the negation has to
+                // be close AND on this side of the nearest punctuation.
+                Assert.True(
+                    Regex.IsMatch(before, @"\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$",
+                        RegexOptions.IgnoreCase),
+                    $"{slug} calls this a \"{phrase}\" without negating it");
+            }
+        }
+    }
+
+    /// <summary>
+    /// The British forms that no gate looked for until WI-511 built one.
+    ///
+    /// WI-510's first draft shipped seven of them (`anaesthetist`,
+    /// `jewellery`, `theatre`, `physiotherapist`, `tablets`, …) and every
+    /// check passed: reading grade, ContentCheck and 1,039 tests are all blind
+    /// to a page that is written correctly for a different country. The corpus
+    /// is US throughout and a reader in Ohio should not meet a page that
+    /// sounds like it is about somebody else's health system.
+    ///
+    /// An explicit list rather than an `-ise` suffix pattern, deliberately:
+    /// "advise", "exercise", "promise", "raise" and "surprise" are all correct
+    /// US English and a suffix rule fails every one of them.
+    ///
+    /// Five obvious-looking entries were written and then REMOVED, because
+    /// each one is a substring of a word that is correct in US English — the
+    /// same "a rule that fails a correct page is worse than no rule" trap the
+    /// ban lists keep falling into, arriving here as a stemming bug:
+    ///
+    /// - `"specialis"` matches **specialist**, which the corpus uses 4 times.
+    /// - `"characteris"` matches **characteristic**.
+    /// - `"organis"` matches **organism**.
+    /// - `"realis"` matches **realistic**.
+    /// - `"analyse"` matches **analyses**, a correct US plural noun. The
+    ///   British-only forms are the inflections, so those are listed instead.
+    ///
+    /// Also considered and left out: `"tablet"`, because US drug labeling uses
+    /// it too ("take one tablet") and only "tablets" meaning *pills in
+    /// general* is the British idiom — the word cannot carry the distinction.
+    /// WI-511's own draft said "a tablet called memantine" and it was fixed by
+    /// reading, not by this list.
+    ///
+    /// `"radiotherapy"` was on the list and came off after review, which is
+    /// the same trap one level up: it is not a spelling variant at all. It is
+    /// standard US medical vocabulary inside named techniques — Stereotactic
+    /// Body Radiotherapy, hippocampal-avoidance whole-brain radiotherapy — and
+    /// `glossary/stereotactic-radiosurgery.md` already cites a source title
+    /// containing it. The first page that had to name SBRT in body prose would
+    /// have failed a gate that was right about nothing. British *usage* of the
+    /// word is caught by the idioms below and by reading.
+    ///
+    /// The entries are matched against WHITESPACE-NORMALISED body text, and
+    /// that is load-bearing rather than tidy: the corpus is hard-wrapped, and
+    /// the first version of this gate read raw text and walked straight past
+    /// `"a lift"` in `blocks/caregiver.md`, where the wrap falls between the
+    /// two words. That block composes into eighteen tumor hubs.
+    /// </summary>
+    public static readonly string[] BritishForms =
+    [
+        // Spellings, matched as prefixes so inflections are caught too.
+        "tumour", "centre", "programme", "behaviour", "colour", "favour",
+        "labour", "anaesth", "oesoph", "paediatr", "haemat", "haemorrh",
+        "oedema", "jewellery", "physiotherap", "whilst", "amongst",
+        "theatre", "plaster cast", "casualty department",
+        "aluminium", "storey", "licence", "defence", "practise",
+        "analysed", "analysing", "organise", "organised", "organising",
+        "organisation", "recognis", "minimis", "apologis", "hospitalis",
+        // Added after this very page shipped "follow-up for them is not
+        // standardised" past the first version of the list. The `-ise` family
+        // is larger than it looks from the outside, and the only way to find
+        // the next one is to keep reading.
+        "standardis", "normalis", "prioritis", "utilis", "emphasise",
+
+        // Idioms. The half WI-510's draft actually got wrong ("you will be got
+        // up", "tablets") was never about spelling, and a reader in Ohio is
+        // offered "a lift" or given fluids "through a drip" by a page that
+        // sounds like it is about a different health system.
+        "a lift", "a drip", "the drip", "casualty",
+    ];
+
+    /// <summary>
+    /// Exact phrases that contain a <see cref="BritishForms"/> entry and are
+    /// nonetheless correct, because they are proper nouns. Stripped before the
+    /// scan rather than removed from the list: "The Brain Tumour Charity" is
+    /// an organization's actual name and Americanising a citation would be a
+    /// worse defect than the one the gate prevents.
+    /// </summary>
+    public static readonly string[] BritishFormExemptions =
+    [
+        "Brain Tumour Charity", "brain tumour charity",
     ];
 
     /// <summary>
