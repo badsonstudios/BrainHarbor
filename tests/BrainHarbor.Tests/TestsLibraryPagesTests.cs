@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
+using BrainHarbor.Web.Content;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace BrainHarbor.Tests;
@@ -30,6 +31,23 @@ internal static class CuratedPage
 
     private static string PagesRoot => Path.Combine(ContentRoot, "pages");
 
+    /// <summary>Where the shared blocks live (§3a), for tests that compare a page against one.</summary>
+    public static string BlocksRoot => Path.Combine(ContentRoot, "blocks");
+
+    /// <summary>
+    /// The files whose content reaches MORE than one page: the shared blocks
+    /// (composed into every including page, §3a) and the glossary entries
+    /// (whose tooltips fire site-wide). A mistake in one of these has the
+    /// widest blast radius on the site, and neither lives under `pages/`.
+    /// </summary>
+    public static IEnumerable<(string Slug, string Text)> SharedSources() =>
+        new[] { BlocksRoot, Path.Combine(ContentRoot, "glossary") }
+            .Where(Directory.Exists)
+            .SelectMany(root => Directory.EnumerateFiles(root, "*.md", SearchOption.AllDirectories)
+                .Select(f => (
+                    Slug: Path.ChangeExtension(Path.GetRelativePath(ContentRoot, f), null)!.Replace('\\', '/'),
+                    Text: File.ReadAllText(f))));
+
     /// <summary>
     /// Every curated page AND every shared block, as (slug, raw text), for
     /// rules that hold site-wide rather than page by page.
@@ -55,13 +73,277 @@ internal static class CuratedPage
     /// "associated with a better prognosis"), so borrowed phrasing is how it
     /// gets onto a page, not a decision anyone makes.
     /// </summary>
+    /// <remarks>
+    /// This is a plain substring check, deliberately: it is predictable, and a
+    /// phrase only belongs here if there is no correct sentence that contains
+    /// it. WI-509 proposed adding "good sign" and "bad sign" and then ran the
+    /// candidate list over the pages already shipped, per §12.8 — the wait page
+    /// says "That is normal and it is <em>not</em> a bad sign", which is the
+    /// natural way to write that reassurance and is exactly right. Both were
+    /// dropped rather than ship a rule that fails a correct page. The ten
+    /// phrases added below have no occurrence anywhere in the corpus.
+    ///
+    /// WI-511 ran the WHOLE list over the WHOLE corpus for the first time —
+    /// §12.8 asks for that before ADDING a phrase, and nobody had asked it of
+    /// the phrases already here. <c>"bad news"</c> failed, on a page shipped
+    /// eight items ago: <c>/seizures/what-to-do</c> says "a seizure is
+    /// <em>not</em> automatically bad news about the tumor", which is correct,
+    /// is the natural way to write it, and is the identical negation shape
+    /// that got "good sign"/"bad sign" rejected at WI-509. Only the marker
+    /// page and the craniotomy page asserted this list, and neither uses the
+    /// phrase, which is why a substring ban sat over a correct sentence for
+    /// eight items without a single test going red.
+    ///
+    /// <c>"bad news"</c> alone moved to <see cref="RejectedCharacterisations"/>.
+    /// <c>"good news"</c> STAYS: review pushed back on dropping it as a pair,
+    /// correctly — it has no occurrence anywhere in the corpus, and retiring a
+    /// working guard for symmetry with a broken one is a net loss. WI-509
+    /// dropped "good sign"/"bad sign" together because BOTH had correct uses
+    /// in view; here only one does.
+    /// </remarks>
     public static readonly string[] Characterisations =
     [
         "better outlook", "worse outlook", "better outcome", "worse outcome",
         "better prognosis", "worse prognosis", "favorable", "favourable",
-        "good news", "bad news", "more aggressive", "less aggressive",
+        "good news", "more aggressive", "less aggressive",
         "responds better", "respond better", "responds well", "does better",
         "the good one", "the bad one",
+
+        // WI-509. The marker page is where the sources say these out loud:
+        // ACS writes "better outlook" for IDH and MGMT, and Johns Hopkins'
+        // glossary "associated with a better prognosis". These are the
+        // remaining shapes that vocabulary arrives in.
+        "better response", "worse response", "poor response", "poorer response",
+        "poor outcome", "poorer outcome", "longer survival", "shorter survival",
+        "better type", "worse type",
+
+        // WI-510, the first treatment page. A treatment page characterises an
+        // OUTCOME rather than a lab value, so the vocabulary is different:
+        // these are the ways "here is what was done" turns into "here is
+        // whether it worked".
+        "nothing to worry about", "successful surgery", "surgery was a success",
+    ];
+
+    /// <summary>
+    /// Candidates run over the corpus (§12.8) and deliberately REJECTED, kept
+    /// here so the next page does not propose them again and re-do the work.
+    ///
+    /// All were corpus-clean; that is not sufficient. The list is a substring
+    /// check, so a phrase only belongs on it if no CORRECT sentence contains
+    /// it — and for each of these a correct sentence is easy to write, usually
+    /// a negation, which is exactly how WI-509 lost "good sign"/"bad sign":
+    ///
+    /// - "good result" — failed on the spot. WI-510's own slot 2 says "it
+    ///   changes what a good result looks like", which is the whole point of
+    ///   asking what the goal of the operation is.
+    /// - "completely gone", "all clear" — a page explaining that a clear scan
+    ///   is NOT the same as cure has to be able to print the phrase it is
+    ///   dismantling. WI-510 is that page.
+    /// - "full recovery" — "we cannot promise a full recovery" is correct.
+    /// - "back to normal" — "you may not feel back to normal for months" is
+    ///   correct, and is what WI-511 and WI-512 will need to write.
+    /// - "went well" — "even when surgery went well, recovery is hard" is
+    ///   correct, and is close to the caregiver section's actual argument.
+    /// - "bad news" — WI-511 demoted this one from the live list.
+    ///   `/seizures/what-to-do` already says "a seizure is not automatically
+    ///   bad news about the tumor", which is correct and is the natural way to
+    ///   write that reassurance. Its partner "good news" stayed on the live
+    ///   list: it is corpus-clean and there is no reason to retire a working
+    ///   guard alongside a broken one.
+    /// </summary>
+    public static readonly string[] RejectedCharacterisations =
+    [
+        "good result", "completely gone", "all clear",
+        "full recovery", "back to normal", "went well", "bad news",
+    ];
+
+    /// <summary>
+    /// The phrasings that tell a reader a serious treatment is nothing much.
+    /// WI-510 wrote this page-locally for the craniotomy page and §12.8 said
+    /// the SECOND treatment page promotes it; WI-511 is that page, so here it
+    /// is, generalised from "operation" to the treatment vocabulary.
+    ///
+    /// Use through <see cref="AssertNeverMinimises"/>, never as a bare
+    /// substring ban: "this is not a routine treatment" is a correct sentence
+    /// and is exactly what a page like this wants to write.
+    /// </summary>
+    public static readonly string[] Minimisations =
+    [
+        "routine operation", "routine procedure", "routine treatment",
+        "simple operation", "simple procedure", "simple treatment",
+        "minor operation", "minor procedure", "minor treatment",
+        "straightforward operation", "straightforward procedure", "straightforward treatment",
+        "easy operation", "easy procedure", "easy treatment",
+        "harmless operation", "harmless procedure", "harmless treatment",
+        "nothing to it", "no big deal", "piece of cake", "walk in the park",
+    ];
+
+    /// <summary>
+    /// Minimisation candidates run over the corpus and REJECTED, with the
+    /// reason, so the next treatment page does not re-propose them. All four
+    /// are corpus-clean; corpus-clean is not the test (§12.8).
+    ///
+    /// - "quick operation", "quick procedure", "quick treatment" — speed is a
+    ///   FACT, not a judgement. Stereotactic radiosurgery genuinely is a
+    ///   quicker treatment than six weeks of daily visits, and a page saying
+    ///   so is being accurate rather than reassuring. "Routine" is the word
+    ///   that makes a claim about how much it matters; "quick" is not.
+    /// - "painless procedure" — radiation IS painless. ACS says "the treatment
+    ///   is not painful" and NBTS says "like an X-ray, radiation is painless",
+    ///   and WI-511 prints it because a reader dreading pain deserves the
+    ///   answer. Banning it would fail the page it was written for.
+    /// - "not a big deal" — the negation-aware check would WAVE THIS THROUGH,
+    ///   because the "not" is right there, while "this is not a big deal" is
+    ///   precisely the minimising sentence the rule exists to catch. A
+    ///   negation-aware substring test cannot express it, so it is left out
+    ///   rather than shipped broken and believed.
+    /// - "easy enough" — "it is easy enough to ask" is correct and natural.
+    /// </summary>
+    public static readonly string[] RejectedMinimisations =
+    [
+        "quick operation", "quick procedure", "quick treatment",
+        "painless procedure", "not a big deal", "easy enough",
+    ];
+
+    /// <summary>
+    /// No sentence tells the reader this treatment is nothing much — unless it
+    /// is telling them the opposite, which is the point.
+    ///
+    /// Negation-aware for the WI-509 reason: a bare substring ban on this
+    /// vocabulary fails "this is not a minor operation", which is the correct
+    /// and natural sentence, and a rule that fails a correct page is worse
+    /// than no rule (§12.8).
+    /// </summary>
+    public static void AssertNeverMinimises(string readerText, string slug)
+    {
+        // Whitespace-normalised first. The corpus is hard-wrapped, so a
+        // two-word phrase routinely has a newline in the middle of it — which
+        // is how a WI-509 fix test missed the exact string it was written to
+        // catch, and how WI-511's first British-spelling gate walked straight
+        // past "a\nlift" in the shared caregiver block.
+        var text = Flatten(readerText);
+
+        foreach (var phrase in Minimisations)
+        {
+            foreach (Match match in Regex.Matches(text, Regex.Escape(phrase), RegexOptions.IgnoreCase))
+            {
+                var before = text[Math.Max(0, match.Index - 40)..match.Index];
+
+                // Anchored to the same CLAUSE, and widened to the negations
+                // English actually uses. Review found the first version broken
+                // in both directions with a bare 30-character lookback for
+                // not/never/hardly:
+                //
+                //   FALSE PASS: "it is not painful, and it is a simple
+                //   procedure" — the "not" belongs to the other clause but
+                //   sits inside the window, so the minimisation goes through.
+                //   Any nearby negation bought a free pass.
+                //
+                //   FALSE FAIL: "there is no such thing as a simple
+                //   procedure", "far from a routine treatment", "isn't a minor
+                //   procedure" — all correct, all flagged, and a rule that
+                //   fails a correct page is worse than no rule (§12.8).
+                //
+                // `[^.,;:]{0,20}$` is what does the work: the negation has to
+                // be close AND on this side of the nearest punctuation.
+                Assert.True(
+                    Regex.IsMatch(before, @"\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$",
+                        RegexOptions.IgnoreCase),
+                    $"{slug} calls this a \"{phrase}\" without negating it");
+            }
+        }
+    }
+
+    /// <summary>
+    /// The British forms that no gate looked for until WI-511 built one.
+    ///
+    /// WI-510's first draft shipped seven of them (`anaesthetist`,
+    /// `jewellery`, `theatre`, `physiotherapist`, `tablets`, …) and every
+    /// check passed: reading grade, ContentCheck and 1,039 tests are all blind
+    /// to a page that is written correctly for a different country. The corpus
+    /// is US throughout and a reader in Ohio should not meet a page that
+    /// sounds like it is about somebody else's health system.
+    ///
+    /// An explicit list rather than an `-ise` suffix pattern, deliberately:
+    /// "advise", "exercise", "promise", "raise" and "surprise" are all correct
+    /// US English and a suffix rule fails every one of them.
+    ///
+    /// Five obvious-looking entries were written and then REMOVED, because
+    /// each one is a substring of a word that is correct in US English — the
+    /// same "a rule that fails a correct page is worse than no rule" trap the
+    /// ban lists keep falling into, arriving here as a stemming bug:
+    ///
+    /// - `"specialis"` matches **specialist**, which the corpus uses 4 times.
+    /// - `"characteris"` matches **characteristic**.
+    /// - `"organis"` matches **organism**.
+    /// - `"realis"` matches **realistic**.
+    /// - `"analyse"` matches **analyses**, a correct US plural noun. The
+    ///   British-only forms are the inflections, so those are listed instead.
+    ///
+    /// Also considered and left out: `"tablet"`, because US drug labeling uses
+    /// it too ("take one tablet") and only "tablets" meaning *pills in
+    /// general* is the British idiom — the word cannot carry the distinction.
+    /// WI-511's own draft said "a tablet called memantine" and it was fixed by
+    /// reading, not by this list.
+    ///
+    /// `"radiotherapy"` was on the list and came off after review, which is
+    /// the same trap one level up: it is not a spelling variant at all. It is
+    /// standard US medical vocabulary inside named techniques — Stereotactic
+    /// Body Radiotherapy, hippocampal-avoidance whole-brain radiotherapy — and
+    /// `glossary/stereotactic-radiosurgery.md` already cites a source title
+    /// containing it. The first page that had to name SBRT in body prose would
+    /// have failed a gate that was right about nothing. British *usage* of the
+    /// word is caught by the idioms below and by reading.
+    ///
+    /// The entries are matched against WHITESPACE-NORMALISED body text, and
+    /// that is load-bearing rather than tidy: the corpus is hard-wrapped, and
+    /// the first version of this gate read raw text and walked straight past
+    /// `"a lift"` in `blocks/caregiver.md`, where the wrap falls between the
+    /// two words. That block composes into eighteen tumor hubs.
+    /// </summary>
+    public static readonly string[] BritishForms =
+    [
+        // Spellings, matched as prefixes so inflections are caught too.
+        "tumour", "centre", "programme", "behaviour", "colour", "favour",
+        "labour", "anaesth", "oesoph", "paediatr", "haemat", "haemorrh",
+        "oedema", "jewellery", "physiotherap", "whilst", "amongst",
+        "theatre", "plaster cast", "casualty department",
+        "aluminium", "storey", "licence", "defence", "practise",
+        "analysed", "analysing", "organise", "organised", "organising",
+        "organisation", "recognis", "minimis", "apologis", "hospitalis",
+        // Added after this very page shipped "follow-up for them is not
+        // standardised" past the first version of the list. The `-ise` family
+        // is larger than it looks from the outside, and the only way to find
+        // the next one is to keep reading.
+        "standardis", "normalis", "prioritis", "utilis", "emphasise",
+
+        // Idioms. The half WI-510's draft actually got wrong ("you will be got
+        // up", "tablets") was never about spelling, and a reader in Ohio is
+        // offered "a lift" or given fluids "through a drip" by a page that
+        // sounds like it is about a different health system.
+        //
+        // These are DETERMINER-BOUND on purpose, and that is a known limit
+        // rather than an oversight. Bare "drip" cannot be banned: "IV drip"
+        // and "post-nasal drip" are both standard US usage, so the rule would
+        // fail a correct page (§12.8). WI-512's break harness proved the cost
+        // of the compromise — it mutated "no IV" to "no drip" and the gate did
+        // not fire, because "no drip" was not one of the forms listed. The
+        // determiners below are the ones a sentence actually uses; extend the
+        // list when a new one turns up rather than reaching for a bare stem.
+        "a lift", "a drip", "the drip", "no drip", "on a drip", "by drip",
+        "casualty",
+    ];
+
+    /// <summary>
+    /// Exact phrases that contain a <see cref="BritishForms"/> entry and are
+    /// nonetheless correct, because they are proper nouns. Stripped before the
+    /// scan rather than removed from the list: "The Brain Tumour Charity" is
+    /// an organization's actual name and Americanising a citation would be a
+    /// worse defect than the one the gate prevents.
+    /// </summary>
+    public static readonly string[] BritishFormExemptions =
+    [
+        "Brain Tumour Charity", "brain tumour charity",
     ];
 
     /// <summary>
@@ -76,8 +358,34 @@ internal static class CuratedPage
     /// whole article is satisfied by the body's own links (WI-506 and WI-508
     /// both found this the hard way).
     /// </summary>
-    public static async Task AssertLinksResolve(
-        HttpClient client, string url, params string[] requiredOnward)
+    /// <inheritdoc cref="AssertLinksResolveIn"/>
+    public static Task AssertLinksResolve(
+        HttpClient client, string url, params string[] requiredOnward) =>
+        AssertLinksResolveIn(client, url, "where-to-go-next", requiredOnward);
+
+    /// <summary>
+    /// As above, but naming the section that holds the onward doors.
+    ///
+    /// The id was hard-coded to <c>where-to-go-next</c> until WI-513, because
+    /// every page that had used this helper was a §12.8 LIBRARY page and they
+    /// all end that way. A §12.3 tumor hub does not: its last section is
+    /// "Where to get support", section 15 of a different template. The helper
+    /// was quietly asserting the library template on any page that called it,
+    /// which is exactly the coupling this item exists to find before the shape
+    /// is copied twenty-three more times.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately a DIFFERENT NAME rather than an overload. Adding
+    /// <c>(client, url, string, params string[])</c> alongside
+    /// <c>(client, url, params string[])</c> made C# prefer the new one for
+    /// every existing caller, silently reinterpreting their first required
+    /// link as the section id — seven pages went red at once, each looking for
+    /// a section called "/tests/waiting-for-results". A params overload with a
+    /// matching prefix is a trap; the compiler resolved it exactly as
+    /// specified and the result was nonsense.
+    /// </remarks>
+    public static async Task AssertLinksResolveIn(
+        HttpClient client, string url, string onwardSectionId, params string[] requiredOnward)
     {
         var html = await client.GetStringAsync(url);
 
@@ -105,8 +413,8 @@ internal static class CuratedPage
 
         Assert.True(broken.Count == 0, $"{url} links to:\n" + string.Join("\n", broken.Distinct()));
 
-        var next = html.IndexOf("id=\"where-to-go-next\"", StringComparison.Ordinal);
-        Assert.True(next > 0, $"{url} has no 'Where to go next' section");
+        var next = html.IndexOf($"id=\"{onwardSectionId}\"", StringComparison.Ordinal);
+        Assert.True(next > 0, $"{url} has no '{onwardSectionId}' section");
 
         var onward = Regex.Matches(html[next..end], "href=\"(/[^\"#?]*)\"")
             .Select(m => m.Groups[1].Value).ToList();
@@ -132,6 +440,57 @@ internal static class CuratedPage
         Assert.True(checkedLinks >= onward.Count, $"{url}: fewer links checked than found");
     }
 
+    /// <summary>
+    /// Every <c>#fragment</c> link in the page's article points at an id that
+    /// the target page actually renders.
+    ///
+    /// <see cref="AssertLinksResolve"/> cannot see these: its regex is
+    /// <c>href="(/[^"#?]*)"</c>, which stops at the <c>#</c>, so a link to a
+    /// heading that does not exist resolves as a perfectly healthy 200 and
+    /// lands the reader at the top of a long page with no sign anything went
+    /// wrong. That is the exact failure §12.8 (WI-508) describes for heading
+    /// anchors, and the check for it did not exist until a page needed it:
+    /// WI-513 is the first page in the corpus to deep-link another one, and its
+    /// first draft pointed at <c>/tests/pathology-report#grade</c>, which was
+    /// not an anchor on that page at all.
+    /// </summary>
+    public static async Task AssertFragmentLinksResolve(HttpClient client, string url)
+    {
+        var html = await client.GetStringAsync(url);
+
+        var start = html.IndexOf("<article", StringComparison.Ordinal);
+        var end = html.IndexOf("</article>", StringComparison.Ordinal);
+        Assert.True(start >= 0 && end > start, $"{url} did not render an article");
+
+        var broken = new List<string>();
+        var checkedFragments = 0;
+
+        foreach (Match match in Regex.Matches(html[start..end], "href=\"(/[^\"?#]*)#([^\"]+)\""))
+        {
+            var target = match.Groups[1].Value;
+            var fragment = match.Groups[2].Value;
+            if (target.StartsWith("/css/") || target.StartsWith("/js/"))
+            {
+                continue;
+            }
+
+            checkedFragments++;
+            var targetHtml = await client.GetStringAsync(target);
+            if (!targetHtml.Contains($"id=\"{fragment}\"", StringComparison.Ordinal))
+            {
+                broken.Add($"{target}#{fragment}");
+            }
+        }
+
+        Assert.True(broken.Count == 0,
+            $"{url} deep-links anchors that do not exist on the target page:\n  "
+            + string.Join("\n  ", broken.Distinct()));
+
+        Assert.True(checkedFragments > 0,
+            $"{url} has no fragment links, so this assertion proved nothing — "
+            + "drop the call rather than leaving a green test that cannot fail");
+    }
+
     /// <summary>Whitespace-normalised: the source is hard-wrapped, and a sentence that happens to break across lines is not a content change.</summary>
     public static string Flatten(string page) => Regex.Replace(page, @"\s+", " ");
 
@@ -144,8 +503,16 @@ internal static class CuratedPage
     /// </summary>
     public static string Section(string page, string heading)
     {
+        // The trailing `{#id}` is optional so a caller names the section by the
+        // words a reader sees, not by the anchor bolted onto it. WI-509 made
+        // explicit anchors the rule (§12.8) precisely so wording and interface
+        // move independently; a Section() that demanded the anchor in its
+        // argument would tie them straight back together.
         var match = Regex.Match(
-            page, $@"^## {Regex.Escape(heading)}\s*$(.*?)(?=^## |\z)",
+            // `\s*$` on the tail, not `[ \t]*$`: this repo is core.autocrlf=true
+            // and .NET's multiline `$` does not match before a `\r`, so the
+            // whitespace class has to be the thing that eats it (WI-501, WI-507).
+            page, $@"^## {Regex.Escape(heading)}(?:[ \t]*\{{\#[^}}]+\}})?\s*$(.*?)(?=^## |\z)",
             RegexOptions.Multiline | RegexOptions.Singleline);
 
         Assert.True(match.Success, $"the page has no '## {heading}' section");
@@ -158,6 +525,39 @@ internal static class CuratedPage
 
     /// <summary>The body, with the YAML front matter removed.</summary>
     public static string Body(string page) => page[(page.IndexOf("\n---", 3, StringComparison.Ordinal) + 4)..];
+
+    /// <summary>
+    /// The body as the READER meets it: the WI-105 authoring markers removed,
+    /// the way <c>GlossaryMarker</c> removes them before anything renders.
+    ///
+    /// Not cosmetic. WI-509 suppresses fifteen tooltips with <c>!%term%</c>, and
+    /// <c>!%H3 G34%!%BRAF%</c> puts the characters "34%" into the source — which
+    /// tripped that page's own no-percentages rule on text no reader will ever
+    /// see. A prose rule asserted against raw source is asserting against
+    /// something that is not the prose.
+    /// </summary>
+    public static string ReaderText(string page) =>
+        Regex.Replace(Regex.Replace(Body(page), @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
+
+    /// <summary>
+    /// The page with its shared blocks resolved, through the REAL composer
+    /// (<see cref="ContentBlocks.Compose"/>) rather than a test's own
+    /// reimplementation of it — a private copy of the include rules would
+    /// drift from the one the site actually runs.
+    ///
+    /// WI-514, and this is the trap the item was built on. Once a hub includes
+    /// <c>[CROSSWALK]</c> instead of spelling the crosswalk out, every
+    /// assertion about those words made against the RAW page is asserting
+    /// against the literal string "[CROSSWALK]". WI-513's own retired-name
+    /// test went green that way and proved nothing. A rule about a block's
+    /// prose has to run on the composed page.
+    /// </summary>
+    public static string Composed(string page, string describedAs = "a curated page") =>
+        ContentBlocks.Compose(page, ContentBlockStore.Load(BlocksRoot), describedAs).Markdown;
+
+    /// <summary>One "## " section of the COMPOSED page — see <see cref="Composed"/>.</summary>
+    public static string ComposedSection(string page, string heading) =>
+        Section(Composed(page), heading);
 
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];

@@ -60,7 +60,23 @@ If a piece of your tumor has been taken and you are waiting to hear what it is,
 [waiting for your pathology results](/tests/waiting-for-results) explains what
 is happening in the lab and why the name can change while you wait. Once the
 report itself arrives, [your pathology report, part by
-part](/tests/pathology-report) goes through what each part of it is for.
+part](/tests/pathology-report) goes through what each part of it is for, and
+[the words on your gene results](/tests/molecular-markers) takes the short words
+on it one at a time.
+
+If surgery has been mentioned, [brain surgery: what happens, and what comes
+after](/treatments/craniotomy) walks through the operation, the hospital stay,
+and the weeks at home that most people are least ready for. It has a long
+section for whoever is looking after you.
+
+If radiation has been mentioned, [radiation therapy: the mask, the daily
+visits, and what comes after](/treatments/radiation-therapy) goes through the
+planning visit where the mask is made, what a treatment day is like, and the
+tiredness that does not stop on the last day.
+
+If chemotherapy has been mentioned, [chemotherapy: the drugs, your blood
+counts, and the fever rule](/treatments/chemotherapy) takes the drugs one at a
+time and sets out the one rule worth knowing before you start.
 
 ## Questions to ask your team
 

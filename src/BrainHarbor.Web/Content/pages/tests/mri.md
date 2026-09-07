@@ -129,7 +129,7 @@ your center can do about it. What there is not, is any need to get through it on
 your own.
 
 - **You can ask your doctor for a mild calming medicine** before the scan. Ask
-  in advance, not on the day. If you take one, arrange a lift home, and check
+  in advance, not on the day. If you take one, arrange a ride home, and check
   with the staff about driving.
 - **Some centers let a person you know come into the room with you**, or let you
   bring something of your own in. It helps more than people expect.

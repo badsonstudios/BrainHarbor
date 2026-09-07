@@ -660,3 +660,438 @@ an MRI. Where a test does have an aftercare tail, it gets one.
   happened to do it, and it failed the MRI page, whose every link is
   legitimately in that one section. Before a per-page property is promoted to a
   site-wide one, run it against the pages already shipped.
+
+**Six more from the fourth one (WI-509, the marker reference list):**
+
+- **A reference list bends slot 3 into itself, and slot 4 collapses to a link.**
+  Slot 3 is "what happens, step by step"; on a page whose subject is a list of
+  words it becomes the list. Slot 4 ("how long does it take?") belongs to
+  whichever page owns the wait — but the heading still has to answer itself, so
+  it gives the shape ("weeks rather than days") and then routes. A heading that
+  asks a question and answers only "see that other page" is the WI-506 trap in
+  a new coat. Universal slots are still **0, 1, 3, 4, 9, 10**.
+- **Write entry anchors explicitly (`### MGMT … {#mgmt}`), never derived.**
+  WI-508 established that heading anchors are a published interface; this is the
+  mechanism. Markdig derives an id from heading TEXT, so a reworded heading
+  silently breaks every inbound link. `UseAdvancedExtensions` brings generic
+  attributes, so `{#id}` makes the wording and the interface independent, and a
+  test asserts every `###` entry carries one.
+- **Where a page defines a word the glossary also defines, suppress the tooltip
+  on that page.** `!%term%` (WI-105) turns one term off for one page. A popover
+  repeating the paragraph directly beneath it is noise, and fifteen of them is
+  the carpet WI-505 measured its way out of. The term still fires everywhere
+  else, which is the point of adding it. Assert both directions: absent here,
+  present on the words the page does *not* define.
+- **Assert prose rules against reader text, not raw source.** Authoring markers
+  are not prose. WI-509's own no-percentages test failed on `!%H3 G34%!%BRAF%`,
+  which puts the characters "34%" into the file and nothing on the page. Use
+  `CuratedPage.ReaderText`, which strips the WI-105 markers the way the renderer
+  does.
+- **Before adding a phrase to the shared characterisation ban list, run it over
+  the whole corpus.** WI-509 proposed "good sign" and "bad sign" and found the
+  wait page already saying *"That is normal and it is **not** a bad sign"* —
+  correct, and the natural way to write it. Both were dropped. The list is a
+  substring check, so a phrase belongs on it only if no correct sentence
+  contains it.
+- **A uniqueness claim on a page of many entries is a claim about all the
+  others.** WI-509's MGMT entry said it was "the one result on this page" used
+  for choosing treatment, while the BRAF entry two screens up says there are
+  drugs made to act on BRAF changes. That went stale inside a single draft, and
+  no gate can see it — only reading the page end to end.
+
+**Collapsible entries were considered and rejected, so WI-510 onward do not have
+to re-argue it.** The item asked for each entry behind a disclosure. Three
+reasons not to: a `<details>` closed on load defeats deep-linking (fragment
+auto-expansion is not universally supported, and the reader lands on a heading
+with nothing under it); it prints empty, on the one page people hold beside the
+document; and it needs a second `:::` container with an argument, which is a new
+fail-open surface — WI-503 documents five ways a mistyped fence publishes
+content wide open — guarding words that are descriptions, not prognosis. The
+scannability comes from a jump list of anchors at the top instead. Reserve the
+reader-choice gate for outlook.
+
+**Cloudflare-gated sources: look up the DOI in Europe PMC.** WI-507 recorded
+this; WI-509 confirms it and names the paper, because the dossier sources nearly
+every marker claim to one blocked `academic.oup.com` URL. It is Sahm et al,
+*Neuro-Oncology* 25(10):1731–1749, the EANO guideline on molecular diagnostic
+tools for WHO CNS5, open at **PMC10547522** — the backbone for what every marker
+measures and by which method. A citation nobody can open is a citation nobody
+can verify.
+
+**Six more from the fifth one (WI-510, craniotomy — and the first TREATMENT
+page):**
+
+- **The universal-slot list is a floor, not a ceiling, and three bent pages in a
+  row is how a template quietly shrinks.** WI-507, WI-508 and WI-509 each
+  dropped slots 2, 5, 7 and 8, correctly, because a wait, a document and a
+  reference list have no day and no procedure. WI-510 has all four back and is
+  the first page since WI-506 to use all twelve. **Read this section for the
+  slot list, not the previous page.** Copying the last page written is how the
+  dropped slots would have stayed dropped for the remaining 24. A test on the
+  page asserts the four returning slots by name, for exactly this reason.
+- **A treatment page carries 6b AND may carry 6c.** §12.8 said a treatment page
+  "usually skips 6c". WI-510 carries one — "is there a way to do this without
+  opening the skull?" is a genuinely-asked worry, and the alternative (LITT) is
+  a section rather than a page by the research's own recommendation. Where a
+  treatment has a less-invasive alternative the reader has heard of, 6c is where
+  it goes, **with its limits attached in the same breath**: a description of a
+  gentler option with no limits is a page that sends readers to ask for the
+  wrong operation.
+- **The characterisation ban list needs a treatment-page vocabulary, and most
+  candidates fail.** A tests page characterises a *result*; a treatment page
+  characterises an *outcome*. Ten candidates were run over the corpus (§12.8's
+  own rule) and **six were rejected**, all because a correct sentence contains
+  them — usually a negation, the WI-509 failure mode. `"good result"` failed on
+  the spot against WI-510's own slot 2. The rejected six are recorded in
+  `CuratedPage.RejectedCharacterisations` **with the reason**, so the next page
+  does not re-do the work and re-reach the wrong answer.
+- **Promote a rule at the second page, not the first.** WI-510 wanted a
+  "never minimise the operation" rule ("routine operation", "simple operation").
+  It is corpus-clean, but it only has an obvious meaning on a page about a
+  procedure, so it is a page-local test. WI-511 or WI-512 promotes it to
+  `CuratedPage`. This is the other half of "factor at the second use": do not
+  factor at the *first* either.
+- **US spelling and US clinical words, checked explicitly.** The first draft
+  carried `anaesthetist`, `anaesthetic`, `jewellery`, `theatre`,
+  `physiotherapist`, `tablets` and "you will be got up". The corpus has **zero**
+  British forms (`center` 12, `recognize` 4, `jewelry` 1), no gate looks for
+  them, and a reader in Ohio meets a page that sounds like it is about a
+  different health system. Grep the page against the corpus before shipping.
+- **A page-specific lead-in to a shared block can contradict the block.**
+  WI-510's first draft introduced `[TUMOR-BOARD]` with "your case is very likely
+  to be discussed" while the block itself says a tumor board "tends to happen
+  when a case is complicated". The two other pages that carry it both use one
+  hedged line ("Your case may also go to a tumor board"). **Read the block
+  before writing the sentence above it**, and match the existing lead-ins:
+  the sentence introducing a block is shared prose too, even though it lives on
+  the page.
+
+**Five more from the independent review of WI-510, which is the reason to keep
+running one:**
+
+- **Deleting a bad citation does not delete the claim it was carrying.** WI-510
+  correctly found that the "neurological checks through the night" detail was
+  attributed to a source that never mentions it, removed the citation, and left
+  the four-sentence sensory paragraph on the page. That is a *worse* state than
+  before: an uncited invented claim rather than a miscited one. **When a
+  citation falls, re-derive the sentence from what is left, or cut it.**
+- **A page's emergency list must not contradict the page it links to.** WI-510's
+  ambulance list read "A seizure", six lines above a link to
+  `/seizures/what-to-do`, which correctly says most seizures do not need an
+  ambulance. Whenever a page carries a "call an ambulance" list, diff it against
+  every other such list on the site.
+- **The overlap check for a shared block has to be a shingle check, not a
+  heading check.** WI-510 asserted the block's four bold lead-ins were absent
+  and shipped four genuine duplications that were none of them, including a
+  verbatim sentence and a duplicated link. Word shingles over the composed page,
+  excluding "Where to go next" (an index by design), catch a restatement in any
+  shape.
+- **A "both directions" assertion is only worth writing if both directions are
+  observable.** WI-510's tooltip test claimed to prove a suppressed term still
+  fires elsewhere, by fetching `/glossary` — which renders from the glossary
+  directory and cannot see any page's suppression state. No other page uses any
+  of the six words in prose, so the intended check was not available at all. It
+  now asserts the leak that *is* possible: a `!%term%` marker inside a glossary
+  entry or shared block, which would suppress that term everywhere at once.
+- **Ending a section on the reassurance is a positional property, so pin the
+  LAST sentence.** A three-sentence window only proves the reassurance is
+  nearby. WI-510's resection section passed such a window while genuinely
+  closing on "would have cost you something you would not want to lose".
+
+**And the thing no gate caught, on this page or any of the four before it.**
+Reading WI-510 end to end found eleven defects that every automated check passed
+clean: a guessed pronoun for a real named patient in a quoted source, "we do not
+publish numbers" in a site voice used nowhere else, a bruising sentence that
+parsed and meant nothing ("which can look alarming and is not"), and a "most"
+that contradicted a "many ... some do not" two sections later. **A claim about
+how many people recover cannot have two different strengths on one page.** That
+is the fifth time a human-style read has caught what the suite cannot.
+
+**Seven more from the sixth one (WI-511, radiation therapy — the second
+TREATMENT page):**
+
+- **One URL can carry two claims, be wrong about one and right about the
+  other.** WI-510's rule says deleting a bad citation does not delete the
+  claim. WI-511 found the harder version: the dossier attributes *"somnolence
+  usually resolves on its own"* to the Brain Tumour Charity's **jargon-buster**
+  page, which is one sentence long and says no such thing — so the first draft
+  dropped the URL. But that same page is the **only** source anywhere in the
+  set for the **four-to-six-week timing**, which the draft kept. Dropping the
+  citation orphaned a number nobody had noticed it was also carrying. **Before
+  you drop a source, list every claim resting on it, not just the one that
+  failed.** Both pages are cited now, each for what it actually says.
+- **Where two sources disagree on a frequency, print the disagreement.** The
+  charity calls somnolence syndrome rare; the study the page cites for its
+  central finding saw it in most of a small group. The draft split the
+  difference with an unattributed "uncommon" — a third answer belonging to
+  nobody. §12.8's WI-507 rule (attribute in the sentence that prints the
+  figure) extends to this: name whose number it is, and if they conflict, say
+  so and give the reader the part both agree on.
+- **A number written as a word is still a number.** WI-511's whole-brain
+  section said "most people in both groups lost some thinking skills",
+  importing R3's reasoning about the SRS comparison and asserting it of the
+  CC001 trial, where the per-test rates run 23.3% v 40.4%. "Most" was false of
+  the arm the page recommends. The page's own no-percentages test could not see
+  it, because it only matched digits — and the corpus writes every number in
+  words. **Grade the claim, not the character class.**
+- **An escalation list under-triages as easily as it over-triages, and the
+  under-triage is the more dangerous direction.** WI-510's blocker was an
+  ambulance list that said "a seizure" where most seizures need no ambulance.
+  WI-511's was a *call-the-team-today* list that said "there is a seizure" flat,
+  six lines from a page saying a **first** seizure is a 911 call. Diff every
+  escalation list against `/seizures/what-to-do`, in both directions, whatever
+  the list is headed. A test that asserts only "no heading says ambulance"
+  proves there is no second list; it says nothing about whether the one list is
+  right.
+- **Flatten before matching, in the gates as well as the tests.** The corpus is
+  hard-wrapped, so a two-word phrase routinely has a newline inside it. WI-511's
+  new British-usage gate read raw body text and walked straight past `"a lift"`
+  in `blocks/caregiver.md`, where the wrap falls between the words — a British
+  idiom on eighteen tumor hubs, missed by the gate written to catch it. Same
+  trap as WI-509's fix test, one item later.
+- **A negation-aware ban list has to anchor to the CLAUSE.** A bare
+  N-character lookback for `not|never` fails both ways: *"it is not painful,
+  and it is a simple procedure"* passes (the negation belongs to the other
+  clause), and *"there is no such thing as a simple procedure"* fails. The
+  working form is `\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$` — close
+  AND on this side of the nearest punctuation.
+- **A substring ban list is a stemming problem, and stemming bugs read as
+  correct rules.** WI-511's British-spelling list shipped five entries that are
+  substrings of correct US words — `specialis` matches **specialist**,
+  `characteris` matches **characteristic**, `organis` matches **organism**,
+  `realis` matches **realistic**, `analyse` matches **analyses**. It also
+  carried `radiotherapy`, which is not a British spelling at all but standard US
+  vocabulary inside named techniques (Stereotactic Body Radiotherapy). Every one
+  of those would have failed a correct page. **Run a candidate list against real
+  English, not just against the corpus** — corpus-clean today says nothing about
+  the page nobody has written yet.
+
+**And run the ban lists you already have over the whole corpus, not just the
+page in hand.** §12.8 asks for a corpus scan before *adding* a phrase. Nobody
+had ever asked it of the phrases already on `CuratedPage.Characterisations`.
+WI-511 ran it and found `"bad news"` sitting over a correct sentence on
+`/seizures/what-to-do` — *"a seizure is **not** automatically bad news about the
+tumor"* — eight items after that page shipped. Only two pages assert the list
+and neither uses the phrase, so nothing ever went red. The list now defends
+itself site-wide (`CuratedProseHousekeepingTests`) instead of waiting for a page
+that happens to check it. `"bad news"` was demoted; **`"good news"` was kept** —
+review pushed back on dropping the pair, correctly, because retiring a working
+guard for symmetry with a broken one is a net loss.
+
+**Sixth consecutive item where reading the page end to end found what no gate
+could,** and the independent review found four blockers on top of that. This
+time the human-style read caught: a guessed gender for a real named patient
+(*"One **man** treated for an astrocytoma… to drive **him**"*, where the source
+names Tommy M. and states no pronouns — **the identical defect WI-510 shipped
+and recorded**), three unsourced comparative frequency claims, a caregiver
+section restating the skin rules, the hair advice and the pill-box line already
+on the page or on `/treatments/craniotomy`, and an invented reassurance closing
+the mask section (*"almost everybody gets through the course"* — no source says
+it, on the section written for the most frightened reader on the page). **The
+recorded lesson did not prevent the repeat.** Read the page.
+
+**Six more from the seventh one (WI-512, chemotherapy — and the end of Wave 1):**
+
+- **A dossier claim bundled with a true one inherits its citation.** The
+  research doc puts wafer consequences in a single bullet: *"wafers can
+  complicate later clinical-trial eligibility AND make imaging harder to
+  interpret"*, cited to PMC9259966. The trial half is in that paper verbatim.
+  The imaging half is not — the paper contains "imaging" once, in a definition
+  of progression-free survival, and "MRI" not at all. Both shipped as one
+  sentence with one citation, and a test then pinned the invented half under a
+  name calling it a consequence a reader can act on. **Check a citation against
+  each CLAUSE, not each bullet.**
+- **An escalation tier is a site-wide property, not a page-wide one.** §12.8
+  already said to diff a page's ambulance list against every other such list.
+  That is not enough. WI-512 filed chest pain and breathlessness under
+  "call your team straight away" while `/treatments/craniotomy` files chest pain
+  under **"call an ambulance — these cannot wait"**, and filed confusion under
+  "straight away" while `/treatments/radiation-therapy` files near-identical
+  wording under "the same day". Nobody had contradicted a *list*; three pages
+  had sorted the same symptom into three different **tiers**. The reader who
+  meets all three pages at once — post-craniotomy, on chemoradiation — is the
+  ordinary reader. **Diff the tiers, per symptom, across the corpus.**
+- **A source can be cited for the position it argues against.** WI-512's
+  antibiotic section cited a 2026 systematic review and then wrote "it is the
+  standard thing to do" — while that paper's whole argument is that universal
+  prophylaxis is no longer supported and roughly half the pooled patients never
+  received it. That is worse than not citing it: the citation resolves, and
+  contradicts the sentence it is attached to. **Read the conclusion, not just
+  the abstract's background.**
+- **A verbatim C# string does not process escapes, and a test regex written in
+  one will silently never match.** `@"°"` is six literal characters, not a
+  degree sign. WI-512's "only one temperature threshold" test hunted for a
+  backslash and passed on a page carrying two. The break harness caught it; no
+  amount of reading would have.
+- **Grep the build for "error", not "error CS".** WI-512 lost a full round to
+  MSB3027: a dev server held `BrainHarbor.Web.exe`, every build failed on the
+  copy step, the check in use matched C# errors only and reported zero, and
+  `dotnet test` ran the PREVIOUS assembly — returning green with 34 new tests
+  that had never been compiled. The suite was reported green twice before the
+  test count was noticed not to have moved. **Check the test COUNT changed when
+  you add tests**, and fail the harness loudly on a stale assembly.
+- **A suppression is only meaningful if the word is there to suppress.** Two of
+  WI-512's six `!%term%` markers suppressed nothing: `neutropenia` appeared
+  nowhere in reader prose on any page, and `carmustine wafer` never matched the
+  page's plural because the glossary matcher is whole-word. Both
+  `DoesNotContain("def-…")` assertions passed for the wrong reason, and both
+  glossary entries were unreachable site-wide. **Assert the term appears in the
+  prose before asserting its tooltip does not.**
+
+**And the slot that was dropped and put back.** WI-512 dropped slot 5 ("what
+does it feel like?") arguing four drugs given four ways share no answer. Review
+disagreed and was right: three of the four are capsules at home, and a CYCLE has
+one shared shape — unremarkable on the day, sick that evening, flat by the end
+of the week, and **the nadir arriving exactly when you feel finished**. The
+material was already on the page, scattered between two other sections, which is
+the WI-506 trap. It is now slot 5, headed as a role rather than copied ("What
+does a cycle feel like?", the WI-507 precedent). It would have been the first
+treatment page to drop slot 5 while both siblings carried it — and §12.8's own
+warning is that three bent pages in a row is how a template quietly shrinks.
+**When you drop a universal-ish slot, check whether the material exists anyway
+somewhere worse.**
+
+### 12.9 The tumor-hub template, proved (WI-513)
+
+§12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
+**tumor hub** all the way to §12.3's seventeen sections, which is the shape the
+remaining 23 hubs inherit. Read this before drafting one, and read **§12.3** for
+the order — not §12.8, whose twelve slots the seven Wave 1 pages made familiar.
+
+**The two blocks that are easy to leave out, because nothing prompts you.**
+WI-513's first draft had neither, and both are required by the contract:
+
+- **The self-blame block.** §12.3's own "Deliberate omissions" paragraph says
+  "the self-blame block still appears; it just is not near the top", and it is
+  the one instruction in that paragraph that reads like an aside. It is now
+  `Content/blocks/causes.md`, included as `[CAUSES]`, and **demoted** — WI-513
+  places it between "if it comes back" and the outlook gate. Late enough not to
+  greet a frightened reader with "nobody knows what caused this", early enough
+  that they meet it before outlook.
+- **The retired-name crosswalk slice.** Contract item 3: "where an older name
+  was retired, say so: readers arrive holding old paperwork." Research §0.3
+  calls it the single highest-value block on the site. The canonical full
+  crosswalk belongs to the glioma umbrella page (SYNTHESIS §4.3); **every hub
+  still owes a slice** naming the retired terms its own readers are holding.
+
+**A ban list on retired names has to be negation-aware, or it forbids the
+crosswalk.** WI-513's first test banned "oligoastrocytoma", "anaplastic" and
+"mixed glioma" outright. It passed — and would have made the crosswalk
+impossible on all 23 hubs that copied it, foreclosing the highest-value block on
+the site with a test whose comment said it was enforcing CNS5. There are two
+completely different things a retired name can be doing on a page: used as a
+live diagnosis (forbidden) or NAMED as retired (required). Same for Roman
+numerals, and the site-wide Roman guard's allowance had to stop being pinned to
+one page by slug for the same reason.
+
+**The reader-choice gate, now that one page has actually used it.** WI-503 built
+it; nothing used it for ten items. What using it teaches:
+
+- **The gate is for outlook, and the right tail belongs INSIDE it.** WI-513's
+  draft put "some people live many years, working and driving and raising
+  children" in section 2, where a reader who declined outlook met the most
+  hope-preserving sentence on the page anyway. That is precisely what the gate
+  exists to put behind a choice. The section it came from still needs a landing
+  (§12.6), so give it a non-prognostic one.
+- **A gate that publishes no figures still has to teach the vocabulary.** §12.5
+  is headed "explain the concepts, publish no figures", and the Kirkebøen
+  framing wants four moves when explaining *median*: establish it describes a
+  **group**, give the **distribution** rather than the midpoint, name the
+  **right skew**, and say plainly it is not a prediction about one person.
+  WI-513's first draft did one of the four and its own test BANNED the word
+  "median" — which would have cemented, across 23 copies, a gate that explains
+  nothing.
+- **Verified rather than assumed, because every fail-open mode builds green.**
+  Check the rendered HTML (heading outside, `<details>` not open, no `:::`
+  leaked, the words not also present outside the gate) and the PDF: §12.5 says a
+  gate left closed stays closed on paper, and WI-513 is the first item that
+  could confirm it.
+
+**A shared test helper written for one template will quietly assert it on the
+other.** `AssertLinksResolve` hard-coded `id="where-to-go-next"` — §12.8's last
+section — because every caller until now was a library page. A §12.3 hub ends
+with "Where to get support". The id is a parameter now
+(`AssertLinksResolveIn`), and it is a **separate method, not an overload**:
+adding `(client, url, string, params string[])` beside
+`(client, url, params string[])` made C# prefer the new one for every existing
+caller and silently reinterpret their first required link as a section id.
+
+**`AssertLinksResolve` cannot see fragments, and the first page to deep-link
+another one proved it.** Its regex stops at the `#`, so a link to an anchor that
+does not exist resolves as a healthy 200 and lands the reader at the top of a
+long page. `AssertFragmentLinksResolve` is the check; WI-513's own draft pointed
+at `/tests/pathology-report#grade`, which was not an anchor on that page.
+
+**And the citation discipline has a second half nobody had written down.**
+"Fetch every source URL before citing it" has been the rule since WI-505, and
+WI-513 followed it — every claim was checked against the fetched text. Four of
+its six citation **titles** were still wrong, written from the research
+dossier's description of a paper rather than from the page that had just been
+fetched. Titles render as the visible link text under "Sources", so a fabricated
+title is a fabricated citation on the reader's screen, and no test can catch it.
+**Paste the `<title>` the fetch script prints. Every time.**
+
+### 12.10 Scoping a shared block (WI-514)
+
+WI-501 built the include mechanism and every block it shipped was used by one
+page. WI-514 wrote the first two blocks meant for **all 24 hubs**, and both were
+wrong on the first attempt in the same way. Read this before writing or
+including one.
+
+**The test: would this sentence be true on the hub you have thought about
+least?** Not "is it true of gliomas". A block is prose you are asserting on
+every page that includes it, and the failure is silent — nothing in ContentCheck
+or the test suite can tell you a block's words are wrong for the page pulling
+them in. The reader is the only detector, and by then it is on 24 pages.
+
+- **`[MECHANISM]`'s first draft said "they grow through brain tissue instead of
+  pushing it aside" and "'they got it all' and 'cured' are not the same
+  sentence".** True of diffuse gliomas. **False, and frightening, for a fully
+  resected grade 1 meningioma or pilocytic astrocytoma** — tumors that do push
+  tissue aside and are cured by surgery. It also said "the most common ways a
+  **glioma** shows up", which is simply not about meningioma at all. The
+  infiltration material now lives on `/tumors/glioma` under its own heading, and
+  the block carries only what a closed skull does to anything inside it.
+- **`[CROSSWALK]`'s first draft was the glioma rename table.** Every entry was a
+  glioma name, so a meningioma hub including it would have inherited nothing
+  relevant. Worse, `/tumors/low-grade-glioma` was switched from its own
+  three-name slice to the full block, which put **glioblastoma and DIPG entries
+  into a grade-2 patient's identity section**. That is a regression dressed as
+  factoring.
+
+**So the split is: the block carries what is universal, the page carries its own
+slice** — which is what SYNTHESIS §4.3 says ("canonical: the glioma umbrella
+page, **with the per-tumor slice repeated only where it differs**") and what the
+WI-514 backlog entry says. The universal crosswalk is the 2021 rewrite, Roman to
+Arabic, gene results becoming part of the name, and NOS/NEC. The specific
+renames belong to the family page that owns them.
+
+**A hedge in a block is not weasel wording, it is scope.** "Some of what you are
+feeling **may not** be the tumor itself" reads weaker than "is not" and is the
+correct sentence, because swelling is not every tumor's story. Tests have to
+match the hedged wording; one of WI-514's failed on exactly this and the test
+was what needed changing.
+
+**Two test-shaped traps this produced.**
+
+- **A test named for a block that asserts the page.** `TheCrosswalkBlock
+  ComposesIntoThisPageCarryingEveryRetiredName` checked words that had moved
+  onto the page, so emptying the block left it green. If a test's subject is the
+  block, assert something only the block says.
+- **A test asserting a phrase where the claim was the property.** Checking that
+  "not curable" appears passed on a page whose only use of the words was the
+  softening line beneath it ("Not curable is not the same as untreatable"), so
+  deleting the hard sentence stayed green. Same family as WI-512's urgency
+  tests, which asserted presence when position was the property.
+
+**And the surface a front-matter check cannot see.** Block `sources` merge into
+every including page and **render in the reader's source list**. A banned or
+dead URL added to a block ships onto 24 pages while a test that reads only the
+page's own front matter stays green. Check the blocks too.
+
+**Cross-page consistency tests must read the other page.** WI-514's escalation
+test named `/seizures/what-to-do` in its comment, hard-coded what that page was
+believed to say, and never opened it — a consistency check that could not see an
+inconsistency. It reads the siblings now. (And strip markdown emphasis before
+matching: the seizure page writes `**first ever** seizure`, and a regex walking
+past the asterisks reports the sibling has stopped saying it.)

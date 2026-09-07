@@ -2110,8 +2110,14 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   Refs: `Content/ContentStore.cs`, `tools/BrainHarbor.ContentCheck/`,
   docs/research/tumor-guides/SYNTHESIS.md §3.2. Depends on: nothing.
   **Done.** Directive is a whole line reading `[BLOCK-NAME]`; blocks live in
-  `Content/blocks/`, ship EMPTY (WI-513 writes the crosswalk together with the
-  page that includes it). A block may carry `sources` front matter, which
+  `Content/blocks/`, ship EMPTY. ~~WI-513 writes the crosswalk together with the
+  page that includes it.~~ **Superseded 2026-09-07 (Dan's call): `[CROSSWALK]`
+  is WI-514's, per that item's own description.** WI-513 wrote a page-specific
+  slice as inline prose (`low-grade-glioma.md`, the oligoastrocytoma /
+  diffuse-astrocytoma / Roman-numeral lines) and did NOT create
+  `blocks/crosswalk.md`. The two-layer split is the decision: **the shared block
+  carries the CNS5-wide renames every hub owes, page-specific slices stay on
+  their own pages on top of it.** A block may carry `sources` front matter, which
   merges into every including page — otherwise the drift problem just moves to
   the citation list. Mechanism documented in content-pipeline.md §3a.
   **Two review findings worth carrying into Wave 1:** matching must be line
@@ -2389,7 +2395,47 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(d).
   Depends on: WI-501, WI-502, WI-504, WI-505.
 
-- [ ] **WI-509 T6b The molecular marker glossary** *(absorbs WI-444)*
+- [x] **WI-509 T6b The molecular marker glossary** *(absorbs WI-444)*
+  *(done 2026-09-03)*
+  **Done.** `/tests/molecular-markers`, reading grade 4.1, 1039 tests,
+  ContentCheck 170/0. Fifteen entries, each with an explicit `{#anchor}`.
+  **Entries are visible anchored sections with a jump list, NOT collapsibles.**
+  A `<details>` closed on load defeats deep-linking, prints empty on the one
+  page people hold beside the document, and needs a second `:::` container with
+  an argument — a new fail-open surface (WI-503 documents five) guarding words
+  that are descriptions, not prognosis. Reasoning is in §12.8 so WI-510 onward
+  do not re-argue it.
+  **One clause of the somatic/germline block is deliberately absent.** "You
+  cannot pass them on to your children" is verbatim-supported by NCI ("somatic
+  changes cause most cancers and cannot be passed on to family members"). **"You
+  did not do anything to cause them" has no source** — SYNTHESIS §3.7 presents
+  the whole paragraph as validated framing, but the cited paper (PMC8062319) is
+  a breast-cancer genetic-counselling lexicon and does not contain it. The
+  section delivers the substance without it, and adds the honest other half: a
+  tumor test can occasionally turn up something inherited, and the team tells you
+  first. Self-blame belongs to §12.3's block and WI-513.
+  **The gated source is Sahm et al, EANO, open at PMC10547522.** The dossier
+  hangs nearly every row of its §5.2 marker table on one Cloudflare-gated
+  `academic.oup.com` URL. It is Neuro-Oncology 25(10):1731-1749, found by DOI in
+  Europe PMC, and it is the backbone for what all fifteen markers measure. A test
+  fails if `academic.oup.com` ever appears in this page's front matter.
+  **Two more dossier errors.** Its Ki-67 caveat cites PMC10644968, a paper about
+  thyroid, lung and breast cancer; replaced with a neuropathology source that
+  says it of brain tumors. And §5.2's MGMT rows are fine, but the shipped
+  glossary entry for MGMT cited a **fabricated title** on an unrelated URL (see
+  below).
+  **Four wrong citation titles fixed in shipped glossary entries, 16 files.**
+  `mgmt-methylation.md` cited PMC12467656 as "MGMT promoter methylation and
+  response to alkylating chemotherapy"; that URL is *"Radiotherapy in
+  Glioblastoma Multiforme"* (Biomedicines 2025) and is now repointed to the EANO
+  guideline. Also: "Molecular markers in adult diffuse glioma" is really Thomas
+  et al's 2021 WHO update review (3 entries), "Major changes in..." is really
+  "Major **Features** of..." (11 entries), and the BRAF citation is really
+  Houghton et al on MAPK inhibitors. **Nine bad citations across five items.**
+  Also: 3 glossary terms (TP53, H3 G34, chromosome 7 gain and chromosome 10
+  loss), the 15 markers this page defines have their tooltips suppressed here
+  (`!%term%`) so 3 fire rather than 15, the shared `Characterisations` list
+  gained 10 phrases, and §12.8 gained six rules.
   Goal: one entry per word on the report, as an anchor-linked reference.
   Acceptance, beyond the shared contract: IDH · 1p/19q · ATRX · TERT ·
   CDKN2A/B · EGFR · chromosome 7 and 10 · H3 K27M · H3 G34 · BRAF · MGMT ·
@@ -2411,7 +2457,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   Refs: docs/research/tumor-guides/tests-library.md §(b)6 and §(e)1–2.
   Depends on: WI-508.
 
-- [ ] **WI-510 X2 Craniotomy**
+- [x] **WI-510 X2 Craniotomy** *(done 2026-09-04 — `/treatments/craniotomy`, the first page of the treatment library)*
   Goal: the operation, from arriving at the hospital to being back at home.
   Acceptance, beyond the shared contract: the step-by-step from the patient's
   side; ICU, hospital stay, the incision, hair, headaches, the recovery
@@ -2432,8 +2478,23 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   and giving medicines with none.
   Refs: docs/research/tumor-guides/treatment-library.md.
   Depends on: WI-501, WI-502, WI-504, WI-558.
+  **Shipped notes.** Full twelve slots (§12.8) — the first page since WI-506 to
+  use them, and it carries 6c as well as 6b (LITT, with its limits attached).
+  Reading grade 5.0, 1070 tests, ContentCheck 183/0. Six glossary terms.
+  **Three more dossier citation errors**, taking the running total to twelve
+  across six items: the ICU claim is attributed to ABTA, which never mentions
+  intensive care (it is in StatPearls NBK560922); the "neurological checks
+  through the night" detail is attributed to NBTS, which says nothing about
+  them anywhere; and the gross-total-resection definition rests on PMC5358612,
+  a **conference abstract**. PMC7093492 was dropped too, being a survival
+  meta-analysis cited on a page that publishes no prognosis figures.
+  **Deliberately thinner than the ticket in one place:** "risks by location"
+  is qualitative and names SMA syndrome specifically, but publishes no figure
+  for anything, per R2 — the SMA source alone reports the deficit risk as 23%
+  to 100%. Awake craniotomy is named in one sentence and **not** linked;
+  WI-523 owns it and the page does not exist yet.
 
-- [ ] **WI-511 X5 Radiation therapy**
+- [x] **WI-511 X5 Radiation therapy** *(done 2026-09-04 — `/treatments/radiation-therapy`)*
   Goal: the hub page for every form of radiation.
   Acceptance, beyond the shared contract: the simulation appointment and
   **mask-making, which is a distinct and under-acknowledged fear point**;
@@ -2446,8 +2507,30 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   memantine; R3 applies to the cognitive comparison.
   Refs: docs/research/tumor-guides/treatment-library.md.
   Depends on: WI-501, WI-502, WI-504.
+  **Shipped notes.** Full twelve slots (§12.8), second treatment page. Reading
+  grade 5.4, 1120 tests (1070 before), ContentCheck 197/0. Seven glossary terms.
+  Slot 8 (re-irradiation) has **no patient-level source anywhere** — ACS, MSK
+  and NBTS are all silent — so it rests on the EANO guideline and is published
+  at that strength: an option after roughly a year, indications controversial,
+  no trial settles it.
+  **Three dossier citation errors**, taking the running total to eighteen across
+  seven items: the somnolence "resolves on its own" claim is attributed to the
+  charity's **jargon-buster** page, which is one sentence long and does not
+  contain it (the adults side-effects page does); PMC7017115, cited for the
+  cognitive late effect, is a mechanistic review largely about the **mouse**
+  brain; and `ascopubs.org` returns a JavaScript shell, so the whole-brain claim
+  rests on **PMC7106984** (NRG CC001) directly. NBK66023 stays out per §12.1.
+  **Two rules promoted to `CuratedPage`** as §12.8 asked at the second treatment
+  page: `AssertNeverMinimises` (negation-aware, clause-anchored) and
+  `BritishForms` — the first gate on the site that looks for British usage,
+  which found `"a lift"` in the shared caregiver block (eighteen tumor hubs) and
+  `standardised` in this page's own draft.
+  **Deliberately absent: a "call an ambulance" list.** The shared `[CAREGIVER]`
+  block already teaches the escalation and links the seizure page that owns it;
+  a third copy is a third copy to keep in step. The call-today list carries the
+  first-seizure carve-out inline instead.
 
-- [ ] **WI-512 X8 Chemotherapy**
+- [x] **WI-512 X8 Chemotherapy** *(done 2026-09-04 — `/treatments/chemotherapy`)*
   Goal: one page for the drugs, because the shared content is where the value is.
   Acceptance, beyond the shared contract: temozolomide, PCV, lomustine and
   carmustine wafers as sections; oral vs IV; which tumors use which; **blood-count
@@ -2457,6 +2540,26 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   re-verified before publishing.
   Refs: docs/research/tumor-guides/treatment-library.md §(e)4.
   Depends on: WI-501, WI-502, WI-504.
+  **Shipped notes.** Reading grade 5.4, 1163 tests (1120 before), ContentCheck
+  209/0, all 75 break-mutations proven on LF and CRLF. Six glossary terms.
+  **The fever rule is the page**, and 100.4 F is published deliberately — the
+  one place the site's number discipline points toward including a figure
+  rather than omitting one, hedged with "ask your team for their number".
+  **The carmustine-wafer framing changed from the ticket.** The ticket cites the
+  2022 review's title, *"Is It Still an Option?"*, as grounds for a sceptical
+  mention. Read, that paper ANSWERS ITS OWN TITLE YES. EANO is genuinely more
+  cautious. The page prints the disagreement instead of either framing.
+  **Four sources the dossier offers are unusable**, one on licensing grounds:
+  `drugs.com` is an AHFS monograph (PLAN.md §5 forbids it outright); PMC3601076,
+  cited for TMZ lymphopenia, is a **mouse study**; the Cancer Care Ontario
+  lomustine monograph sits behind a WAF and returns 106 bytes; and NBK66023 is
+  NCI patient PDQ, whose which-drug table contains **"Anaplastic astrocytoma"**,
+  a retired CNS5 name. The lomustine timing came from EANO instead, and the
+  antibiotic section from PMC12803824.
+  **R1's lomustine wording is on the page verbatim in spirit** and now properly
+  sourced: taken only occasionally, not every day, *because it lowers blood
+  counts for weeks after each dose*.
+  **Slot 5 was dropped and put back after review** — see §12.8.
 
 - [x] **WI-559 "What to do when someone has a seizure"** *(done 2026-08-30, with WI-560 in one PR — `/seizures/what-to-do`)*
   Goal: the one page on this site where a reader may be acting, not reading.
@@ -2576,7 +2679,7 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   happening right now, and writing them together is how that split gets decided
   once instead of twice.
 
-- [ ] **WI-513 Low-grade glioma, deepened — the template proof**
+- [x] **WI-513 Low-grade glioma, deepened — the template proof** *(done 2026-09-05 — `/tumors/low-grade-glioma`)*
   Goal: one tumor hub taken all the way, reviewed, before the pattern is copied.
   Chosen deliberately: the short version already exists to compare against.
   Acceptance, beyond the shared contract: the full 17-section order; **"low
@@ -2597,14 +2700,48 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   adjusted here, not after 23 more pages exist.
   Refs: docs/research/tumor-guides/glioma-family.md §(b)2,
   patient-questions-and-ia.md §(b). Depends on: WI-506…WI-512, WI-558, WI-559.
+  **Shipped notes.** 202 words and 4 sections became the full §12.3 seventeen.
+  Reading grade 5.3, 1195 tests (1163 before), ContentCheck 219/0, all 60
+  break-mutations proven on LF and CRLF. Five glossary terms. **The hub template
+  is now written down at content-pipeline.md §12.9** — read that, not §12.8,
+  before the next hub.
+  **Two firsts.** The first page ever to use the `:::outlook` reader-choice gate
+  (WI-503 built it ten items ago and nothing had used it), verified in rendered
+  HTML and in print. And the first tumor hub to link into the tests and
+  treatment libraries, which is what the seven Wave 1 pages were built for.
+  **Review found two required blocks missing from the first draft**, both now
+  added: the **self-blame block** (new shared `[CAUSES]` block, demoted per
+  §12.3) and a **retired-name crosswalk slice**. A test in that draft banned the
+  retired names outright and would have foreclosed the crosswalk on all 23 hubs
+  that copied it.
+  **Four of six citation TITLES were fabricated** — written from the dossier's
+  description rather than the fetched page — and titles render as visible link
+  text. Corrected, and §12.9 now says to paste the fetched `<title>`.
+  **Also corrected `glioma-family.md` §2.3**, which sourced "most of these
+  tumors do not cause neurologic deficits at diagnosis" to an article containing
+  zero occurrences of "deficit", so Wave 2 does not inherit it.
+  ~~**Open question for Dan, flagged by review:** WI-501's note says blocks ship
+  empty and WI-513 writes the crosswalk, while WI-514 is named canonical home
+  for `[CROSSWALK]`.~~ **ANSWERED 2026-09-07 — this item's call was upheld.**
+  The page-specific slice stays here; the canonical block is WI-514's. See
+  WI-501 and WI-514.
 
 ### Wave 2 — the glioma family and what it pulls in
 
 Start only after Dan has signed off WI-513's template.
 
-- [ ] **WI-514 Glioma (umbrella), deepened** — the family tree and the router:
+- [x] **WI-514 Glioma (umbrella), deepened** *(done 2026-09-07 — `/tumors/glioma`)* — the family tree and the router:
   which of the specific pages does the reader actually need. Canonical home for
-  the `[CROSSWALK]` and `[MECHANISM]` blocks. Diffuse vs circumscribed;
+  the `[CROSSWALK]` and `[MECHANISM]` blocks — **confirmed by Dan 2026-09-07,
+  over WI-501's contradicting note.** This item WRITES `blocks/crosswalk.md`,
+  which today does not exist (`Content/blocks/` holds only `tumor-board.md`,
+  `caregiver.md`, `causes.md`). **Two layers, and the split is the point:** the
+  block carries the CNS5-wide renames every hub owes (the 2021 rewrite, Roman
+  numerals to Arabic, NOS/NEC); a page keeps its own slice for names specific to
+  its diagnosis, as `/tumors/low-grade-glioma` does for oligoastrocytoma. When
+  the block lands, reconcile that page so the shared lines are not said twice —
+  its Roman-numeral line is the overlap. Source: Kurokawa et al,
+  `10.1148/rg.210236` (see WI-504). Diffuse vs circumscribed;
   "adult-type" and "pediatric-type" mean biology, not the reader's age; grade,
   not stage. Depends on: WI-513.
 - [ ] **WI-515 High-grade glioma, deepened** — grades 3 and 4 as a grouping, not
@@ -2810,6 +2947,103 @@ research items. Same shared contract throughout.
   `/tumors` shipped with nothing linking to it, and the link check was
   structurally blind to it — the sitemap-reachability test added then must cover
   these). Depends on: WI-548.
+
+- [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
+  Goal: give a curated page a way to carry an image, with everything the site's
+  existing rules already demand of one.
+  **Why it is a separate item from WI-562:** there is no image support on
+  curated pages today at all. Markdig will emit a bare `<img>` from `![]()`,
+  but nothing styles it, nothing carries a caption or a credit, nothing sizes it
+  on a phone, and `print.css` has no rule for it. Sourcing 30 images before that
+  exists means 30 images with nowhere to go.
+  Acceptance:
+  - An author writes one image per figure in Markdown; it renders as a real
+    `<figure>` with a `<figcaption>`. The caption is **content**, not
+    decoration: it is graded by ContentCheck along with the rest of the page,
+    so it obeys the 6.0 gate like every other sentence.
+  - **Alt text is required and the build fails without it.** WCAG AA is a hard
+    requirement (`.claude/CLAUDE.md`), and an empty `alt=""` must be a
+    deliberate, declared choice for a decorative image rather than the default
+    a hurried author gets. Prove the failure by removing one.
+  - **Every image carries a source and a licence, checked mechanically.** The
+    glossary learned this at WI-505 and the pages learned it at WI-502: a
+    citation nobody can follow is not a citation. Model it on
+    `wwwroot/img/cards/IMAGE-CREDITS.md`, but make it a **front-matter field on
+    the page** so the credit travels with the image and ContentCheck can see it.
+  - Sized for a phone first (the site is verified at 390px since WI-440) and
+    lazy-loaded below the fold.
+  - **Print behaviour decided deliberately, and verified by printing to PDF,
+    not by reading the CSS.** WI-560 found that `print.css` had been silently
+    deleting every glossary term from every printed page since WI-101, and it
+    was only ever visible on paper. An image that becomes a full blank page, or
+    vanishes, is the same class of bug.
+  - A page with no images renders byte-identically to today (the WI-501
+    regression property).
+  - **CRLF-safe.** Any parsing added here gets proven on a CRLF copy — this repo
+    has `core.autocrlf=true` and CI is Linux/LF, so a Windows-only break stays
+    green in CI forever (WI-501, WI-506, WI-508).
+  Out of scope: choosing or sourcing any actual image. That is WI-562.
+  Refs: docs/content-pipeline.md §5 (the automated gates), §12.8;
+  wwwroot/img/cards/IMAGE-CREDITS.md; PLAN.md §5. Depends on: nothing.
+
+- [ ] **WI-562 Images Needed — the per-page slot inventory** *(Dan sources)*
+  Goal: for every curated page, say what images it wants, what kind each one is,
+  and where on the page it goes — so Dan can go and find them without having to
+  re-read each page first.
+  **Why:** the P5 pages are walls of text. `/tests/waiting-for-results` is 2,533
+  words with no picture in it, and the audience may be cognitively impaired.
+  Dan's call, 2026-09-03: he sources the images himself, public domain or free.
+  **Density: one image per ~500 words of body text, minimum one per page.**
+  Words, not source lines — the Markdown is hard-wrapped, so a line count
+  measures the author's editor rather than the reader's screen. It also scales
+  itself: a tumor hub is ~180 words today and becomes a 17-section hub at
+  WI-513, and the rule moves it from one slot to four without anyone editing
+  this ticket. As the pages stand that gives:
+  | Page | Words | Slots |
+  |---|---|---|
+  | `/tests/waiting-for-results` | 2533 | 5 |
+  | `/tests/mri` | 2109 | 4 |
+  | `/tests/pathology-report` | 1963 | 4 |
+  | `/seizures/living-with` | 1748 | 3 |
+  | `/seizures/what-to-do` | 963 | 2 |
+  | `/start` | 577 | 1 |
+  | each `/tumors/*` (18) | ~180 | 1 |
+  **Four kinds of image, and they are not equally easy to get. Say which kind
+  each slot is, because two of them cannot be shopped for:**
+  1. **Sourceable photo** — free stock or public domain, Dan can search for it
+     directly. *Examples: an MRI scanner in a room; a lab bench with slide
+     trays; a microscope; a gloved hand holding a specimen pot; an empty
+     waiting room; hands holding paperwork at a kitchen table.*
+  2. **Mock document** — a made-up example with the parts labelled. **Never a
+     real report**: a real one carries PHI, and no stock site has one. Someone
+     has to build it. *Examples: a sample pathology report with the nine parts
+     called out (the single highest-value image on the whole site — it is
+     `/tests/pathology-report`'s entire subject); a report showing "final
+     diagnosis" at the top with the evidence underneath; a before/after of a
+     report and its addendum.*
+  3. **Simple diagram** — a line drawing we make. Highest explanatory value,
+     and it is a design job rather than a search. *Examples: tissue → fixative →
+     wax block → slide → microscope, as five boxes (this is WI-507's
+     step-by-step, which is currently nine numbered paragraphs); the layered
+     report as stacked bands; a timeline of the wait showing the quick answer,
+     the microscope answer and the gene results arriving at different points.*
+  4. **Public-domain medical imagery** — real scans and slides from Wikimedia
+     Commons or NIH open sets. **Each licence checked individually**, and
+     **never an NCI embedded image** (PLAN.md §5 bars them outright).
+     *Examples: a normal brain MRI; an H&E-stained slide; a contrast-enhanced
+     scan.*
+  Acceptance:
+  - Every curated page has its slots listed: position (which heading it follows),
+    which of the four kinds, what it should show, and one sentence of draft alt
+    text so the accessibility requirement is not an afterthought at paste time.
+  - **The mock-document and diagram slots are called out separately from the
+    photo slots**, because they are work rather than shopping and Dan should not
+    discover that halfway through.
+  - No image is chosen or committed in this item. It produces the list.
+  - **No AI-generated imagery**, consistent with the standing rule on feed cards.
+  Refs: PLAN.md §5; docs/content-pipeline.md §12.8;
+  wwwroot/img/cards/IMAGE-CREDITS.md. Depends on: WI-561 (the slots need
+  somewhere to go).
 
 ---
 

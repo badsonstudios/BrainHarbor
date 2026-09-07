@@ -32,6 +32,63 @@ public sealed class ShippedGlossaryTests
             .Select(f => GlossaryStore.ParseTerm(File.ReadAllText(f), Path.GetFileNameWithoutExtension(f)))];
 
     [Fact]
+    public void NoDefinitionClaimsAFindingCannotBeInherited()
+    {
+        // Found by an independent review of WI-509, after it merged.
+        //
+        // `tp53.md` said "It is a change in the tumor, not one you were born
+        // with." TP53 is the Li-Fraumeni gene, and CRUK — already a source on
+        // this project — lists Li-Fraumeni among the inherited syndromes that
+        // raise brain-tumor risk. The claim was false, it fired site-wide as a
+        // tooltip, and it contradicted the two places that handle this
+        // correctly: the marker page's own TP53 entry and its somatic/germline
+        // section, which both say a tumor test can occasionally turn up
+        // something inherited.
+        //
+        // A popover is the worst place on the site to settle a question this
+        // one-sided: a reader whose family history matters could be talked out
+        // of asking for genetic counselling by it. Definitions may say a result
+        // WAS somatic; they may not rule inheritance out as a general fact.
+        // Whitespace-normalised first. Definitions are hard-wrapped, so the
+        // real defect text arrives as "...not one you were born\nwith." and a
+        // regex with a literal space misses it entirely. Proving this test by
+        // breaking it is the only reason that was caught.
+        foreach (var term in LoadAll())
+        {
+            var flat = Regex.Replace(term.Definition, @"\s+", " ");
+
+            Assert.DoesNotMatch(
+                new Regex(@"not\s+(a change\s+|one\s+)?(you were|you are)\s+born with",
+                    RegexOptions.IgnoreCase),
+                flat);
+        }
+    }
+
+    [Fact]
+    public void TheThreeGlioblastomaFindingsCarryTheirIdhWildtypeCondition()
+    {
+        // The glossary half of the WI-509 correction. CAP Recommendation 9 and
+        // WHO CNS5 both state the condition explicitly: TERT promoter
+        // mutation, EGFR amplification and +7/-10 only mean "glioblastoma
+        // despite lower-grade-looking cells" in an IDH-WILDTYPE tumor.
+        //
+        // Unconditioned, the tooltip tells an oligodendroglioma reader that
+        // their result names a glioblastoma — and TERT mutation is present in
+        // a majority of oligodendrogliomas, so that reader is common.
+        foreach (var term in LoadAll())
+        {
+            if (!Regex.IsMatch(term.Definition, @"glioblastoma", RegexOptions.IgnoreCase))
+            {
+                continue;
+            }
+
+            Assert.Matches(
+                new Regex(@"IDH", RegexOptions.IgnoreCase),
+                term.Definition);
+        }
+    }
+
+    [Fact]
     public void EveryShippedTermParses()
     {
         // ParseTerm throws on bad front matter, a bad slug or an empty body,

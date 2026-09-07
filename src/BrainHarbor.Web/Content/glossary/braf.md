@@ -3,7 +3,7 @@ term: BRAF
 also: [BRAF V600E, BRAF fusion]
 sources:
   - url: https://tp.amegroups.org/article/view/122626/html
-    title: "Targeting BRAF alterations in glioma"
+    title: "Houghton et al: Advances in the treatment of BRAF-mutant low-grade glioma with MAPK inhibitors"
     accessed: 2026-08-30
 ---
 
