@@ -1095,3 +1095,114 @@ believed to say, and never opened it — a consistency check that could not see 
 inconsistency. It reads the siblings now. (And strip markdown emphasis before
 matching: the seizure page writes `**first ever** seizure`, and a regex walking
 past the asterisks reports the sibling has stopped saying it.)
+
+### 12.11 What a grouping page owes its umbrella (WI-515)
+
+`/tumors/high-grade-glioma` is the second **grouping** page — a label covering
+several diagnoses rather than naming one — after `/tumors/low-grade-glioma`.
+Between them and `/tumors/glioma` there are now three pages saying overlapping
+things to overlapping readers, and this is what that costs.
+
+**The page carries its own slice, and the slice has to have an angle.** §12.10
+established the split for shared *blocks*. The same rule governs two *pages*:
+the umbrella's retired-name slice is the whole glioma family, so a grouping page
+that copies that list has added a second maintenance site and no information.
+This page's slice is one word — **anaplastic**, which before 2021 was how a
+report said grade 3 — because that is the word its readers are actually holding.
+The test asserts the ANGLE (`grade number does that job now`), not just that the
+names appear, because a slice that is a copy passes a names-only check.
+
+**Assert the non-duplication against the block's own words, not a literal
+list.** `TheSliceDoesNotRepeatWhatTheSharedCrosswalkBlockAlreadySays` reads
+`blocks/crosswalk.md`, picks the sentences the block owns, and fails if the page
+also says them. Written that way, moving a sentence *into* the block later turns
+the duplicate red instead of creating one silently. A hard-coded list would have
+gone stale the first time the block was edited — which is the whole reason the
+block exists.
+
+**Three shared-helper traps, all the same shape: a step that quietly stops
+doing anything.**
+
+- **`CuratedPage.Section` flattens before it returns.** A splitter handed its
+  output finds no newlines, yields ONE chunk, and every per-chunk assertion
+  becomes a whole-section assertion. WI-515's three-regimen test passed with all
+  three regimens collapsed onto one tumor until `BulletNaming` was re-pointed at
+  a raw-section helper. Identical to WI-507's `Split("\n\n")` on CRLF: a
+  splitter with nothing to split on does not fail, it stops being a splitter.
+  **Anything that splits needs raw text, and needs a canary that fails when the
+  split yields nothing.**
+- **Flattening is not enough for a YAML comment.** It leaves the next line's
+  `#` inside the sentence, so a wrapped comment flattens to
+  `"... on a scan. NEVER # for naming or grading"`. Strip the comment markers
+  first, then flatten.
+- **A tooltip can only fire on PROSE.** WI-515 asserted a `def-radiation-necrosis`
+  tooltip for a term that appeared only in a **heading**. That is the exact
+  mirror of WI-512's and WI-514's no-op suppressions, and both directions need
+  checking: a suppressed term the prose never uses suppresses nothing, and an
+  expected tooltip for a term the prose never uses can never fire.
+
+**A router that links to pages nobody has written yet must say so, and the test
+should read the destinations.** WI-514's blocker was routing the cancer question
+to five Wave-0 stubs while insisting it "is not a dodge". The fix generalises:
+`ThePageWarnsThatTheChildPagesItRoutesToAreStillStubs` measures the destinations
+and requires the honesty note **only while they are thin** — so when WI-516,
+WI-517 and WI-518 land, the test fails until the note comes down. The warning
+removes itself rather than becoming a lie nobody noticed.
+
+**The unsourced comparative is this phase's most persistent defect class.** Five
+items in a row have now shipped a draft containing one. WI-511 asserted "most
+people in both groups" of the wrong trial arm; WI-515's draft said the swelling
+around a high-grade glioma "is heavier", which is a comparative claim about how
+much, and **the dossier sentence it came from is not in the paper it cites**
+(§3.3, corrected at source). A comparative needs a source that makes the
+comparison. If the source describes a *nature* ("infiltrative edema ... in a
+zone of infiltrating tumor cells"), publish the nature. Every one of these has
+been caught by reading the page, never by a gate.
+
+**Never run the break harness in the background and then edit the content.** It
+holds the originals in memory and restores them in a `finally`, so any edit made
+while it runs is silently reverted — and if the run is killed, whichever
+mutation was applied at that instant stays on disk looking like your own prose.
+WI-515 lost four editorial fixes and shipped a mutated section order into a test
+run before noticing. The harness now writes a marker file and refuses to start
+if a previous run did not finish.
+
+**Review found the §12.10 defect re-committed on this very page, which is the
+strongest argument for running it.** The draft said "these tumors grow into the
+brain around them … with today's treatments they are not curable" directly under
+"Yes. A high-grade glioma is cancer" — so it asserted infiltration and
+incurability of *every* high-grade glioma. CNS5 defines a whole supercategory of
+**circumscribed astrocytic gliomas**, "gliomas with more well-delineated borders
+separating them from the surrounding brain parenchyma", and two of them are
+grade 3. Both siblings scope the claim; the page whose entire thesis is "two
+tumors in this group can be very different" did not. **When you write a claim
+about "these tumors" on a grouping page, name which ones.**
+
+**Three more things a hub owes, all found by review rather than by a gate.**
+
+- **A page that routes readers into a treatment owes that treatment's safety
+  rule.** Every reader of this hub is offered chemotherapy, `/treatments/
+  chemotherapy` opens by calling a fever "the one thing to know before you
+  start", and this page's escalation section had no fever line at all. A hub is
+  not just a description; it is a place people arrive before treatment starts.
+- **Name the thing you tell the reader to ask about.** "A device worn on the
+  head that treats the tumor with electrical fields — ask whether it is relevant
+  to you" gives a reader nothing to say out loud or type into a search box.
+  §12.6's first rule ("say the outcome, then name the word") applies to devices
+  and regimens, not only to procedures.
+- **A heading with two questions in it owes two answers.** "Where does it grow,
+  and why does it cause these symptoms?" was answered only by `[MECHANISM]`,
+  which covers the *why*. The *where* has to be on the page, before the block,
+  for the reader who stops after the first paragraph.
+
+**Do not carry a shared guard's EXEMPTIONS across pages with it.** The
+prognosis-figure regex was copied from the low-grade page complete with a
+`(?![^.]{0,60}with)` lookahead, which exists there to allow "live many years
+*with* a grade 2 glioma" — and which is precisely the phrasing most likely to
+leak a prognosis claim onto a grade 3 and 4 page. Copying a rule copies its
+holes; re-derive the exemption list per page.
+
+**Fetch every URL in everything the item ships, not every URL on the page.** The
+citation discipline held on the page and failed on a **glossary entry**, which
+shipped a hand-composed title for a URL nobody had fetched. Glossary entries,
+shared blocks and page front matter are all citation surfaces.

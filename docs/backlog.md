@@ -2744,9 +2744,27 @@ Start only after Dan has signed off WI-513's template.
   `10.1148/rg.210236` (see WI-504). Diffuse vs circumscribed;
   "adult-type" and "pediatric-type" mean biology, not the reader's age; grade,
   not stage. Depends on: WI-513.
-- [ ] **WI-515 High-grade glioma, deepened** — grades 3 and 4 as a grouping, not
+- [x] **WI-515 High-grade glioma, deepened** *(done 2026-09-07 — `/tumors/high-grade-glioma`)* — grades 3 and 4 as a grouping, not
   a diagnosis; two tumors can both be grade 4 and be very different; there is no
   grade 4 oligodendroglioma; de novo vs transformed. Depends on: WI-513.
+  **Shipped notes.** 194 words and 4 sections became the full §12.3 seventeen.
+  Reading grade 5.6, 1275 tests (1233 before), ContentCheck 226/0, all 91
+  break-mutations proven on LF and CRLF. Two glossary terms (chemoradiation,
+  PCV). Beyond the four listed claims the page carries **pseudoprogression** —
+  research §3.5 calls it "one of the most distressing and least-explained
+  experiences in the whole disease" — with radiation necrosis as the later
+  look-alike, and a "why is my friend on different chemotherapy?" section that
+  is the practical proof of claim 2 (three regimens, from EANO and CATNON).
+  **`/review` found the §12.10 defect re-committed here**: the incurability and
+  infiltration claim was asserted of every high-grade glioma, and CNS5 defines
+  circumscribed astrocytic gliomas with "more well-delineated borders", two of
+  them grade 3. Now scoped. It also found the page had **no fever rule** despite
+  routing every reader into chemotherapy. Both written into **§12.11**, along
+  with the three shared-helper traps and the rule that a hub owes the safety
+  rules of the treatments it routes into.
+  **Five more bad dossier citations (25 across nine items)**, including §3.3's
+  raised-pressure comparative, which is not in the Springer paper it cites —
+  corrected in `glioma-family.md` at source so WI-516/517/518 do not inherit it.
 - [ ] **WI-516 Astrocytoma, deepened** — three different families share the name;
   **personality and behaviour change**, which can precede diagnosis by months;
   the crosswalk slice that matters most (both directions of the

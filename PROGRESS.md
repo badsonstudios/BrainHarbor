@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **nothing mid-flight. WI-514 IS DONE AND MERGED** (PR #91, squash-merged to `develop` 2026-09-07; `develop` head `d710e5d`). 1233 tests green, ContentCheck 223/0, no feature PRs open. **THE `develop` -> `main` RELEASE PR #90 IS STILL OPEN AND UNMERGED, AND IT NOW SHIPS WI-509 THROUGH WI-514** — WI-514 landed after #90 was opened, so it is inside that deploy window; the PR title and body were updated to say so. **Merging #90 IS the Azure deploy and it is Dan's call.** Nothing on this branch has been reviewed locally: Dan approved WI-513's template and opened #90 sight-unseen on 2026-09-07, knowingly setting aside the standing pre-deploy read (memory `test-locally-before-deploy`). That was recorded as a departure, not a precedent — **the next release gets the local read.** Wave 2's first item, first hub written to §12.9 rather than proving it. Turns `/tumors/glioma` (today a **166-word, 4-section stub**) into the §12.3 seventeen-section hub, and writes the two shared blocks it is canonical home for: `blocks/crosswalk.md` and `blocks/mechanism.md`, neither of which exists yet. Also on this item: reconcile `/tumors/low-grade-glioma`'s inline crosswalk slice (lines 73-85) against the new shared block so the Roman-numeral line is not said twice. **ALSO OPEN: RELEASE PR #90 (`develop` -> `main`) IS OPEN AND UNMERGED — merging it IS the Azure deploy** of WI-509 through WI-513 in one window. Opened 2026-09-07 on Dan's explicit instruction. **WI-513's TEMPLATE IS SIGNED OFF (2026-09-07) — Wave 2 is unblocked.** Both decisions were made **sight-unseen**: the site was started at `localhost:5177` and the three review pages returned 200, but Dan approved before reading them, knowingly setting aside the standing pre-deploy review rule (memory `test-locally-before-deploy`). Recorded because it is a departure, not a precedent — the rule still stands for the next release. P5 Wave 1 is complete and merged into `develop`; PRs **#86 (WI-511), #89 (WI-512, replacing #87), #88 (WI-513)** all squash-merged. `develop` head is `aebe36c`, **1195 tests green, ContentCheck 219/0**. The hub template is written down at `docs/content-pipeline.md` **§12.9** (new section, separate from §12.8, which is the LIBRARY template). **A stacked-PR lesson worth not repeating:** `gh pr merge --squash --delete-branch` on the bottom of a stack **auto-closes the PR above it** (GitHub closes a PR whose base branch is deleted, and a closed PR cannot be reopened or retargeted). #87 was lost that way and had to be re-created as #89. Squash-merging also means the branch above must be rebased with `git rebase --onto origin/develop <last-commit-of-the-merged-item>` — using develop's squash commit as the upstream replays the already-merged work and conflicts. Everything below this sentence is older state. 
+| **In progress** | **WI-515 IS CODE-COMPLETE and awaiting Dan's commit approval (Gate 2).** `/tumors/high-grade-glioma`: a 194-word stub is now the §12.3 seventeen-section hub. Reading grade **5.6**, **1275 tests** (1233 before), ContentCheck **226/0**, **all 91 break-mutations proven on LF AND CRLF**, two new glossary terms (chemoradiation, PCV). `/review` run and all findings addressed. **The site is running at `http://localhost:5177/tumors/high-grade-glioma` for Dan to read before anything is committed** — memory `test-locally-before-deploy`, honoured this time after two releases without it. **RELEASE PR #90 IS MERGED AND DEPLOYED** (2026-09-07, on Dan's instruction; merge commit, `develop` not deleted). Run 34164795315 green on both jobs; live smoke `/`, `/tumors/glioma`, `/tumors/low-grade-glioma`, `/treatments/radiation-therapy`, `/treatments/chemotherapy`, `/tests/molecular-markers`, `/research`, `/trials`, `/search`, `/get-help-now` **all 200** — including the four that 500'd in the last four deploy windows — and the outlook gate renders on the live glioma page. **WI-509 THROUGH WI-514 ARE NOW ON `main` AND LIVE.** **That release also shipped without the local read** (memory `test-locally-before-deploy`), the second in a row. Dan was offered the localhost review and chose to merge. **Recorded as a departure again, NOT a precedent** — two in a row is the point at which it starts looking like the rule is dead, and it is not. Older state below. WI-514 IS DONE AND MERGED (PR #91, `develop` head `2568b0d`). 1233 tests green, ContentCheck 223/0. Wave 2's first item, first hub written to §12.9 rather than proving it. Turns `/tumors/glioma` (today a **166-word, 4-section stub**) into the §12.3 seventeen-section hub, and writes the two shared blocks it is canonical home for: `blocks/crosswalk.md` and `blocks/mechanism.md`, neither of which exists yet. Also on this item: reconcile `/tumors/low-grade-glioma`'s inline crosswalk slice (lines 73-85) against the new shared block so the Roman-numeral line is not said twice. **ALSO OPEN: RELEASE PR #90 (`develop` -> `main`) IS OPEN AND UNMERGED — merging it IS the Azure deploy** of WI-509 through WI-513 in one window. Opened 2026-09-07 on Dan's explicit instruction. **WI-513's TEMPLATE IS SIGNED OFF (2026-09-07) — Wave 2 is unblocked.** Both decisions were made **sight-unseen**: the site was started at `localhost:5177` and the three review pages returned 200, but Dan approved before reading them, knowingly setting aside the standing pre-deploy review rule (memory `test-locally-before-deploy`). Recorded because it is a departure, not a precedent — the rule still stands for the next release. P5 Wave 1 is complete and merged into `develop`; PRs **#86 (WI-511), #89 (WI-512, replacing #87), #88 (WI-513)** all squash-merged. `develop` head is `aebe36c`, **1195 tests green, ContentCheck 219/0**. The hub template is written down at `docs/content-pipeline.md` **§12.9** (new section, separate from §12.8, which is the LIBRARY template). **A stacked-PR lesson worth not repeating:** `gh pr merge --squash --delete-branch` on the bottom of a stack **auto-closes the PR above it** (GitHub closes a PR whose base branch is deleted, and a closed PR cannot be reopened or retargeted). #87 was lost that way and had to be re-created as #89. Squash-merging also means the branch above must be rebased with `git rebase --onto origin/develop <last-commit-of-the-merged-item>` — using develop's squash commit as the upstream replays the already-merged work and conflicts. Everything below this sentence is older state. 
 | **Next up** | **WI-515 (high-grade glioma), or WI-516 (astrocytoma) — both are now unblocked.** WI-515 depends on WI-513 and WI-516 on WI-514; both are satisfied. **Read `docs/content-pipeline.md` §12.9 (the hub template) AND §12.10 (scoping a shared block, written by WI-514) before drafting either.** §12.10 matters most: WI-514 wrote the first two blocks meant for all 24 hubs and got both wrong the same way — they asserted glioma-specific things that are false and frightening for other tumor types. The rule is now: the block carries what is universal, the page carries its own slice. Older entry, for context: **Wave 2 was WI-514** (glioma umbrella — the family tree and the router, and the **canonical home for `[CROSSWALK]` and `[MECHANISM]`**), then WI-515…WI-518 and the rest. **Read §12.9 before any hub**, and note the three things most likely to be copied wrong: **(1)** a hub follows **§12.3's seventeen sections**, not §12.8's twelve slots; **(2)** every hub owes a **self-blame block** (`[CAUSES]`, demoted) and a **retired-name crosswalk slice** — WI-513's first draft had neither and a test in it would have foreclosed the crosswalk on all 23 remaining hubs; **(3)** the **right tail belongs inside the outlook gate**, and the gate must teach *median* rather than ban the word. **One open question for Dan, raised by review:** WI-501's note says blocks ship empty and WI-513 writes the crosswalk, while WI-514 is named canonical home for `[CROSSWALK]`. WI-513 wrote a page-specific slice and left the canonical block to WI-514, per SYNTHESIS §4.3 — worth confirming before WI-514 starts. Older list, for context: **WI-513** (the template proof), which finished Wave 1's run. 
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -88,6 +88,89 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-07** — **WI-515 code-complete — `/tumors/high-grade-glioma`, the
+  second grouping page, and the item where `/review` caught §12.10's own defect
+  being re-committed.** A 194-word stub became the §12.3 seventeen-section hub.
+  Reading grade **5.6** (joint highest with the umbrella; the vocabulary is
+  why), **1275 tests** (1233 before), ContentCheck **226/0**, two glossary terms.
+  **All 91 breaks proven on an LF copy AND a CRLF copy.**
+  **The blocker was the §12.10 defect, on the page least able to afford it.**
+  The draft said "these tumors grow into the brain around them ... they are not
+  curable" directly under "Yes. A high-grade glioma is cancer" — asserting
+  infiltration and incurability of **every** high-grade glioma. CNS5 defines a
+  supercategory of **circumscribed astrocytic gliomas**, "gliomas with more
+  well-delineated borders separating them from the surrounding brain
+  parenchyma", and two of them are grade 3. Both siblings scope the claim;
+  the page whose whole thesis is "two tumors here can be very different" did
+  not. Written up in **§12.11**.
+  **The safety gap was a missing fever rule.** Every reader of this page is
+  offered chemotherapy and `/treatments/chemotherapy` opens by calling a fever
+  "the one thing to know before you start" — and this page's escalation section
+  had no fever line at all. It now has one, linked to `#fever-rule`, with a test
+  that reads the sibling so a softening there goes red here.
+  **Five more bad dossier citations, which makes twenty-five across nine items.**
+  (1) §3.3's raised-pressure comparative ("more commonly seen in high-grade
+  gliomas") is **not in the Springer paper** — its only "more commonly seen"
+  sentence is about hematologic malignancies. My draft had turned it into "the
+  swelling is heavier", an unsourced quantity claim; the paper describes the
+  *nature* of the swelling (infiltrative edema "in a zone of infiltrating tumor
+  cells") and that is what shipped. Corrected in `glioma-family.md` at source.
+  (2) §3.5's "roughly 10-30% will have **transient worsening**" is attributed to
+  a paper containing that phrase **zero** times, whose actual figure (12-65%) has
+  a different denominator. (3) **NBK559184**, cited twice for general high-grade
+  treatment, is the StatPearls **oligodendroglioma** chapter, which §12.1 bans;
+  radiation necrosis re-sourced to ACS at patient level. (4) NBTS is *still*
+  cited for the "secondary glioblastoma" retirement it does not contain — WI-514
+  found this and the dossier kept it; EANO says the rename verbatim. (5) Both
+  `academic.oup.com` URLs **re-confirmed 403** today; open replacements found via
+  Europe PMC (PMC6655498, PMC13186461). PMC3643853's "recurrence is usually
+  local" was **dropped** rather than published off a 21-patient single-centre
+  study.
+  **The page's own thesis sentence had no clean source, and the fix was to say
+  so.** Nothing fetchable defines "high-grade glioma = grade 3 and 4" except
+  StatPearls NBK441874, which writes "WHO grade III and IV" — the notation this
+  page forbids. Resolved by **widening the front-matter scope note deliberately
+  and visibly**: the range is taken from there with the numerals translated,
+  which is exactly what the crosswalk teaches. The notation is the defect, not
+  the range. A test fails if the note is deleted while the URL stays.
+  **My own tests were weak in six places and the break harness found every
+  one.** Two alternations where either branch alone passed (the stub warning,
+  the right tail); a first-two-sentences check that let the cancer answer be
+  buried in a subordinate clause; a "twelve weeks" assertion that survived
+  deleting the rule because the page says the words twice; a crosswalk check
+  that passed on a mention without the new name; and `Regex.Matches` with a
+  **consuming** window, so the first occurrence swallowed the second and a loop
+  over "every occurrence" only ever saw one.
+  **Three shared-helper traps, all the same shape — a step that quietly stops
+  doing anything.** `CuratedPage.Section` **flattens before it returns**, so a
+  splitter fed its output yields ONE chunk and every per-bullet assertion became
+  a whole-section assertion that passed with all three chemotherapy regimens
+  collapsed onto one tumor. Flattening a YAML comment leaves the next line's
+  `#` inside the sentence. And a tooltip was asserted for a term that appeared
+  only in a **heading** — the mirror of WI-512's no-op suppressions.
+  **`slug:` routes nothing.** ContentStore routes by file path, so
+  `ThePageIsServedAtItsExistingUrl` cannot be broken by any in-file mutation.
+  Discovered by mutating the slug and watching the test stay green; there is now
+  a reachable assertion instead, and the mutation table records why the other
+  one is absent.
+  **A harness footgun cost four editorial fixes.** The break harness holds the
+  originals in memory and restores them in a `finally`, so edits made while it
+  runs in the background are silently reverted — and a killed run leaves
+  whichever mutation was applied sitting on disk looking like your own prose. It
+  now writes a marker file and refuses to start if a previous run did not
+  finish. **Never background it and then edit the content.**
+  **Also:** the citation discipline held on the page and **failed on a glossary
+  entry**, which shipped a hand-composed title for a URL nobody had fetched
+  (fetched now, real `<title>` pasted) — the rule is *fetch every URL in
+  everything the item ships*; the device paragraph now **names** tumor treating
+  fields instead of telling the reader to ask about an unnamed thing, and prints
+  EANO's disagreement about it; the "where does it grow" heading now answers its
+  own first question before `[MECHANISM]`; four unsourced quantifiers removed;
+  and a prognosis guard copied from the low-grade page arrived with a `with`
+  exemption that would have let "live many years with this" through here.
+  **Print verified**: the outlook heading and the component's warning print, the
+  gated body does not, and no glossary popover text leaks into the body.
 
 - **2026-09-07** — **WI-514 code-complete — `/tumors/glioma`, Wave 2's first
   hub, and the first two blocks written for all 24 pages.** A 166-word,
