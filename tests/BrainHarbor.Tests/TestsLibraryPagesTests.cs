@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.RegularExpressions;
+using BrainHarbor.Web.Content;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace BrainHarbor.Tests;
@@ -537,6 +538,26 @@ internal static class CuratedPage
     /// </summary>
     public static string ReaderText(string page) =>
         Regex.Replace(Regex.Replace(Body(page), @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
+
+    /// <summary>
+    /// The page with its shared blocks resolved, through the REAL composer
+    /// (<see cref="ContentBlocks.Compose"/>) rather than a test's own
+    /// reimplementation of it — a private copy of the include rules would
+    /// drift from the one the site actually runs.
+    ///
+    /// WI-514, and this is the trap the item was built on. Once a hub includes
+    /// <c>[CROSSWALK]</c> instead of spelling the crosswalk out, every
+    /// assertion about those words made against the RAW page is asserting
+    /// against the literal string "[CROSSWALK]". WI-513's own retired-name
+    /// test went green that way and proved nothing. A rule about a block's
+    /// prose has to run on the composed page.
+    /// </summary>
+    public static string Composed(string page, string describedAs = "a curated page") =>
+        ContentBlocks.Compose(page, ContentBlockStore.Load(BlocksRoot), describedAs).Markdown;
+
+    /// <summary>One "## " section of the COMPOSED page — see <see cref="Composed"/>.</summary>
+    public static string ComposedSection(string page, string heading) =>
+        Section(Composed(page), heading);
 
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];

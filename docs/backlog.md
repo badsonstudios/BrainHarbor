@@ -2110,8 +2110,14 @@ Small, and everything downstream inherits it. Do not start Wave 1 first.
   Refs: `Content/ContentStore.cs`, `tools/BrainHarbor.ContentCheck/`,
   docs/research/tumor-guides/SYNTHESIS.md §3.2. Depends on: nothing.
   **Done.** Directive is a whole line reading `[BLOCK-NAME]`; blocks live in
-  `Content/blocks/`, ship EMPTY (WI-513 writes the crosswalk together with the
-  page that includes it). A block may carry `sources` front matter, which
+  `Content/blocks/`, ship EMPTY. ~~WI-513 writes the crosswalk together with the
+  page that includes it.~~ **Superseded 2026-09-07 (Dan's call): `[CROSSWALK]`
+  is WI-514's, per that item's own description.** WI-513 wrote a page-specific
+  slice as inline prose (`low-grade-glioma.md`, the oligoastrocytoma /
+  diffuse-astrocytoma / Roman-numeral lines) and did NOT create
+  `blocks/crosswalk.md`. The two-layer split is the decision: **the shared block
+  carries the CNS5-wide renames every hub owes, page-specific slices stay on
+  their own pages on top of it.** A block may carry `sources` front matter, which
   merges into every including page — otherwise the drift problem just moves to
   the citation list. Mechanism documented in content-pipeline.md §3a.
   **Two review findings worth carrying into Wave 1:** matching must be line
@@ -2714,18 +2720,28 @@ tested before it is replicated 23 times. **Ends with a localhost URL for Dan**
   **Also corrected `glioma-family.md` §2.3**, which sourced "most of these
   tumors do not cause neurologic deficits at diagnosis" to an article containing
   zero occurrences of "deficit", so Wave 2 does not inherit it.
-  **Open question for Dan, flagged by review:** WI-501's note says blocks ship
+  ~~**Open question for Dan, flagged by review:** WI-501's note says blocks ship
   empty and WI-513 writes the crosswalk, while WI-514 is named canonical home
-  for `[CROSSWALK]`. This item wrote a page-specific slice and left the
-  canonical block to WI-514, per SYNTHESIS §4.3.
+  for `[CROSSWALK]`.~~ **ANSWERED 2026-09-07 — this item's call was upheld.**
+  The page-specific slice stays here; the canonical block is WI-514's. See
+  WI-501 and WI-514.
 
 ### Wave 2 — the glioma family and what it pulls in
 
 Start only after Dan has signed off WI-513's template.
 
-- [ ] **WI-514 Glioma (umbrella), deepened** — the family tree and the router:
+- [x] **WI-514 Glioma (umbrella), deepened** *(done 2026-09-07 — `/tumors/glioma`)* — the family tree and the router:
   which of the specific pages does the reader actually need. Canonical home for
-  the `[CROSSWALK]` and `[MECHANISM]` blocks. Diffuse vs circumscribed;
+  the `[CROSSWALK]` and `[MECHANISM]` blocks — **confirmed by Dan 2026-09-07,
+  over WI-501's contradicting note.** This item WRITES `blocks/crosswalk.md`,
+  which today does not exist (`Content/blocks/` holds only `tumor-board.md`,
+  `caregiver.md`, `causes.md`). **Two layers, and the split is the point:** the
+  block carries the CNS5-wide renames every hub owes (the 2021 rewrite, Roman
+  numerals to Arabic, NOS/NEC); a page keeps its own slice for names specific to
+  its diagnosis, as `/tumors/low-grade-glioma` does for oligoastrocytoma. When
+  the block lands, reconcile that page so the shared lines are not said twice —
+  its Roman-numeral line is the overlap. Source: Kurokawa et al,
+  `10.1148/rg.210236` (see WI-504). Diffuse vs circumscribed;
   "adult-type" and "pediatric-type" mean biology, not the reader's age; grade,
   not stage. Depends on: WI-513.
 - [ ] **WI-515 High-grade glioma, deepened** — grades 3 and 4 as a grouping, not

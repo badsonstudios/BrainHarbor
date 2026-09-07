@@ -70,15 +70,14 @@ You may also come across "**lower**-grade glioma", with the -er. Some doctors
 use that for grade 2 and grade 3 together. It is a different grouping again,
 and it is worth asking which one somebody means.
 
-**If your paperwork is more than a few years old, some of its names have been
-retired.** The rules changed in 2021, and a report written before that can use
-words no longer in use. The commonest ones for this group:
+[CROSSWALK]
+
+**Two older names turn up on this group's paperwork more than any others.**
 
 - **Diffuse astrocytoma** on its own is now usually written with the gene
   result attached, as astrocytoma, IDH-mutant, with a grade.
 - **Oligoastrocytoma**, a mixed name, is no longer given as a diagnosis. Gene
   tests now sort those tumors into one group or the other.
-- **Roman numeral grades**, like grade II, are now written as grade 2.
 
 Seeing a retired name on your own report does not mean it was wrong. It means it
 was written under the old rules. If you are comparing an old report with a new

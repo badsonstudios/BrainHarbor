@@ -1030,3 +1030,68 @@ dossier's description of a paper rather than from the page that had just been
 fetched. Titles render as the visible link text under "Sources", so a fabricated
 title is a fabricated citation on the reader's screen, and no test can catch it.
 **Paste the `<title>` the fetch script prints. Every time.**
+
+### 12.10 Scoping a shared block (WI-514)
+
+WI-501 built the include mechanism and every block it shipped was used by one
+page. WI-514 wrote the first two blocks meant for **all 24 hubs**, and both were
+wrong on the first attempt in the same way. Read this before writing or
+including one.
+
+**The test: would this sentence be true on the hub you have thought about
+least?** Not "is it true of gliomas". A block is prose you are asserting on
+every page that includes it, and the failure is silent — nothing in ContentCheck
+or the test suite can tell you a block's words are wrong for the page pulling
+them in. The reader is the only detector, and by then it is on 24 pages.
+
+- **`[MECHANISM]`'s first draft said "they grow through brain tissue instead of
+  pushing it aside" and "'they got it all' and 'cured' are not the same
+  sentence".** True of diffuse gliomas. **False, and frightening, for a fully
+  resected grade 1 meningioma or pilocytic astrocytoma** — tumors that do push
+  tissue aside and are cured by surgery. It also said "the most common ways a
+  **glioma** shows up", which is simply not about meningioma at all. The
+  infiltration material now lives on `/tumors/glioma` under its own heading, and
+  the block carries only what a closed skull does to anything inside it.
+- **`[CROSSWALK]`'s first draft was the glioma rename table.** Every entry was a
+  glioma name, so a meningioma hub including it would have inherited nothing
+  relevant. Worse, `/tumors/low-grade-glioma` was switched from its own
+  three-name slice to the full block, which put **glioblastoma and DIPG entries
+  into a grade-2 patient's identity section**. That is a regression dressed as
+  factoring.
+
+**So the split is: the block carries what is universal, the page carries its own
+slice** — which is what SYNTHESIS §4.3 says ("canonical: the glioma umbrella
+page, **with the per-tumor slice repeated only where it differs**") and what the
+WI-514 backlog entry says. The universal crosswalk is the 2021 rewrite, Roman to
+Arabic, gene results becoming part of the name, and NOS/NEC. The specific
+renames belong to the family page that owns them.
+
+**A hedge in a block is not weasel wording, it is scope.** "Some of what you are
+feeling **may not** be the tumor itself" reads weaker than "is not" and is the
+correct sentence, because swelling is not every tumor's story. Tests have to
+match the hedged wording; one of WI-514's failed on exactly this and the test
+was what needed changing.
+
+**Two test-shaped traps this produced.**
+
+- **A test named for a block that asserts the page.** `TheCrosswalkBlock
+  ComposesIntoThisPageCarryingEveryRetiredName` checked words that had moved
+  onto the page, so emptying the block left it green. If a test's subject is the
+  block, assert something only the block says.
+- **A test asserting a phrase where the claim was the property.** Checking that
+  "not curable" appears passed on a page whose only use of the words was the
+  softening line beneath it ("Not curable is not the same as untreatable"), so
+  deleting the hard sentence stayed green. Same family as WI-512's urgency
+  tests, which asserted presence when position was the property.
+
+**And the surface a front-matter check cannot see.** Block `sources` merge into
+every including page and **render in the reader's source list**. A banned or
+dead URL added to a block ships onto 24 pages while a test that reads only the
+page's own front matter stays green. Check the blocks too.
+
+**Cross-page consistency tests must read the other page.** WI-514's escalation
+test named `/seizures/what-to-do` in its comment, hard-coded what that page was
+believed to say, and never opened it — a consistency check that could not see an
+inconsistency. It reads the siblings now. (And strip markdown emphasis before
+matching: the seizure page writes `**first ever** seizure`, and a regex walking
+past the asterisks reports the sibling has stopped saying it.)
