@@ -552,11 +552,27 @@ public sealed class LowGradeGliomaPageContentTests
         // arrive holding old paperwork." Research §0.3 calls the crosswalk the
         // single highest-value block on the site, and this page's readers are
         // exactly the ones holding a pre-2021 report.
-        var section = CuratedPage.Flatten(Section("What is a low-grade glioma?"));
+        //
+        // WI-514 moved the CNS5-wide renames into the shared [CROSSWALK] block
+        // (SYNTHESIS §4.3: canonical home is the glioma umbrella, "with the
+        // per-tumor slice repeated only where it differs"). So this asserts
+        // against the COMPOSED page. Asserting the raw source here would be
+        // asserting against the literal characters "[CROSSWALK]".
+        var raw = CuratedPage.Flatten(Section("What is a low-grade glioma?"));
+        var section = CuratedPage.Flatten(
+            CuratedPage.ComposedSection(Page, "What is a low-grade glioma?"));
 
-        Assert.Matches(new Regex(@"some of its names have been\s*retired", RegexOptions.IgnoreCase), section);
-        Assert.Matches(new Regex(@"[Oo]ligoastrocytoma", RegexOptions.IgnoreCase), section);
+        // The page's own slice: the two names THIS group's readers hold, called
+        // out before the shared block rather than left for them to find.
+        Assert.Matches(new Regex(@"diffuse astrocytoma", RegexOptions.IgnoreCase), raw);
+        Assert.Matches(new Regex(@"[Oo]ligoastrocytoma", RegexOptions.IgnoreCase), raw);
+
+        // And the shared block is actually pulled in, carrying the renames and
+        // the Roman-numeral line this page used to spell out itself.
+        Assert.Contains("[CROSSWALK]", Section("What is a low-grade glioma?"), StringComparison.Ordinal);
         Assert.Matches(new Regex(@"grade II", RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"names for these tumors changed|rules .{0,30}changed in 2021",
+            RegexOptions.IgnoreCase), section);
 
         // And it must not read as an accusation against whoever wrote the old
         // report — the same move the grade section makes about "the good kind".

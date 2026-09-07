@@ -163,7 +163,7 @@ Two reasons it is worth the bother:
   at how often the trigger happened **without** a seizure too. That is the part
   people skip, and it is the part that tells you the truth.
 
-## Driving
+## Driving {#driving}
 
 This is usually the biggest practical change, and often the hardest.
 
