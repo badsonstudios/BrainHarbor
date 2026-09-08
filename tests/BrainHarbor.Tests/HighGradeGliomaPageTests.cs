@@ -800,6 +800,11 @@ public sealed class HighGradeGliomaPageContentTests
             Section("Where does it grow, and why does it cause these symptoms?"),
             StringComparison.Ordinal);
         Assert.Contains("[CROSSWALK]", Section(ReportHeading), StringComparison.Ordinal);
+
+        // WI-563. Pinned to the SECTION: an [ESCALATION] that drifts to the
+        // bottom of the page is a reader who meets the ambulance tier four
+        // screens after the symptoms that trigger it.
+        Assert.Contains("[ESCALATION]", Section(SymptomHeading), StringComparison.Ordinal);
         Assert.Contains("[CAUSES]", Section("Did I cause this?"), StringComparison.Ordinal);
         Assert.Contains(
             "[CAREGIVER]",
@@ -886,87 +891,11 @@ public sealed class HighGradeGliomaPageContentTests
     [Fact]
     public void TheEscalationTiersMatchTheSiblingPagesTheySendPeopleTo()
     {
-        // WI-512's blocker and WI-514's fix for it: pin WHICH LIST a symptom
-        // sits in, and READ the sibling rather than hard-coding what it is
-        // believed to say.
-        var section = CuratedPage.Flatten(Section(SymptomHeading));
-
-        var ambulance = Regex.Match(section,
-            @"Call an ambulance for any of these:(.*?)(?=Call your team)", RegexOptions.Singleline);
-        Assert.True(ambulance.Success, "the page has no ambulance list");
-
-        var sameDay = Regex.Match(section,
-            @"Call your team the same day for any of these:(.*?)(?=Same day means|$)",
-            RegexOptions.Singleline);
-        Assert.True(sameDay.Success, "the page has no same-day list");
-
-        var here = ambulance.Groups[1].Value;
-        var later = sameDay.Groups[1].Value;
-
-        // Markdown emphasis stripped first: the seizure page writes
-        // "**first ever** seizure", and a regex walking past the asterisks
-        // reports the sibling has stopped saying it.
-        var seizurePage = Regex.Replace(
-            CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read("seizures", "what-to-do.md"))),
-            @"[*_]", "");
-        Assert.True(
-            Regex.IsMatch(seizurePage, @"first[- ](ever[- ])?seizure", RegexOptions.IgnoreCase),
-            "/seizures/what-to-do no longer singles out a first seizure — this page's ambulance "
-            + "tier was built on that and needs rechecking");
-        Assert.Matches(new Regex(@"first ever seizure", RegexOptions.IgnoreCase), here);
-
-        // The sibling's TIER, not merely that the sibling says the word. An
-        // earlier version only proved /treatments/craniotomy mentioned
-        // "confusion" somewhere — so if that page promoted it to its ambulance
-        // list, the cross-page consistency test would have stayed green while
-        // the two pages disagreed. That is the WI-514 defect wearing the
-        // costume of its own fix, one layer deeper.
-        var craniotomy = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.Read("treatments", "craniotomy.md")));
-        var craniotomyAmbulance = Regex.Match(craniotomy,
-            @"[Cc]all an ambulance(.*?)(?=[Cc]all your team|$)", RegexOptions.Singleline);
-
-        foreach (var sameDaySymptom in new[] { "confusion", "vision" })
-        {
-            Assert.True(
-                craniotomy.Contains(sameDaySymptom, StringComparison.OrdinalIgnoreCase),
-                $"/treatments/craniotomy no longer mentions '{sameDaySymptom}', so the tier this "
-                + "page copied from it cannot be checked");
-            Assert.False(
-                craniotomyAmbulance.Success
-                && craniotomyAmbulance.Groups[1].Value.Contains(
-                    sameDaySymptom, StringComparison.OrdinalIgnoreCase),
-                $"/treatments/craniotomy now escalates '{sameDaySymptom}' to an ambulance while "
-                + "this page files it as same-day — the two pages disagree");
-
-            Assert.Matches(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), later);
-            Assert.DoesNotMatch(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), here);
-        }
-
-        Assert.Matches(new Regex(@"breathing|choking", RegexOptions.IgnoreCase), here);
-        Assert.Matches(new Regex(@"cannot be woken", RegexOptions.IgnoreCase), here);
-        Assert.Matches(new Regex(@"out of hours", RegexOptions.IgnoreCase), section);
-
-        // THE FEVER RULE. Essentially every reader of this page is offered
-        // chemotherapy — the treatment section says so — and
-        // /treatments/chemotherapy opens by calling a fever "the one thing to
-        // know before you start". The first draft of this section had no fever
-        // line at all, which made this the only page on the site that routes
-        // people into chemotherapy without the rule that goes with it.
-        //
-        // The sibling is READ, so if that page ever softens or moves the rule,
-        // this page's pointer to it goes red rather than quietly stale.
-        var chemotherapy = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.Read("treatments", "chemotherapy.md")));
-        Assert.True(
-            Regex.IsMatch(chemotherapy, @"fever[^.]{0,80}straight away", RegexOptions.IgnoreCase),
-            "/treatments/chemotherapy no longer says a fever means calling straight away, so "
-            + "this page's fever line was built on something that has moved");
-
-        Assert.Matches(
-            new Regex(@"fever is its own rule", RegexOptions.IgnoreCase), section);
-        Assert.Contains(
-            "/treatments/chemotherapy#fever-rule", Section(SymptomHeading), StringComparison.Ordinal);
+        // WI-563: the tiers moved into Content/blocks/escalation.md and this
+        // assertion moved with them. It ran here as three byte-identical copies
+        // that had ALREADY drifted apart — this one lacked checks the others had
+        // — which is the same failure as the prose it guards, one layer up.
+        CuratedPage.AssertEscalationTiers(Page, "tumors/high-grade-glioma", SymptomHeading);
     }
 
     [Fact]
@@ -1348,7 +1277,8 @@ public sealed class HighGradeGliomaPageRenderTests : IClassFixture<WebApplicatio
     {
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
-        foreach (var directive in new[] { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]" })
+        foreach (var directive in new[]
+                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[ESCALATION]" })
         {
             Assert.DoesNotContain(directive, html, StringComparison.Ordinal);
         }

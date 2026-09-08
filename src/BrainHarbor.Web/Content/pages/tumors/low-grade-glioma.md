@@ -178,11 +178,7 @@ Some of these tumors are found by accident. Someone has a scan for a head
 injury, or for a headache that turns out to be nothing to do with it, and there
 it is.
 
-**When to get help urgently.** A first-ever seizure is an emergency call.
-[What to do when someone has a seizure](/seizures/what-to-do) is worth reading
-before you need it, and it says clearly which seizures need an ambulance and
-which do not. Otherwise, call your team the same day for a new or much worse
-headache, new weakness, confusion, or a change in vision.
+[ESCALATION]
 
 ## How do doctors find out it is this?
 
