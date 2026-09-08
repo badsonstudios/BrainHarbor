@@ -1095,9 +1095,18 @@ form (https://pmc.ncbi.nlm.nih.gov/articles/PMC11640674/).
 
 Everything in §0.6, but with the emphasis inverted relative to low-grade disease:
 
-- **Oedema and raised ICP dominate.** Raised ICP "is more commonly seen in
+- **Oedema is infiltrative here.** ~~Raised ICP "is more commonly seen in
   high-grade gliomas complicated by blood–brain barrier disruption and vasogenic
-  oedema" (https://link.springer.com/article/10.1186/s44201-022-00013-6).
+  oedema".~~ **CORRECTED 2026-09-07 (WI-515): that sentence is NOT in the cited
+  Springer paper.** The paper was fetched in full; its only "more commonly seen"
+  sentence is about hematologic malignancies. Do not state a comparative claim
+  about how much oedema or raised pressure high-grade gliomas cause — nothing in
+  the fetched set supports one. What the paper DOES say, verbatim: "peritumoral
+  edema in high-grade gliomas is referred to as **infiltrative edema** because it
+  represents vasogenic edema **in a zone of infiltrating tumor cells**"
+  (https://link.springer.com/article/10.1186/s44201-022-00013-6). That is a
+  statement about the NATURE of the oedema, not its quantity, and it is what
+  `/tumors/high-grade-glioma` publishes.
 - **Contrast enhancement on MRI** reflects that barrier breakdown
   (https://www.ncbi.nlm.nih.gov/books/NBK441874/).
 - **Rapid infiltration along white matter tracts**, including across the corpus
