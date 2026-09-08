@@ -749,6 +749,19 @@ public sealed class GliomaPageContentTests
 /// gate must be VERIFIED rather than assumed, "because every fail-open mode
 /// builds green" — and on a router page, the links are the product.
 /// </summary>
+/// <summary>
+/// WI-517: <c>[Collection(DatabaseCollection.Name)]</c> is what serializes a
+/// render class against the one dev database. This class shipped without it,
+/// and so did two siblings — they had been racing every other DB-touching
+/// class since they were written. It only surfaced when a FOURTH render class
+/// arrived: CI came back with 397 failures, every one of them
+/// "23505: duplicate key value violates unique constraint
+/// pg_database_datname_index" — two fixtures running CREATE DATABASE at once.
+/// Locally it looked like flake, because a different test failed each run.
+/// A suite that fails somewhere else each time it runs is not flaky, it is
+/// contended.
+/// </summary>
+[Collection(DatabaseCollection.Name)]
 public sealed class GliomaPageRenderTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private const string Url = "/tumors/glioma";
