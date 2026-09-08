@@ -2786,6 +2786,61 @@ Start only after Dan has signed off WI-513's template.
   "**Grade III.**" — the IgnoreCase trap's fourth occurrence. Bad citation #26:
   the dossier's source for the entire circumscribed group is a bot-blocked
   PubMed URL that is not open access anywhere.
+- [ ] **WI-563 `[ESCALATION]` shared block — factor the tiers, keep the routing
+  page-local** *(do this BEFORE WI-517)* — the twelve-line ambulance / same-day
+  list is now hand-copied **byte-identical** across three hubs
+  (`/tumors/glioma` L200, `/tumors/high-grade-glioma` L205,
+  `/tumors/astrocytoma` L191) and the fever sentence beneath it has **already
+  diverged**: high-grade says the fever rule "explains why, **and what number
+  your team will give you**", astrocytoma says "explains why." Twenty-one hubs
+  are still to be written; §12.8's "factor at the second use" is three uses
+  overdue. Slotted before WI-517 so oligodendroglioma is the **first hub written
+  against the block** rather than the fifth hand-copy.
+  **Goal:** one `Content/blocks/escalation.md`, included as `[ESCALATION]`,
+  carrying only what is true on the hub you have thought about least.
+  **Apply §12.10's split:**
+  - **Universal → the block.** The two tier headings, the five ambulance lines,
+    the seven same-day lines, the "same day means today" paragraph with the
+    out-of-hours-number instruction, and the two onward links
+    (`/seizures/what-to-do`, `/get-help-now`). These are properties of a brain
+    tumor in a closed skull, not of any diagnosis.
+  - **Page-local → the slice.** The **fever line is routing, not a tier** — it
+    fires only for a reader this page sends into chemotherapy, so it stays on
+    the page, beneath the include, and `/tumors/glioma` deliberately does not
+    carry it (it routes to children, not to a regimen). WI-515's lesson holds:
+    a hub owes the safety rules of the treatments it routes into.
+  - `/tumors/low-grade-glioma` keeps its **compressed one-paragraph** version
+    (L183-184) — do **not** switch it to the block without re-reading §12.10's
+    crosswalk regression; decide deliberately and record which way and why.
+  - The three `/treatments/*` pages keep their own **procedure-specific** lists.
+    They are not this block and must not be folded into it — but re-check the
+    tier each shared symptom sits in, because WI-512 found the same symptom
+    sorted into three different tiers across three pages.
+  **Acceptance criteria:**
+  - [ ] `Content/blocks/escalation.md` exists; the three hubs include
+        `[ESCALATION]` and none of them still contains the twelve list lines
+        inline. A test fails if a hub re-inlines them.
+  - [ ] A test asserts something **only the block says** (§12.10's
+        test-named-for-a-block trap) so emptying the block goes red.
+  - [ ] A test pins **which tier** each of the twelve symptoms sits in, not
+        merely that the words are present — WI-512's presence-versus-position
+        defect.
+  - [ ] The fever line is asserted **page-local**: present on high-grade and
+        astrocytoma, absent on glioma, with the divergence resolved to one
+        wording, and the test **reads `/treatments/chemotherapy`** rather than
+        hard-coding what it says (§12.10, cross-page tests open the sibling).
+  - [ ] The ambulance list is checked against `/seizures/what-to-do` by reading
+        that page, stripping markdown emphasis first.
+  - [ ] Block `sources` audited — they merge into every including page's reader
+        source list; every URL fetched and its real `<title>` pasted.
+  - [ ] Reading grade still ≤ 6.0 on all three hubs, ContentCheck 0 failures,
+        full suite green, and every new test proven by the break harness on an
+        **LF copy and a CRLF copy**.
+  - [ ] §12.10 gains the escalation case; §12.9's hub template names
+        `[ESCALATION]` so the remaining 21 hubs include it instead of copying.
+  **Refs:** `docs/content-pipeline.md` §12.8 (factor at the second use), §12.9
+  (hub template), §12.10 (scoping a shared block), §12.11 (a hub owes the safety
+  rules of what it routes into). **Depends on:** WI-516.
 - [ ] **WI-517 Oligodendroglioma, deepened** — why both halves of the name
   matter; seizures as the hallmark; calcification on the scan; **why PCV is the
   oligodendroglioma chemotherapy** (the 1p/19q co-deletion that *defines* the
