@@ -2874,13 +2874,60 @@ Start only after Dan has signed off WI-513's template.
   `blocks/escalation.md` must match — WI-563 pinned the two together with a test
   that reads the sibling's `{#fever-rule}` section, so they cannot drift again.
   **Depends on:** WI-563.
-- [ ] **WI-517 Oligodendroglioma, deepened** — why both halves of the name
-  matter; seizures as the hallmark; calcification on the scan; **why PCV is the
-  oligodendroglioma chemotherapy** (the 1p/19q co-deletion that *defines* the
-  tumor also *predicts* PCV benefit — label and treatment are two consequences
-  of one biological fact, which is also why the test is worth waiting for);
-  PCV vs temozolomide presented as genuinely open; what to ask if the report
-  does not mention 1p/19q. Depends on: WI-514.
+- [x] **WI-517 Oligodendroglioma, deepened** *(done 2026-09-08 — `/tumors/oligodendroglioma`)* —
+  a 172-word stub became the §12.3 seventeen-section hub. Reading grade **5.8**,
+  **1357 tests** (1322 before), ContentCheck **232/0**, **all 47
+  break-mutations proven on LF AND CRLF**, two new glossary terms
+  (oligodendrocyte, calcification). **The first hub written AGAINST
+  `[ESCALATION]` rather than hand-copying it**, which is why WI-563 was slotted
+  ahead of it.
+  **This is the page where §12.1 costs the most, and it is now written up as
+  §12.13.** The single richest source on this tumor is the StatPearls
+  oligodendroglioma chapter — the exact chapter §12.1 names as one never to use
+  for naming or grading. It is cited here for symptoms, imaging and treatment
+  mechanics; naming and grading rest on the CNS5-aligned sources, with a
+  front-matter comment saying so and tests looking for the vocabulary that would
+  leak in if the line slipped.
+  **Three dossier claims are not in the sources they are attributed to.**
+  "Patients often have a long history of seizures before diagnosis" appears
+  **zero** times in that chapter; **PMC10475770**, cited for "transformation is
+  not associated with worse outcomes in oligodendrogliomas", is about
+  transformation *patterns* and says nothing of the kind; and "no inherited
+  syndrome is characteristically associated with oligodendroglioma" — which the
+  dossier flags as *"say this, because it is reassuring and true"* — has no
+  citation anywhere. **That parenthetical is the tell.** `ascopubs.org`
+  re-confirmed dead (403, 5,620-byte shell) for the third item running.
+  **`/review` found FIVE blockers and the first was a whole missing block.**
+  (1) **No retired-name crosswalk slice**, on the one hub whose central fact IS
+  a retired name — oligoastrocytoma was not renamed, it was **eliminated**, and
+  the 1p/19q test this page spends its length explaining is what eliminated it.
+  The page printed "Oligoastrocytoma" in a visible source title with no
+  explanation, while `/tumors/high-grade-glioma` already explained "anaplastic
+  oligodendroglioma" and routed here. **And the test guarding it iterated over
+  regex MATCHES, so on a page with none the loop never ran and it was green.**
+  (2) The page's headline claim **overstated its only live source by one word**:
+  "prediction of the best drug RESPONSE" became "predicts WHICH DRUGS it will
+  respond to best", under a heading naming PCV — drug selection rather than
+  responsiveness — and contradicted the "genuinely open" section three screens
+  below. (3) The caregiver section reported what caregivers "most often say",
+  a quantified population claim no source makes. (4) The outlook gate turned
+  "relative chemosensitivity ... among diffuse gliomas" into two **superlatives**;
+  the ban list held "responds better" and "responds well" but not "responds
+  best". (5) The radiation-timing trade-off is a **grade-2** conversation and
+  was offered to grade-3 readers, for whom waiting is not on the table.
+  **The break harness then found six more, four of them real test weaknesses.**
+  The §12.6 landing check read `sentences[^1]` of a section with three `###`
+  subsections under it, so it was examining a different subsection and **could
+  never fire**. The retired-name positives passed on any mention anywhere, so
+  deleting the bullet left them green. Nothing banned an invented quantifier
+  ("a large majority" for a 35-to-91% spread). And `BritishForms` holds
+  spellings, not idiom, so putting "out of hours" back passed every guard.
+  **Also:** `blocks/mechanism.md` said "feeling sick and being sick" — the same
+  idiom WI-563 fixed in the escalation block one item earlier, on the block that
+  composes onto every hub — now fixed; `[MECHANISM]` was sitting before the
+  page's own answer to "where does it grow" (§12.11) and the sibling's test for
+  that was not copied across; and the `[ESCALATION]` include is pinned to the
+  symptoms section, so relocating it goes red.
 - [ ] **WI-518 Glioblastoma, deepened** — the growth story in one paragraph
   (outgrows its blood supply → necrosis → starving cells force leaky new vessels
   → expansion), which explains necrosis, ring enhancement, edema and relentless

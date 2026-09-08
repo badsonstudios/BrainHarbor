@@ -26,7 +26,7 @@ the tumor being any different than it was.
 
 **Pressure can build up inside the head.** When the pressure inside the skull
 rises, there is a pattern doctors watch for: headaches that are worse in the
-morning, feeling sick and being sick, odd eye movements, seizures, and being
+morning, feeling sick and throwing up, odd eye movements, seizures, and being
 confused or very drowsy. Not everybody with raised pressure has all of it, and
 some people have almost none of it. If this pattern is new for you, it is worth
 a phone call rather than a wait.
