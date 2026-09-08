@@ -1,6 +1,6 @@
 ---
 term: CDKN2A/B homozygous deletion
-also: [CDKN2A/B deletion]
+also: [CDKN2A/B deletion, CDKN2A/B]
 sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC9723092/
     title: "Smith et al: Major Features of the 2021 WHO Classification of CNS Tumors"

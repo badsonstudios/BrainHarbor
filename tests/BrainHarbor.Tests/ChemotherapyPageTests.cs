@@ -411,7 +411,10 @@ public sealed class ChemotherapyPageContentTests
         }
 
         // Arabic grades only.
-        Assert.DoesNotMatch(new Regex(@"\bgrade\s+(I{1,3}V?|IV)\b"), Reader);
+        // IgnoreCase added by WI-516: written case-sensitive, this walked past
+        // the sentence-initial "Grade IV", which is the commonest form.
+        Assert.DoesNotMatch(
+            new Regex(@"\bgrade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase), Reader);
     }
 
     [Fact]
