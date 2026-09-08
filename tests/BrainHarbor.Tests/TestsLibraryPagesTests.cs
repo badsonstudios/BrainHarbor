@@ -561,17 +561,195 @@ internal static class CuratedPage
 
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];
+
+    /// <summary>Where the curated pages live, for tests that walk a whole directory.</summary>
+    public static string PagesDirectory => PagesRoot;
+
+    /// <summary>The escalation block's own text.</summary>
+    public static string EscalationBlock =>
+        File.ReadAllText(Path.Combine(BlocksRoot, "escalation.md"));
+
+    /// <summary>
+    /// The escalation bullets, READ OUT OF THE BLOCK rather than re-typed here.
+    ///
+    /// The first version of this was a hard-coded literal list, which is the
+    /// trap §12.11 names: a test that asserts the non-duplication of a block
+    /// against its own private copy of the block's words has two copies to keep
+    /// in step, in the helper whose subject is not keeping two copies in step.
+    /// Reword a bullet and the literal list silently stops guarding it.
+    /// </summary>
+    public static string[] EscalationLines() =>
+        [.. Regex.Matches(ReaderText(EscalationBlock), @"^- (.+)$", RegexOptions.Multiline)
+            .Select(m => m.Groups[1].Value.Trim())];
+
+    /// <summary>
+    /// The escalation tiers, checked against the sibling pages they were built
+    /// from. WI-563 factored this out of three byte-identical copies in
+    /// GliomaPageTests, HighGradeGliomaPageTests and AstrocytomaPageTests —
+    /// which were themselves the same drift the block fixes, one layer up: the
+    /// copies had already diverged, and each was missing a check another had.
+    ///
+    /// Runs on the COMPOSED page, because the tiers now live in a block and an
+    /// assertion against the raw page would be asserting against the literal
+    /// string "[ESCALATION]" (§12.10, WI-514's trap).
+    ///
+    /// SECTION-SCOPED, and that is not cosmetic. The first version of this
+    /// helper flattened the WHOLE page, which quietly dropped the scoping the
+    /// three copies it replaced all had — so moving [ESCALATION] out of the
+    /// symptoms section and down into "Where to get support" would have kept
+    /// the suite green. That is WI-512's "presence was never the property,
+    /// position was", re-committed by the factoring that cites it.
+    ///
+    /// Every cross-page claim READS the sibling rather than hard-coding what it
+    /// is believed to say (§12.10), and checks the sibling's TIER rather than
+    /// merely that it says the word.
+    /// </summary>
+    public static void AssertEscalationTiers(string page, string slug, string heading)
+    {
+        var section = Flatten(ReaderText(ComposedSection(page, heading)));
+
+        // The list header ends with a period now, not a colon: it carries the
+        // 911 instruction on its own line so a US reader gets the action and
+        // not only the British-sounding noun (/seizures/what-to-do does the
+        // same). `[.:]` so a revert to either shape is still matched.
+        var ambulance = Regex.Match(section,
+            @"Call an ambulance for any of these[.:](.*?)(?=A seizure like|Call your team)",
+            RegexOptions.Singleline);
+        Assert.True(ambulance.Success, $"{slug} has no ambulance list");
+
+        var sameDay = Regex.Match(section,
+            @"Call your team the same day for any of these:(.*?)(?=If you are having|Same day means|$)",
+            RegexOptions.Singleline);
+        Assert.True(sameDay.Success, $"{slug} has no same-day list");
+
+        var here = ambulance.Groups[1].Value;
+        var later = sameDay.Groups[1].Value;
+
+        // /seizures/what-to-do is the site's authority on seizure escalation.
+        // Strip markdown emphasis first, or `**first ever** seizure` reads as
+        // absent (§12.10).
+        var seizurePage = Regex.Replace(
+            Flatten(ReaderText(Read("seizures", "what-to-do.md"))), @"[*_]", "");
+        Assert.True(
+            Regex.IsMatch(seizurePage, @"first[- ](ever[- ])?seizure", RegexOptions.IgnoreCase),
+            "/seizures/what-to-do no longer singles out a first seizure — the escalation block's "
+            + "ambulance tier was built on that and needs rechecking");
+        Assert.Matches(new Regex(@"first ever seizure", RegexOptions.IgnoreCase), here);
+
+        // WI-512's blocker: the same symptom sorted into different tiers on
+        // different pages.
+        //
+        // The capture is anchored on craniotomy's REAL heading. The first
+        // version terminated on "[Cc]all your team", which that page does not
+        // contain anywhere — so the capture ran from the ambulance heading to
+        // the end of the file, swallowing the questions list and two later
+        // sections. It passed only because the words happened not to appear
+        // down there; the first time somebody wrote "confusion" into that
+        // page's questions list, four hub tests would have failed claiming
+        // craniotomy had escalated it.
+        var craniotomy = Flatten(ReaderText(Read("treatments", "craniotomy.md")));
+        var craniotomyAmbulance = Regex.Match(craniotomy,
+            @"When to call an ambulance\.\*\*(.*?)(?=\*\*[A-Z]|\z)", RegexOptions.Singleline);
+        Assert.True(craniotomyAmbulance.Success,
+            "/treatments/craniotomy no longer has a 'When to call an ambulance' list, so the "
+            + "tier the escalation block was checked against cannot be found");
+
+        // Concept sets, not single words. Craniotomy's ambulance tier says
+        // "cannot ... see", never "vision" — so a literal Contains("vision")
+        // check reported agreement while the two pages were in fact drawing
+        // the line in different places. Lexical checks across pages written by
+        // different hands prove nothing.
+        var sameDayConcepts = new[]
+        {
+            (Name: "confusion", Words: new[] { "confusion", "confused" }),
+            (Name: "vision", Words: new[] { "vision", "sight" }),
+        };
+
+        foreach (var (name, words) in sameDayConcepts)
+        {
+            Assert.True(
+                words.Any(w => craniotomy.Contains(w, StringComparison.OrdinalIgnoreCase)),
+                $"/treatments/craniotomy no longer mentions '{name}', so the tier the "
+                + "escalation block copied from it cannot be checked");
+
+            // The block files a NEW, partial deficit as same-day and a SUDDEN,
+            // complete one as an ambulance; craniotomy draws the same line. So
+            // the disagreement to catch is craniotomy filing the gradual form
+            // as an ambulance, which is what these words name.
+            Assert.False(
+                words.Any(w => craniotomyAmbulance.Groups[1].Value.Contains(
+                    w, StringComparison.OrdinalIgnoreCase)),
+                $"/treatments/craniotomy now escalates '{name}' to an ambulance while "
+                + $"{slug} files it as same-day — the two pages disagree");
+
+            Assert.Matches(new Regex(name, RegexOptions.IgnoreCase), later);
+            Assert.DoesNotMatch(new Regex(name, RegexOptions.IgnoreCase), here);
+        }
+
+        // One anchored regex, not an alternation: "breathing|choking" is
+        // satisfied by either word alone, and the bullet is one item naming
+        // both (WI-515). Two of the three copies this replaced used the weak
+        // alternation; only one used the anchored form.
+        Assert.Matches(
+            new Regex(@"[Tt]rouble breathing, or someone who seems to be choking",
+                RegexOptions.IgnoreCase),
+            here);
+        Assert.Matches(new Regex(@"cannot be woken", RegexOptions.IgnoreCase), here);
+
+        // The sudden-and-complete deficit is an ambulance, and must not have
+        // been dropped back down into the same-day tier (§12.10, the
+        // under-triage direction).
+        Assert.Matches(
+            new Regex(@"[Ss]uddenly not being able to speak, move one side, or see",
+                RegexOptions.IgnoreCase),
+            here);
+
+        // The converse. Without it the block teaches a reader who has seizures
+        // every month to call an ambulance every month — which is what
+        // /tumors/low-grade-glioma's compressed slice said and the block's
+        // first draft did not.
+        Assert.Matches(
+            new Regex(@"is not an ambulance call", RegexOptions.IgnoreCase), section);
+
+        Assert.Matches(new Regex(@"after[- ]hours", RegexOptions.IgnoreCase), section);
+
+        // §12.11: a hub that routes readers into a treatment owes that
+        // treatment's safety rule. WI-563 moved this INTO the block after
+        // finding /tumors/glioma and /tumors/low-grade-glioma both offering
+        // chemotherapy with no fever rule anywhere on the page — the exact
+        // defect WI-515 was blocked on, live on two pages.
+        //
+        // The sibling is read AT THE SECTION THE BLOCK DEEP-LINKS, not at the
+        // page. The first version matched the chemotherapy page's INTRO line,
+        // so gutting the whole {#fever-rule} section would have left this green
+        // while the block's link landed the reader on an empty heading.
+        var feverRule = Flatten(ReaderText(
+            Section(Read("treatments", "chemotherapy.md"), "Your blood counts, and the fever rule")));
+        Assert.True(
+            Regex.IsMatch(feverRule, @"straight away, at any hour", RegexOptions.IgnoreCase),
+            "/treatments/chemotherapy's fever-rule section no longer says a fever means calling "
+            + "straight away at any hour, so the escalation block's fever line has drifted from "
+            + "the page that owns the rule");
+        Assert.Matches(new Regex(@"fever is its own rule", RegexOptions.IgnoreCase), section);
+        Assert.Contains("/treatments/chemotherapy#fever-rule", section, StringComparison.Ordinal);
+
+        // The surgery half of the same rule. Every hub that routes into
+        // /treatments/craniotomy owes it, and a post-op fever is not
+        // chemo-conditional.
+        Assert.Matches(
+            new Regex(@"after brain surgery, a fever is its own rule too", RegexOptions.IgnoreCase),
+            section);
+
+        // The fever lines are call-right-away, and must not have been folded
+        // into either tier list — a fever in the same-day bullets is the
+        // over-reassuring direction (§12.12), and one in the ambulance bullets
+        // sends people to an emergency room for something the team wants to
+        // triage by phone.
+        Assert.DoesNotMatch(new Regex(@"fever", RegexOptions.IgnoreCase), later);
+        Assert.DoesNotMatch(new Regex(@"fever", RegexOptions.IgnoreCase), here);
+    }
 }
 
-/// <summary>
-/// WI-506: T1 MRI, the first page of the tests library and the page that sets
-/// the library-page template (content-pipeline §12.8).
-///
-/// The properties pinned here are the ones that would rot silently. The prose
-/// is not tested — it is reviewed. What IS tested is the small number of places
-/// where this page could give a reader actively wrong advice, and the shape the
-/// other 28 library pages inherit from it.
-/// </summary>
 public sealed class MriPageContentTests
 {
     private static string Page => CuratedPage.Read("tests", "mri.md");

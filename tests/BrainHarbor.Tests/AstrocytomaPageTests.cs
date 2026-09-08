@@ -589,75 +589,11 @@ public sealed class AstrocytomaPageContentTests
     [Fact]
     public void TheEscalationTiersMatchTheSiblingPagesTheySendPeopleTo()
     {
-        // WI-512's blocker, WI-514's fix, WI-515's extension: pin WHICH list a
-        // symptom sits in, READ the siblings, and check the sibling's TIER
-        // rather than merely that it says the word.
-        var section = CuratedPage.Flatten(Section(SymptomHeading));
-
-        var ambulance = Regex.Match(section,
-            @"Call an ambulance for any of these:(.*?)(?=Call your team)", RegexOptions.Singleline);
-        Assert.True(ambulance.Success, "the page has no ambulance list");
-
-        var sameDay = Regex.Match(section,
-            @"Call your team the same day for any of these:(.*?)(?=If you are having|Same day means|$)",
-            RegexOptions.Singleline);
-        Assert.True(sameDay.Success, "the page has no same-day list");
-
-        var here = ambulance.Groups[1].Value;
-        var later = sameDay.Groups[1].Value;
-
-        var seizurePage = Regex.Replace(
-            CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read("seizures", "what-to-do.md"))),
-            @"[*_]", "");
-        Assert.True(
-            Regex.IsMatch(seizurePage, @"first[- ](ever[- ])?seizure", RegexOptions.IgnoreCase),
-            "/seizures/what-to-do no longer singles out a first seizure — this page's ambulance "
-            + "tier was built on that and needs rechecking");
-        Assert.Matches(new Regex(@"first ever seizure", RegexOptions.IgnoreCase), here);
-
-        var craniotomy = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.Read("treatments", "craniotomy.md")));
-        var craniotomyAmbulance = Regex.Match(craniotomy,
-            @"[Cc]all an ambulance(.*?)(?=[Cc]all your team|$)", RegexOptions.Singleline);
-
-        foreach (var sameDaySymptom in new[] { "confusion", "vision" })
-        {
-            Assert.True(
-                craniotomy.Contains(sameDaySymptom, StringComparison.OrdinalIgnoreCase),
-                $"/treatments/craniotomy no longer mentions '{sameDaySymptom}', so the tier this "
-                + "page copied from it cannot be checked");
-            Assert.False(
-                craniotomyAmbulance.Success
-                && craniotomyAmbulance.Groups[1].Value.Contains(
-                    sameDaySymptom, StringComparison.OrdinalIgnoreCase),
-                $"/treatments/craniotomy now escalates '{sameDaySymptom}' to an ambulance while "
-                + "this page files it as same-day — the two pages disagree");
-            Assert.Matches(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), later);
-            Assert.DoesNotMatch(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), here);
-        }
-
-        // One anchored regex, not an alternation: "breathing|choking" is
-        // satisfied by either word alone, and the bullet is one item naming
-        // both.
-        Assert.Matches(
-            new Regex(@"[Tt]rouble breathing, or somebody who seems to be choking",
-                RegexOptions.IgnoreCase),
-            here);
-        Assert.Matches(new Regex(@"cannot be woken", RegexOptions.IgnoreCase), here);
-        Assert.Matches(new Regex(@"out of hours", RegexOptions.IgnoreCase), section);
-
-        // §12.11: a hub that routes readers into a treatment owes that
-        // treatment's safety rule. This page offers chemotherapy at three
-        // grades.
-        var chemotherapy = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.Read("treatments", "chemotherapy.md")));
-        Assert.True(
-            Regex.IsMatch(chemotherapy, @"fever[^.]{0,80}straight away", RegexOptions.IgnoreCase),
-            "/treatments/chemotherapy no longer says a fever means calling straight away, so "
-            + "this page's fever line was built on something that has moved");
-        Assert.Matches(new Regex(@"fever is its own rule", RegexOptions.IgnoreCase), section);
-        Assert.Contains("/treatments/chemotherapy#fever-rule", Section(SymptomHeading),
-            StringComparison.Ordinal);
+        // WI-563: the tiers moved into Content/blocks/escalation.md and this
+        // assertion moved with them. It ran here as three byte-identical copies
+        // that had ALREADY drifted apart — this one lacked checks the others had
+        // — which is the same failure as the prose it guards, one layer up.
+        CuratedPage.AssertEscalationTiers(Page, "tumors/astrocytoma", SymptomHeading);
     }
 
     [Fact]
@@ -822,6 +758,12 @@ public sealed class AstrocytomaPageContentTests
         Assert.Contains("[CAUSES]", Section("Did I cause this?"), StringComparison.Ordinal);
         Assert.Contains("[CAREGIVER]", Section(CaregiverHeading), StringComparison.Ordinal);
         Assert.Contains("[TUMOR-BOARD]", Section(TreatmentHeading), StringComparison.Ordinal);
+
+        // WI-563. Pinned to the SECTION, not the page: the block is the
+        // escalation list, and an [ESCALATION] that has drifted into the
+        // support section at the bottom is a reader who meets the ambulance
+        // tier four screens after the symptoms that trigger it.
+        Assert.Contains("[ESCALATION]", Section(SymptomHeading), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1002,7 +944,7 @@ public sealed class AstrocytomaPageRenderTests : IClassFixture<WebApplicationFac
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
         foreach (var directive in new[]
-                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]" })
+                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]", "[ESCALATION]" })
         {
             Assert.DoesNotContain(directive, html, StringComparison.Ordinal);
         }

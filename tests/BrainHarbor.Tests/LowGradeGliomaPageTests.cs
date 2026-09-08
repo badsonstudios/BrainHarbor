@@ -36,6 +36,27 @@ public sealed class LowGradeGliomaPageContentTests
     private const string CaregiverHeading = "For the person caring for someone with this";
 
     [Fact]
+    public void TheEscalationTiersMatchTheSiblingPagesTheySendPeopleTo()
+    {
+        // WI-563. This page carried a COMPRESSED one-paragraph version of the
+        // escalation material rather than the twelve lines its three siblings
+        // shared, and the compression is what hid the gap: it mentioned
+        // chemotherapy four times and contained the word "fever" only inside a
+        // link label, so a grade-2 reader on temozolomide met no fever rule
+        // anywhere on the page. That is §12.11's defect, live.
+        //
+        // Switching it to the block was a deliberate call, not a tidy-up.
+        // §12.10 warns that moving a page onto a shared block can be a
+        // regression dressed as factoring, so the test was: is any of the
+        // twelve lines wrong for a grade-2 patient? None is — the tiers sort
+        // SYMPTOMS, not prognosis, and a grade-2 glioma's hallmark is exactly
+        // the seizure the ambulance tier is built around. A shorter emergency
+        // list for the less acutely ill reader is the over-reassuring
+        // direction, which §12.12 records as the more dangerous one.
+        CuratedPage.AssertEscalationTiers(Page, "tumors/low-grade-glioma", "What symptoms does it cause?");
+    }
+
+    [Fact]
     public void TheGradeSectionSaysGradeOneAndGradeTwoAreNotTheSameThing()
     {
         // The reason this page exists. The old 202-word version said "Doctors
@@ -726,6 +747,7 @@ public sealed class LowGradeGliomaPageRenderTests : IClassFixture<WebApplication
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
         Assert.DoesNotContain("[CAREGIVER]", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("[ESCALATION]", html, StringComparison.Ordinal);
         Assert.Contains("You are allowed to ask questions", html, StringComparison.Ordinal);
     }
 

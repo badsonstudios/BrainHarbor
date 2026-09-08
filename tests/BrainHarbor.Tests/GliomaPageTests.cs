@@ -472,70 +472,11 @@ public sealed class GliomaPageContentTests
     [Fact]
     public void TheEscalationTiersMatchTheSiblingPagesTheySendPeopleTo()
     {
-        // WI-512's blocker, generalised. Nobody had contradicted a list; three
-        // pages had quietly sorted the same symptom into three different tiers.
-        // The test pins WHICH LIST each symptom sits in, because presence was
-        // never the property — position was.
-        //
-        // And it READS THE SIBLING PAGES rather than hard-coding what they are
-        // believed to say. The first version of this test asserted against
-        // string literals and named /seizures/what-to-do in its comment without
-        // opening it: if that page moved "first ever seizure" to same-day
-        // tomorrow, the test guarding cross-page consistency would have stayed
-        // green. That is the WI-512 defect wearing the costume of its own fix.
-        var section = CuratedPage.Flatten(Section(SymptomHeading));
-
-        var ambulance = Regex.Match(section,
-            @"Call an ambulance for any of these:(.*?)(?=Call your team)", RegexOptions.Singleline);
-        Assert.True(ambulance.Success, "the page has no ambulance list");
-
-        var sameDay = Regex.Match(section,
-            @"Call your team the same day for any of these:(.*?)(?=Same day means|$)",
-            RegexOptions.Singleline);
-        Assert.True(sameDay.Success, "the page has no same-day list");
-
-        var here = ambulance.Groups[1].Value;
-        var later = sameDay.Groups[1].Value;
-
-        // The seizure page is the site's authority on seizure escalation, and
-        // it puts a FIRST seizure in the 911 tier. WI-511's blocker was this
-        // page's sibling under-triaging against it.
-        // Markdown emphasis stripped before matching: the seizure page writes
-        // "their **first ever** seizure", and a regex that walks past the
-        // asterisks reports the sibling page has stopped saying it. WI-511 hit
-        // the same shape when a British-forms gate read raw text and missed
-        // "a lift" across a hard wrap.
-        var seizurePage = Regex.Replace(
-            CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read("seizures", "what-to-do.md"))),
-            @"[*_]", "");
-        Assert.True(
-            Regex.IsMatch(seizurePage, @"first[- ](ever[- ])?seizure", RegexOptions.IgnoreCase),
-            "/seizures/what-to-do no longer singles out a first seizure — this page's "
-            + "ambulance tier was built on that and needs rechecking");
-        Assert.Matches(new Regex(@"first ever seizure", RegexOptions.IgnoreCase), here);
-
-        // Symptoms the craniotomy page files as same-day must not be escalated
-        // to an ambulance here, and must not be missing entirely. WI-510's
-        // blocker was over-escalation; WI-511's was under-escalation.
-        var craniotomy = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.Read("treatments", "craniotomy.md")));
-        foreach (var sameDaySymptom in new[] { "confusion", "vision" })
-        {
-            Assert.True(
-                craniotomy.Contains(sameDaySymptom, StringComparison.OrdinalIgnoreCase),
-                $"/treatments/craniotomy no longer mentions '{sameDaySymptom}', so the tier "
-                + "this page copied from it cannot be checked");
-            Assert.Matches(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), later);
-            Assert.DoesNotMatch(new Regex(sameDaySymptom, RegexOptions.IgnoreCase), here);
-        }
-
-        // The airway item every sibling emergency list carries.
-        Assert.Matches(new Regex(@"breathing|choking", RegexOptions.IgnoreCase), here);
-        Assert.Matches(new Regex(@"cannot be woken", RegexOptions.IgnoreCase), here);
-
-        // "Same day" is useless to a reader at 2am without a number to call,
-        // and this page's own questions list tells them to ask for one.
-        Assert.Matches(new Regex(@"out of hours", RegexOptions.IgnoreCase), section);
+        // WI-563: the tiers moved into Content/blocks/escalation.md and this
+        // assertion moved with them. It ran here as three byte-identical copies
+        // that had ALREADY drifted apart — this one lacked checks the others had
+        // — which is the same failure as the prose it guards, one layer up.
+        CuratedPage.AssertEscalationTiers(Page, "tumors/glioma", SymptomHeading);
     }
 
     [Fact]
@@ -546,13 +487,23 @@ public sealed class GliomaPageContentTests
         // and a page that teaches somebody to recognise drowsiness or vomiting
         // as a warning sign, then never tells them what to do about it, has
         // done the frightening half and skipped the useful half.
-        var symptoms = CuratedPage.Flatten(Section(SymptomHeading));
+        // Both sides read the COMPOSED page. WI-563 moved the action lists into
+        // [ESCALATION], and the first run of this test after that move failed
+        // on "Sleeping much more" — asserting against the raw page was
+        // asserting against the literal string "[ESCALATION]" (§12.10, WI-514's
+        // trap). The pairing is now block-to-block and neither half can go
+        // stale silently.
+        var symptoms = CuratedPage.Flatten(CuratedPage.ComposedSection(Page, SymptomHeading));
         var mechanism = CuratedPage.Flatten(Composed);
 
         foreach (var (taught, acted) in new[]
                  {
                      ("very drowsy", "Sleeping much more"),
-                     ("being sick", "sick over and over"),
+                     // WI-563: the action line reads "Throwing up again and
+                     // again" now. "Being sick" is British for vomiting and
+                     // reads as "being unwell" to this page's audience, which
+                     // is the wrong half of a same-day escalation trigger.
+                     ("being sick", "Throwing up again and again"),
                      ("worse in the\n  morning", "wakes you from sleep"),
                  })
         {
@@ -884,7 +835,8 @@ public sealed class GliomaPageRenderTests : IClassFixture<WebApplicationFactory<
     {
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
-        foreach (var directive in new[] { "[CROSSWALK]", "[MECHANISM]", "[CAUSES]", "[CAREGIVER]" })
+        foreach (var directive in new[]
+                 { "[CROSSWALK]", "[MECHANISM]", "[CAUSES]", "[CAREGIVER]", "[ESCALATION]" })
         {
             Assert.DoesNotContain(directive, html, StringComparison.Ordinal);
         }

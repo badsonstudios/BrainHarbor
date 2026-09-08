@@ -2786,61 +2786,94 @@ Start only after Dan has signed off WI-513's template.
   "**Grade III.**" — the IgnoreCase trap's fourth occurrence. Bad citation #26:
   the dossier's source for the entire circumscribed group is a bot-blocked
   PubMed URL that is not open access anywhere.
-- [ ] **WI-563 `[ESCALATION]` shared block — factor the tiers, keep the routing
-  page-local** *(do this BEFORE WI-517)* — the twelve-line ambulance / same-day
-  list is now hand-copied **byte-identical** across three hubs
-  (`/tumors/glioma` L200, `/tumors/high-grade-glioma` L205,
-  `/tumors/astrocytoma` L191) and the fever sentence beneath it has **already
-  diverged**: high-grade says the fever rule "explains why, **and what number
-  your team will give you**", astrocytoma says "explains why." Twenty-one hubs
-  are still to be written; §12.8's "factor at the second use" is three uses
-  overdue. Slotted before WI-517 so oligodendroglioma is the **first hub written
-  against the block** rather than the fifth hand-copy.
-  **Goal:** one `Content/blocks/escalation.md`, included as `[ESCALATION]`,
-  carrying only what is true on the hub you have thought about least.
-  **Apply §12.10's split:**
-  - **Universal → the block.** The two tier headings, the five ambulance lines,
-    the seven same-day lines, the "same day means today" paragraph with the
-    out-of-hours-number instruction, and the two onward links
-    (`/seizures/what-to-do`, `/get-help-now`). These are properties of a brain
-    tumor in a closed skull, not of any diagnosis.
-  - **Page-local → the slice.** The **fever line is routing, not a tier** — it
-    fires only for a reader this page sends into chemotherapy, so it stays on
-    the page, beneath the include, and `/tumors/glioma` deliberately does not
-    carry it (it routes to children, not to a regimen). WI-515's lesson holds:
-    a hub owes the safety rules of the treatments it routes into.
-  - `/tumors/low-grade-glioma` keeps its **compressed one-paragraph** version
-    (L183-184) — do **not** switch it to the block without re-reading §12.10's
-    crosswalk regression; decide deliberately and record which way and why.
-  - The three `/treatments/*` pages keep their own **procedure-specific** lists.
-    They are not this block and must not be folded into it — but re-check the
-    tier each shared symptom sits in, because WI-512 found the same symptom
-    sorted into three different tiers across three pages.
-  **Acceptance criteria:**
-  - [ ] `Content/blocks/escalation.md` exists; the three hubs include
-        `[ESCALATION]` and none of them still contains the twelve list lines
-        inline. A test fails if a hub re-inlines them.
-  - [ ] A test asserts something **only the block says** (§12.10's
-        test-named-for-a-block trap) so emptying the block goes red.
-  - [ ] A test pins **which tier** each of the twelve symptoms sits in, not
-        merely that the words are present — WI-512's presence-versus-position
-        defect.
-  - [ ] The fever line is asserted **page-local**: present on high-grade and
-        astrocytoma, absent on glioma, with the divergence resolved to one
-        wording, and the test **reads `/treatments/chemotherapy`** rather than
-        hard-coding what it says (§12.10, cross-page tests open the sibling).
-  - [ ] The ambulance list is checked against `/seizures/what-to-do` by reading
-        that page, stripping markdown emphasis first.
-  - [ ] Block `sources` audited — they merge into every including page's reader
-        source list; every URL fetched and its real `<title>` pasted.
-  - [ ] Reading grade still ≤ 6.0 on all three hubs, ContentCheck 0 failures,
-        full suite green, and every new test proven by the break harness on an
-        **LF copy and a CRLF copy**.
-  - [ ] §12.10 gains the escalation case; §12.9's hub template names
-        `[ESCALATION]` so the remaining 21 hubs include it instead of copying.
-  **Refs:** `docs/content-pipeline.md` §12.8 (factor at the second use), §12.9
-  (hub template), §12.10 (scoping a shared block), §12.11 (a hub owes the safety
-  rules of what it routes into). **Depends on:** WI-516.
+- [x] **WI-563 `[ESCALATION]` shared block** *(done 2026-09-08 — `Content/blocks/escalation.md`)* —
+  the twelve-line ambulance / same-day list was hand-copied **byte-identical**
+  across three hubs and the fever sentence beneath it had **already diverged**
+  (high-grade said "explains why, and what number your team will give you",
+  astrocytoma said "explains why."). Factored at the fourth use, three uses
+  after §12.8's rule said to, with 21 hubs still to write. Now included by
+  **four** pages; `/tumors/low-grade-glioma` was switched off its compressed
+  one-paragraph version too. §12.10 gained the case, §12.9 names the block.
+  **The item's own split was WRONG and the item reversed it.** This entry
+  originally said the tiers were universal and the fever line was page-local
+  routing, and that `/tumors/glioma` should deliberately carry none. Checking
+  that assumption found the opposite: **`/tumors/glioma` linked
+  `/treatments/chemotherapy` and contained the word "fever" zero times, and
+  `/tumors/low-grade-glioma` mentioned chemotherapy four times with "fever" only
+  inside a link label** — two live pages carrying §12.11's defect, the one
+  WI-515 was blocked for nearly shipping. A **conditional** ("if you are having
+  chemotherapy") is true on every hub and false on none, so it belongs in the
+  block; the surgery half went in with it, because a post-craniotomy fever is
+  not chemo-conditional and every hub routes into `/treatments/craniotomy`.
+  **`/review` found two blockers, and the first was an editorial defect the
+  automated gates cannot see.** (1) *"Being sick over and over"* is British for
+  vomiting and reads as *being unwell* to a US reader — on a same-day escalation
+  trigger, promoted into the file with the widest blast radius on the site. The
+  block now says "Throwing up again and again", carries the 911 instruction
+  `/seizures/what-to-do` already uses, and drops `straight away`, `straight
+  after` and `out of hours`. (2) Factoring the three page-level tests into one
+  helper **silently dropped the section scoping all three had**, so moving
+  `[ESCALATION]` to the bottom of a page kept the suite green — WI-512's
+  presence-versus-position defect, re-committed by the factoring that cites it.
+  **Three more of my own checks were theatre.** The craniotomy cross-check
+  terminated on "call your team", a string that page **does not contain**, so
+  the capture ran to end of file and passed only because the words happened not
+  to appear down there; it also compared "vision" against a page that says
+  "cannot ... see", reporting agreement where the two pages differed. The
+  chemotherapy check matched that page's **intro line**, so gutting the whole
+  `{#fever-rule}` section would have stayed green while the block's link landed
+  on an empty heading. And the British-forms guard copied the weaker of the
+  repo's two implementations, which disables a whole check when any exemption
+  appears in the file.
+  **Also:** three gaps closed that predate the item — the ambulance tier had no
+  sudden-complete-deficit line while `/treatments/craniotomy` did (the
+  under-triage direction), the block never said which seizures are **not** an
+  ambulance (which `/tumors/low-grade-glioma`'s compressed slice did say), and
+  the "while your white cells are low" clause in my first draft handed a reader
+  whose last count was normal a reason to discount a fever. **29 breaks proven
+  on LF and CRLF**, including a NEAR copy of the list rather than a byte copy —
+  the first version of the fork test used `Ordinal` and would have waved a
+  re-typed "first-ever" straight through. **1322 tests** (1311 before),
+  ContentCheck 228/0, grades unchanged (low-grade 5.3 -> 5.2).
+  **One self-inflicted scare worth recording:** the script that trimmed the
+  helper file cut from the insertion point **to end of file**, deleting the two
+  MRI page test classes that lived below it. Caught by the test COUNT going
+  DOWN (1308) rather than by any failure — a green suite that is 14 tests
+  smaller is the WI-512 stale-assembly lesson in a new coat. **Always read the
+  count, not just the colour.**
+- [ ] **WI-564 Corpus-wide British idiom sweep** *(not a Wave 2 blocker — do it
+  before the corpus doubles)* — WI-563 found that the spelling gate
+  (`CuratedPage.BritishForms`) does not catch **idiom**, and idiom is what
+  actually misleads. *"Being sick"* means vomiting in Britain and *being unwell*
+  in the US, and it was sitting in a same-day escalation trigger. Corpus counts
+  at the time: `being sick` 6, `out of hours` 9, `throwing up` 1 — and
+  `/treatments/radiation-therapy` uses **both** forms on the same page.
+  **Goal:** promote `being sick`, `straight away`, `straight after`, `out of
+  hours`, `come round` and `advice line` into a shared idiom list, fix the
+  pages they land on (`/treatments/chemotherapy`, `/treatments/craniotomy`,
+  `/treatments/radiation-therapy`, `blocks/mechanism.md`), and run the whole
+  list over the whole corpus per §12.8 **before** adding it — WI-511's "bad
+  news" lesson is that a rule which fails a correct page is worse than no rule.
+  Note `straight away` is not wrong in US English, only less natural; decide
+  deliberately and record the decision either way. **Depends on:** WI-563.
+- [ ] **WI-565 Source the "at any hour" clause on `/treatments/chemotherapy`,
+  or retire it** — WI-563 fetched every source in that page's front matter and
+  in the escalation block and found **nothing supporting the phrase "at any
+  hour"**. CRUK says "contact your advice line straight away", ACS neutropenia
+  gives the threshold and "call your cancer care team or get medical help", NCI
+  says an infection is "life threatening and require[s] urgent medical
+  attention" — none says "at any hour". The page publishes it **twice** and it
+  is the most safety-critical sentence on the site.
+  **Do not simply delete it.** WI-511's lesson: deleting a bad citation does not
+  delete the claim, and this one is operationally right — the same page tells
+  the reader to get "the number to call out of hours, not the clinic's daytime
+  number", which is a team that expects out-of-hours calls. Either find a
+  patient-level source that says it (a 24-hour advice line page would), or
+  re-word to what is sourced **without weakening it** (§12.12: the
+  over-reassuring direction is the more dangerous one). Whatever is decided,
+  `blocks/escalation.md` must match — WI-563 pinned the two together with a test
+  that reads the sibling's `{#fever-rule}` section, so they cannot drift again.
+  **Depends on:** WI-563.
 - [ ] **WI-517 Oligodendroglioma, deepened** — why both halves of the name
   matter; seizures as the hallmark; calcification on the scan; **why PCV is the
   oligodendroglioma chemotherapy** (the 1p/19q co-deletion that *defines* the
