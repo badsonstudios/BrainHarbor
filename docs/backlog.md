@@ -2848,8 +2848,15 @@ Start only after Dan has signed off WI-513's template.
   in the US, and it was sitting in a same-day escalation trigger. Corpus counts
   at the time: `being sick` 6, `out of hours` 9, `throwing up` 1 — and
   `/treatments/radiation-therapy` uses **both** forms on the same page.
-  **Goal:** promote `being sick`, `straight away`, `straight after`, `out of
-  hours`, `come round` and `advice line` into a shared idiom list, fix the
+  **WI-518 adds one the sweep would otherwise miss: `feeling sick`.** WI-563
+  fixed "being sick" in `blocks/mechanism.md` and left "feeling sick" beside it
+  in the same sentence. In US English that reads as *feeling unwell*, not
+  *nauseated*, and it sits on a raised-pressure symptom line on every hub the
+  block composes onto. Half-fixing an idiom pair is worse than not starting:
+  the remaining half now looks deliberate.
+  **Goal:** promote `being sick`, `feeling sick`, `straight away`, `straight
+  after`, `out of hours`, `come round` and `advice line` into a shared idiom
+  list, fix the
   pages they land on (`/treatments/chemotherapy`, `/treatments/craniotomy`,
   `/treatments/radiation-therapy`, `blocks/mechanism.md`), and run the whole
   list over the whole corpus per §12.8 **before** adding it — WI-511's "bad
