@@ -128,8 +128,31 @@ public sealed class HighGradeGliomaPageContentTests
         // ("those child pages are short at the moment") and this stayed green
         // off the redirect half alone — an alternation where either branch
         // passes is not one assertion, it is two weaker ones.
-        var claim = new Regex(@"child pages are short at the moment", RegexOptions.IgnoreCase);
-        var redirect = new Regex(@"page you land on is thin", RegexOptions.IgnoreCase);
+        // WI-518 SCOPED the note. It used to say "those child pages are short",
+        // plural and unnamed, which became false the moment three of the four
+        // were filled in — a reader was told the glioblastoma page was thin and
+        // pointed back here as "the fuller one". §12.11: name which ones.
+        //
+        // The guard now requires the note to NAME a destination that is
+        // actually thin, so it cannot go stale in that direction again.
+        var claim = new Regex(@"page is still\s*short at the moment", RegexOptions.IgnoreCase);
+        var redirect = new Regex(@"[Ii]f you land there", RegexOptions.IgnoreCase);
+
+        if (thin > 0)
+        {
+            var named = destinations.Where(slug =>
+                CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read("tumors", slug + ".md")))
+                    .Length < 4000);
+
+            foreach (var slug in named)
+            {
+                Assert.Contains($"/tumors/{slug}", section, StringComparison.Ordinal);
+            }
+
+            // And it must NOT still be making the unscoped plural claim.
+            Assert.DoesNotMatch(
+                new Regex(@"[Tt]hose child pages are short", RegexOptions.IgnoreCase), section);
+        }
 
         if (thin > 0)
         {

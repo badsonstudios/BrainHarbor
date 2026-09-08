@@ -1357,6 +1357,52 @@ applies: the tiers are universal, the fever line's routing is not.
 > about least" test, and for the two live pages that were routing readers into
 > chemotherapy with no fever rule at all.
 
+### 12.14 Banning a citation is not fixing a claim (WI-518)
+
+WI-518's test bans three URLs by name, each with a comment explaining that the
+paper does not say what the dossier claims. **And the page shipped two of those
+claims in its prose anyway** — steroids working "quickly" (the only source is
+the steroid-complications audit WI-514 already rejected) and "it usually comes
+back at or near the same place" (the only source is the 21-patient study WI-515
+dropped).
+
+This is WI-510's rule at one remove, and it is worse than the original because
+the ban **provides false assurance**. A test that names a bad URL reads like the
+claim was handled. **When you ban a source, grep the page for the claim it was
+carrying.** Both of these survived a `/review` pass on the item that wrote the
+ban.
+
+**A proximity window is not a scope.** WI-518's retired-name guard checked for a
+marker word ("older", "superseded", "used to") within ±220 characters of the
+superseded name. The break harness planted the name in an unrelated symptom
+bullet and it passed — 440 characters of a page whose whole subject is old names
+will find a marker almost every time. Tightening it to the sentence plus the
+next one *still* passed, off "especially common in **older** people" in the
+following bullet. **The markers are ordinary English words, so any adjacency
+allowance leaks.** It is same-sentence now, and the one legitimate use that
+needed the allowance (a heading explained beneath it) was reworded to carry its
+own marker instead. Same family as WI-511's clause anchor.
+
+**A self-removing note goes stale in the direction nobody guards.** The
+`/tumors/high-grade-glioma` honesty note said "those child pages are short at
+the moment" and its guard required the note while *any* destination was thin.
+Filling in three of four made the sentence false — a reader was told the
+glioblastoma page was thin and pointed back to high-grade-glioma as "the fuller
+one" — and nothing went red, because the guard had no upper bound tying the
+note's *unscoped plural* to the *number* still thin. The note now names the one
+page it is true of, and the guard requires the named destination to be one of
+the thin ones.
+
+**Check the source, not the dossier's quotation of it.** `/review` flagged this
+page's shorter-radiation paragraph as an unsourced comparative, quoting the
+dossier's "a safe, well-tolerated **alternative**". The paper itself says
+hypofractionation "**is the preferred standard of care** for elderly (≥70 years)
+or frail patients ... offering comparable overall survival", and EANO
+independently says it "has **similar activity** to irradiation with 60 Gy in 30
+fractions". The dossier had quoted a weaker sentence from the same paper. The
+page was right; the finding was rejected with the verbatim recorded in the front
+matter so the next reader does not re-open it.
+
 ### 12.13 When the richest source is the one you may not use (WI-517)
 
 `/tumors/oligodendroglioma` is the page where §12.1's source-precedence rule
