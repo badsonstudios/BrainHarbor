@@ -974,6 +974,16 @@ WI-513's first draft had neither, and both are required by the contract:
   crosswalk belongs to the glioma umbrella page (SYNTHESIS §4.3); **every hub
   still owes a slice** naming the retired terms its own readers are holding.
 
+**The escalation list is `[ESCALATION]` and a hub must INCLUDE it, never re-type
+it (WI-563).** `Content/blocks/escalation.md` carries the ambulance tier, the
+same-day tier, the "not every seizure is an ambulance" line, both conditional
+fever rules and the after-hours instruction. Put the directive **inside the
+symptoms section**; a test reads that section, not the page, so an
+`[ESCALATION]` that drifts to the bottom goes red. The block was factored out of
+three byte-identical hand-copies at the fourth use, three uses after §12.8's
+rule said to, and the fever sentence beneath it had already diverged between two
+of them.
+
 **A ban list on retired names has to be negation-aware, or it forbids the
 crosswalk.** WI-513's first test banned "oligoastrocytoma", "anaplastic" and
 "mixed glioma" outright. It passed — and would have made the crosswalk
@@ -1095,6 +1105,55 @@ believed to say, and never opened it — a consistency check that could not see 
 inconsistency. It reads the siblings now. (And strip markdown emphasis before
 matching: the seizure page writes `**first ever** seizure`, and a regex walking
 past the asterisks reports the sibling has stopped saying it.)
+
+**A CONDITIONAL survives the "hub you have thought about least" test, and that
+changes what belongs in a block (WI-563).** §12.12 recorded the escalation
+tiers as universal and the fever line's routing as page-local. That was wrong,
+and the item reversed it after finding the defect the split would have
+preserved: **`/tumors/glioma` linked `/treatments/chemotherapy` and contained
+the word "fever" zero times, and `/tumors/low-grade-glioma` mentioned
+chemotherapy four times with "fever" only inside a link label.** Two live pages
+with §12.11's defect, which WI-515 was blocked for nearly shipping once.
+
+The reason a conditional is different: *"**If you are having chemotherapy**, a
+fever is its own rule"* is true on every hub and false on none, because a reader
+it does not apply to is not addressed by it. An unconditional claim has to be
+true of the page; a conditional only has to be true of the reader it names. So
+the block also carries the surgery half — a post-craniotomy fever is not
+chemo-conditional and every hub routes into `/treatments/craniotomy` too.
+
+**Two limits on that, which the next hubs will hit.** A conditional is still
+*prose asserted on 24 pages*, so it must be checked against the hubs that do not
+exist yet: a **spinal-cord** hub would inherit an ambulance tier headed "A first
+ever seizure" with no cord-compression line, and a **pituitary** hub would file
+sudden vision change as same-day when apoplexy is an emergency. The block is
+right for the glioma family it was written from; **it is not automatically right
+for a hub whose emergencies are different**, and the test that requires it
+(`AHubThatRoutesIntoATreatmentCarriesThatTreatmentsSafetyRule`) fires on a
+chemotherapy link, not on whether the tiers fit. Read the tiers against the
+tumor before including, and add the page's own line beneath the block if its
+emergency is not in the list.
+
+**A block's threshold belongs to one page.** This block's own six sources carry
+**three different fever numbers** (100.4 °F on ACS, 100 °F on UMass, 37.5 °C on
+CRUK). `/treatments/chemotherapy` publishes one, sourced, and says teams differ;
+the block routes to it and publishes none. A number in a block is that number on
+every hub.
+
+**The idiom check has to run on the block, and "British" is wider than
+spelling.** WI-563's first draft shipped *"Being sick over and over"* in the
+same-day tier — correct in the source, and in US English it reads as *being
+unwell*, not *vomiting*, on a line that is an escalation trigger. Spelling gates
+do not catch idiom. `out of hours`, `straight away`, `straight after` and
+`come round` are all in the corpus and all British; the block uses the US forms
+and the rest are a follow-up sweep.
+
+**When a guard is copied, its holes are copied too.** The repo had two
+implementations of the British-forms check: one **strips** the exemptions and
+scans, one `continue`s past a form whose exemption appears anywhere in the file.
+The second disables the entire check for that form — one mention of "The Brain
+Tumour Charity" would switch off the `tumour` check for a whole file. WI-563
+copied the weaker one and `/review` caught it. Use the strip-then-scan form.
 
 ### 12.11 What a grouping page owes its umbrella (WI-515)
 

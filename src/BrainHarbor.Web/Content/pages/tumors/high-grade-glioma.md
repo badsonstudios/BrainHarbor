@@ -198,39 +198,7 @@ numbness on one side, trouble with speech, and changes in thinking, behavior or
 personality. Which ones you get depends mostly on where the tumor sits, which
 the section above walks through.
 
-### When to call for help right now
-
-Some things should not wait for the next appointment.
-
-**Call an ambulance for any of these:**
-
-- A **first ever seizure**.
-- A seizure that lasts more than five minutes.
-- One seizure straight after another, with no waking up in between.
-- Somebody who cannot be woken.
-- Trouble breathing, or somebody who seems to be choking.
-
-**Call your team the same day for any of these:**
-
-- A headache much worse than usual, or one that wakes you from sleep.
-- Being sick over and over.
-- New weakness in the face, an arm or a leg.
-- New trouble speaking, or understanding what people say.
-- New confusion.
-- Sleeping much more than being awake.
-- A sudden change in your vision.
-
-**If you are having chemotherapy, a fever is its own rule.** It means calling
-straight away, at any hour, not waiting for the morning.
-[The fever rule](/treatments/chemotherapy#fever-rule) explains why, and what
-number your team will give you.
-
-**Same day means today, not the next clinic appointment.** Ask your team now for
-the number to call out of hours, and put it somewhere you will find it at two in
-the morning rather than somewhere sensible.
-
-[What to do during a seizure](/seizures/what-to-do) has the step-by-step, and
-[getting help now](/get-help-now) is the short version to keep on a phone.
+[ESCALATION]
 
 ## How do doctors find out it is this?
 
