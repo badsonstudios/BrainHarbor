@@ -1155,6 +1155,31 @@ The second disables the entire check for that form — one mention of "The Brain
 Tumour Charity" would switch off the `tumour` check for a whole file. WI-563
 copied the weaker one and `/review` caught it. Use the strip-then-scan form.
 
+**A test that iterates over matches passes on a page with none (WI-517).** The
+retired-name guard loops over every occurrence of a retired term and checks each
+one is marked as retired. On a page that never says the word, `Regex.Matches`
+returns empty, the loop body never runs, and the test is green — so it cannot
+tell *"correctly marked as retired"* from *"absent"*. WI-517 shipped a hub with
+**no crosswalk slice at all** behind exactly that test, on the one page whose
+central fact IS a retired name (oligoastrocytoma was not renamed, it was
+eliminated, and the 1p/19q test is what eliminated it). **Every
+iterate-and-check guard needs a positive assertion beside it**, and the positive
+one has to pin the *structure* (the bullet), not the *presence* of the word —
+deleting the bullet left the word alive in a later paragraph and the first fix
+passed anyway.
+
+**The corollary for any guard: prove it can fire.** The Roman-numeral check now
+asserts a canary against `blocks/crosswalk.md`, which teaches the old notation
+on purpose. Without it, a regex that matches nothing anywhere looks identical to
+a clean page.
+
+**A §12.6 landing check must be scoped to the paragraph, not the section
+(WI-517).** `SentencesOf(Section(heading))[^1]` is the *section's* last
+sentence, and a hub section with `###` subsections under it ends somewhere else
+entirely — so the check that the curability paragraph does not end on
+"not curable" was reading the end of a different subsection and could never
+fire. Split on the first `###`.
+
 ### 12.11 What a grouping page owes its umbrella (WI-515)
 
 `/tumors/high-grade-glioma` is the second **grouping** page — a label covering
@@ -1325,3 +1350,59 @@ block is now hand-copied byte-identical across four hubs, and the fever sentence
 beneath it has *already* diverged between two of them. With 21 hubs to go it is
 the strongest `[ESCALATION]` block candidate on the site. §12.10's split
 applies: the tiers are universal, the fever line's routing is not.
+
+> **Done at WI-563, and the split above was wrong.** The block exists at
+> `Content/blocks/escalation.md`. The fever line went **into** it, not onto the
+> page — see §12.10 for why a conditional survives the "hub you have thought
+> about least" test, and for the two live pages that were routing readers into
+> chemotherapy with no fever rule at all.
+
+### 12.13 When the richest source is the one you may not use (WI-517)
+
+`/tumors/oligodendroglioma` is the page where §12.1's source-precedence rule
+costs the most. The single best source on this tumor is the StatPearls
+oligodendroglioma chapter — and §12.1 names **that exact chapter** as one never
+to use for naming or grading, because it gives a correct molecular definition
+and then lapses into Roman numerals and a retired term in the same article.
+
+**The resolution is per-claim, and it has to be written down where the reader of
+the front matter will see it.** The chapter carries symptoms, imaging and
+treatment mechanics; naming and grading come from the CNS5-aligned sources. A
+comment in the front matter says so, and the tests look for the *vocabulary that
+would leak in* if the line slipped — a Roman numeral, a retired name used as a
+live diagnosis — because nothing can mechanically check a claim-to-source
+mapping.
+
+**Note the ban is on the chapter for a purpose, not on the domain.**
+`/tumors/astrocytoma` and `/tumors/high-grade-glioma` ban this URL outright in
+their own front matter and are right to: there it was the *wrong tumor's*
+chapter cited for general high-grade treatment. Right chapter for the right
+claims is a different thing from right chapter for the wrong ones.
+
+**Three claims the dossier makes that its own sources do not.** Fetched and
+checked: "patients often have a long history of seizures before diagnosis"
+appears **zero** times in the chapter it is attributed to; PMC10475770, cited
+for "transformation is not associated with worse outcomes in
+oligodendrogliomas", is about transformation *patterns* and says nothing of the
+kind; and "no inherited syndrome is characteristically associated with
+oligodendroglioma" — which the dossier flags as *"say this, because it is
+reassuring and true"* — has no citation anywhere. **That parenthetical is the
+tell.** A dossier note arguing for a claim on the grounds that it is reassuring
+is the §12.12 direction with the reasoning left visible.
+
+**And the claim that was overstated by one word.** The source says 1p/19q allows
+"prediction of the best drug **response**" — how well the tumor responds. The
+draft rendered that as predicting "**which drugs** it will respond to best",
+which is drug *selection*, under a heading naming PCV. The source that actually
+makes the PCV-specific claim is the one this page dropped as unreachable, so
+that was WI-510's rule live on the page: the citation went and the claim stayed.
+It also contradicted the section directly beneath it, which presents PCV versus
+temozolomide as genuinely open. **Two claims that cannot both be true, three
+screens apart, is the shape to look for when a page argues for a treatment.**
+
+**A superlative is not a comparative.** "Relative chemosensitivity and indolent
+clinical course **among** diffuse gliomas" became "the slower-moving of them and
+the one that responds best" — a first-place ranking on two axes that no source
+ranks, inside the outlook gate, where the reader chose to be. The
+`Characterisations` ban list did not fire because it held `"responds better"`
+and `"responds well"` but not the superlative. It does now.

@@ -113,6 +113,11 @@ internal static class CuratedPage
         // ACS writes "better outlook" for IDH and MGMT, and Johns Hopkins'
         // glossary "associated with a better prognosis". These are the
         // remaining shapes that vocabulary arrives in.
+        // WI-517. The list banned "responds better" and "responds well" but not
+        // the superlative, so an outlook gate saying this tumor is "the one that
+        // responds best" sailed through the guard written to stop exactly that.
+        // Run over the corpus per §12.8: no other occurrence.
+        "responds best",
         "better response", "worse response", "poor response", "poorer response",
         "poor outcome", "poorer outcome", "longer survival", "shorter survival",
         "better type", "worse type",
