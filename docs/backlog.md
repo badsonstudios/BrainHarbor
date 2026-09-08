@@ -2928,12 +2928,55 @@ Start only after Dan has signed off WI-513's template.
   page's own answer to "where does it grow" (§12.11) and the sibling's test for
   that was not copied across; and the `[ESCALATION]` include is pinned to the
   symptoms section, so relocating it goes red.
-- [ ] **WI-518 Glioblastoma, deepened** — the growth story in one paragraph
-  (outgrows its blood supply → necrosis → starving cells force leaky new vessels
-  → expansion), which explains necrosis, ring enhancement, edema and relentless
-  growth at once; "but my tumor didn't look grade 4"; why surgery cannot remove
-  all of it; the expanded self-blame block; R3 applies to relapse.
-  Depends on: WI-514.
+- [x] **WI-518 Glioblastoma, deepened** *(done 2026-09-08 - `/tumors/glioblastoma`)* -
+  a 230-word stub became the §12.3 seventeen-section hub. Reading grade **5.8**,
+  **1388 tests** (1358 before), ContentCheck **236/0**, **all 42
+  break-mutations proven on LF AND CRLF**, two new glossary terms (bevacizumab,
+  tumor treating fields).
+  **The engine had no reachable source.** The dossier hangs the entire growth
+  story on `academic.oup.com/jnen`, which returns 403 with a 5,558-byte shell -
+  the third item to find that domain closed. Rebuilt from PMC12564729 (rapid
+  growth lowers oxygen; hypoxia stabilises HIF which upregulates VEGF; GBM
+  vasculature is "immature, nonfunctional, tortuous") and PMC2588896 (leaky
+  vessels let water and protein out), with NBK537272 added as the firmer source
+  for the edema half. The two spatial claims that belonged only to the dead
+  source were softened rather than kept.
+  **`/review` found five blockers and one of them was a mirror of §12.12's.**
+  The short version told every holder of *secondary glioblastoma* that their
+  diagnosis has a different name today. **That is false for the IDH-wildtype
+  ones, and `/tumors/astrocytoma` routes those readers HERE** - two hubs
+  disagreeing about who belongs where, with the wrong one in the higher-traffic
+  position. "Secondary" described how a tumor AROSE and said nothing about IDH;
+  the slice now has three bullets and routes by the IDH line, as the sibling
+  does.
+  **Two claims shipped in prose whose only source this item's own test bans** -
+  steroids working "quickly" (PMC12406498, the complications audit WI-514
+  rejected) and "it usually comes back at or near the same place" (PMC3643853,
+  the 21-patient study WI-515 dropped). **Banning a citation is not fixing a
+  claim, and the ban makes it look handled.** Written up as **§12.14**.
+  **One review finding was REJECTED with evidence.** The shorter-radiation
+  paragraph was called an unsourced comparative, quoting the dossier's "a safe,
+  well-tolerated *alternative*". The paper says hypofractionation "**is the
+  preferred standard of care** ... offering comparable overall survival", and
+  EANO independently says "similar activity to irradiation with 60 Gy in 30
+  fractions". The dossier had quoted a weaker sentence from the same paper. The
+  verbatim is now in the front matter so nobody re-opens it.
+  **The honesty note on `/tumors/high-grade-glioma` had become false and its
+  guard could not see it.** With three of four destinations filled in, a reader
+  was told the glioblastoma page was thin and pointed back to high-grade-glioma
+  as "the fuller one". The note now names diffuse midline glioma specifically,
+  and the guard requires the named page to be one of the thin ones. **WI-535
+  retires it.**
+  **The harness found the retired-name guard was a proximity window, not a
+  scope.** A ±220-character allowance passed on the superseded name planted in
+  an unrelated bullet; tightening to sentence-plus-next still passed off
+  "especially common in **older** people" next door. Same-sentence now.
+  **Also:** the drug and the device were both unnamed in the first draft
+  (WI-515's defect, third occurrence) and the guard was scoped to one section
+  while the recurrence paragraph said "a different drug"; Optune's eighteen
+  hours a day is published per §12.4 R1; "feeling sick" was the British idiom
+  the escalation-block sweep left behind; and a `necrosis` glossary entry was
+  written and **withdrawn** because the term fires inside "radiation necrosis".
 - [ ] **WI-519 T4 Biopsy — how tissue is taken** — needle vs open, frame vs
   frameless, the chance it does not give an answer. R2 applies. Sits between
   nothing and WI-507 in a deliberate three-page sequence with WI-508.

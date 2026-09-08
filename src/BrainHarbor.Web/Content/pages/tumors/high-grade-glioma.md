@@ -77,8 +77,8 @@ There are others. Some are named after a change in a gene called H3, such as
 [diffuse midline glioma](/tumors/diffuse-midline-glioma). Some belong to the
 group usually seen in children, which can also turn up in adults.
 
-**Those child pages are short at the moment.** They are being filled in one at a
-time. If the page you land on is thin, this page and
+**The [diffuse midline glioma](/tumors/diffuse-midline-glioma) page is still
+short at the moment.** The others are filled in. If you land there, this page and
 [glioma](/tumors/glioma) are the fuller ones for now.
 
 **So the first question to ask is a plain one:** what is the full name of my
