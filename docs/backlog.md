@@ -2765,10 +2765,27 @@ Start only after Dan has signed off WI-513's template.
   **Five more bad dossier citations (25 across nine items)**, including §3.3's
   raised-pressure comparative, which is not in the Springer paper it cites —
   corrected in `glioma-family.md` at source so WI-516/517/518 do not inherit it.
-- [ ] **WI-516 Astrocytoma, deepened** — three different families share the name;
+- [x] **WI-516 Astrocytoma, deepened** *(done 2026-09-08 — `/tumors/astrocytoma`)* — three different families share the name;
   **personality and behaviour change**, which can precede diagnosis by months;
   the crosswalk slice that matters most (both directions of the
   "secondary glioblastoma" rename). Depends on: WI-514.
+  **Shipped notes.** 182 words and 4 sections became the full §12.3 seventeen,
+  4,129 words. Reading grade 5.7, 1311 tests (1275 before), ContentCheck 228/0,
+  all 77 break-mutations proven on LF and CRLF. One glossary term (astrocyte)
+  plus a `CDKN2A/B` alias that made an existing entry reachable from the prose.
+  **`/review` found two blockers and both were over-reassuring**, which §12.12
+  now records as the more dangerous direction of §12.11's scoping defect.
+  (1) The draft told the whole circumscribed group they were grade 1 and curable;
+  CNS5's table grades that family 1, 1, 2-3, 2-3, not established, 3. (2) **The
+  "secondary glioblastoma" claim had no source at all** — the phrase appears in
+  no body text across every source fetched for three items, and "secondary"
+  described how the tumor arose rather than its IDH status, so the bolded
+  promise was wrong for IDH-wildtype readers. Now routed by the IDH line.
+  **Also fixed beyond this page:** five copies of the Roman-numeral guard across
+  four test files were case-sensitive and all stayed green on a planted
+  "**Grade III.**" — the IgnoreCase trap's fourth occurrence. Bad citation #26:
+  the dossier's source for the entire circumscribed group is a bot-blocked
+  PubMed URL that is not open access anywhere.
 - [ ] **WI-517 Oligodendroglioma, deepened** — why both halves of the name
   matter; seizures as the hallmark; calcification on the scan; **why PCV is the
   oligodendroglioma chemotherapy** (the 1p/19q co-deletion that *defines* the

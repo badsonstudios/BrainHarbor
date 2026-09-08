@@ -1206,3 +1206,63 @@ holes; re-derive the exemption list per page.
 citation discipline held on the page and failed on a **glossary entry**, which
 shipped a hand-composed title for a URL nobody had fetched. Glossary entries,
 shared blocks and page front matter are all citation surfaces.
+
+### 12.12 Three names, one word (WI-516)
+
+`/tumors/astrocytoma` is the first hub where **three unrelated groups share one
+name** — IDH-mutant diffuse, circumscribed, and pediatric-type — and where the
+answer to "can this be cured" is genuinely different across them. §12.11 said a
+claim about "these tumors" on a grouping page must name which ones. This is what
+happens when it does not.
+
+**The scoping defect has a direction, and the reassuring one is worse.** WI-515
+shipped a draft asserting incurability of *every* high-grade glioma: wrong, and
+frightening. WI-516 shipped the mirror image — "these are usually grade 1, and
+an operation that takes all of it out can be the end of it" — of the whole
+circumscribed family. CNS5's own table grades that family **1, 1, 2–3, 2–3, not
+established, 3**. Four of six entities are not grade 1 and are not cured by
+surgery. **Over-reassurance is the more dangerous failure**, because it is the
+kind of sentence that stops being true later, at the worst possible moment,
+which is precisely the thing this whole phase exists to prevent. Bind the
+promise to the entity the source grades, and say the group is mixed.
+
+**A retired name and the route it describes are not the same fact.** The page's
+headline claim was "if your old report said **secondary glioblastoma**, you are
+in the right place" — in bold, in the description, in the short version and in
+the heading. Grepped across every source fetched for three consecutive items,
+**the phrase appears only in bibliography entries and in no body text at all**.
+What CNS5 says is about IDH status: "IDH-mutant astrocytomas are no longer
+referred to as glioblastomas". "Secondary" described how the tumor *arose*, and
+not every secondary glioblastoma is IDH-mutant — so an IDH-wildtype reader
+holding that word was told, first and in bold, that they were on the right page.
+**Route by the line the reader can look up**, not by the phrase they arrived
+with.
+
+**Check the negation list a retired-name guard accepts.** WI-516's allowed
+"is now" and "are now" as proof a name was being *named* rather than *used* —
+which passes "Anaplastic astrocytoma is now treated with radiation first". The
+markers that carry the check are the ones that are explicitly about the naming:
+`retired`, `no longer`, `once said`, `older phrase`, `meant grade`, `was
+renamed`. A guard whose allowance list is broad enough to admit the defect is a
+guard that has stopped guarding.
+
+**The IgnoreCase trap, for the fourth time, in five places at once.** §12.9
+records it biting WI-505, WI-506 and WI-508. WI-516's harness planted
+`**Grade III.**` and **five** copies of the Roman-numeral guard stayed green,
+across four test files, because all five were written case-sensitive — and a
+grade is most often written sentence-initially, which is exactly where the
+capital is. All five now carry `RegexOptions.IgnoreCase`. **When a guard is
+copied, its holes are copied too** (§12.11 said this about exemptions; it is
+equally true of flags).
+
+**Two more mutation-strength lessons, both "the mutation was too weak, not the
+test".** Deleting one sentence of a two-sentence bullet left the negation marker
+in the same chunk, and removing one of three mentions of a glossary term left
+the tooltip firing. A mutation has to remove the property, not an instance of
+it.
+
+**Worth raising with `/pm`:** the twelve-line ambulance/same-day escalation
+block is now hand-copied byte-identical across four hubs, and the fever sentence
+beneath it has *already* diverged between two of them. With 21 hubs to go it is
+the strongest `[ESCALATION]` block candidate on the site. §12.10's split
+applies: the tiers are universal, the fever line's routing is not.

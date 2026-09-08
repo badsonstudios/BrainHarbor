@@ -142,7 +142,10 @@ public sealed class LowGradeGliomaPageContentTests
         // Same negation-aware treatment as the retired names above, and for
         // the same reason: the crosswalk has to be able to PRINT "grade II" in
         // order to tell a reader it is the old way of writing grade 2.
-        foreach (Match match in Regex.Matches(Reader, @"\bgrade\s+(I{1,3}V?|IV)\b"))
+        // IgnoreCase added by WI-516: written case-sensitive, this walked past
+        // the sentence-initial "Grade IV", which is the commonest form.
+        foreach (Match match in Regex.Matches(
+                     Reader, @"\bgrade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase))
         {
             var window = Reader[Math.Max(0, match.Index - 320)
                                 ..Math.Min(Reader.Length, match.Index + 320)];

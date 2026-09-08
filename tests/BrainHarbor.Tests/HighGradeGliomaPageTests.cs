@@ -462,13 +462,17 @@ public sealed class HighGradeGliomaPageContentTests
         // proves the block still carries the notation somewhere.
         var body = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(Page)));
 
-        Assert.DoesNotMatch(new Regex(@"grade\s+(I{1,3}V?|IV)\b"), body);
+        // IgnoreCase added by WI-516, which planted "**Grade III.**" and
+        // watched this stay green. §12.9's IgnoreCase trap, fourth occurrence.
+        Assert.DoesNotMatch(
+            new Regex(@"grade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase), body);
 
         // The shared block IS supposed to print one, for the reader holding it.
         // If it stops, the site has quietly lost the translation and this
         // page's silence stops being a deliberate division of labour.
         var crosswalk = File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"));
-        Assert.Matches(new Regex(@"grade\s+(I{1,3}V?|IV)\b"), crosswalk);
+        Assert.Matches(
+            new Regex(@"grade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase), crosswalk);
     }
 
     [Fact]
