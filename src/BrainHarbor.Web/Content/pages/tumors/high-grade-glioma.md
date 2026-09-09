@@ -212,6 +212,9 @@ Usually a scan first, then a piece of the tumor.
 - **Gene tests on that tissue.** These decide both the exact name and, often,
   the grade.
 
+[How tissue is taken](/tests/biopsy) goes through both ways of getting that
+sample.
+
 The answer arrives in layers rather than all at once, and the name can change as
 later results come back. [Waiting for results](/tests/waiting-for-results) is
 about that wait.

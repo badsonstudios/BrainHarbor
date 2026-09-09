@@ -207,6 +207,9 @@ Usually a scan comes first, then a tissue sample.
 - **Gene tests on that tissue.** These are what separate the three main adult
   diagnoses from each other.
 
+[How tissue is taken](/tests/biopsy) is about that step: the needle, the
+operation, and what happens if the sample does not give an answer.
+
 The full answer arrives in layers, not all at once, and the name can change as
 later results come back. [Waiting for
 results](/tests/waiting-for-results) is about that wait, which is one of the

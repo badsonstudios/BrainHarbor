@@ -2984,10 +2984,70 @@ Start only after Dan has signed off WI-513's template.
   hours a day is published per §12.4 R1; "feeling sick" was the British idiom
   the escalation-block sweep left behind; and a `necrosis` glossary entry was
   written and **withdrawn** because the term fires inside "radiation necrosis".
-- [ ] **WI-519 T4 Biopsy — how tissue is taken** — needle vs open, frame vs
-  frameless, the chance it does not give an answer. R2 applies. Sits between
-  nothing and WI-507 in a deliberate three-page sequence with WI-508.
-  Depends on: WI-507.
+- [x] **WI-519 T4 Biopsy — how tissue is taken** *(done 2026-09-08)*
+  **Done.** `/tests/biopsy`, a new page, eighth under the §12.8 LIBRARY template
+  and the first written after three §12.3 hubs in a row. Reading grade **4.3**
+  (the lowest of any P5 page so far), ContentCheck **237/0**, all twelve slots
+  plus a caregiver section, and **nine inbound links** added so the page is not
+  an orphan (`/tests/mri`, `/tests/waiting-for-results`,
+  `/treatments/craniotomy` and all six adult glioma hubs).
+  **The blocker was mine and no gate could see it: the first draft had no risk
+  section at all.** The page described a needle going into someone's brain, told
+  the person driving them home to call an ambulance if they suddenly could not
+  speak, and never said what could go wrong or why. Found by reading the
+  rendered page end to end, which is the **seventh** consecutive item where that
+  read caught what the suite could not. §12.8's rule is to answer the
+  frightening question in both directions; answering it in neither is worse.
+  **Two more bad dossier citations.** (1) §4.1's "a meta-analysis found no
+  significant difference in diagnostic yield between the two systems" rests on
+  `surgicalneurologyint.com`, which returns a **24-word JavaScript shell**, and
+  on PMC10219353 — **not a meta-analysis** but a 72-patient single-centre
+  comparison. Per §12.14 the test bans the URL **and the word**. (2) §4.3 bundles
+  "a small shaved patch" into a bullet cited to ACS, which contains the string
+  "shav" **zero** times and never writes "burr hole" either. The shaved patch
+  moved into the questions list, where a question asserts nothing.
+  **A paragraph that met the factor-at-the-second-use bar was deliberately not
+  factored.** `/treatments/craniotomy`'s "there is no percentage on this page"
+  framing was about to be copied verbatim. This page has a better, page-specific
+  reason: the published bleeding rates run 2.3% to 72% and the source says the
+  spread is about **what each study counted**. Written up in §12.8.
+  **A glossary entry was written and withdrawn** (`burr hole`): the page defines
+  the word, so the tooltip is suppressed here, and no other page uses it, so the
+  entry would have fired nowhere. The two entries that ARE suppressed here were
+  checked through their **aliases** first (`needle biopsy` on
+  `/tumors/astrocytoma`, `navigation scan` on `/tests/mri`) — the first grep said
+  both were unreachable site-wide and it was wrong twice.
+  **`/review` found three blockers and ten should-fixes, and it PROVED three of
+  them by mutation.** (1) The risk section blamed bleeding on **where the tumor
+  sits** — imported from `/treatments/craniotomy`, where location is the story.
+  The paper this page cites concludes the opposite (**lesion size** and
+  intraoperative bleeding are the two factors that survived its multivariable
+  analysis; location is one of six from other people's literature), and the
+  wrong cause was propping up a reassurance. (2) The driving prohibition was
+  **narrowed**: the source says "you must not drive after having a brain
+  biopsy", the draft said "you must not drive **yourself**", filed under a
+  packing list, and it never reached the caregiver section where craniotomy
+  deliberately puts it. (3)
+  `TheAmbulanceListDoesNotOverEscalateASeizureAgainstTheSeizurePage` **could
+  not fail on the defect it is named after** — review flattened the bullet to
+  "A seizure", WI-510's blocker verbatim, and all eighteen tests stayed green.
+  **Three more test weaknesses, all proven the same way.** The tier check was
+  **one-directional** (three symptoms on the sibling were silently missing here:
+  chest pain, a fall or knock to the head, and pain the medicine is not
+  touching); the caregiver-duplication guard was the **bold lead-in** check
+  §12.8 already records as insufficient, while the shingle version existed in
+  three sibling files (three verbatim block sentences pasted in went green); and
+  the lab-pipeline guard was five nouns, which a genuine restatement written
+  around them walked through.
+  Also: linking a word turns its tooltip off, caught by this page's own tooltip
+  test; CRUK is cited for how it feels afterwards and explicitly **not** for
+  anesthesia, where it asserts UK practice that contradicts ACS; the outpatient
+  review is cited for what it establishes rather than the position it argues
+  (the **selection criteria** half was missing, so an overnight stay was
+  described as nothing to read anything into); the overnight adult is now stated
+  as the condition both sources make it rather than something to ask about; and
+  §12.13/§12.14 were reordered in the doc, which had them backwards since
+  WI-518.
 - [ ] **WI-520 T7 Getting ready for surgery — tests and clearance** — bloods,
   ECG, chest imaging, the anesthesia consult, **the 2-hour clear-fluid rule**
   (patients routinely go dry all night unnecessarily), which medicines continue,

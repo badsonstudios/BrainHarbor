@@ -323,6 +323,8 @@ the top.
 
 - [Your pathology report, part by part](/tests/pathology-report) once the report
   is in your hands and you want to know what each part of it is for.
+- [How tissue is taken](/tests/biopsy) for the step before this one, and for
+  what happens if the sample does not give an answer.
 - [Just diagnosed? Start here](/start) if this is all new.
 - [Your MRI scan](/tests/mri), the scan that started this and the ones that
   come later.
