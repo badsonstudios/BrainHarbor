@@ -21,6 +21,12 @@ node_modules/
 Thumbs.db
 .DS_Store
 
+# The break-test harness's interrupted-run marker (.claude/work_files/*/break-tests.py).
+# It is written at the repo root before the first mutation and removed once the
+# originals are restored, so it only exists while a run is in flight or after one
+# was killed. Ignored so a killed run cannot end up staged (WI-519).
+.break-tests-running
+
 # Raw Unsplash originals (heavy) — optimized versions live in wwwroot/img/cards
 /images/*.jpg
 /images/*.jpeg

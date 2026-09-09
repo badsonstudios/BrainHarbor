@@ -197,6 +197,9 @@ A scan first, then a piece of the tumor.
 - **Gene tests on that tissue.** For this tumor they decide the diagnosis, and
   often the grade as well.
 
+[How tissue is taken](/tests/biopsy) goes through both ways of getting that
+sample.
+
 The answer arrives in layers rather than all at once, and the name can change as
 later results come back, which on this page is not a small thing.
 [Waiting for results](/tests/waiting-for-results) is about that wait.

@@ -533,6 +533,8 @@ person, say so, and ask them to call you when it lands.
 
 ## Where to go next
 
+- [How tissue is taken](/tests/biopsy) if what you are having is a biopsy rather
+  than an operation to remove the tumor.
 - [Waiting for your pathology results](/tests/waiting-for-results) for what
   happens to the piece of tumor that was taken out, and why the wait is what it
   is.

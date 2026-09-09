@@ -196,6 +196,9 @@ A scan first, then a piece of the tumor, then gene tests on that piece.
   [Waiting for results](/tests/waiting-for-results) explains why the answer
   arrives in layers.
 
+[How tissue is taken](/tests/biopsy) goes through both ways of getting that
+sample.
+
 ## What do the words on my report mean?
 
 [CROSSWALK]

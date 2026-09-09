@@ -56,6 +56,10 @@ Almost everyone has an MRI scan early on, and more of them later.
 [What an MRI is like, and what to ask](/tests/mri) walks through the day, the
 noise, the dye, and what to do if small spaces frighten you.
 
+If a piece of your tumor is about to be taken, [how tissue is
+taken](/tests/biopsy) goes through the needle, the operation, and what happens
+if the sample does not give an answer.
+
 If a piece of your tumor has been taken and you are waiting to hear what it is,
 [waiting for your pathology results](/tests/waiting-for-results) explains what
 is happening in the lab and why the name can change while you wait. Once the

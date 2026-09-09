@@ -204,7 +204,7 @@ staff that can handle devices others cannot.
 Two scans catch almost everyone out. Both are normal, and neither means
 something has gone wrong.
 
-### The scan just before surgery
+### The scan just before surgery {#navigation-scan}
 
 This one is a map, not a repeat.
 
@@ -264,6 +264,8 @@ and who is going to call me?
 ## Where to go next
 
 - [Just diagnosed? Start here](/start) if this is all new.
+- [How tissue is taken](/tests/biopsy) for the step after this one, when a scan
+  has gone as far as a scan can go.
 - [Waiting for your pathology results](/tests/waiting-for-results) if tissue has
   been taken and you are waiting to hear what it is.
 - [Your pathology report, part by part](/tests/pathology-report) once that

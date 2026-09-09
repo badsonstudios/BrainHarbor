@@ -201,6 +201,9 @@ A scan first, then a piece of the tumor, then gene tests on that piece.
 - **[Gene tests on that tissue](/tests/molecular-markers)**, which are what the
   2021 rules turn on and what can set the grade on their own.
 
+[How tissue is taken](/tests/biopsy) goes through both ways of getting that
+sample, and what happens if it does not give an answer.
+
 ## What do the words on my report mean?
 
 [CROSSWALK]
