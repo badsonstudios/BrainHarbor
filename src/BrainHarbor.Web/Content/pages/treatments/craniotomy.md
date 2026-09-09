@@ -383,6 +383,11 @@ Before the day, expect:
 - Tests of how you are doing now, so there is something to compare with
   afterwards.
 
+[Getting ready for surgery](/tests/getting-ready-for-surgery) goes through all
+of that appointment by appointment, including when to stop eating and drinking
+and what happens to your medicines. **If you take a blood thinner, read that
+page before you change anything.**
+
 Bring:
 
 - Your advance directive or living will.
