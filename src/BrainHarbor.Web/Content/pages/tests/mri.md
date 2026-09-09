@@ -270,6 +270,8 @@ and who is going to call me?
   been taken and you are waiting to hear what it is.
 - [Your pathology report, part by part](/tests/pathology-report) once that
   report is in your hands.
+- [Getting ready for surgery](/tests/getting-ready-for-surgery) if this scan is
+  the one your surgeon will navigate by, and the operation is being planned.
 - [Brain tumor types](/tumors) to read about your own diagnosis.
 - [What to do when someone has a seizure](/seizures/what-to-do), which is worth
   reading before you need it.
