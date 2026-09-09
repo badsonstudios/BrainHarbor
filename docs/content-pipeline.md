@@ -1170,6 +1170,118 @@ page in the corpus that publishes an instruction a reader can follow tonight):**
   asserts both halves: the lab-tests URL present, `medlineplus.gov/druginfo`
   absent.
 
+**Thirteen more from the tenth one (WI-521, follow-up scans — the page that
+publishes no numbers at all, on the subject the backlog asked for numbers on):**
+
+- **R2's reasoning reaches a FREQUENCY, not only a procedural risk, when the
+  spread is about what each study counted.** The backlog asked for
+  "10-30% of glioblastoma patients"; the dossier says "20-30% ... range 12% to
+  64%"; the ASCO Post says "28% to 66%"; PMC10412732 says "approximately 36% in
+  a recent meta-analysis" and separately reports a biopsy series at 12.4%. Five
+  answers, none of them each other, because each counted a different thing
+  (radiological change, confirmed change, tissue-proven change). **The page
+  publishes none of them — and says so.** "There is no reliable figure to put
+  here, because studies that counted it in different ways came back with very
+  different answers" is content. A page that simply omits a frequency leaves
+  the reader to supply their own, and the one they supply is usually worse than
+  the truth.
+- **A frequency guard looks FORWARD from the number, and it needs its own
+  quantity vocabulary.** English always puts the population after the count
+  ("a third of people", "one in three patients"). Looking backwards as well
+  flagged *"a lot of people read it as one on the drive home"*, where the
+  population belongs to a different clause. And the quantity list cannot be
+  shared with the schedule guard: that one needs `few`, `several`, `once`,
+  `twice` ("every few months", "twice a year"), and a frequency guard holding
+  them fails *"for most of them the worst part was not the scan"*, which is
+  correct, sourced, and on three tumor hubs already.
+- **Invert a guard only after checking the correct page survives it.**
+  "Every quantity in this section must be a length of time" is right for the
+  two look-alike sections and wrong for the report-words section, which has to
+  be able to say *"two things about those rules"*, *"ask one question"*, *"a
+  tumor that got a little smaller and one that got a little bigger"*. Widening
+  an exclusion list until those pass hollows the guard out one idiom at a time.
+  What a threshold actually looks like is **a magnitude preposition next to a
+  quantity** (`by|at least|more than|over` + number), which has no innocent use
+  and catches `"it shrank by at least half"` on the first try.
+- **THE RESTATEMENT CHECK HAS TO RUN OVER THE WHOLE CORPUS.** This page's first
+  version checked three hand-picked tests pages and reported zero — while
+  sharing **108 eight-word shingles with `/tumors/high-grade-glioma`**, whole
+  paragraphs of pseudoprogression and radiation-necrosis prose lifted wholesale,
+  and the two copies had already drifted inside a single commit ("dead tissue"
+  there, "damaged tissue" here). A guard that checks the siblings you thought of
+  is a guard that finds nothing. Three supports make a corpus-wide run usable:
+  **strip headings and link targets first** (slot 9's heading is identical on
+  all 29 library pages by prescription, and a URL fragment tokenises into eleven
+  words), and **require three content words** (eight function words in a row
+  collide by chance — "and it is not a sign that your").
+- **A deliberately shared sentence is a short, commented allowlist, and the
+  comparison runs the other way round.** §12.10 says two pages must not state
+  one safety claim at two strengths, so where a claim is load-bearing on a hub
+  and on its canonical page the right answer is **identical words**. The list
+  here is four entries and every one is a claim or a link label. The first
+  implementation asked `shingle.Contains(allowedSentence)` — backwards, since
+  the shingle is the shorter string — and did nothing at all.
+- **Find the LIST first, judge the lead-in second.** The escalation-shape guard
+  copied from WI-520 was a single regex anchored on a `**bold**` lead-in, and
+  `/review` beat it three ways: a `###` heading instead of the bold, an ordinary
+  sentence between the lead-in and the bullets, and three bullets instead of
+  four. Inverted, it cannot be walked around, because the bullets are what make
+  it a list. Two things to get right: the trigger words must be **urgency**
+  words only (`team`, `doctor` and `nurse` fail this page's own "What to ask
+  your team" list), and the lead-in must be **the preceding paragraph**, not a
+  character window — a hard-wrapped bullet breaks the run, so a long list
+  arrives as several runs and a window reads the list's own earlier bullets as
+  its introduction.
+- **Fixing the canonical page exposes what the hub was missing.** RANO 2.0 gives
+  three routes out of the twelve-week rule; `/tumors/high-grade-glioma` listed
+  the two harsher ones (outside the field, or a sample) and omitted the
+  mandatory confirmation scan, which is the **most reassuring** one and the one
+  a reader is actually living through. Writing the canonical page is when that
+  gets noticed, so budget an edit to the hubs when you write one.
+- **`SentencesOf` cannot split a sentence that ends `.**`.** It splits on
+  terminal punctuation *followed by whitespace*, and a closing bold marker is
+  not whitespace — so a claim and the sentence that qualifies it arrive as one
+  chunk, and `sentences[claimAt + 1]` is the wrong sentence. Use index
+  proximity for an adjacency assertion about a bolded claim.
+- **A last-sentence pin has to anchor to the END of the sentence.** §12.8
+  (WI-510) says pin the last sentence rather than a three-sentence window;
+  that is not enough on its own. `/review` appended *", but if the next scan
+  shows the same thing, it is usually growth"* to the closing sentence of the
+  most frightening section on the page, and the pinned words were still inside
+  the final sentence while the section now ended on the fear. `\.?\s*$`.
+- **An ordering test on FIRST OCCURRENCES proves nothing about a restatement.**
+  `IndexOf(scope) < IndexOf(figure)` was satisfied while `/review` appended
+  *"Around eight months after radiation is when it usually turns up"* to the end
+  of the section — the SRS-only figure generalised to everybody, in the sentence
+  after the one saying it is not a rule for everybody. Assert the figure appears
+  **exactly once**, and that its scope is in **its own sentence**.
+- **A glossary entry can be unreachable and look completely fine.** `RANO` is in
+  the glossary and appears in **no page's prose anywhere in the corpus** — this
+  is the first page to say the word, and this page defines it, so §12.8 says
+  suppress the tooltip here. The entry therefore fires nowhere. It is kept
+  rather than deleted (the word is on real reports and the entry is correct) but
+  the state is **pinned by a test** rather than believed: the next page that
+  says RANO in prose makes it live and that test goes red, which is the prompt
+  to delete the test. WI-519 dropped an entry in this position; this one is
+  older than the page that would have justified it.
+- **A page about results has to say what a scan cannot do, and the end-to-end
+  read is what finds it missing.** §12.8's WI-506 rule again: a follow-up scan
+  shows what is big enough to see, so a scan with nothing left to measure is a
+  real and welcome thing **and** is not the same as saying nothing is there.
+  Without both halves the page either promises cure or tells somebody their
+  clear scan means nothing.
+- **NINTH CONSECUTIVE ITEM WHERE READING THE PAGE END TO END CAUGHT WHAT NO GATE
+  COULD.** On this one it found: the missing "what a scan cannot do" section; a
+  reader whose report says **progression** reaching the bottom of the page with
+  nowhere to go; *"anyone who gives you one is guessing about you"*, which
+  undercuts the one authority the page keeps telling the reader to ask;
+  *"they are not allowed to give you a result"*, a policy claim no source
+  supports where a role fact was available; *"your team **will** start again
+  from the top with you"*, a guarantee about somebody else's behaviour next to
+  the correctly-hedged version of itself; and a sentence that had been edited
+  into nonsense — *"the rules your team works to build a step in for it"* —
+  which reading grade 5.3, ContentCheck 245/0 and 1,477 tests all passed.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

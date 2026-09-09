@@ -343,6 +343,10 @@ can be changed, and sometimes saying it out loud is what helps.
 If something changes between appointments, you do not have to wait for the next
 one. Bringing a scan forward is an ordinary thing to ask for.
 
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) goes
+through the rest of it: what your team compares your scan with, what the words
+on the report mean, and why a scan that looks worse is not always worse.
+
 ## If it comes back, or changes
 
 For many gliomas, a change over time is expected rather than surprising, and

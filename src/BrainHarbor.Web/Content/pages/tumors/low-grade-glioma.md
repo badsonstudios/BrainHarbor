@@ -339,6 +339,10 @@ than the scan. Ask who will give you the result, and roughly when. Ask one more
 thing: will it appear in your online records before anybody calls you? For a lot
 of people it does.
 
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) goes
+through what your team compares each scan with, and what the words on the report
+mean.
+
 ## If it comes back, or changes
 
 Because a diffuse grade 2 glioma is not curable, the plan assumes it will need

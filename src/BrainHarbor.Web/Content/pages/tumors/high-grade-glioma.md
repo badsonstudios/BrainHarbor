@@ -362,9 +362,9 @@ symptoms, and those can be treated.
 
 **This is why your team may say "let's scan again" instead of changing the
 plan.** There is a rule they follow. For the first twelve weeks after radiation,
-they will not call a change growth unless the new area sits outside where the
-radiation was aimed, or a sample shows it. Waiting is often the only way to tell
-the two apart.
+they will not call a change growth unless a repeat scan a few weeks later shows
+the same thing, or the new area sits outside where the radiation was aimed, or a
+sample shows it. Waiting is often the only way to tell the two apart.
 
 Those twelve weeks are hard, and the researchers who study this say so plainly.
 One paper puts it like this: when a scan looks worse early, families can wait
@@ -383,6 +383,10 @@ operation is needed.
 
 It happens rarely. It is worth knowing about, because "your scan has changed"
 does not automatically mean one thing.
+
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) is the
+fuller version of this section: what each scan is compared with, what the words
+on the report mean, and what the research actually says about the waiting.
 
 ## If it comes back, or changes
 
