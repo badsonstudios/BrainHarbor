@@ -188,6 +188,8 @@ For these tumors, the gene tests are what settle both the name and the grade.
 
 - [Your MRI scan](/tests/mri) for what the appointment is like, and what the dye
   is for.
+- [How tissue is taken](/tests/biopsy) for the needle, the operation, and what
+  happens if the sample does not give an answer.
 - [Waiting for your pathology results](/tests/waiting-for-results) for why the
   answer comes in layers, and why the name can change while you wait. That
   applies particularly here.

@@ -951,6 +951,133 @@ warning is that three bent pages in a row is how a template quietly shrinks.
 **When you drop a universal-ish slot, check whether the material exists anyway
 somewhere worse.**
 
+**Eight more from the eighth one (WI-519, the biopsy — and the first library
+page written after three §12.3 HUBS in a row):**
+
+- **The first draft had no risk section at all, and only the end-to-end read
+  found it.** The page described a needle going into someone's brain, told the
+  person driving them home to call an ambulance if they suddenly could not
+  speak, and never once said what could go wrong or why. Every gate passed:
+  reading grade, ContentCheck, 1,411 tests. §12.8's WI-506 rule is to answer
+  the frightening question in **both** directions; a page that answers it in
+  **neither** is the worse failure, and it is invisible to a suite that can only
+  check what is present. **Seventh consecutive item where reading the page end
+  to end caught what nothing else could.**
+- **A tests page CAN carry a caregiver section, and this is the first one that
+  does.** §12.8 said tests pages mostly do not, "where a test does have an
+  aftercare tail, it gets one" — and this is that test: someone goes home the
+  same day with a hole in their skull and a person who has to watch them
+  overnight. One misfit is worth knowing before the next one: `[CAREGIVER]` says
+  ask what counts as an ambulance "for this tumor", and the reader of a biopsy
+  page **does not have a diagnosis yet**. It was left alone rather than reworded
+  on twenty including pages for one preposition, but that is the §12.10 question
+  in miniature and the next page to notice it should decide it properly.
+- **A dossier bullet's citation covers the clause it came from, not the
+  bullet.** §4.3 sources "a small shaved patch, a small incision, a small hole
+  in the skull ('burr hole'), and needle passes" to ACS in one breath. ACS
+  contains the string "shav" **zero** times and never writes "burr hole". This
+  is WI-512's bundled-claim shape for the third time, and the fix generalises:
+  **where a source does not support a detail the reader will still ask about,
+  move it into the questions list.** "Will any of my hair be shaved, and where?"
+  asserts nothing and is more useful than the sentence would have been.
+- **Check the study design, not just the sentence.** The dossier's "a
+  meta-analysis found no significant difference in diagnostic yield between the
+  two systems" rests on `surgicalneurologyint.com`, which returns a **24-word
+  JavaScript shell**, and on PMC10219353 — which is not a meta-analysis but a
+  72-patient single-centre comparison (42 frameless, 30 frame-based) whose own
+  discussion asks for further study. Per §12.14 the test bans the URL **and the
+  word**: no source on this page may be described as a meta-analysis, because
+  none of them is one.
+- **Not writing the shared paragraph is also an option, and sometimes the right
+  one.** This page was about to copy `/treatments/craniotomy`'s risk framing
+  verbatim ("There is no percentage on this page, and that is deliberate. The
+  published figures ... vary so widely"), which is exactly §12.8's own
+  factor-at-the-second-use trigger. It was neither copied nor factored, because
+  **the second page had a better reason than the first**: the reported bleeding
+  rates after a biopsy run from 2.3% to 72% and the source says outright that
+  the spread is about what each study **counted** as a hemorrhage, not about
+  risk. A block would have flattened a real difference into one generic
+  sentence. **Before factoring a paragraph, check the second page has the same
+  reason, not just the same shape.**
+- **A glossary entry defined only on the page that suppresses it is
+  decoration.** WI-519 nearly added a `burr hole` entry: the page defines the
+  word in prose, so §12.8 says suppress the tooltip here — and no other page
+  uses the word, so the entry would have fired nowhere at all. Dropped. The two
+  entries this page **does** suppress were checked the other way first, and the
+  check has a trap in it: `stereotactic biopsy` and `neuronavigation` appear in
+  **no other page's prose**, and both are reachable anyway, through their
+  aliases (`needle biopsy` on `/tumors/astrocytoma`, `navigation scan` on
+  `/tests/mri`). **Grep the aliases, not the term.** Both greps here were wrong
+  the first time. This is also the first page in the corpus where WI-510's
+  "both directions observable" test is actually available, so it is written.
+- **Linking a word turns its tooltip off.** `GlossaryMarker` marks paragraphs
+  and skips links, so `That operation is a [craniotomy](/treatments/craniotomy)`
+  renders with no popover. The tooltip test caught it. The fix is to say the
+  word in prose and hang the link on different words ("A craniotomy, step by
+  step"), and it will recur on every page that names a procedure it also links
+  to.
+- **A one-directional coverage check only sees the direction it was written
+  for, and it is usually the safe one.** WI-519's tier test asserted that every
+  symptom **this page carries** sits in the same tier on
+  `/treatments/craniotomy`. It could not see a symptom the sibling carries and
+  this page had **dropped** — and three had been: chest pain, a fall or a knock
+  to the head, and pain the medicine is not touching. That is the under-triage
+  direction §12.8 (WI-511) already calls the more dangerous one, and the test
+  written after that lesson still only checked over-triage. **When you diff two
+  lists, diff them both ways.** The reverse check is a bullet COUNT, not a
+  phrase match: the first attempt compared each sibling bullet's opening words
+  and failed on its own correct page, because craniotomy writes "A headache
+  that is new" where this page writes "The headache is new". Counting forces a
+  deliberate edit without becoming a rewording detector.
+- **A test named for a defect reads like the defect was handled — §12.14, one
+  level up.** `TheAmbulanceListDoesNotOverEscalateASeizureAgainstTheSeizurePage`
+  asserted three things and none of them was this page's own seizure bullet.
+  Review mutated the bullet to a flat "A seizure" — WI-510's blocker
+  **verbatim** — and all eighteen tests stayed green. The name was doing the
+  reassuring, exactly as a banned URL does.
+- **§12.8's own recorded lesson does not stop the weaker check being written
+  again.** The caregiver-duplication guard here was the **bold lead-in** check
+  that this section already describes as insufficient ("WI-510 asserted the
+  block's four bold lead-ins were absent and shipped four genuine duplications
+  that were none of them"), while the shingle version already existed in three
+  sibling test files. Review pasted three verbatim block sentences into the
+  page and the suite stayed green. **When §12.8 says a check is insufficient,
+  the fix is usually already written somewhere — copy it, do not re-derive it.**
+- **A vocabulary ban is a filter, not an ownership proof, and it should say so.**
+  The guard stopping this page restating WI-507's lab pipeline was five nouns;
+  review wrote a genuine restatement using none of them ("set hard, cut into
+  slices thinner than a hair, stained, and read under a microscope") and it
+  passed. The list is wider now and the comment states the limit outright,
+  because nothing can mechanically decide whether one page has restated
+  another's subject. Auto-deriving the list from the sibling's own steps was
+  tried and rejected: those steps' content words include *tissue*, *needle*,
+  *piece*, *surgeon*, *gene*, *tests*, *report* and *tumor*, every one of which
+  this page needs.
+- **A cause borrowed from a sibling page can be the wrong cause.** The risk
+  section said "where the tumor sits is what decides most of that", which is
+  true on `/treatments/craniotomy` and is imported reasoning here: the paper
+  this page cites concludes that **lesion size** and **bleeding during the
+  procedure** are the two factors, and names location only as one of six from
+  other people's literature. Worse, the wrong cause was propping up a
+  reassurance ("part of why your team chose this route"). §12.14's rule again:
+  the sentence was checked against the dossier and not against the paper.
+- **Narrowing a source's prohibition is a defect even when the words look
+  bigger.** CRUK says "You must not drive after having a brain biopsy"; the
+  draft wrote "you must not drive **yourself**", under the heading "someone to
+  get you home", which reads as a rule about that afternoon. It also never
+  reached the caregiver section, where `/treatments/craniotomy` deliberately
+  puts driving because that is the person who can enforce it. Same shape: a
+  blanket restriction quietly scoped to the safer-sounding case.
+- **A new library page nothing links to is half shipped.** `/tests` has no
+  index, so a page's only way in is the pages that mention it. This one is
+  linked from `/tests/mri`, `/tests/waiting-for-results`,
+  `/treatments/craniotomy` and all six adult glioma hubs, whose "how do doctors
+  find out" sections already said "needle biopsy" as flat text. **The hub
+  additions are appended sentences, not rewrites of existing ones**, so no hub's
+  own assertions could break — and the words `needle biopsy` deliberately stay
+  unlinked there, because linking them would have turned off the one live
+  tooltip for the `stereotactic biopsy` entry.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
@@ -1357,52 +1484,6 @@ applies: the tiers are universal, the fever line's routing is not.
 > about least" test, and for the two live pages that were routing readers into
 > chemotherapy with no fever rule at all.
 
-### 12.14 Banning a citation is not fixing a claim (WI-518)
-
-WI-518's test bans three URLs by name, each with a comment explaining that the
-paper does not say what the dossier claims. **And the page shipped two of those
-claims in its prose anyway** — steroids working "quickly" (the only source is
-the steroid-complications audit WI-514 already rejected) and "it usually comes
-back at or near the same place" (the only source is the 21-patient study WI-515
-dropped).
-
-This is WI-510's rule at one remove, and it is worse than the original because
-the ban **provides false assurance**. A test that names a bad URL reads like the
-claim was handled. **When you ban a source, grep the page for the claim it was
-carrying.** Both of these survived a `/review` pass on the item that wrote the
-ban.
-
-**A proximity window is not a scope.** WI-518's retired-name guard checked for a
-marker word ("older", "superseded", "used to") within ±220 characters of the
-superseded name. The break harness planted the name in an unrelated symptom
-bullet and it passed — 440 characters of a page whose whole subject is old names
-will find a marker almost every time. Tightening it to the sentence plus the
-next one *still* passed, off "especially common in **older** people" in the
-following bullet. **The markers are ordinary English words, so any adjacency
-allowance leaks.** It is same-sentence now, and the one legitimate use that
-needed the allowance (a heading explained beneath it) was reworded to carry its
-own marker instead. Same family as WI-511's clause anchor.
-
-**A self-removing note goes stale in the direction nobody guards.** The
-`/tumors/high-grade-glioma` honesty note said "those child pages are short at
-the moment" and its guard required the note while *any* destination was thin.
-Filling in three of four made the sentence false — a reader was told the
-glioblastoma page was thin and pointed back to high-grade-glioma as "the fuller
-one" — and nothing went red, because the guard had no upper bound tying the
-note's *unscoped plural* to the *number* still thin. The note now names the one
-page it is true of, and the guard requires the named destination to be one of
-the thin ones.
-
-**Check the source, not the dossier's quotation of it.** `/review` flagged this
-page's shorter-radiation paragraph as an unsourced comparative, quoting the
-dossier's "a safe, well-tolerated **alternative**". The paper itself says
-hypofractionation "**is the preferred standard of care** for elderly (≥70 years)
-or frail patients ... offering comparable overall survival", and EANO
-independently says it "has **similar activity** to irradiation with 60 Gy in 30
-fractions". The dossier had quoted a weaker sentence from the same paper. The
-page was right; the finding was rejected with the verbatim recorded in the front
-matter so the next reader does not re-open it.
-
 ### 12.13 When the richest source is the one you may not use (WI-517)
 
 `/tumors/oligodendroglioma` is the page where §12.1's source-precedence rule
@@ -1452,3 +1533,49 @@ the one that responds best" — a first-place ranking on two axes that no source
 ranks, inside the outlook gate, where the reader chose to be. The
 `Characterisations` ban list did not fire because it held `"responds better"`
 and `"responds well"` but not the superlative. It does now.
+
+### 12.14 Banning a citation is not fixing a claim (WI-518)
+
+WI-518's test bans three URLs by name, each with a comment explaining that the
+paper does not say what the dossier claims. **And the page shipped two of those
+claims in its prose anyway** — steroids working "quickly" (the only source is
+the steroid-complications audit WI-514 already rejected) and "it usually comes
+back at or near the same place" (the only source is the 21-patient study WI-515
+dropped).
+
+This is WI-510's rule at one remove, and it is worse than the original because
+the ban **provides false assurance**. A test that names a bad URL reads like the
+claim was handled. **When you ban a source, grep the page for the claim it was
+carrying.** Both of these survived a `/review` pass on the item that wrote the
+ban.
+
+**A proximity window is not a scope.** WI-518's retired-name guard checked for a
+marker word ("older", "superseded", "used to") within ±220 characters of the
+superseded name. The break harness planted the name in an unrelated symptom
+bullet and it passed — 440 characters of a page whose whole subject is old names
+will find a marker almost every time. Tightening it to the sentence plus the
+next one *still* passed, off "especially common in **older** people" in the
+following bullet. **The markers are ordinary English words, so any adjacency
+allowance leaks.** It is same-sentence now, and the one legitimate use that
+needed the allowance (a heading explained beneath it) was reworded to carry its
+own marker instead. Same family as WI-511's clause anchor.
+
+**A self-removing note goes stale in the direction nobody guards.** The
+`/tumors/high-grade-glioma` honesty note said "those child pages are short at
+the moment" and its guard required the note while *any* destination was thin.
+Filling in three of four made the sentence false — a reader was told the
+glioblastoma page was thin and pointed back to high-grade-glioma as "the fuller
+one" — and nothing went red, because the guard had no upper bound tying the
+note's *unscoped plural* to the *number* still thin. The note now names the one
+page it is true of, and the guard requires the named destination to be one of
+the thin ones.
+
+**Check the source, not the dossier's quotation of it.** `/review` flagged this
+page's shorter-radiation paragraph as an unsourced comparative, quoting the
+dossier's "a safe, well-tolerated **alternative**". The paper itself says
+hypofractionation "**is the preferred standard of care** for elderly (≥70 years)
+or frail patients ... offering comparable overall survival", and EANO
+independently says it "has **similar activity** to irradiation with 60 Gy in 30
+fractions". The dossier had quoted a weaker sentence from the same paper. The
+page was right; the finding was rejected with the verbatim recorded in the front
+matter so the next reader does not re-open it.
