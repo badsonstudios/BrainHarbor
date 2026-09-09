@@ -232,6 +232,11 @@ longer you wait, the more of it there is to see and the harder it is to tell
 healing from tumor. Getting the scan early gives your team a clean picture to
 measure everything else against.
 
+The scans that come later, once treatment is over, are asked for a different
+reason again.
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) covers
+those, and what the words on the report mean.
+
 ## Who reads my scan, and how do I get the result?
 
 How long it takes depends on where you are, so ask before you leave. What
@@ -272,6 +277,8 @@ and who is going to call me?
   report is in your hands.
 - [Getting ready for surgery](/tests/getting-ready-for-surgery) if this scan is
   the one your surgeon will navigate by, and the operation is being planned.
+- [Follow-up scans, and what the results mean](/tests/follow-up-scans) for the
+  scans that carry on after treatment, and the words used to describe change.
 - [Brain tumor types](/tumors) to read about your own diagnosis.
 - [What to do when someone has a seizure](/seizures/what-to-do), which is worth
   reading before you need it.

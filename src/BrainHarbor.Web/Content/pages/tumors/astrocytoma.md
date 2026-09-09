@@ -362,6 +362,10 @@ records before anybody calls you? For a lot of people it does.
 If something changes between appointments, you do not have to wait. Bringing a
 scan forward is an ordinary thing to ask for.
 
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) goes
+through what your team compares your scan with, and what the words on the report
+mean.
+
 ## If it comes back, or changes
 
 **Some grade 2 astrocytomas change into a higher grade over time.** That is

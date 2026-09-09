@@ -328,6 +328,9 @@ the top.
 - [Just diagnosed? Start here](/start) if this is all new.
 - [Your MRI scan](/tests/mri), the scan that started this and the ones that
   come later.
+- [Follow-up scans, and what the results mean](/tests/follow-up-scans) for the
+  scans that carry on after treatment, and the shorter wait that comes with
+  each one.
 - [Brain tumor types](/tumors) once you have a name you trust.
 - [The glossary](/glossary) for any word on your report you do not recognize.
 - [Get help now](/get-help-now) if the waiting is more than you can carry today.

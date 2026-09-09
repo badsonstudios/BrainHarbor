@@ -377,7 +377,9 @@ happening during the wait and why it takes as long as it does.
 A stable scan is the ordinary outcome for many people for a long time. A change
 on a scan is not always growth: it can be an effect of treatment, and telling
 the two apart sometimes takes a second scan rather than a decision on the day.
-[Pseudoprogression](/treatments/radiation-therapy) is the word for that.
+[Pseudoprogression](/tests/follow-up-scans#looks-worse) is the word for that,
+and that page also goes through what each scan is compared with and what the
+words on the report mean.
 
 ## If it comes back, or changes
 
