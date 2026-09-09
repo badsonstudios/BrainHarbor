@@ -3072,13 +3072,46 @@ Start only after Dan has signed off WI-513's template.
   antiplatelet stop-day counts (a number a frightened reader CAN follow, next to
   a heading saying not to), no 8-hour fatty-meal tier (no reachable adult
   source states it), no anticoagulant restart timings, no escalation list.
-- [ ] **WI-521 T11 Follow-up scans and what the results mean** — the canonical
-  home for RANO in plain terms, **pseudoprogression** (10–30% of glioblastoma
-  patients on chemoradiation see the MRI get worse within 12 weeks of finishing
-  radiation, from treatment effect, with real new symptoms), **radiation
-  necrosis**, and scanxiety. On scanxiety the honest position is that no
-  intervention has proven effective, so promise nothing and give logistics
-  (book the scan and the results close together). Depends on: WI-506.
+- [x] **WI-521 T11 Follow-up scans and what the results mean** — the canonical
+  home for RANO in plain terms, **pseudoprogression**, **radiation necrosis**,
+  and scanxiety. On scanxiety the honest position is that no intervention has
+  proven effective, so promise nothing and give logistics (book the scan and
+  the results close together). Depends on: WI-506.
+  **Done 2026-09-09.** `/tests/follow-up-scans`, a new page and the tenth under
+  the §12.8 LIBRARY template — the third in the corpus to use **all twelve
+  slots**. Reading grade **5.2**, **1477 tests** (1444 before), ContentCheck
+  **245/0**, **all 72 break-mutations proven on LF and CRLF**, no new glossary
+  terms, and **nine inbound doors** (`/tests/mri`, `/tests/waiting-for-results`,
+  `/treatments/radiation-therapy` and all six adult glioma hubs).
+  **THE PAGE PUBLISHES NO FREQUENCY, AND THAT IS THE ITEM'S RULING.** This
+  ticket asked for "10-30% of glioblastoma patients"; the dossier (§10.3) says
+  "20-30% ... range 12% to 64%"; the ASCO Post says "28% to 66%"; PMC10412732
+  says "approximately 36%" and reports a biopsy series at 12.4%. Five answers,
+  none of them each other, because each counted a different thing — so §12.4
+  R2's reasoning applies and the page says it is common **and says why there is
+  no number**. Four more dossier defects recorded in the front matter: the
+  radiation-necrosis timing (dossier "median 7 months, range 1-25"; the paper
+  says **8 months, range 1-41**, in **stereotactic radiosurgery** patients,
+  mostly metastases and meningiomas), a biopsy-agreement claim attributed to a
+  paper stating **biopsies were never performed**, scanxiety figures absent
+  from both open sources, and "four categories" of RANO 2.0 where the reachable
+  paper's table has **five**. The surveillance schedule is deliberately absent:
+  its source is 403, it would be wrong for most of this page's readers, and it
+  is a number a frightened reader can act on.
+  **`/review` found the page shared 108 eight-word shingles with
+  `/tumors/high-grade-glioma`** — whole paragraphs, already drifted inside one
+  commit — while the restatement guard, scoped to three hand-picked tests
+  pages, reported zero. Both sections rewritten; the guard now runs corpus-wide
+  with a four-entry allowlist of deliberately-shared safety claims. Eleven more
+  guards were walked by mutation and all are now claim-shaped. Written up as
+  thirteen new lessons in §12.8.
+  **Also fixed on a sibling:** `/tumors/high-grade-glioma` listed only two of
+  RANO's three routes out of the twelve-week rule, omitting the mandatory
+  confirmation scan — the most reassuring one.
+  **Known follow-up:** the `rano` glossary entry is reachable nowhere (this is
+  the first page to use the word in prose, and it defines it, so the tooltip is
+  suppressed here). Pinned by a test that goes red when a later page makes it
+  live.
 - [ ] **WI-522 X1 Watch and wait** — that it is a plan, not a delay; what is
   monitored and how often; the reassuring growth data; **and the measured cost**
   — watch-and-wait carries 4.26× higher risk of a pathological depression score,

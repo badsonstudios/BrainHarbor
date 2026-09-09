@@ -368,13 +368,17 @@ that gap.
 **A worse-looking scan does not always mean the tumor has grown.** After
 radiation with temozolomide, a scan can look worse for a while and then settle
 without any change of treatment. It has a name,
-[pseudoprogression](/treatments/radiation-therapy), it usually shows up within
+[pseudoprogression](/tests/follow-up-scans#looks-worse), it usually shows up within
 about the first three months after radiation finishes, and it can cause real
 symptoms, so it is not only a picture problem. Telling it apart from real growth
 sometimes needs a second scan rather than a decision on the day.
 
 If your team says "let us scan again before we change anything", that is usually
 this, and it is not them stalling.
+
+[Follow-up scans, and what the results mean](/tests/follow-up-scans) goes
+through the rest of it: what each scan is compared with, and what the words on
+the report mean.
 
 ## If it comes back, or changes
 

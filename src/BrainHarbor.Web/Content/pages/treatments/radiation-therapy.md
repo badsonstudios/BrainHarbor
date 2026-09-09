@@ -645,6 +645,8 @@ stalling. It is how the question gets answered.
   for the operation many people have before radiation.
 - [Your MRI scan](/tests/mri) for the scan that plans this treatment and the
   ones that follow it.
+- [Follow-up scans, and what the results mean](/tests/follow-up-scans) for
+  pseudoprogression, radiation necrosis and the words on a follow-up report.
 - [Waiting for your pathology results](/tests/waiting-for-results) if you are
   still waiting to hear what the tumor is.
 - [Your pathology report, part by part](/tests/pathology-report) once the
