@@ -257,8 +257,13 @@ Before the day:
   vitamins, the lot.
 - **Ask which medicines to keep taking, and which to stop.** Take what you are
   prescribed exactly as you are told, and do not stop anything on your own.
+  [Getting ready for surgery](/tests/getting-ready-for-surgery#medicines) is
+  about that conversation, and it has a section on blood thinners.
 - **Ask what time to stop eating and drinking**, and follow the times your own
   hospital gives you rather than any you read anywhere else.
+  [When do I stop eating and
+  drinking?](/tests/getting-ready-for-surgery#fasting) explains what the times
+  are usually based on, and what to ask about them.
 - **Ask whether any hair will be shaved**, and where. It varies, and it is
   easier to know beforehand.
 

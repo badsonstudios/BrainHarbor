@@ -73,6 +73,12 @@ after](/treatments/craniotomy) walks through the operation, the hospital stay,
 and the weeks at home that most people are least ready for. It has a long
 section for whoever is looking after you.
 
+Before any of that there is a set of checks, and two of them are worth knowing
+about early. [Getting ready for
+surgery](/tests/getting-ready-for-surgery) covers the appointments, what to ask
+about the times you are given for stopping food and drink, and why you must not
+stop a blood thinner on your own.
+
 If radiation has been mentioned, [radiation therapy: the mask, the daily
 visits, and what comes after](/treatments/radiation-therapy) goes through the
 planning visit where the mask is made, what a treatment day is like, and the

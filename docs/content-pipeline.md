@@ -1078,6 +1078,98 @@ page written after three §12.3 HUBS in a row):**
   unlinked there, because linking them would have turned off the one live
   tooltip for the `stereotactic biopsy` entry.
 
+**Nine more from the ninth one (WI-520, getting ready for surgery — the first
+page in the corpus that publishes an instruction a reader can follow tonight):**
+
+- **A string-shaped test is not a claim-shaped test, and this is the item that
+  proves how far apart they are.** `/review` ran sixteen adversarial mutations
+  against this page's first test suite and **thirteen went through green**, six
+  of them against tests **named** for the exact defect being reintroduced. A
+  four-literal ban on *"steroids are generally continued"* was defeated by the
+  singular. A day-count guard requiring `N days (before|prior)` was defeated by
+  **"five days ahead"**, then by a drug that was not on its list, then by the
+  questions list it never read. An age regex written to catch the dossier's own
+  *"above roughly age 50–60"* could not match it, because the dossier puts an
+  adverb and the word "age" between the preposition and the number. **When a
+  guard is about a claim, ban the shape: a quantity next to a meaning, checked
+  per sentence.** Every one of the thirteen is now in the mutation table and
+  fails on LF and CRLF.
+- **Selecting a sentence on a word that the sentence next door also contains
+  will pick the wrong sentence and pass.** The European fasting median has to be
+  attributed in the sentence that prints it (§12.8, WI-507). The guard selected
+  the sentence containing `"twelve"` — which the *attribution* also contains, in
+  "twelve **European** countries" — so splitting the two apart left the figure
+  unattributed and the test green. **Select on the FIGURE (`twelve hours`), not
+  on a word the figure happens to share with its label.**
+- **A section-scoped position test cannot see the short version, and the summary
+  is where most readers stop.** The fasting section is built correctly: the
+  hospital's own times first, the two-hour figure second, an action last. The
+  **summary** carried the permission with no caveat at all — and the test
+  written for the summary **pinned the uncaveated sentence in place**. §12.3's
+  own number is the argument: readers consume 20 to 28% of a page. **Any rule
+  about where a dangerous sentence sits has to be asserted over the whole
+  reader text, not one section.**
+- **Print the scope the source attaches to a rule, not just the rule.** The
+  ASA's two-hour clear-liquid interval is "for **elective procedures**", from a
+  document titled "Application to **healthy patients**", in a paper most of
+  whose length is about the people it does not hold for — GLP-1 receptor
+  agonists, gastroparesis, labor. The front matter quoted the qualifier; the
+  prose dropped it. That is §12.6's "keep the qualifier, shorten it" and it
+  matters more than usual here, because the section then **arms the reader to
+  push back on a longer fasting time**. For somebody on a weight-loss injection
+  the longer time may be the right one, and without the scope the page has told
+  them it is institutional habit.
+- **A number a reader can act on is a different risk from a number that
+  misleads, and §12.4 needs both readings.** R2 keeps procedural risk
+  percentages off the site because the spread misleads. The per-drug
+  antiplatelet stop-day counts are not like that — they are real, precise and
+  correctly sourced. They stay off **because a frightened reader CAN follow
+  them**, next to a heading saying not to. The page keeps one number, "for some
+  of them it is around a week", and it only ever pushes in the safe direction:
+  **ask sooner**. Ask which way a number pushes if the reader acts on it alone.
+- **Ban the URL and re-derive the claim, on the same pass.** Sixth item running
+  for §12.14, and this time it was caught by the end-to-end read rather than a
+  gate: the dossier hangs "dexamethasone and anti-seizure medicines are
+  generally continued" on an **MRI page** whose only medication sentence is
+  "take your regular medications as usual". The citation was banned in a test —
+  and the section opened with *"Most of what you take, you keep taking"*, which
+  is that sentence in my own words, three tests below the ban.
+- **A test that reads the raw markdown cannot see a shared block.** The
+  escalation-absence guard ran on the page source, where the caregiver section
+  is the eleven characters `[CAREGIVER]`, so it proved a phrase absent from a
+  page nobody reads while the **composed** page says "what counts as 'call an
+  ambulance'" inside the block. Compose first, then subtract the block text if
+  what you mean is *this page's own prose*. Related: `CuratedPage.ReaderText`
+  strips front matter **by index**, so fed a `Section()` it returns
+  `section[3..]` — three characters off the front, silently breaking any
+  assertion about how a section opens. It cost this item a round and then
+  appeared again thirty lines from the comment warning about it.
+- **The absence of an escalation list is the right answer for a page whose
+  reader has no symptoms yet, and it needs a shape check rather than a
+  phrase check.** Nothing here can be diffed against `/seizures/what-to-do`,
+  because nothing has happened yet; the one escalation-shaped event before the
+  day is becoming unwell, and no reachable source supports a triage rule for it,
+  so the caregiver section **asks the question instead of answering it**
+  (§12.8, WI-519). Guarding that with four banned headings failed immediately —
+  `/review` wrote a fifth. The working check is structural: an urgency-flavoured
+  bold lead-in introducing a run of symptom bullets.
+- **The `[CAREGIVER]` "for this tumor" question, decided.** WI-519 flagged the
+  block's *"what counts as 'call an ambulance' **for this tumor**"* as a misfit
+  on a page whose reader has no diagnosis yet, and left it for the next page to
+  settle. Settled: **it stays, and it is not a misfit here.** This reader has a
+  planned brain operation, so they have a diagnosis; WI-519's reader is the
+  narrower case, mid-diagnosis, and one preposition on twenty including pages is
+  not worth a fork for it. If a later page genuinely has no diagnosed reader at
+  all, that page reopens it.
+- **PLAN.md §5 bans AHFS *drug monographs*, which MedlinePlus hosts under
+  licence — it does not ban medlineplus.gov.** A MedlinePlus **Medical Test**
+  page is NLM's own public-domain writing, and it is the only patient-level
+  source in this page's set that says an ECG is painless and says plainly why
+  somebody has one before an operation. Recorded because the easy mistake is to
+  widen a ban to the domain, which is §12.13's shape exactly, and a test now
+  asserts both halves: the lab-tests URL present, `medlineplus.gov/druginfo`
+  absent.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

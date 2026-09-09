@@ -3048,10 +3048,30 @@ Start only after Dan has signed off WI-513's template.
   as the condition both sources make it rather than something to ask about; and
   §12.13/§12.14 were reordered in the doc, which had them backwards since
   WI-518.
-- [ ] **WI-520 T7 Getting ready for surgery — tests and clearance** — bloods,
-  ECG, chest imaging, the anesthesia consult, **the 2-hour clear-fluid rule**
-  (patients routinely go dry all night unnecessarily), which medicines continue,
-  and **never stop blood thinners on your own**. Depends on: WI-506.
+- [x] **WI-520 T7 Getting ready for surgery — tests and clearance** *(done
+  2026-09-09)* — `/tests/getting-ready-for-surgery`, the ninth §12.8 LIBRARY
+  page. Reading grade **5.2**, **1444 tests** (1415 before), ContentCheck
+  **244/0**, **all 55 break-mutations proven on LF AND CRLF**, three new
+  glossary terms (anesthesiologist, advance directive, blood thinner), four
+  inbound doors (`/start`, `/tests/biopsy`, `/tests/mri`,
+  `/treatments/craniotomy`).
+  **The dossier (`tests-library.md` §6) is wrong or unusable in six places** and
+  the first two are on this page's headline claims: the ASA fasting table is
+  attributed to a document containing **no fasting guidance at all**, and
+  "dexamethasone and anti-seizure medicines are generally continued" is
+  attributed to an **MRI page** that mentions neither. Also: the ECG age
+  threshold is contradicted by its own co-citation ("Age alone may not be an
+  indication for ECG"); `accessanesthesiology.mhmedical.com` is 403; the
+  group-and-save paragraph has no citation; the restart timings are unconfirmed
+  and post-operative. All six recorded in the page's front matter with
+  replacements.
+  **`/review` ran sixteen mutations and THIRTEEN passed** — six against tests
+  named for the defect being reintroduced. Written up as nine new lessons in
+  §12.8; every one is now in the mutation table and fails on both line endings.
+  **Deliberate omissions, each with a test and a reason:** no per-drug
+  antiplatelet stop-day counts (a number a frightened reader CAN follow, next to
+  a heading saying not to), no 8-hour fatty-meal tier (no reachable adult
+  source states it), no anticoagulant restart timings, no escalation list.
 - [ ] **WI-521 T11 Follow-up scans and what the results mean** — the canonical
   home for RANO in plain terms, **pseudoprogression** (10–30% of glioblastoma
   patients on chemoradiation see the MRI get worse within 12 weeks of finishing
