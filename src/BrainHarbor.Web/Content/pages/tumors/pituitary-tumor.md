@@ -7,6 +7,9 @@ sources:
   - url: https://www.cancer.gov/types/brain
     title: "National Cancer Institute: Brain and Spinal Cord Tumors"
     accessed: 2026-08-16
+  - url: https://www.cancerresearchuk.org/about-cancer/brain-tumours/types/pituitary-tumours
+    title: "Pituitary tumours | Cancer Research UK"
+    accessed: 2026-09-10
 reviewed: 2026-08-16
 review_due: 2027-02-16
 disclaimers: [medical]
@@ -31,6 +34,9 @@ Some **press on what is nearby**. The nerves for eyesight run right above the
 gland, so pressure there can change your vision, often at the outer edges.
 
 Blood tests and an eye check are common early steps for that reason.
+
+A small one that is not causing symptoms may be watched with scans.
+[Watching a tumor, step by step](/treatments/watch-and-wait) goes through what that involves.
 
 ## For the person caring for someone with this
 

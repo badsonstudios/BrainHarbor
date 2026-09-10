@@ -437,6 +437,8 @@ thing to ask for, and asking does not use anything up.
   report, the one that names your tumor.
 - [Radiation therapy](/treatments/radiation-therapy) for the treatment behind
   both of the scan changes on this page.
+- [Watching a tumor, step by step](/treatments/watch-and-wait) if your scans are part of a plan
+  to watch a tumor rather than treat it.
 - [Brain tumor types](/tumors) for what follow-up usually looks like for your
   own diagnosis.
 - [Get help now](/get-help-now) if you need to talk to a person today.

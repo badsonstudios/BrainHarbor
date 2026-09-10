@@ -962,16 +962,29 @@ public sealed class FollowUpScansPageContentTests
             + @"call|phone|ring|same day|straight away|do not wait|cannot wait)\b",
             RegexOptions.IgnoreCase);
 
-        foreach (Match run in Regex.Matches(
-                     Page, @"(?:^[ \t]*(?:[-*]|\d+\.)[ \t]+.+(?:\r?\n|$)){2,}", RegexOptions.Multiline))
+        // A list item INCLUDES its indented continuation lines (WI-522's
+        // /review): if EVERY bullet wraps, a regex that needs two consecutive
+        // marker lines finds no run at all and judges nothing. Read on the BODY,
+        // because with continuations allowed the front matter's `- url:` /
+        // `title:` source list becomes a run of its own.
+        var markdown = CuratedPage.Body(Page);
+        var runs = Regex.Matches(
+            markdown, @"(?:^[ \t]*(?:[-*]|\d+\.)[ \t]+.+(?:\r?\n[ \t]+\S.*)*(?:\r?\n|$)){2,}",
+            RegexOptions.Multiline);
+
+        // A finder that finds nothing judges nothing: the page has six lists.
+        Assert.True(runs.Count >= 4, $"the list finder found {runs.Count} lists on a page that has six");
+
+        foreach (Match run in runs)
         {
             // The lead-in is THE PARAGRAPH IMMEDIATELY BEFORE the list, not a
-            // fixed character window. A hard-wrapped bullet breaks the run, so a
-            // long list arrives here as several runs and a character window
+            // fixed character window. (Before WI-522 a hard-wrapped bullet broke
+            // the run, so a long list arrived here as several runs; continuation
+            // lines now join the run, but the reasoning stands.) A character window
             // reads the list's own earlier bullets as its introduction — which
             // is how the first version condemned this page's "What to ask your
             // team" list off its own "Do you call me either way?" question.
-            var paragraphs = Regex.Split(Page[..run.Index], @"\r?\n[ \t]*\r?\n")
+            var paragraphs = Regex.Split(markdown[..run.Index], @"\r?\n[ \t]*\r?\n")
                 .Where(p => p.Trim().Length > 0).ToList();
             var before = paragraphs.Count > 0 ? paragraphs[^1] : "";
 
