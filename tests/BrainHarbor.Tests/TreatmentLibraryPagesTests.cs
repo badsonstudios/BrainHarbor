@@ -447,8 +447,12 @@ public sealed class CraniotomyPageContentTests
         // the section reads fine anywhere, and the ordering is the part that
         // encodes "you have been given everything to act on before we ask you
         // to take on a job".
+        //
+        // Anchors stripped since WI-523, which pinned `{#caregiver}` on the
+        // heading because /treatments/awake-craniotomy deep-links to it. The
+        // words the reader sees are what this test is about (§12.8, WI-509).
         var headings = Regex.Matches(Page, @"^## (.+)$", RegexOptions.Multiline)
-            .Select(m => m.Groups[1].Value.Trim())
+            .Select(m => Regex.Replace(m.Groups[1].Value, @"\s*\{#[^}]+\}\s*$", "").Trim())
             .ToList();
 
         var preparation = headings.IndexOf("What you need first, and what to bring");
@@ -490,6 +494,14 @@ public sealed class CraniotomyPageContentTests
         // will point at.
         Assert.Matches(new Regex(@"^## .*\{#how-much-came-out\}", RegexOptions.Multiline), Page);
         Assert.Matches(new Regex(@"^### .*\{#sma-syndrome\}", RegexOptions.Multiline), Page);
+
+        // WI-523: /treatments/awake-craniotomy hands the reader to three more
+        // sections rather than restating them — the stay, the general risks,
+        // and the caregiver's whole job after surgery.
+        Assert.Matches(new Regex(@"^## How long does it take\? \{#how-long\}", RegexOptions.Multiline), Page);
+        Assert.Matches(new Regex(@"^## What can go wrong \{#what-can-go-wrong\}", RegexOptions.Multiline), Page);
+        Assert.Matches(new Regex(@"^## For the person caring for someone after surgery \{#caregiver\}",
+            RegexOptions.Multiline), Page);
     }
 
     [Fact]

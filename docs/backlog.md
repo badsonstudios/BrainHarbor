@@ -3156,11 +3156,27 @@ Start only after Dan has signed off WI-513's template.
   bullet wraps (fixed in both suites). The end-to-end read, **tenth item
   running**, found the plan-changes-when-it-grows contradiction and the missing
   vorasidenib option.
-- [ ] **WI-523 X3 Awake craniotomy and brain mapping** — split from WI-510
+- [x] **WI-523 X3 Awake craniotomy and brain mapping** *(done 2026-09-10 —
+  `/treatments/awake-craniotomy`)* — split from WI-510
   because the patient has a job to do. **"During mapping you may briefly lose a
   word or the use of a limb, and it comes back — that is the test working."**
   Nobody says this, and it is the sentence that removes the most fear on the
   page. R2 applies to the seizure risk. Depends on: WI-510.
+  **Outcome:** reading grade 4.2, **1542 tests** (1512 before), ContentCheck
+  249/0, **all 101 break-mutations proven on LF AND CRLF**, one new glossary
+  term (`brain mapping`, reachable on `/treatments/craniotomy`), seven inbound
+  doors (craniotomy and all six glioma hubs). **The spine had no citation in the
+  dossier**; it now rests on NBTS, StatPearls and PMC12414027, and is scoped to
+  the electrical TEST — the removal step says outright that a change then "is
+  not the test. It may not pass". **No seizure number** (five sources, five
+  answers); **"uncommon" printed for the failed awake part**, where the sources
+  agree, with its cost (less tumor out, more speech trouble) and the study's
+  finding that most were avoidable. `/review` found two blockers: the page told a
+  reader they had "not missed out" while its own meta-analysis concludes awake
+  surgery "should be strongly considered" near eloquent areas; and "it comes
+  back" leaked into the removal phase through the word "testing". Also fixed on
+  a sibling: `/treatments/craniotomy` now says pre-op scans "suggest" rather than
+  "map" where speech and movement sit, and carries three explicit anchors.
 - [ ] **WI-524 X11 Steroids** — its own URL because of one message: **this might
   be the drug, not the tumor.** Dexamethasone causes proximal muscle weakness in
   ~28%, routinely mistaken for progression. Also why you feel better without the
