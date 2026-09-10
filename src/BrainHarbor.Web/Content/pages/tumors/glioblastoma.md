@@ -261,6 +261,9 @@ offered a version of it.
 - **[Surgery](/treatments/craniotomy) first**, taking out as much as can safely
   come out. It also gives the tissue the diagnosis is made from, and taking
   bulk away can relieve pressure.
+  If the tumor is close to the parts that handle speech or movement, you may be
+  awake for part of it. [Awake brain surgery](/treatments/awake-craniotomy)
+  explains why.
 - **[Radiation](/treatments/radiation-therapy) with
   [temozolomide](/treatments/chemotherapy)** together, usually starting a few
   weeks after surgery. The standard course is thirty sessions over about six

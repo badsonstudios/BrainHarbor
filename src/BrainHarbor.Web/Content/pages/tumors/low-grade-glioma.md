@@ -223,6 +223,9 @@ results, where the tumor sits, how much of it came out, and what you want.
   where it is possible. For a grade 1 circumscribed tumor, a complete operation
   can be the end of it. [Brain surgery: what happens, and what comes
   after](/treatments/craniotomy) goes through the operation.
+  If the tumor is close to the parts that handle speech or movement, you may be
+  awake for part of it. [Awake brain surgery](/treatments/awake-craniotomy)
+  explains why.
 - **Watching, with scans.** Your team may call this watch and wait, or active
   surveillance. It is a real option for some people, and there is a section on it
   below, because it is the part that causes most doubt.
