@@ -336,6 +336,7 @@ it early rather than later has not been shown to change how long people live. It
 does tend to give a longer stretch before the tumor grows again. It also tends
 to give better seizure control after surgery. Some teams choose to wait and some
 do not. Ask out loud rather than assuming the timing was fixed.
+[Watching a tumor, step by step](/treatments/watch-and-wait) covers what the waiting involves.
 
 **For a grade 3 tumor this is not the same conversation.** There, treatment
 after surgery is the standard plan rather than something to time, and the

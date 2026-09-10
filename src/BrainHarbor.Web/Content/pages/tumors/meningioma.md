@@ -24,7 +24,8 @@ faster.
 ## What often happens
 
 Many are found by accident, on a scan done for another reason. A small one that
-causes no trouble may just be watched with scans.
+causes no trouble may be watched with scans. [Watching a tumor, step by step](/treatments/watch-and-wait)
+goes through what that involves.
 
 Because a meningioma sits on the outside, symptoms often come from where it
 presses rather than from the tumor itself.

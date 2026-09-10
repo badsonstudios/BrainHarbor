@@ -458,10 +458,25 @@ public sealed class LowGradeGliomaPageContentTests
         Assert.Matches(new Regex(@"years of living alongside", RegexOptions.IgnoreCase), section);
         Assert.Matches(new Regex(@"[Ss]can weeks are hard", RegexOptions.IgnoreCase), section);
 
-        // Watching is harder on the caregiver than treating, and saying so is
-        // the thing no comparator does.
+        // Watching is hard to live with for the person alongside too, and
+        // saying so is the thing no comparator does.
+        //
+        // WI-522 CORRECTED THIS FROM A COMPARATIVE. It used to read "Watching is
+        // HARDER to live with THAN TREATING", which no source on this page
+        // supports — and the sources /treatments/watch-and-wait checked point
+        // the other way: the one study behind the "watching costs you" claim
+        // concludes distress is high "independent of management strategy",
+        // QUALMS found "similar HRQoL" watched and operated, and the same
+        // cohort re-surveyed found LESS distress in the watched group. Two
+        // pages stating one claim at two strengths is §12.10's defect, so the
+        // comparative is banned here rather than merely no longer pinned.
         Assert.Matches(
-            new Regex(@"[Ww]atching is harder to live with than treating", RegexOptions.IgnoreCase), section);
+            new Regex(@"[Ww]atching is hard to live with", RegexOptions.IgnoreCase), section);
+        Assert.DoesNotMatch(
+            new Regex(@"harder to live with than|harder than treat|in a way that treat\w*|"
+                + @"(?:harder|worse|tougher)\s+than\s+(?:treating|treatment|having treatment|an operation)",
+                RegexOptions.IgnoreCase),
+            CuratedPage.Flatten(CuratedPage.ReaderText(Page)));
     }
 
     [Fact]

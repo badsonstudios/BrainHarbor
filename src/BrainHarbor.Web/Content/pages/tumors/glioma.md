@@ -284,6 +284,7 @@ The usual building blocks:
 Which of these apply, in what order, and whether any apply at all depends
 entirely on which glioma you have. Some people are watched rather than treated
 at first, and that is a plan rather than an absence of one.
+[Watching a tumor, step by step](/treatments/watch-and-wait) goes through what that involves.
 
 Alongside all this there is supportive treatment. That means medicines to
 prevent seizures, medicines to bring swelling down, and treatment for a fluid

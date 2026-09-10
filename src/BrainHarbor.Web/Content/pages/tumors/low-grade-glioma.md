@@ -244,8 +244,10 @@ Because for some people, watching is the treatment that does least harm.
 **Watching is not doing nothing.** It means scans at set times, and seeing your
 team, so a change is caught while it is small. Here is the point of it.
 Radiation and chemotherapy both have costs. Over years, radiation's cost falls
-on thinking and memory. Starting treatment before you need it spends that cost
-early and buys nothing.
+on thinking and memory. Starting radiation right after surgery can hold the tumor
+back for longer and mean fewer seizures. Even so, it has not been shown to change
+how long people live. That is why some teams wait, to put radiation's cost off
+until it is needed.
 
 Whether it suits you depends on things your team can weigh and a web page
 cannot: your grade, your gene results, how much of the tumor is left, your
@@ -261,10 +263,10 @@ strict age cutoff, and other things should be weighed too. **So if your plan has
 been explained to you as "you are over 40, so...", ask again.** Not because
 anyone is wrong. Because the reasoning should be about you.
 
-Waiting is hard in a way that treatment is not, and being uneasy about it is not
-a sign you are choosing wrong. Ask what specifically would change the plan, and
-when the next scan is. Having those two answers makes the gap between scans much
-easier to live in.
+Waiting is hard, and being uneasy about it is not a sign you are choosing wrong.
+Ask what specifically would change the plan, and when the next scan is, so you
+know what you are waiting for. [Watching a tumor, step by step](/treatments/watch-and-wait) goes through the plan itself, and
+the worry that can come with it.
 
 ### What is vorasidenib, and could it apply to me?
 
@@ -417,7 +419,7 @@ scan and its result are, for a lot of people, worse than anything else in the
 year. It helps to know that in advance and to plan the week rather than pretend
 it is ordinary.
 
-**Watching is harder to live with than treating, for you as well.** If the plan
+**Watching is hard to live with, for you as well.** If the plan
 is to watch, there is nothing for you to do. Having nothing to do, while
 something frightening sits inside someone you love, is its own kind of hard. It
 is not a sign the plan is wrong.

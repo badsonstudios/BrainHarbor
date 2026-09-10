@@ -1282,6 +1282,99 @@ publishes no numbers at all, on the subject the backlog asked for numbers on):**
   into nonsense — *"the rules your team works to build a step in for it"* —
   which reading grade 5.3, ContentCheck 245/0 and 1,477 tests all passed.
 
+**Twelve more from the eleventh one (WI-522, watch and wait — the page whose
+headline claim did not survive its own source):**
+
+- **The backlog's headline claim can be the defect, so read the paper's Methods,
+  tables and Conclusion before the abstract.** The item's spine was
+  *"watch-and-wait carries 4.26x higher risk of a pathological depression
+  score"*. The paper (PMC7761113) is a cross-sectional survey of 31 people being
+  watched and 31 after a perfect operation; 4.26 is a **univariate odds ratio**
+  (95% CI 1.19-15.25) that the **abstract mislabels "Multivariate"**; anxiety did
+  not differ; and its own conclusion is that distress is high **"independent of
+  management strategy"**. Three other studies found no watch-and-wait excess, and
+  the dossier's own note under the figure said *"Do not publish the odds
+  ratio"*. The page prints what the studies agree on (worry is common either
+  way, in meningioma), names the one study and the disagreement in consecutive
+  sentences (WI-511), and prints no number. **The cost stayed the page's centre
+  of gravity. What changed is the claim.**
+- **A page serving several tumor types splits its reassurance by tumor.** The
+  "reassuring growth data" is meningioma data; diffuse low-grade gliomas "grow
+  continuously and usually transform" (Jakola 2017). The growth section is one
+  paragraph per tumor, and the guard is positional: reassurance-shaped sentences
+  may live only in the paragraphs of the tumors they are true of. Everything
+  else in the section is checked, and anywhere outside it a reassurance sentence
+  must name a tumor it is true of **and must not also name a glioma**. /review
+  beat an any-tumor-name check with "Whether it is a meningioma or a glioma, the
+  growth usually slows down".
+- **A cohort's best sentence can hide its main result.** Strømsnes gives "None
+  developed symptoms prior to intervention" and "Intervention was avoided in
+  > 40%", and the first draft built its meningioma paragraph from those, while
+  the same paper treated **54% of its patients**. After "slows down or stops",
+  "some tumors kept growing and were treated" read as the exception. A
+  proportion that changes the picture goes in as a comparison ("more people
+  ended up having treatment than not") when it cannot go in as a number.
+- **Practice is not evidence.** "Experts also differ on whether to operate on a
+  glioma found by chance" rested on a German practice survey inside Cochrane's
+  excluded-studies table, while the guideline the page cites says "Surgical
+  resection is the first step ... even in incidentally discovered tumors".
+  WI-512's shape again, a source cited for the position it argues against, and
+  on the one reader it matters most to: somebody watched without an operation.
+- **Writing the canonical page found three defects on a hub.** The low-grade
+  hub said starting radiation early "buys nothing" (EORTC 22845 says it buys a
+  longer stretch before regrowth, and fewer seizures), said watching is "harder
+  to live with than treating" (no source; the ones checked here say otherwise),
+  and **150 lines higher said the same comparative in different words**, "hard
+  in a way that treatment is not", which a two-phrase ban could not see. The
+  ban is claim-shaped now. §12.8 (WI-521) said budget an edit to the hubs; this
+  one needed three.
+- **One claim, one wording, when the claim is this close to prognosis.** EORTC
+  22845's survival half was on three pages in three strengths ("lived about as
+  long", "has not been shown to help them live longer", "has not been shown to
+  change how long people live"). It is now identical words on all three, in the
+  restatement guard's allowlist, and a test reads all three pages.
+- **A trigger stated as absolute can contradict the data two screens down.** The
+  summary, step six and the growth section all said "if it grows, the plan
+  changes", above "most meningiomas that are watched do grow a little". The
+  trigger in the sources is **sustained** growth. Found by the end-to-end read.
+- **Check what else is offered to exactly this page's reader.** The first draft
+  never mentioned vorasidenib, which was tested against a dummy pill **because**
+  watching after surgery was the standard for those patients (the FDA summary
+  says so). A watched grade 2 glioma reader who does not know to ask is the
+  reader the page failed. Also found by the end-to-end read: **the tenth
+  consecutive item** where that read caught what no gate could, and this time
+  it also caught a guarantee about the team ("your team **will** think again"),
+  WI-521's defect, again.
+- **A list finder that needs two consecutive marker lines finds nothing when
+  every bullet wraps.** WI-521's escalation-shape guard assumed a wrapped list
+  arrives as several runs; /review wrote three bullets that each wrapped, and it
+  arrived as none. List items now include their indented continuation lines,
+  and with that change the guard must read the **body**, or the front matter's
+  `- url:` / `title:` source list becomes a "list" of its own. Fixed in both
+  suites that carry it.
+- **A negation inside a superlative is not a negation.** "There is **no** better
+  way to ease the worry than talking to a counselor" passed the clause-anchored
+  negation check (WI-511), because it uses "no" to mean "most".
+- **A sentence written to pass a test gets checked against the source too.** The
+  first version of the never-treated sentence read "for some, **most often with
+  a meningioma**, it never turns into treatment": a tumor name was added to
+  satisfy the scoping check, and it created an unsourced comparative (by the
+  page's own sources, small pituitary tumors change least). It now names the
+  three tumors the sources support.
+- **The machine can be the flake.** Midway through, a scheduled disk backup
+  (`ReflectBin`) saturated the host disk. Postgres checkpoint syncs took up to
+  125 seconds (`docker logs`), Npgsql threw "Exception while reading from
+  stream", and a test host hung for twelve minutes. Nothing was wrong with the
+  change. Run `--filter "Category!=Database"` for the content suites while it
+  lasts, put `--blame-hang-timeout` on full runs, and check the render tests
+  green unmutated before trusting the harness. A render mutation that "fails"
+  on a database timeout proves nothing.
+
+Two dossier details worth knowing next time: the "675 untreated meningiomas"
+cohort was a **page number** in a reference (J Neurosurg 110:675-684), and a
+source listed as 403 can come back (The Brain Tumour Charity returned 200 on
+2026-09-10). Re-fetch before you drop.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
