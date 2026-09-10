@@ -272,6 +272,9 @@ much of it can safely be removed.
 - **[Surgery](/treatments/craniotomy)**, taking out as much as is safe and
   getting tissue for testing. For a grade 1 tumor with a clear edge, a complete
   operation can be the end of it.
+  If the tumor is close to the parts that handle speech or movement, you may be
+  awake for part of it. [Awake brain surgery](/treatments/awake-craniotomy)
+  explains why.
 - **[Radiation therapy](/treatments/radiation-therapy)**, usually after surgery,
   for people whose situation calls for treating now.
 - **[Chemotherapy](/treatments/chemotherapy)**, as pills or into a vein.

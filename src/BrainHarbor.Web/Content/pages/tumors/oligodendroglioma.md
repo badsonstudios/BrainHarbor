@@ -265,6 +265,9 @@ come up.
 - **[Surgery](/treatments/craniotomy) first, where it is possible.** Taking out
   as much as can safely come out is the usual first step. Even when the whole
   tumor cannot come out, removing part of it can help with seizures.
+  If the tumor is close to the parts that handle speech or movement, you may be
+  awake for part of it. [Awake brain surgery](/treatments/awake-craniotomy)
+  explains why.
 - **[Radiation](/treatments/radiation-therapy)** to the area the tumor was in,
   usually after surgery.
 - **[PCV chemotherapy](/treatments/chemotherapy)**, which is three drugs given

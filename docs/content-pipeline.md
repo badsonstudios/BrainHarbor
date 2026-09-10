@@ -1375,6 +1375,90 @@ cohort was a **page number** in a reference (J Neurosurg 110:675-684), and a
 source listed as 403 can come back (The Brain Tumour Charity returned 200 on
 2026-09-10). Re-fetch before you drop.
 
+**Ten more from the twelfth one (WI-523, awake craniotomy — the page whose
+spine is true of one step and false of the operation):**
+
+- **A sentence that is true of a step is false of the procedure, and one word
+  can move it across.** "You may lose a word for a moment, and it comes back —
+  that is the test working" is true of the electrical test (bursts under four
+  seconds, "transient disruption ... as expected"). It is false of a change that
+  shows up while tumor is being removed, which may be permanent and is the
+  signal to stop. The first draft's step 7 said the team "keeps **testing** you"
+  during removal, so the spine's own scope word now covered the phase where it
+  is false — and the guard accepted any sentence containing "the test". The fix
+  is in both places: the removal step says outright that a change then "is not
+  the test. It may not pass", and the guard scopes a return claim only by words
+  that belong to the test alone (the current, a spot).
+- **The front matter can claim what the page does not do.** This page's source
+  notes said it "says separately that a change while tumor is coming out is the
+  signal to stop, which is a different thing". The page said the first half and
+  never the second. Front-matter rulings are checked against the page, not only
+  against the sources.
+- **Read a meta-analysis's Implications section, not just its Limitations.**
+  The first draft used PMC12941676's limitations (observational, selection bias,
+  one small trial the other way) to tell a reader they had "not missed out" if
+  awake surgery was not offered. The same paper concludes it "should be strongly
+  considered" for high-grade gliomas near eloquent areas. WI-512's shape — a
+  source cited for the position it argues against — aimed at the reader it
+  matters most to: a speech-area tumor at a low-volume hospital. The page now
+  prints the suggestion, why it is unsettled, and the reviewers' own conclusion,
+  and tells that reader it is fair to ask.
+- **R2's silence is for spreads, not for small numbers the sources agree on.**
+  The seizure rate runs 2.9% to 54% across five sources, so no number and a
+  sentence saying why. The failed-awake rate is about 2%, 0-6% and 6.4% — they
+  agree — and the first draft's "none of them has a number, the studies disagree"
+  covered it too, which was false and left the reader to supply a worse figure
+  (WI-521). It now says "This is uncommon", and the no-number sentence sits
+  inside the seizure paragraph it is true of.
+- **Every claim-shaped guard needs a canary.** The frequency guard was two C#
+  string literals joined with `+`; the first was `$@"..."` and the second
+  `@"..."`, so `{CountWord}` in the second half was literal text and that half
+  could never fire. It passed this page and the page before it. It was found
+  only by adding `Assert.Matches(guard, "It happens to about one in ten
+  people.")` — a known-bad sentence the guard must catch before its pass on the
+  page means anything. (§12.10's "prove it can fire", at the regex level.)
+- **The shell heredoc rule is about backslashes, not about mutation tables.**
+  An edit to the test file made through a bash heredoc turned twelve `\b`s into
+  backspace characters (0x08). They are invisible to grep and to the eye, the
+  file compiled, and four regexes silently stopped matching word boundaries. Any
+  edit whose text contains a backslash goes through the Write or Edit tool, or a
+  script file written with them.
+- **A window around a story is not a pronoun guard.** The first guard checked a
+  story's sentence and the next; /review put "she" two sentences in. NBTS
+  genders two of its five people and not the other three, and tracking which is
+  which is where the guess gets in (WI-510, WI-511). The page now writes all five
+  neutrally and the guard is page-wide.
+- **A glossary alias is site-wide, and "site" includes machine-written text.**
+  The `brain mapping` entry first carried the alias `mapping` so it would fire on
+  `/treatments/craniotomy`. `SummaryRenderer` runs the glossary marker over the
+  AI feed summaries too, so any research item "mapping tumor cells" would have
+  got a brain-surgery definition. Aliases must be unambiguous in research
+  English, not only in the corpus; the craniotomy page now says "brain mapping".
+- **Writing the canonical page found one claim at two strengths on a sibling.**
+  `/treatments/craniotomy` said the pre-op scans "map where those areas sit";
+  this page says a scan "can suggest" and the test in the room checks it
+  (RadiologyInfo: further tests "to confirm the results of fMRI" before brain
+  surgery). The sibling now says "sometimes ... to suggest". WI-521's rule again:
+  budget an edit to the siblings.
+- **An efficacy claim with moderate evidence gets a positional allowance, not a
+  ban.** "Fewer new problems afterwards if they are awake" is moderate-certainty
+  in the meta-analysis, so banning it would misstate the evidence the other way.
+  The guard allows an efficacy phrase in exactly one place: a sentence beginning
+  "Some studies suggest", immediately followed by "But most of those studies
+  cannot settle it." Anywhere else — "the test lowers that risk", "being awake
+  makes that much less likely" — it fails.
+
+**The end-to-end read, eleventh item running,** caught eight defects before
+review saw the page: a hospital stay called "much the same" as an asleep
+operation when both sources that compare them say shorter (the sentence was
+written to avoid printing a comparison, and made the opposite one); "there is no
+reason to ask for it"; "three answers, not two", which assumed the reader had
+read another page; "most surgeons only use it when really needed", which was one
+surgeon; "most of the fear is the idea of feeling the operation", which was one
+patient; and three guarantees about what the team does. `/review` then found two
+blockers and twelve should-fixes, and fifteen mutations that walked the first
+suite — all fifteen are now in the harness table.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

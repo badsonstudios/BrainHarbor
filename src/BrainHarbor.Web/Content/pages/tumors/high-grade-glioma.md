@@ -262,6 +262,9 @@ combination, and in what order, depends on the exact diagnosis.
 
 - **[Surgery](/treatments/craniotomy)**, to take out as much as can safely be
   taken and to get tissue for testing.
+  If the tumor is close to the parts that handle speech or movement, you may be
+  awake for part of it. [Awake brain surgery](/treatments/awake-craniotomy)
+  explains why.
 - **[Radiation therapy](/treatments/radiation-therapy)**, usually after surgery,
   and usually over several weeks.
 - **[Chemotherapy](/treatments/chemotherapy)**, as pills or into a vein.

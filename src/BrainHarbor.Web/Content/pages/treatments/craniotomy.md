@@ -125,6 +125,8 @@ Your scalp is numbed as well, even though you are asleep. **The brain itself has
 no feeling in it.** That is the reason some of these operations can be done as an
 awake craniotomy. That is a different plan, for tumors sitting next to speech or
 movement, and your team would talk it through with you well beforehand.
+[Awake brain surgery, and what you do during it](/treatments/awake-craniotomy)
+goes through that plan.
 
 While you are asleep, the surgeon uses more than a pair of eyes:
 
@@ -170,7 +172,7 @@ work on words.
 You go home, or to a rehab unit, when you are stable, nothing has gone wrong,
 and there is a plan for where you are going.
 
-## How long does it take?
+## How long does it take? {#how-long}
 
 The operation itself takes hours, and how many depends on where the tumor is
 and how much is being done. Your family will be waiting a long time. That is
@@ -250,7 +252,7 @@ it is almost always because going further would have cost you something you
 would not want to lose. That is a decision made for you, in the moment, with
 your life afterwards in mind. It is the right call far more often than not.
 
-## What can go wrong
+## What can go wrong {#what-can-go-wrong}
 
 Every operation carries risk, and brain surgery is a serious one. Your team will
 go through your risks with you before you sign anything.
@@ -271,7 +273,8 @@ medicine is usually given before surgery and for a few days after.
 job you would notice losing. Surgery in or beside one of them carries the risk
 of affecting that job. Surgeons call a part of the brain like that an eloquent
 area, and you may hear the word or see it in your notes. That is why so much of
-the planning is about location, and why mapping and monitoring are used at all.
+the planning is about location, and why brain mapping and monitoring are used
+at all.
 
 Problems do not all show up at once. Something can appear right after surgery,
 or days or even weeks later. That is why you are watched closely at first and
@@ -376,8 +379,8 @@ Ask your team whether it applies to you rather than asking for it.
 Before the day, expect:
 
 - An MRI, sometimes more than one, including one for the surgeon to navigate by.
-- Extra scans if the tumor is near the areas for speech or movement, to map
-  where those areas sit in your particular brain.
+- Sometimes extra scans, if the tumor is near the areas for speech or movement,
+  to suggest where those areas sit in your particular brain.
 - Blood tests, and heart or chest checks if the anesthesiologist wants them.
 - A review of everything you take, including anything you buy yourself.
 - Tests of how you are doing now, so there is something to compare with
@@ -397,7 +400,7 @@ Bring:
 - Very little else. You will not want your own clothes for the first few days,
   and things go missing.
 
-## For the person caring for someone after surgery
+## For the person caring for someone after surgery {#caregiver}
 
 [CAREGIVER]
 
@@ -548,6 +551,8 @@ person, say so, and ask them to call you when it lands.
 - [The words on your gene results](/tests/molecular-markers) for IDH, MGMT,
   1p/19q and the rest, one at a time.
 - [Your MRI scan](/tests/mri), the scan before this and all the ones after.
+- [Awake brain surgery, and what you do during it](/treatments/awake-craniotomy)
+  if your surgeon wants you awake for part of the operation.
 - [What to do when someone has a seizure](/seizures/what-to-do), worth reading
   before you need it.
 - [Get help now](/get-help-now) if you need to talk to a person today.
