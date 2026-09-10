@@ -25,9 +25,10 @@ schwannoma, because it starts in cells called Schwann cells that wrap the nerve.
 Because of where it sits, the first signs are usually about one ear: hearing
 loss on that side, ringing, or trouble with balance.
 
-Many are small and are simply watched with scans over time. Treatment choices
+Many are small and are watched with scans over time. Treatment choices
 weigh the tumor against the hearing you still have, so the decision is often
-about more than size.
+about more than size. [Watching a tumor, step by step](/treatments/watch-and-wait) goes through
+what watching involves.
 
 ## For the person caring for someone with this
 

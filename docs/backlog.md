@@ -3112,10 +3112,50 @@ Start only after Dan has signed off WI-513's template.
   the first page to use the word in prose, and it defines it, so the tooltip is
   suppressed here). Pinned by a test that goes red when a later page makes it
   live.
-- [ ] **WI-522 X1 Watch and wait** — that it is a plan, not a delay; what is
+- [x] **WI-522 X1 Watch and wait** — that it is a plan, not a delay; what is
   monitored and how often; the reassuring growth data; **and the measured cost**
   — watch-and-wait carries 4.26× higher risk of a pathological depression score,
   which every other site treats as a footnote. Depends on: WI-502.
+  **Done 2026-09-10.** `/treatments/watch-and-wait`, a new page and the fourth
+  TREATMENT page under the §12.8 LIBRARY template. Reading grade **5.2**,
+  **1512 tests** (1477 before), ContentCheck **246/0**, **all 89 break-mutations
+  proven on LF and CRLF**, no new glossary terms, and **eight inbound doors**
+  (`/tumors/meningioma`, `/tumors/acoustic-neuroma`, `/tumors/pituitary-tumor`,
+  `/tumors/low-grade-glioma`, `/tumors/astrocytoma`, `/tumors/glioma`,
+  `/tumors/oligodendroglioma`, `/tests/follow-up-scans`).
+  **THE 4.26 FIGURE IS NOT PUBLISHED, AND THAT IS THE ITEM'S RULING — against
+  this ticket.** PMC7761113 is a cross-sectional survey of 31 watched and 31
+  operated people; 4.26 is a univariate odds ratio (CI 1.19-15.25) that the
+  abstract mislabels "Multivariate"; anxiety did not differ; its own conclusion
+  is that distress is high "independent of management strategy"; three other
+  studies found no watch-and-wait excess; and the dossier's note under the
+  figure already said not to print it. The page keeps the cost as its centre of
+  gravity (a whole section, and the summary) and prints what the evidence
+  supports: worry is common either way in meningioma, one study found more low
+  mood in the watched group, another did not, and for an acoustic neuroma people
+  watched felt about as well or better.
+  **The "reassuring growth data" is meningioma data and was on the wrong paper**
+  (Nakamura 2003, 41 patients, via a review, not PMC10180371). Printed as
+  direction only, one paragraph per tumor, with diffuse low-grade glioma's
+  opposite behaviour stated plainly and guarded by paragraph. Nine dossier
+  defects in all, recorded in the front matter, including a "675-patient cohort"
+  that is a page number.
+  **No per-tumor schedule** (WI-521's ruling held): one attributed range, "from
+  every few months to every couple of years".
+  **`/review` found three blockers** (a practice survey framed as expert
+  disagreement against the guideline the page cites; the same unsourced
+  comparative still on `/tumors/low-grade-glioma` in different words; the
+  Norway cohort's "most were treated" hidden behind its best sentence), nine
+  should-fixes, and twelve mutations that walked the first suite; a second
+  `/review` round found four more (the emergency line over-triaged a usual
+  seizure; "the rest never needed it" where many had died of other causes). All
+  fixed and all in the mutation table. **Also fixed on siblings:** `/tumors/low-grade-glioma`
+  said early radiation "buys nothing" and that watching is "harder to live with
+  than treating", and EORTC 22845 was stated three ways on three pages (now one
+  wording); WI-521's escalation-list guard could not see a list whose every
+  bullet wraps (fixed in both suites). The end-to-end read, **tenth item
+  running**, found the plan-changes-when-it-grows contradiction and the missing
+  vorasidenib option.
 - [ ] **WI-523 X3 Awake craniotomy and brain mapping** — split from WI-510
   because the patient has a job to do. **"During mapping you may briefly lose a
   word or the use of a limb, and it comes back — that is the test working."**

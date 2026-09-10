@@ -277,7 +277,8 @@ much of it can safely be removed.
 - **[Chemotherapy](/treatments/chemotherapy)**, as pills or into a vein.
 - **Watching, with scans**, which is a real plan for some grade 2 tumors rather
   than an absence of one. [Low-grade glioma](/tumors/low-grade-glioma) goes
-  through what watch and wait involves.
+  through what watch and wait involves, and
+  [Watching a tumor, step by step](/treatments/watch-and-wait) covers the plan itself.
 - **Vorasidenib**, a newer medicine taken by mouth, for some people with a grade
   2 IDH-mutant tumor after surgery. It works on the IDH change itself.
 
