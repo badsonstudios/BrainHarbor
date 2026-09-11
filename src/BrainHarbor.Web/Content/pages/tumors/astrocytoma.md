@@ -330,6 +330,8 @@ because the front of the brain is already involved. Steroids cause muscle
 weakness and can change mood. Seizure medicines can affect temper and
 concentration. If someone seems more irritable after treatment starts, that is
 worth asking about rather than assuming the worst.
+[Steroids](/treatments/steroids) covers what that medicine does and what can be
+done about it.
 
 ## Everyday life: work, driving, seizures and tiredness
 

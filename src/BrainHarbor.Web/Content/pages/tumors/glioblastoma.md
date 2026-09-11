@@ -335,8 +335,9 @@ Two things specific to this diagnosis:
 **Steroids will probably be part of it, and they change how you feel.** They
 work on the swelling described above rather than on the tumor itself. They
 also affect sleep, appetite, mood and blood sugar. Coming off them is done
-slowly and on a plan. If you feel unlike yourself on them, that is the drug. Say
-so rather than putting up with it.
+slowly and on a plan. If you feel unlike yourself on them, that may well be the
+drug rather than the tumor. Say so rather than putting up with it.
+[Steroids](/treatments/steroids) goes through the whole of it.
 
 **The weeks after radiation are their own thing.** Tiredness often arrives after
 treatment finishes rather than during it, and it can be heavier than people

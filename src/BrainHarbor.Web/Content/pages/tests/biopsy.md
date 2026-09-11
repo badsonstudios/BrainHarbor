@@ -206,7 +206,8 @@ small target, because a small one is harder to hit cleanly. The other is
 bleeding during the procedure itself, which your surgeon can see happening.
 
 You may be given steroid medicine before or after, to settle swelling in the
-brain.
+brain. [Steroids](/treatments/steroids) says what that medicine does, and why a
+team sometimes wants the sample taken first.
 
 That is what the watching afterwards is for. Someone checks on you, you get the
 scan, and you are told what to look out for at home. The list is further down

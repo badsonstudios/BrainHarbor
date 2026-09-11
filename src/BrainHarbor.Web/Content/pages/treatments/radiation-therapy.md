@@ -348,10 +348,11 @@ Ask this before you assume the worst. One medicine often given during radiation
 causes things that look like the tumor getting worse.
 
 **Dexamethasone** is the steroid used to settle swelling around a tumor. It
-causes weakness in the big muscles of the legs, arms, shoulders and neck.
-Somebody who suddenly cannot get out of a low chair may be having a drug
-effect, not a tumor effect. It also brings a bigger appetite, weight gain,
-trouble sleeping and mood swings.
+causes weakness in the big muscles of the legs, arms, shoulders and neck, which
+usually builds up over weeks. Somebody who has started finding a low chair hard
+to get out of may be having a drug effect, not a tumor effect. It also brings a
+bigger appetite, weight gain, trouble sleeping and mood swings.
+[Steroids](/treatments/steroids) is the page for all of it.
 
 Your team may change your dose more than once during your treatment. When they
 decide it is safe, they will give you a schedule for coming off it in steps.
@@ -547,12 +548,12 @@ hair falls out, so the color can be matched, and that means acting weeks before
 anyone feels ready to. It is a good job to take off their hands. Ask whether a
 prescription would get insurance to cover it.
 
-**The steroid is the medicine to watch, and it moves.** Unlike after surgery,
-the dose can be changed more than once while treatment is going on, and then
-reduced in steps at the end. Get the current schedule in writing every time it
-changes, and keep it somewhere you both look. And if they get weak in the legs,
-hungry, sleepless or short-tempered, ask the team whether it is the steroid
-before assuming it is the tumor.
+**The steroid is the medicine to watch, and during radiation it moves more than
+it does anywhere else.** Unlike after surgery, the dose can be changed several
+times while treatment is going on, usually because the treated area has swollen,
+and then brought down at the end. Ask for the current schedule in writing every
+time it changes. [Steroids](/treatments/steroids#caregiver) has the rest of what
+that medicine asks of you.
 
 **When to call the team the same day.** Ask for their own version of this list
 before treatment starts. Generally, call if:

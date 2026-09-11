@@ -1128,13 +1128,30 @@ which improves function (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6136096/).
 treat the tumor — say this clearly, because people believe it does.
 
 ## Side effects — the under-explained part
-In brain tumor patient series, the most common were:
-- **Increased appetite / weight gain — 46%**
+
+> **CORRECTED AT WI-524. The four percentages below are NOT in PMC12406498.**
+> That paper contains "proximal" zero times; its only "28" is 28.8%, the share
+> of patients with a documented steroid *plan*. The figures are **Sturdza et al
+> 2008** (Support Care Cancer 16:1041-8) — 88 patients, one institution, **brain
+> metastases**, palliative radiation, 45% of physicians using 16 mg/day —
+> reported secondhand by cns.org. The wider literature does not agree with them:
+> myopathy is "approximately 10%" (PMC4059813), "2% to 60%" (PMC4483077), "10%
+> to 90%" (PMC6007454), 10.6% of 216 primary brain tumor patients and 60% of 15
+> heavily dosed ones (both via PMC12948405), and 4.5% at >=12 mg/day
+> (PMC6700052). **Publish no frequency**; publish the direction they agree on
+> (more likely the higher the dose and the longer the course).
+> What PMC12406498 *does* support, and what `/treatments/steroids` uses it for:
+> of 316 referrals, 210 were started on a steroid and only 6% had a documented
+> weaning plan at that point; complications rose with courses past two weeks and
+> with the absence of a written plan.
+
+In brain tumor patient series, the most commonly reported were (Sturdza 2008,
+via https://www.cns.org/guidelines/treatment-adults-metastatic-brain-tumors/role-of-steroids-in-treatment-of-adults-with-metas):
+- Increased appetite / weight gain — 46%
 - **Proximal muscle weakness — 28%** (difficulty rising from a chair or climbing stairs; often
   mistaken by patients for the tumor progressing)
-- **Insomnia — 24%**
-- **Gastrointestinal symptoms — 20%**
-(https://pmc.ncbi.nlm.nih.gov/articles/PMC12406498/)
+- Insomnia — 24%
+- Gastrointestinal symptoms — 20%
 
 Also documented:
 - Mood disturbance, anxiety, irritability, agitation, depression, mood swings; neuropsychiatric
