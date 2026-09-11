@@ -318,8 +318,9 @@ slower for a while. Neither means treatment failed.
 
 **"Is this the tumor, or the medicine?"** is a question worth keeping in your
 pocket. Steroids cause muscle weakness. Seizure medicines can affect mood and
-temper. Both can look like the tumor winning when they are not. The pages linked
-above each go through this properly.
+temper. Both can look like the tumor winning when they are not.
+[Steroids](/treatments/steroids) goes through the first one properly, and the
+pages linked above cover the rest.
 
 ## Everyday life: work, driving, seizures and tiredness
 

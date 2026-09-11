@@ -183,7 +183,16 @@ public sealed class CraniotomyPageContentTests
             new Regex(@"Neither of these is a reason to stop a medicine on your own",
                 RegexOptions.IgnoreCase),
             section);
-        Assert.Matches(new Regex(@"reduced slowly", RegexOptions.IgnoreCase), section);
+        // The property is that nobody is told to stop a steroid themselves, and
+        // it used to be pinned as "reduced slowly". WI-524 found that wording
+        // false of a short post-operative course — PMC4059813 records a fast
+        // taper "discontinued 3 days after resection", which is exactly this
+        // page's reader — so the page now states the rule that holds in both
+        // cases. /treatments/steroids owns the full version.
+        Assert.Matches(new Regex(@"never one to stop by yourself", RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"your team's decision", RegexOptions.IgnoreCase), section);
+        Assert.DoesNotMatch(new Regex(@"(?:have|has) to be reduced slowly", RegexOptions.IgnoreCase), section);
+        Assert.Contains("/treatments/steroids", section, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -436,8 +445,10 @@ public sealed class CraniotomyPageContentTests
         Assert.Matches(new Regex(@"[Kk]eep it dry", RegexOptions.IgnoreCase), section);
         Assert.Matches(new Regex(@"staples", RegexOptions.IgnoreCase), section);
         Assert.Matches(new Regex(@"steroid", RegexOptions.IgnoreCase), section);
-        Assert.Matches(
-            new Regex(@"must not be stopped suddenly", RegexOptions.IgnoreCase), section);
+        // Same correction as above (WI-524): the caregiver is told the rule
+        // that is true of both a three-day course and a three-month one.
+        Assert.Matches(new Regex(@"never stopped by you", RegexOptions.IgnoreCase), section);
+        Assert.DoesNotMatch(new Regex(@"must not be stopped suddenly", RegexOptions.IgnoreCase), section);
     }
 
     [Fact]

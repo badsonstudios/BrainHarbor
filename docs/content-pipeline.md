@@ -491,7 +491,10 @@ a picture of a group and not a prediction about one person.
   gets cut, not when a sentence gets simplified.
 - **"Is this the tumor, or the drug?"** is a recurring frame worth repeating:
   levetiracetam causes irritability and aggression; dexamethasone causes
-  proximal muscle weakness in ~28%; SMA syndrome takes speech and one-sided
+  weakness in the big muscles of the thighs and upper arms, more likely the
+  higher the dose and the longer the course (**this example used to read "in
+  ~28%", and WI-524 found that figure is not in the paper the dossier cites it
+  to; see §12.8**); SMA syndrome takes speech and one-sided
   movement away right after surgery and gives them back over days to weeks;
   cognition feels worse on day 2 to 3 after surgery and then improves.
   Unwarned, people read every one of these as the tumor winning.
@@ -1458,6 +1461,84 @@ surgeon; "most of the fear is the idea of feeling the operation", which was one
 patient; and three guarantees about what the team does. `/review` then found two
 blockers and twelve should-fixes, and fifteen mutations that walked the first
 suite — all fifteen are now in the harness table.
+
+**Nine more from the thirteenth one (WI-524, steroids — the page whose headline
+figure was not in the paper it was cited to):**
+
+- **A guard scoped to the section named for the defect is a guard with a door
+  next to it.** The no-frequency rule for steroid myopathy was checked inside
+  "The weakness in your legs and arms"; `/review` put *"Proximal weakness turns
+  up in about twenty-eight in every hundred people on a high dose"* into "The
+  rest of the side effects", two screens down, and every test stayed green. A
+  page-wide guard then fires on the page's own legitimate sentences, and that is
+  the point: the exemptions become a **short, named allowlist** (five entries
+  here, each with the source quote that earns it) rather than a pattern hole
+  anybody can walk through. Four of the eight sentences it flagged were genuine
+  defects — *"almost everybody"*, *"most people get some of these"*, *"plenty of
+  people"*, *"many people are given"* — none of them sourced, none of them
+  visible to a section-scoped check.
+- **`ReaderText` strips the front matter, so every body-scoped guard is blind to
+  the title and the description — and `ContentPage.cshtml` renders the
+  description as the first paragraph under the heading.** This page's
+  description promised *"why it has to come down slowly"*, which is the exact
+  claim the page's own taper section exists to correct, and its title promised
+  *"when it IS the drug and not the tumor"*, the verdict grammar this item
+  deleted from a sibling. Both shipped past 24 tests. **Assert over
+  `title + description` as well as over the body**, with the same regexes.
+- **A front-matter reader must tolerate CRLF.** `^title: "(.+)"$` does not match
+  `"\r\n`, so on a Windows checkout the headline guards ran over an empty string
+  and passed. The break harness found it by reporting a mutation as correctly
+  failing on CRLF while it walked through green on LF — **a break that fails on
+  only one line ending is a bug report about the test, not about the page**.
+- **Check the POLARITY of the sentence, not the presence of a safe word.** The
+  dose-change guard asked whether a matched sentence contained "your team", and
+  `/review` beat it with *"it is reasonable to halve your dose until your team
+  can see you"*. A permission sentence naming the team is still permission. The
+  working form asserts a prohibition marker **and** the absence of a permission
+  marker (`it is fine|reasonable|you can|if you feel ready`).
+- **Assert the match COUNT before iterating over matches.** Two guards here ran
+  their scope checks over zero matches — the page writes "stop **a** steroid"
+  where the regex demanded "stop **your** steroid" — so the property each was
+  named for was never checked at all. §12.10 records this for a page with no
+  matches; the harder version is a page whose correct prose the regex cannot
+  see. `Assert.True(matches.Count >= n)` with a message saying what it means.
+- **A tier list invented for one page contradicts the corpus by omission.** ABTA
+  gives its eight steroid warnings one undifferentiated "contact your doctor";
+  this page sorted them into three tiers and filed **a fall** in the one that
+  does not need calling today, while `/treatments/craniotomy` and `/tests/biopsy`
+  file it as same-day and `/treatments/chemotherapy` files it higher still — 50
+  lines under this page's own "a steroid makes bones easier to break". **When a
+  source gives one flat tier and the corpus already sorts the symptom, follow
+  the corpus.** The same list dropped four of `[ESCALATION]`'s seven same-day
+  symptoms; a reverse check is a **bullet count plus the named concepts**
+  (§12.8, WI-519), and this page's did not exist until review asked for it.
+- **A scope sentence governs the list it introduces, so check it against the
+  worst item in that list.** *"Nearly all of them fade after the steroid stops"*
+  sat above bullets naming thin skin, weaker bones and hip pain, none of which
+  fade. §12.12's over-reassuring direction, produced by a sentence that is true
+  of the first four bullets.
+- **Print the speed, not the share, when the shares disagree.** The first draft
+  published one guideline's "three quarters improve" — the reassuring number, of
+  two that disagree (the page's other source reports 50% in its own cohort), and
+  widened past its population (people with raised pressure from a primary brain
+  tumor) to everyone on a steroid. The page now says most people feel better
+  within hours, that not everybody improves, and that the counts disagree.
+- **A rule that is true of a long course can be false of a three-day one, and
+  the sibling will be carrying the false version.** "A steroid must never be
+  stopped suddenly" is right for the reader on it for months and wrong for the
+  post-operative reader, whose fast taper is "discontinued 3 days after
+  resection" in this page's own guideline. The rule that holds in both cases is
+  **"not on your own"**. `/treatments/craniotomy` said the absolute in two
+  places, four lines above the new door to this page, and its own tests pinned
+  the wording — so correcting a claim here meant correcting a sibling's prose
+  **and** repointing that sibling's tests at the property rather than the words.
+
+**The end-to-end read, twelfth item running,** found the thing no gate could:
+the page said the steroid is tapered and never said **why** stopping suddenly is
+dangerous, which is the item's own requirement and the one fact that makes the
+rule stick. `/review` then found five blockers and eleven should-fixes, and
+walked **fourteen of eighteen** mutations through green; all eighteen are in the
+harness table, which stands at 72 breaks on LF and CRLF.
 
 ### 12.9 The tumor-hub template, proved (WI-513)
 

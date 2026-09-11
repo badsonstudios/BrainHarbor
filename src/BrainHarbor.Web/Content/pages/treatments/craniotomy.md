@@ -335,7 +335,7 @@ are better. Say so when it happens. Telling the people around you that the
 difficulty outlasts the scar is worth doing, because they cannot see it and
 will not guess.
 
-### Is this the tumor, or is it the medicine?
+### Is this the tumor, or is it the medicine? {#tumor-or-medicine}
 
 Ask this before you assume the worst, because two medicines given after this
 operation cause things that look exactly like the tumor getting worse.
@@ -350,10 +350,15 @@ operation cause things that look exactly like the tumor getting worse.
   personality change on the tumor, or on everything the person has been
   through. Sometimes it is the pills.
 
-Neither of these is a reason to stop a medicine on your own. Steroids in
-particular have to be reduced slowly, on your team's instructions. It is a
+Neither of these is a reason to stop a medicine on your own. A steroid in
+particular is never one to stop by yourself: how fast it comes down, and
+whether it comes down at all yet, is your team's decision. It is a
 reason to tell your team what you are seeing, because doses can be changed and
 medicines can be swapped.
+
+[Steroids](/treatments/steroids) goes through the steroid on its own: what it is
+doing, what it does to sleep, appetite, mood and strength, and how it comes back
+down again.
 
 ## Is there a way to do this without opening the skull?
 
@@ -422,8 +427,9 @@ are the kind that dissolve on their own and need no appointment at all. Find out
 which before you leave the hospital, and make sure any appointment exists.
 
 **Medicines.** There will be more of them than you expect, and the doses change.
-The steroid is the one to be careful with: it is usually reduced in steps over
-time, and it must not be stopped suddenly. Write the schedule down somewhere you
+The steroid is the one to be careful with: after a short course a team may stop
+it outright, and after a longer one it comes down in steps, but either way it is
+never stopped by you. Write the schedule down somewhere you
 can both see it. A pill box with the days marked on it is worth more than a
 good memory at week three.
 
