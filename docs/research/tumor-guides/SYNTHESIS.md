@@ -174,8 +174,13 @@ The single most useful recurring frame, and it appears in at least five places:
 
 - **Levetiracetam** causes irritability and aggression — families attribute
   personality change to the tumor when it may be the medicine.
-- **Dexamethasone** causes proximal muscle weakness in ~28% — mistaken for
-  progression.
+- **Dexamethasone** causes proximal muscle weakness — mistaken for progression.
+  **CORRECTED BY WI-524: this line used to say "in ~28%".** That figure is
+  Sturdza 2008 (88 patients, brain metastases, palliative radiation, reported
+  secondhand by cns.org), and the dossier cites it to PMC12406498, which
+  contains the word "proximal" zero times. The published range across seven
+  sources runs from 2% to 90%, so `/treatments/steroids` publishes no
+  frequency and prints the direction the sources agree on instead.
 - **SMA syndrome**: transient loss of speech initiation and one-sided movement
   right after surgery near the supplementary motor area, recovering over days to
   weeks. Unwarned patients believe they have been permanently disabled.

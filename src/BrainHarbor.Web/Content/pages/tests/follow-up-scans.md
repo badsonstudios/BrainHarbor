@@ -335,6 +335,8 @@ it is radiation necrosis, and it is easily mistaken for the tumor returning.
 This one is not only on the screen either. The swelling around it can press on
 brain tissue and cause symptoms. Steroids often settle it. Sometimes another
 medicine is added, and sometimes an operation is needed.
+[Steroids](/treatments/steroids) covers that medicine, including why your team
+asks what dose you are on before a scan.
 
 **The clearest numbers come from one kind of radiation, and it may not be
 yours.** They are from people given a focused, high-dose treatment called

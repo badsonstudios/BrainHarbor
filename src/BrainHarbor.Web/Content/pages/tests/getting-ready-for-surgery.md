@@ -285,6 +285,7 @@ there are reasons a team sometimes wants it done differently.
 medicine to stop on your own. A steroid is normally brought down in steps rather
 than stopped, and stopping one suddenly can make you seriously ill. Your team
 tells you what to do with it around the operation.
+[Steroids](/treatments/steroids) is the page for the rest of it.
 [A craniotomy, step by step](/treatments/craniotomy) covers what happens to it
 afterwards.
 

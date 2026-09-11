@@ -3177,11 +3177,45 @@ Start only after Dan has signed off WI-513's template.
   back" leaked into the removal phase through the word "testing". Also fixed on
   a sibling: `/treatments/craniotomy` now says pre-op scans "suggest" rather than
   "map" where speech and movement sit, and carries three explicit anchors.
-- [ ] **WI-524 X11 Steroids** — its own URL because of one message: **this might
-  be the drug, not the tumor.** Dexamethasone causes proximal muscle weakness in
-  ~28%, routinely mistaken for progression. Also why you feel better without the
-  tumor shrinking (they treat the swelling, not the mass), and why they are
-  tapered. Depends on: WI-502.
+- [x] **WI-524 X11 Steroids** *(done 2026-09-11 — `/treatments/steroids`)* — its
+  own URL because of one message: **this might be the drug, not the tumor.**
+  Also why you feel better without the tumor shrinking (they treat the swelling,
+  not the mass), and why they are tapered. Depends on: WI-502.
+  **Outcome:** reading grade **4.7**, **1572 tests** (1542 before), ContentCheck
+  **250/0**, **all 72 break-mutations proven on LF AND CRLF**, no new glossary
+  terms (both candidates would have fired nowhere), and **ten inbound doors**
+  (craniotomy, radiation-therapy, glioblastoma, high-grade-glioma, astrocytoma,
+  low-grade-glioma, cns-lymphoma, biopsy, getting-ready-for-surgery,
+  follow-up-scans).
+  **THE TICKET'S OWN "~28%" IS NOT PUBLISHED, AND IT IS NOT IN THE PAPER IT WAS
+  CITED TO.** PMC12406498 contains "proximal" zero times; its only 28 is 28.8%,
+  the share of patients with a documented steroid *plan*. The figure is Sturdza
+  2008 (88 patients, brain metastases, palliative radiation) reported secondhand
+  by cns.org, and six other sources give 10%, 2-60%, 10-90%, 10.6%, 60% and
+  4.5%. The page prints no frequency, says why, and prints the direction all
+  seven agree on. Corrected at source in SYNTHESIS §3.5, content-pipeline §12.6
+  and the dossier.
+  **Also ruled on:** "it does not treat the tumor" is **scoped**, because it is
+  false for lymphoma (and the page carries the biopsy-first reason); "never stop
+  suddenly" became **"not on your own"**, because a three-day post-operative
+  course is stopped outright; and the speed claim §12.14 recorded as unsourced
+  now rests on two guidelines, printed without the improvement share (two
+  sources disagree, and the first draft published the reassuring one).
+  **`/review` found five blockers** (the description and title asserting what
+  the page refutes; `/treatments/craniotomy` still carrying the absolute stop
+  rule four lines above the new door; a fall filed below the tier three sibling
+  pages give it; a "nearly all of them fade" sentence governing bullets that do
+  not; a headache trigger scoped to the taper) **and walked fourteen of
+  eighteen mutations through green.** All are in the harness table.
+  **The end-to-end read, twelfth item running,** found that the page explained
+  the taper without ever saying why stopping suddenly is dangerous.
+  **Also fixed on siblings:** `/treatments/radiation-therapy`'s "somebody who
+  **suddenly** cannot get out of a low chair may be having a drug effect" (the
+  weakness builds over weeks, and the corpus files sudden weakness as same-day
+  or as an ambulance) and its caregiver steroid paragraph, which owned this
+  page's spine; `/tumors/glioblastoma`'s "if you feel unlike yourself on them,
+  **that is** the drug"; and two `/treatments/craniotomy` sentences plus the two
+  tests that pinned their wording. Nine lessons in §12.8.
 - [ ] **WI-525 X12 Anti-seizure medicines** — same reason: **levetiracetam
   causes irritability and aggression**, and families attribute the personality
   change to the tumor. Also answers "why won't they give me seizure medicine?" —
