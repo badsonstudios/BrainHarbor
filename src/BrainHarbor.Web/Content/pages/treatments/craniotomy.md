@@ -345,8 +345,9 @@ operation cause things that look exactly like the tumor getting worse.
   a low chair may be having a drug effect, not a tumor effect. It also brings a
   bigger appetite, weight gain, trouble sleeping and mood swings, and it can
   hide a fever, which matters when you are watching for infection.
-- **Levetiracetam** is one of the commonest medicines used to prevent seizures.
-  It is linked with irritability, low mood and anger. Families blame the
+- **Levetiracetam** is the seizure medicine most often used here. Whether one is
+  given around an operation at all is unsettled, so teams differ. It is linked
+  with irritability, low mood and anger. Families blame the
   personality change on the tumor, or on everything the person has been
   through. Sometimes it is the pills.
 
@@ -358,7 +359,9 @@ medicines can be swapped.
 
 [Steroids](/treatments/steroids) goes through the steroid on its own: what it is
 doing, what it does to sleep, appetite, mood and strength, and how it comes back
-down again.
+down again. [Anti-seizure medicines](/treatments/anti-seizure-medicines) does the
+same for the other one, including how to tell a drug effect from a tumor effect
+and how long a course after an operation is meant to last.
 
 ## Is there a way to do this without opening the skull?
 

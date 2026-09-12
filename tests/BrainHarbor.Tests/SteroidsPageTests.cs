@@ -119,6 +119,39 @@ public sealed class SteroidsPageContentTests
         // that must not have two strengths (§12.10), so it is the identical
         // sentence rather than this page's own version of it.
         "suddenly not being able to speak, move one side, or see",
+
+        // WI-525. The sentence that stops a drug-specific call list being read
+        // as the reader's WHOLE call list, and the route out of it. Shared
+        // with /treatments/anti-seizure-medicines on purpose and allowlisted on
+        // both sides: the second drug page's first draft said "gave you" where
+        // this one says "gives you", which is how one safety claim becomes two
+        // slightly different ones (§12.10).
+        "It does not replace the list your own team gives you for your tumor, and "
+        + "[get help now](/get-help-now) has the numbers to keep on a phone. Call",
+
+        // WI-525. The closing line of the call list, likewise shared on purpose
+        // between the two drug pages: a reader who is unsure must get the same
+        // answer whichever of them they are standing on. Carried with the
+        // "phone." that precedes it, because the shingle window spans the
+        // sentence boundary — and WI-525's /review found these two pages saying
+        // "a smaller thing" and "a much smaller thing", which is the drift this
+        // list exists to stop. They are identical now.
+        "is phone. That call is a much smaller thing than any of the problems on this page.",
+
+        // WI-525. The corpus's same-day wording for confusion, which
+        // Content/blocks/escalation.md and both drug pages now carry
+        // identically. A symptom sorted into a tier is the definitive §12.10
+        // "must not have two strengths" claim, so rewording it on one page to
+        // dodge this check is the wrong fix.
+        "You are confused, or somebody says you are not making sense",
+
+        // WI-525 likewise: the two standard "Where to go next" doors, worded
+        // identically on every library page, plus the "an operation" that
+        // precedes them on both drug pages — the shingle window spans the
+        // sentence boundary, so allowlisting the doors alone leaves a gram that
+        // is nobody's claim.
+        "an operation. Brain tumor types if you want the page for your own tumor. "
+        + "Get help now if you need to talk to a person today.",
     ];
 
     private static readonly HashSet<string> AllowedShingles =

@@ -306,8 +306,9 @@ of treatment. It is not a side effect of it.
 **"Is this the tumor, or the medicine?"** is a question worth keeping in your
 pocket. The medicines used here have effects that look like the tumor getting
 worse: levetiracetam is linked with irritability and low mood, and steroids
-cause muscle weakness. [Steroids](/treatments/steroids) covers that medicine on
-its own, and the surgery and radiation pages go through the rest.
+cause muscle weakness. [Steroids](/treatments/steroids) and
+[anti-seizure medicines](/treatments/anti-seizure-medicines) cover those two on
+their own, and the surgery and radiation pages go through the rest.
 
 ## Everyday life: work, driving, seizures and tiredness
 
