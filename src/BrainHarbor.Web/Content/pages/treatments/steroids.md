@@ -337,8 +337,10 @@ and what is not, which matters if you are already unsteady.
   is one to report the same day rather than to watch.
 
 Seizure medicines cause their own version of this, and the two are often given
-together. [Brain surgery](/treatments/craniotomy#tumor-or-medicine) goes through
-that pair.
+together.
+[Anti-seizure medicines](/treatments/anti-seizure-medicines#tumor-or-medicine)
+goes through the seizure medicine on its own, including how the timing tells a
+drug effect from a tumor effect.
 
 None of this is a reason to stop a medicine, and all of it is a reason to tell
 somebody. A dose can come down. A medicine can be traded for a different one.
@@ -441,8 +443,8 @@ one side, or see, or for somebody who cannot be woken.
 - A cough that will not go, or stinging when you pee.
 - Any wound or cut that is slow to heal.
 
-If you are not sure which of these it is, phone. That call is a smaller thing
-than any of the problems on this page.
+If you are not sure which of these it is, phone. That call is a much smaller
+thing than any of the problems on this page.
 
 ## What you can do {#what-you-can-do}
 

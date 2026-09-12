@@ -354,6 +354,9 @@ life for years rather than a one-off event.
   triggers, sleep, medicine routines and telling people.
 - [What to do during a seizure](/seizures/what-to-do) is worth reading before
   you need it, and worth showing to the people you live and work with.
+- [Your seizure medicine](/treatments/anti-seizure-medicines) has a page of its
+  own. It covers what it can do to mood, and why the dose is not yours to
+  change.
 - **Driving rules depend on where you live** and on your seizure history. Your
   team knows the rules where you are. Ask directly rather than guessing, and ask
   again after any change in your medicine or your seizures.

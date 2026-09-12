@@ -3216,13 +3216,38 @@ Start only after Dan has signed off WI-513's template.
   page's spine; `/tumors/glioblastoma`'s "if you feel unlike yourself on them,
   **that is** the drug"; and two `/treatments/craniotomy` sentences plus the two
   tests that pinned their wording. Nine lessons in §12.8.
-- [ ] **WI-525 X12 Anti-seizure medicines** — same reason: **levetiracetam
-  causes irritability and aggression**, and families attribute the personality
-  change to the tumor. Also answers "why won't they give me seizure medicine?" —
-  there is a Level A recommendation *not* to give them prophylactically to
-  someone who has not had a seizure, and readers experience that as being denied
-  something. Driving is jurisdictional: say "your rules depend on where you live,
-  here is who to ask", never state any. Depends on: WI-502.
+- [x] **WI-525 X12 Anti-seizure medicines** *(done 2026-09-11 — `/treatments/anti-seizure-medicines`)*
+  — same reason: **levetiracetam causes irritability and aggression**, and
+  families attribute the personality change to the tumor. Also answers "why
+  won't they give me seizure medicine?" — there is a Level A recommendation
+  *not* to give them prophylactically to someone who has not had a seizure, and
+  readers experience that as being denied something. Driving is jurisdictional:
+  say "your rules depend on where you live, here is who to ask", never state
+  any. Depends on: WI-502.
+  **THE BACKLOG'S HEADLINE CLAIM SURVIVED THE CHECK**, the first time in four
+  items: the Level A is verbatim in the **SNO/EANO 2021 practice guideline
+  update** (PMC8563323, Walbert et al), and the 2000 AAN parameter it replaces
+  is marked [RETIRED]. **The scope trap is in the same guideline and cuts the
+  other way** — peri- and postoperative prophylaxis is **Level C, insufficient
+  evidence** — so the page carries both halves or it tells a reader given
+  levetiracetam for their craniotomy that their team defied the strongest grade
+  of advice there is. Three dossier defects: the enzyme-inducing interaction
+  claim is cited to PMC8787304, **which mentions none of phenytoin,
+  carbamazepine, chemotherapy or steroids** (replaced by PMC6657392, which also
+  supplies the half that makes it the reader's problem — a steroid moves the
+  seizure-medicine level too); the short-course claim rests on a
+  **clinicaltrials.gov protocol**, a plan rather than a result; and "levetiracetam
+  and lacosamide are the most commonly used" overstates a source that says LEV
+  "is still the most widely used". **No frequency published** for the mood
+  effect (seven figures, seven populations). Reading grade **5.2**, **1605
+  tests**, ContentCheck **251/0**, **117 break-mutations on LF and CRLF**,
+  eleven inbound doors, no new glossary terms. `/review` returned 4 blockers,
+  13 should-fixes and **26 proven guard walk-throughs**; the end-to-end read
+  (thirteenth item running) found 8 more, the worst an unsourced *"It is not
+  common"* on the thoughts-of-self-harm warning. Sibling corrections:
+  `/seizures/what-to-do`'s absolute "Never stop seizure medicine suddenly", and
+  `/treatments/craniotomy`'s "one of the commonest medicines used to prevent
+  seizures". Ten lessons in §12.8.
 - [ ] **WI-526 X17 Clinical trials as an option** — how to think about them,
   framed as "ask your team". **Never matching** — Leal Health and Massive Bio do
   AI trial matching and that is a regulated space this site stays out of (see

@@ -444,8 +444,9 @@ quietly.
 - **Write down what you noticed and when**, and take it to appointments. You saw
   things a clinic never will, and it genuinely helps the team.
 - **Ask which changes are the tumor, which are the medicines, and which are
-  treatable.** Steroids and seizure medicines both change mood and temper, and
-  those can often be adjusted.
+  treatable.** [Steroids](/treatments/steroids) and
+  [seizure medicines](/treatments/anti-seizure-medicines) both change mood and
+  temper, and those can often be adjusted.
 - **Ask the team what to expect after surgery near the front of the brain.**
   Some changes settle over weeks. Knowing which ones are expected stops every
   bad day looking like bad news.

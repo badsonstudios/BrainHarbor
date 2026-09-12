@@ -137,6 +137,8 @@ Triggers are personal. Some people have none. These are the ones worth watching:
 
 - **Missed doses.** For many people this is the most common trigger there is.
   Set an alarm. Use a weekly pill box. Keep a spare few days' worth in your bag.
+  [Anti-seizure medicines](/treatments/anti-seizure-medicines) covers the rest
+  of the medicine itself, including what it can do to mood and temper.
 - **Sleep.** Too little, or poor quality, makes seizures more likely for most
   people. A regular bedtime and wake-up time does more than anything else here.
 - **Alcohol.** The risk is not usually while you are drinking. It is in the

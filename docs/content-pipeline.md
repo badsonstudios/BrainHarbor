@@ -1540,6 +1540,105 @@ rule stick. `/review` then found five blockers and eleven should-fixes, and
 walked **fourteen of eighteen** mutations through green; all eighteen are in the
 harness table, which stands at 72 breaks on LF and CRLF.
 
+**Ten more from the fourteenth one (WI-525, anti-seizure medicines — the page
+whose hardest job was holding two halves of one guideline apart):**
+
+- **A guideline can contain its own scope trap, and the page has to carry both
+  halves or it accuses somebody's team.** PMC8563323 gives **Level A** for "newly
+  diagnosed brain tumors who have not had a seizure ... should not prescribe
+  AEDs", and, three recommendations later, **Level C, insufficient evidence**
+  for the peri- and postoperative period. A page printing only the first tells
+  every reader handed levetiracetam for their craniotomy that their team defied
+  the strongest grade of advice there is. §12.12's shape, except that both
+  halves are in the same document — so **read the whole recommendation list,
+  not the one the backlog quoted.** The same guideline's short-course rule is
+  scoped the same way ("treated surgically **who have not had a seizure**"), and
+  those two readers are indistinguishable from where they stand, which is why
+  the page hands them a question instead of an answer.
+- **The backlog's headline claim CAN be right, and checking it is still the
+  work.** WI-521, WI-522 and WI-524 each found theirs defective, which is a
+  pattern that starts to feel like a rule. This one was verbatim. What the check
+  bought was not a correction but the guideline's own *reason* — side effects,
+  interactions, no measurable benefit — which is what turns a refusal into an
+  explanation on a page whose second spine is a reader who feels denied
+  something.
+- **A test can be satisfied entirely by the front matter.** `Everything` is
+  `title + description + body`, which WI-524 added so the headline could not
+  ship the defect. One item later a count over `Everything` was the only thing
+  asserting the page's load-bearing safety rule, and `/review` enumerated its
+  two hits: the title string, and the short version. The phrase **"on your own"
+  appeared nowhere in the body at all.** Widen the corpus a guard reads and the
+  guard gets easier to satisfy — so **assert the property against `Body`, and
+  use `Everything` only for the bans.**
+- **Check the AGENT, not the modal.** WI-524's lesson was that a permission
+  sentence naming the team is still permission. The harness walked the
+  successor guard, on both line endings, with *"When you lower the dose or try a
+  different one, the mood change usually lifts"* — which contains no modal at
+  all. A sentence does not need a permission word to be permission; it only
+  needs the reader as the subject of the verb.
+- **Two closed lists of eight words is not a guard.** `/review` beat the
+  dose-permission check four separate ways — *"it is **safe** to skip"*, *"**hold**
+  tonight's dose"* (a verb that was not listed, so the polarity half never ran),
+  *"you are **allowed to** miss one"*, *"it is **fair to** leave the next one"* —
+  and beat the driving check four more, including two that published a waiting
+  time. The fix is to invert the rule: instead of hunting for bad words, require
+  every sentence in scope to **earn its place** (it forbids the thing, or it
+  hands it to somebody who is not the reader). Shapes nobody has thought of then
+  fail by default instead of passing by default.
+- **A membership check is not a tier check.** The escalation guard read the
+  ambulance and same-day lists and asserted which bullets were in them. `/review`
+  kept every bullet where it was and softened the **instruction** attached to
+  one — *"This is rare, and it can usually wait until the morning"* on a
+  blistering rash, *"There is no rush about this one"* on the mood change, a
+  hedge inside the five-minute rule — and all of it stayed green. **Assert the
+  absence of downgrade language inside each tier**, not just the presence of the
+  bullet.
+- **A reverse check by bullet COUNT rewards a downgrade.** Moving "trouble
+  breathing" out of the ambulance tier and into the same-day tier as its own
+  bullet took the same-day count from seven to eight, and the count check read
+  that as healthy. Count plus named concepts is §12.8's own WI-519 rule; the
+  missing half is that the concepts have to be named **per tier**.
+- **WI-524's "guard with a door next to it" was re-committed one item later, in
+  its purest form.** This page's tier guard read
+  `Content/blocks/escalation.md`, asserted that *the block* files new weakness
+  and new confusion as same-day, and never looked at the page — under a comment
+  saying "This page could have quietly filed them lower". It had. The page
+  carried neither symptom in any tier, nor the corpus's sudden-deficit ambulance
+  line, and the test was green. **Read the sibling to learn where the corpus
+  files a symptom; then assert THIS page files it there.**
+- **Naming the safe drug and leaving the risky class anonymous is the wrong way
+  round.** §12.4 R1 bans a multiplier, a milligram and a drug-by-drug table. It
+  does not ban a drug's name. The page named levetiracetam and dexamethasone
+  and then described the enzyme-inducing drugs as "a few of the long-established
+  ones", so a reader on carbamazepine could not tell whether the paragraph was
+  about them. The source names all three.
+- **Write down what is on the page with no fetched source.** `/review` asked
+  where the six-step "what happens" spine came from, and the honest answer was
+  ordinary clinical practice. On an item that found three dossier citation
+  defects, an unsourced section that *looks* sourced is the same failure one
+  layer up. It is now named in the front matter, and it is written as shape
+  rather than instruction: no dose, no interval, no duration.
+
+**The end-to-end read, thirteenth item running,** found eight more, and the worst
+was an unsourced **"It is not common"** attached to the sentence about thoughts
+of self-harm — the over-reassuring direction (§12.12) on the single most
+dangerous claim on the page, invisible to a frequency guard that has no word for
+"not common". It also caught the page's own caregiver paragraph restating the
+`[CAREGIVER]` block ten lines below it in different words (the shingle check
+cannot see a restatement that shares no eight-word run), and a British "a
+fortnight ago" in a quoted family sentence. `/review` then returned four
+blockers, thirteen should-fixes and **twenty-six proven guard walk-throughs**,
+eighteen of them verified by executing the regex rather than reading it. The
+harness table stands at **117 breaks on LF and CRLF**.
+
+**And the heredoc rule failed for a fourth consecutive item, inside the item
+that wrote it down.** Two `\b`s became backspace characters (0x08) in the new
+test file, invisible to grep and to the eye, and the canary caught it because
+the regex stopped matching word boundaries. The rule is not "avoid heredocs for
+mutation tables" — it is **any edit whose text contains a backslash goes through
+Write/Edit or a script file written with them**, and it applies to one-line
+`python - <<` invocations exactly as much as to a multi-line table.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
