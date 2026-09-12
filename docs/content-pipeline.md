@@ -1639,6 +1639,101 @@ mutation tables" — it is **any edit whose text contains a backslash goes throu
 Write/Edit or a script file written with them**, and it applies to one-line
 `python - <<` invocations exactly as much as to a multi-line table.
 
+**Nine more from the fifteenth one (WI-526, clinical trials — the page that had
+to explain a subject another page already half-explained):**
+
+- **When a Razor page already covers the subject, write down the split before
+  writing a word.** `/trials` does the FINDING (a ZIP search, a country filter,
+  a registry list) and explains the subject in three sentences. The curated
+  corpus mentioned trials **sixteen times across nine pages and explained them
+  nowhere** — six were a bullet in an options list, five a question in a
+  questions list. So the split is *what exists and where* against *should I be
+  thinking about this at all*. Write it into the front matter: the next editor
+  will otherwise restate the finder, and **no site-wide rule can stop them**,
+  because a Razor page is outside `CuratedPage.AllPages()` and every corpus-wide
+  guard is blind to it. The restatement check has to read it explicitly, and
+  the harness proved that: lifting the finder's opening paragraph verbatim
+  walked through on both line endings.
+- **A one-sentence correction can over-shoot into a different contradiction.**
+  The short version first said the earliest trial window is "before any
+  treatment starts", which is false because surgery is a treatment. The
+  end-to-end read caught it; the fix said "before anything at all has been
+  done", which `/review` then caught contradicting the page's own "a confirmed
+  diagnosis **from tissue**" eight screens later — a diagnosis *is* the output
+  of surgery, and `/treatments/watch-and-wait` already records that a biopsy
+  counts as surgery. Two passes, two wrong answers, because both were written
+  against the sentence rather than against the page. The third says "before the
+  operation that takes the tumor out", and the prerequisites list now names
+  which windows it is true of.
+- **Emphasis markers and line wraps defeat a phrase guard, and that is
+  structural rather than lexical.** `/review` beat the matching guard with
+  *"you **do**\nqualify"* — four asterisks and a wrap between two words every
+  second-person pattern needs adjacent. No amount of vocabulary fixes that.
+  Every phrase-shaped guard now runs over text with `[*_]` stripped, which is
+  the same argument §12.8 (WI-509) makes for asserting against reader text
+  rather than raw source: emphasis is authoring markup and a reader never meets
+  it.
+- **A pattern escape is a door; a short named allowlist is not.** The matching
+  guard exempted any sentence containing screening language, so that a correct
+  sentence ("Tests to check you fit what the trial is looking for") would pass.
+  `/review` put the exemption word and the defect in ONE sentence: *"the trials
+  **looking for** that are the ones **you fit**"*. The working form bans the
+  assertion unconditionally and names the one legitimate sentence. WI-524 said
+  this about section scopes; it is equally true of vocabulary escapes.
+- **A membership check is not a tier check.** The escalation guard banned four
+  phrases and counted the composed page's one legitimate "call an ambulance".
+  `/review` inserted a complete page-local tier list — an urgent lead-in plus
+  *"A fever. / New weakness. / A seizure."* — and everything stayed green. On a
+  trials page that is the worst available outcome: `/treatments/chemotherapy`
+  owns the fever threshold and the hubs file new weakness as same-day, so a
+  reader told to call the trial team first has been routed away from the page
+  with the number. The replacement is **structural**: walk the raw page and fail
+  on an urgency-flavoured line followed by two or more symptom bullets. Shape,
+  not vocabulary.
+- **Pinning a sentence's first clause leaves its tail free.** The guard held
+  `Three of those five doors are open early` and `/review` replaced the rest
+  with *"and **none of them** shut once treatment begins"* — flatly false, and
+  over-reassuring. It also wrote *"two of those **five** shut"*, which is wrong
+  arithmetic, and the numbers guard's allowlist entry then exempted the sentence
+  from the count check as well. **Pin the whole sentence, end-anchored**, and
+  make the allowlist entry long enough not to exempt its own replacement.
+- **Count list items by marker, not by numeral.** The five-windows check used
+  `\d\. `, so a sixth window added as a `-` bullet, or as prose, left "five
+  points" and "three of those five" both passing. Count
+  `^\s*(?:\d+\.|[-*]) ` over the raw section and assert the exact number.
+- **A superlative is not a comparative — eight items after §12.13 said so.**
+  The phase guard held `safer|riskier` and missed *"Phase 1 trials are the
+  **riskiest**, and phase 3 **the one to hope for**"*. And a vocabulary ban
+  cannot see a paraphrase: the NBTS selling line this page exists to refuse
+  ("early access to potentially beneficial treatments") came back as *"put a
+  treatment in your hands years before it reaches the ordinary clinic"*, past a
+  substring list that banned the literal phrase. On a hype-prone subject the
+  ban has to be **claim-shaped** — no access frame, no exclusivity frame, no
+  better-than-standard-care frame — not a word list.
+- **A door needs to be near the sentence it was appended to, or the guard
+  proves nothing.** `TheDoorsOnTheSiblingPagesAreAppendedSentences` asserts the
+  door AND the sibling's pre-existing sentence, which is §12.14's answer to a
+  door that replaced a paragraph. On `/tumors/low-grade-glioma` the pinned
+  sentence was 190 lines from the door, so replacing the door bullet outright
+  stayed green; on `/treatments/chemotherapy` the pin sat three sentences in
+  front of the replaced text and survived it. Assert the **distance** between
+  the two, and take the nearest door when a page has more than one.
+
+**The end-to-end read, fourteenth item running,** found nine, and two are worth
+naming. **Three separate sections each told the reader they were the most
+important one** — "the single most useful thing on this page", "This matters
+more than anything else on this page", "This is the part most worth
+understanding" — all three in one draft, which is §12.8 (WI-509)'s uniqueness
+claim going stale before the page ever shipped. And **the caregiver paragraph
+restated the `[CAREGIVER]` block in different words ten lines below it**, which
+is the lesson WI-525 wrote down, repeated at the next opportunity: the shingle
+check cannot see a restatement that shares no eight-word run, so the page's own
+caregiver claims have to be pinned by name.
+
+`/review` returned four blockers, thirteen should-fixes and **forty-seven proven
+guard walk-throughs**, eighteen verified by executing the regex. The harness
+table stands at **115 breaks on LF and CRLF**.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

@@ -363,7 +363,8 @@ If something does change, there are usually still options:
 - More surgery.
 - Radiation, if it has not been used yet or can be used again.
 - A different drug.
-- A clinical trial.
+- [A clinical trial](/treatments/clinical-trials), which is worth asking
+  about earlier than most people do.
 
 Which of these are open to you depends on your diagnosis, what you have already
 had, and how you are doing in yourself.

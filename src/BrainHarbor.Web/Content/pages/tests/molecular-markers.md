@@ -329,7 +329,8 @@ to the next.
 - Is anything on my report marked as pending, failed or not tested?
 - Was any of my testing sent to another lab?
 - If a result is unclear, what happens next?
-- Do any of these results open up a treatment or a trial I should know about?
+- Do any of these results open up a treatment or a
+  [trial](/treatments/clinical-trials) I should know about?
 - Would you go through the gene results with me line by line?
 
 ## Where to go next
