@@ -272,7 +272,7 @@ combination, and in what order, depends on the exact diagnosis.
 Alongside those there is supportive treatment: medicine to bring swelling down,
 medicine to control seizures if you have had one, and help with tiredness.
 
-**Clinical trials are a normal part of this conversation**, at diagnosis and
+**[Clinical trials](/treatments/clinical-trials) are a normal part of this conversation**, at diagnosis and
 again later. Asking about one is not a sign that the usual treatment has failed.
 
 ### Why is my friend on different chemotherapy?
@@ -403,7 +403,8 @@ If something does change, there are usually still options:
 - More surgery.
 - Radiation again, in some situations.
 - A different drug.
-- A clinical trial.
+- [A clinical trial](/treatments/clinical-trials), which is worth asking
+  about earlier than most people do.
 
 Which of these are open to you depends on your diagnosis, what you have already
 had, and how well you are feeling day to day.

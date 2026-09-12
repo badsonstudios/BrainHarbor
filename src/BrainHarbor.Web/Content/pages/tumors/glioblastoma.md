@@ -394,11 +394,12 @@ your own scans are what answer that rather than anything a page can say.
 
 That is not the end of the options. There may be further surgery, radiation
 again to a smaller area, a different chemotherapy such as **lomustine**,
-**bevacizumab** for the swelling, tumor treating fields, or a clinical trial. What
+**bevacizumab** for the swelling, tumor treating fields, or a
+[clinical trial](/treatments/clinical-trials). What
 fits depends on what was used before, how long the gap was, and where the tumor
 is.
 
-**Clinical trials are worth asking about early**, not only when other things have
+**[Clinical trials](/treatments/clinical-trials) are worth asking about early**, not only when other things have
 been tried. Ask your team what trials you would be eligible for and what testing
 would be needed to find out.
 

@@ -288,7 +288,7 @@ much of it can safely be removed.
 Alongside these there is supportive treatment: medicine to bring swelling down,
 medicine to control seizures if you have had one, and help with tiredness.
 
-**Clinical trials are a normal part of this conversation**, at diagnosis and
+**[Clinical trials](/treatments/clinical-trials) are a normal part of this conversation**, at diagnosis and
 again later.
 
 ### Why the grades are treated differently
@@ -385,7 +385,8 @@ from the start. That is why the scans continue.
 
 If something does change, there are usually still options. More surgery.
 Radiation, if it has not been used or can be used again. A different drug. A
-clinical trial. Which of them are open to you depends on your diagnosis, what
+[clinical trial](/treatments/clinical-trials). Which of them are open to you
+depends on your diagnosis, what
 you have had already, and how well you feel day to day.
 
 Being told there has been a change is a hard day. It is not the same as being

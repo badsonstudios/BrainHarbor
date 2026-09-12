@@ -450,7 +450,8 @@ health. Keep your own appointments. Let people help with the ordinary things.
 - If surgery is on the table, what is the goal, and what could I lose?
 - What should I do about driving and work?
 - What should make me call you before the next appointment?
-- Is there a clinical trial I should know about?
+- Is there a [clinical trial](/treatments/clinical-trials) I should know
+  about?
 
 ## Where to get support
 

@@ -192,7 +192,8 @@ of why not every surgeon offers them.
 One more practical thing, and it is easy to miss. Having wafers can rule you
 out of some clinical trials afterwards, because the drug they release muddies
 the results. If wafers come up, ask about that before the operation, not
-after.
+after. [Clinical trials](/treatments/clinical-trials#already-started) covers
+the rest of that question, and what to ask before you start anything new.
 
 ## How long does it go on?
 

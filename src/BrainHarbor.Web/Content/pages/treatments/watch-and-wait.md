@@ -387,10 +387,12 @@ radiation right after surgery held the tumor back for longer and meant fewer
 seizures. But it has not been shown to change how long people live, which is why
 some teams wait and keep radiation's cost for later. For some
 people with a grade 2 glioma that has an IDH change, there is now also a
-medicine taken by mouth, vorasidenib. It was tested against a dummy pill in
-people who would otherwise have been watched after surgery, and a biopsy counted
-as surgery, so ask whether it could apply to you.
-[Low-grade glioma](/tumors/low-grade-glioma) has a section on it.
+medicine taken by mouth, vorasidenib. It was tested against a placebo in people
+who would otherwise have been watched after surgery, and a biopsy counted as
+surgery, so ask whether it could apply to you.
+[Low-grade glioma](/tumors/low-grade-glioma) has a section on it, and
+[clinical trials](/treatments/clinical-trials#placebo) explains what a placebo
+is and what it means for the group you would be in.
 
 **Acoustic neuroma.** Many small ones do not grow. But hearing on that side often
 gets worse while the tumor is being watched, which is why hearing tests are part

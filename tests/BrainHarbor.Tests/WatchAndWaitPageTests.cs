@@ -480,8 +480,16 @@ public sealed class WatchAndWaitPageContentTests
         // The question now sits right after the guideline sentence it is about,
         // since the second /review: at the end of the paragraph it followed the
         // vorasidenib sentences and read as a question about the drug. The
-        // paragraph ends on the door to the hub instead.
-        Assert.Matches(new Regex(@"has a section on it\.\s*$"), section[glioma..acoustic]);
+        // paragraph ends on a door rather than on the disagreement.
+        //
+        // WI-526 added a second door on the end of it. This page is the only
+        // other one in the corpus that uses placebo vocabulary, and its
+        // reader's live alternative IS a trial, so /treatments/clinical-trials
+        // is the natural second destination — and the end-anchor is what
+        // caught the append, which is the anchor doing its job.
+        Assert.Matches(new Regex(@"what a placebo\s*is and what it means for the group you would be in\.\s*$"),
+            section[glioma..acoustic]);
+        Assert.Contains("has a section on it", section[glioma..acoustic], StringComparison.Ordinal);
         Assert.Contains("it is a fair question to ask why your team chose that", section, StringComparison.Ordinal);
     }
 
