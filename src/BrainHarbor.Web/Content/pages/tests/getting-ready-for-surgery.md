@@ -280,6 +280,9 @@ keep the medicine as close to normal as it can be around the operation, and to
 get back onto it as soon as possible afterwards. On the morning you may be told
 to take your dose with a sip of water. Ask whether that is your plan, because
 there are reasons a team sometimes wants it done differently.
+[Anti-seizure medicines](/treatments/anti-seizure-medicines) covers the rest,
+including what it can do to mood and temper, and how to ask whether your course
+has an end date.
 
 **Your steroid.** If you are on dexamethasone or another steroid, this is not a
 medicine to stop on your own. A steroid is normally brought down in steps rather

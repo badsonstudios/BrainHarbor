@@ -140,8 +140,13 @@ information for the care team, and it is often something medicine can control.
   copy to family, work and school.
 - Get a **medical ID** bracelet, or put the details in the phone's medical ID so
   a stranger can find them.
-- **Never stop seizure medicine suddenly.** Stopping can cause a seizure. If it
-  needs to change, the care team changes it slowly.
+- **Never change or stop seizure medicine on your own.** Stopping it suddenly
+  can bring on a seizure. Somebody who has never had a seizure is
+  sometimes put on it only around an operation, and meant to stop soon after.
+  Somebody who has had one usually stays on it for years. Which of those you are
+  is a question for the care team, and never one to settle at home.
+  [Anti-seizure medicines](/treatments/anti-seizure-medicines) goes through the
+  rest of it, including what a common one does to mood and temper.
 - The rest of daily life has its own page:
   [living with seizures](/seizures/living-with).
 

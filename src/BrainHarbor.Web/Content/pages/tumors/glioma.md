@@ -289,9 +289,10 @@ entirely on which glioma you have. Some people are watched rather than treated
 at first, and that is a plan rather than an absence of one.
 [Watching a tumor, step by step](/treatments/watch-and-wait) goes through what that involves.
 
-Alongside all this there is supportive treatment. That means medicines to
-prevent seizures, medicines to bring swelling down, and treatment for a fluid
-blockage if you have one.
+Alongside all this there is supportive treatment. That means
+[medicines to stop seizures](/treatments/anti-seizure-medicines),
+[medicines to bring swelling down](/treatments/steroids), and treatment for a
+fluid blockage if you have one.
 
 [TUMOR-BOARD]
 

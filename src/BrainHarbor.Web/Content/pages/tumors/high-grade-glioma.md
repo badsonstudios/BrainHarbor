@@ -466,8 +466,10 @@ to ask the team directly what they think they are looking at.
 
 **Watch for the changes only you will see.** A shorter temper. Words coming more
 slowly. Sleeping much more. Say them at the appointment rather than deciding
-they are too small to mention. Some of them turn out to be the steroids or the
-seizure medicine rather than the tumor, and those can be adjusted.
+they are too small to mention. Some of them turn out to be
+[the steroids](/treatments/steroids) or
+[the seizure medicine](/treatments/anti-seizure-medicines) rather than the
+tumor, and those can be adjusted.
 
 **If seizures are part of this**, learn what to do before you need to.
 [What to do during a seizure](/seizures/what-to-do) is the one to know, and it
