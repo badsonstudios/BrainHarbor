@@ -3248,10 +3248,35 @@ Start only after Dan has signed off WI-513's template.
   `/seizures/what-to-do`'s absolute "Never stop seizure medicine suddenly", and
   `/treatments/craniotomy`'s "one of the commonest medicines used to prevent
   seizures". Ten lessons in §12.8.
-- [ ] **WI-526 X17 Clinical trials as an option** — how to think about them,
-  framed as "ask your team". **Never matching** — Leal Health and Massive Bio do
-  AI trial matching and that is a regulated space this site stays out of (see
-  WI-449). Depends on: WI-502.
+- [x] **WI-526 X17 Clinical trials as an option** *(done 2026-09-12 — `/treatments/clinical-trials`)*
+  — how to think about them, framed as "ask your team". **Never matching** —
+  Leal Health and Massive Bio do AI trial matching and that is a regulated
+  space this site stays out of (see WI-449). Depends on: WI-502.
+  **The scope had to be decided before a word was written**, because `/trials`
+  already exists: that Razor page does the FINDING and explains the subject in
+  three sentences, while the curated corpus mentioned trials **sixteen times
+  across nine pages and explained them nowhere**. So `/trials` answers "what
+  exists and where" and this page answers "should I be thinking about this at
+  all". **Four dossier defects**, and one is the framing rule's own citation:
+  §16 attributes "patients should take trial options TO their health care team"
+  to a page that does not contain it, and whose one real sentence is a selling
+  line. The phase participant counts are **not NCI's** (20-80/100-300/
+  1,000-3,000 against "around 15 to 30"/"50 to 100"/"100 to several thousand"),
+  so no counts are printed. **"No one is given a placebo when an effective
+  treatment is available" is on neither NCI page it could be cited to**; what
+  NCI does say is better, because in the common design the placebo goes **on
+  top of** standard treatment. And the dossier lost NBTS's "**beginning a new
+  therapy doesn't automatically rule you out**", which matters because most of
+  this page's readers arrive mid-treatment. The spine is sourced verbatim: a
+  trial is not a last resort, there are **five windows**, and three of them are
+  before recurrence. Beside it, the two omissions that make a trials page
+  dangerous: **a phase 1 trial is not designed to find out whether the
+  treatment works**, and **neither you nor your doctor chooses your group**.
+  Reading grade **4.9**, **1633 tests**, ContentCheck **252/0**, **115
+  break-mutations on LF and CRLF**, thirteen inbound doors, no new glossary
+  terms (and **no glossary term fires on the page at all**, pinned rather than
+  hidden). `/review` returned 1 blocker, 13 should-fixes and **47 proven guard
+  walk-throughs**; the end-to-end read found 9 more. Nine lessons in §12.8.
 
 ### Wave 3 — meningioma, metastases, and the general page
 

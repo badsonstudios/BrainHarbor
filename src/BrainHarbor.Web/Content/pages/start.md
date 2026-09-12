@@ -94,6 +94,7 @@ time and sets out the one rule worth knowing before you start.
 - Was any gene testing done, and what did it show?
 - What are my treatment choices, and what happens if I wait?
 - Is there a clinical trial that fits me?
+  ([how to think about one](/treatments/clinical-trials))
 - Who do I call when something changes?
 
 ## Where to talk to a person

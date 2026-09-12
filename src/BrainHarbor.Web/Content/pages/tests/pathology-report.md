@@ -236,7 +236,8 @@ you want to open it on your own.
 - Which gene tests were run, and are any of them still pending?
 - Has the name changed since the last time we spoke?
 - Can I have a copy of the report?
-- Do any of these results open up a treatment or a trial I should know about?
+- Do any of these results open up a treatment or a
+  [trial](/treatments/clinical-trials) I should know about?
 
 ## Where to go next
 

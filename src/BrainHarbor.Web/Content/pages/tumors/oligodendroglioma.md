@@ -395,7 +395,8 @@ change over time into something that grows faster.
 
 Neither of those is the end of the options. There is usually more than one thing
 left to try: further surgery, radiation to a smaller area, a different
-chemotherapy, or a clinical trial. What is right depends on what was used
+chemotherapy, or a [clinical trial](/treatments/clinical-trials). What is
+right depends on what was used
 before, how long the gap was, and where the tumor is.
 
 The thing worth doing now, before any of that: ask your team what would make
@@ -466,7 +467,8 @@ choosing to be different.
 - What are the rules about driving where I live?
 - What would make you want to see me before my next appointment?
 - Who do I call after hours, and what number is it?
-- Is there a clinical trial I should know about?
+- Is there a [clinical trial](/treatments/clinical-trials) I should know
+  about? (Worth asking now, not only if it comes back.)
 
 ## Where to get support
 
