@@ -158,9 +158,15 @@ public sealed class MeningiomaPageContentTests
         // /tumors/spinal-cord-tumor. A symptom sorted into a tier is the
         // definitive §12.10 "must not have two strengths" claim, so the two
         // pages now carry it identically rather than each in their own words.
-        "New weakness or new bladder trouble is a reason to be seen quickly, not to wait "
-        + "for the next appointment. Do not wait for it to get bad first, because the early "
-        + "signs are often vague ones.",
+        // WI-528 extended it to the red-flag list itself, and to a third page:
+        // /tumors/brain-metastases now carries the same sentence, because
+        // cancer pressing on the cord is the same emergency whichever tumor is
+        // doing the pressing. Three pages, one wording.
+        "new weakness in the legs, a change in how you walk, numbness around the "
+        + "saddle area, and any new trouble with your bladder or bowel. **New weakness "
+        + "or new bladder trouble is a reason to be seen quickly, not to wait for the "
+        + "next appointment.** Do not wait for it to get bad first, because the early "
+        + "signs are often vague ones. [Spinal cord tumors](/tumors/spinal-cord-tumor)",
 
         // The gate's closing move, likewise prescribed rather than invented:
         // what shapes a reader's own situation is what their team can see and a
@@ -1288,17 +1294,26 @@ public sealed class MeningiomaPageContentTests
         Assert.False(string.IsNullOrEmpty(raw), "the outlook section has gone");
 
         // Gate opens after the heading and closes before the next section.
-        Assert.Matches(new Regex(@"^## What might happen over time\s*\n\n:::outlook", RegexOptions.Multiline),
+        //
+        // `\r?\n` EVERYWHERE, NEVER A BARE `\n` OR AN `\s*` STANDING IN FOR A
+        // BLANK LINE. On a CRLF checkout `\s*\n\n` cannot match `\r\n\r\n` at
+        // all — greedy `\s*` eats both line breaks and there is nothing left
+        // for the two `\n`s, and every shorter split leaves a `\r` where a
+        // `\n` is required. This shipped, and the break harness could not see
+        // it: the harness only asks whether a mutated page FAILS the test, and
+        // a test that is broken on CRLF fails for free (§12.8, WI-528).
+        Assert.Matches(new Regex(
+            @"^## What might happen over time[ \t]*\r?\n[ \t]*\r?\n:::outlook", RegexOptions.Multiline),
             raw);
-        Assert.Contains("\n:::\n", raw, StringComparison.Ordinal);
+        Assert.Matches(new Regex(@"\r?\n:::\r?\n"), raw);
 
-        var inside = Regex.Match(raw, @":::outlook(.*?)\n:::", RegexOptions.Singleline).Groups[1].Value;
+        var inside = Regex.Match(raw, @":::outlook(.*?)\r?\n:::", RegexOptions.Singleline).Groups[1].Value;
         Assert.Matches(new Regex(@"usually about\s*whether the tumor comes back rather than about how long anybody lives",
             RegexOptions.IgnoreCase), CuratedPage.Flatten(inside));
 
         // Nothing sits outside the gate in that section but the heading.
         var outside = raw
-            .Replace(Regex.Match(raw, @":::outlook.*?\n:::", RegexOptions.Singleline).Value, "",
+            .Replace(Regex.Match(raw, @":::outlook.*?\r?\n:::", RegexOptions.Singleline).Value, "",
                 StringComparison.Ordinal)
             .Replace("## What might happen over time", "", StringComparison.Ordinal);
         Assert.True(string.IsNullOrWhiteSpace(outside),

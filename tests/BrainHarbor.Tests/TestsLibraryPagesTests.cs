@@ -127,6 +127,14 @@ internal static class CuratedPage
         // these are the ways "here is what was done" turns into "here is
         // whether it worked".
         "nothing to worry about", "successful surgery", "surgery was a success",
+
+        // WI-528. The list held "more aggressive" and "less aggressive" and not
+        // the bare word, so "they are aggressive once they reach the brain"
+        // walked through the guard written to stop exactly that — the same
+        // comparative-versus-absolute hole WI-517 found with "responds best".
+        // Run over the corpus per §12.8 before adding: the word appears in no
+        // page, block or glossary entry, so nothing legitimate loses by it.
+        "aggressive",
     ];
 
     /// <summary>

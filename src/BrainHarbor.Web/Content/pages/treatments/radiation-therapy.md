@@ -442,7 +442,7 @@ grandchildren and sleep in your own bed. Nobody has to keep away from you.
 ## Whole-brain radiation {#whole-brain-radiation}
 
 Sometimes radiation is given to the whole brain rather than to one spot. That
-is usually because there is more than one tumor in the brain.
+is usually because there are too many tumors to aim at one at a time.
 
 Treating the whole brain means treating healthy brain too. That is why it is a
 harder choice than aiming at one spot: what it can do to thinking and memory.

@@ -11,4 +11,4 @@ sources:
 ---
 
 Radiation given to the whole brain, rather than aimed at one spot. It is used
-when there is more than one tumor in the brain.
+when there are too many tumors to aim at one at a time.
