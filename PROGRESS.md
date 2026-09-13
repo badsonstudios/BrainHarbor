@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-530 — code-complete 2026-09-13**, pending commit/PR. Two NEW pages: `/tests/ct-scan` (grade 4.5) and `/tests/planning-scans` (grade 4.7). |
+| **In progress** | none. **WI-530 SHIPPED AND LIVE 2026-09-13** (PR #125 → develop, release PR #126 → main, deploy green). `/tests/ct-scan` and `/tests/planning-scans` both return 200 on brainharbor.org with no leaked markers or directives; ten neighbours smoke-checked at 200. |
 | **Next up** | **WI-531 (X6 Proton therapy + X7 Stereotactic radiosurgery)** — two pages, one item. Proton splits out because **the reader's real question is access, not physics** (~50 US centres, travel, and insurance denial as a routine appealable step rather than a verdict). SRS splits out because **the name misleads** — people think it is surgery — and the day is entirely different. Do not state that frame or frameless is standard; the literature is actively arguing it. Depends on: WI-511. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -132,6 +132,12 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-13** — **WI-530 is live.** PR #125 into `develop`, release PR #126 into `main`,
+  build-test green first time on both, deploy succeeded. `/tests/ct-scan` and
+  `/tests/planning-scans` return 200 on brainharbor.org with no authoring marker and no
+  unresolved block directive; the `radiologist` tooltip renders in the section that owns it.
+  Ten other pages smoke-checked at 200.
 
 - **2026-09-13** — **WI-530 done — `/tests/ct-scan` and `/tests/planning-scans`, two NEW pages in
   one item, and the item where a cited page had been rewritten out from under its citations.**
