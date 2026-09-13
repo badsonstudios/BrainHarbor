@@ -1734,6 +1734,91 @@ caregiver claims have to be pinned by name.
 guard walk-throughs**, eighteen verified by executing the regex. The harness
 table stands at **115 breaks on LF and CRLF**.
 
+**Eleven more from the sixteenth one (WI-527, meningioma — the first §12.3
+tumor hub outside the glioma family, and the item where the harness did the
+reviewing):**
+
+- **A 98-mutation table found THIRTY-FIVE guards that could not fail**, after
+  `/review` had already returned sixty-six walk-throughs and been answered.
+  Identically on LF and CRLF, so not a flake. This is the strongest argument the
+  project has for the harness being non-optional: `/review` reads the guards and
+  reasons about them; the harness *runs* them, and the two disagree by a third
+  of the table. Build the table against `/review`'s own walk-throughs and then
+  keep going.
+- **A substring allowlist exempts the whole sentence, which is a free ride for
+  everything else in it.** `Most meningiomas are grade 1 and grow slowly` was
+  allowlisted; the harness appended *"and almost all people who have one die of
+  something else"* and the sentence was exempt. Same trick landed a percentage
+  on the end of the page's own refusal to print one. **Redact the allowed phrase
+  and match the remainder** — and prove the redaction with a canary, because a
+  redaction that removes too much is the same defect wearing the opposite coat.
+- **A quantifier guard that knows halves, thirds and quarters knows almost no
+  fractions.** "Roughly a fifth", "a twentieth", "a tenth", "the large
+  majority", "a tiny minority", "a handful in every hundred", "about half the
+  time" — seven shares, none of them a percentage, all of them through. A share
+  does not need the word "of", either: *"half **the** people who have the
+  condition"* is the commonest phrasing there is.
+- **Adjacency is a one-word door.** `most (people|patients|tumors)` misses "most
+  **grade 2** tumors". Allow a two-or-three-word gap in every quantifier guard.
+- **Ban the threshold shape, not the unit.** "Fifty-four grays in thirty visits"
+  walked past a dose guard holding `\d+ Gy`: the spelled compound is not a count
+  word and `gray\b` does not match the plural. "Under twenty millimetres", "at
+  least three dividing cells", "more than one tablet a day" and *"about the size
+  of a walnut or smaller"* all went the same way. One branch —
+  `(more than|less than|at least|up to|under|over|above|below) <count>` — kills
+  four of them, and taking the unit out of a size threshold does not stop it
+  being one.
+- **An inflection is a door.** `\bgrade\s+(I{1,3}V?|IV)\b` misses "gradED I, II
+  and III" and "gradES I to III". `grade[sd]?`. Five copies of this guard in the
+  corpus were case-sensitive until WI-516; this is the same rule failing on the
+  other end of the word.
+- **A section-scoped guard proves nothing about the rest of the page —
+  WI-524's rule, applied to a guard that had not been given it.** The eleven-year
+  surveillance endpoint is pinned, scoped and canaried inside the follow-up
+  section; the harness put it UNSCOPED in the short version and every assertion
+  passed, because every assertion was reading a different section. The fix is a
+  containment check: find the claim page-wide, assert every instance lives in the
+  one section that scopes it.
+- **A digit ban is not a prognosis ban.** Inside the `:::outlook` gate, every
+  digit is required to be a grade — and *"people in that group live as long as
+  anybody else"* and *"almost everybody in that group is done with it"* contain
+  no digit. §12.5's gate is consent to read, not a licence to publish, and the
+  ban has to cover the claim in words.
+- **A contract item no test names is not a contract item.** `[MECHANISM]` and
+  `[CROSSWALK]` were composed into the page and listed in no assertion; deleting
+  the mechanism block and its heading broke nothing.
+- **Count the section's own claims when a paraphrase is the failure mode.** The
+  caregiver guard says in its own comment that no shingle check can see a
+  paraphrase — and then let one through, because it pinned three claims without
+  asserting there were only three. The section promises "three things"; assert
+  **three**.
+- **A ban list made of clinical nouns misses the reader's own words.** The
+  shared `[ESCALATION]` block is checked for "spinal cord", "bladder", "bowel";
+  the harness added *"losing control of your water, or numbness in the saddle
+  area"* to the block file and every hub in the corpus silently acquired a
+  spinal line. `AssertEscalationTiers` cannot see it either — it diffs the block
+  against siblings, and they all read the same file.
+
+**The end-to-end read, fifteenth item running,** found two, and both are the
+kind only a person meets. **An ambiguous pronoun in the reassuring direction:**
+"Growth tends to slow down after the first couple of years, and after several
+more **it** becomes very small" — *it* is the growth rate, but the nearest noun
+a reader is tracking is their tumor, and the sentence sits under "the long-term
+studies of tumors like that are reassuring". Read straight through, it says a
+watched meningioma shrinks. It does not. §12.12's more dangerous direction, and
+no guard in the suite can see a pronoun. The sentence now names its subject and
+closes the wrong reading by hand ("That is the growth slowing, not the tumor
+shrinking"). And **an unsourced majority claim survived every guard by being
+allowlisted for one**: "Most watched meningiomas grow a little" had no ruling in
+the front matter, sat in a section that already routes to the sibling carrying
+the study where MORE people ended up treated than not, and was on this page's
+own allowlist so that its share guard would pass. The action survived the edit;
+the share did not. **If a claim needs an allowlist entry, ask what it is doing
+on the page before you write the entry.**
+
+The harness table stands at **98 breaks on LF and CRLF**, and the guard count
+went from 63 that could fail to 98.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

@@ -145,7 +145,8 @@ findings your team lines up beside the IDH result.
 ### TERT promoter {#tert}
 
 **What is measured.** A promoter is the switch that turns a gene on. This test
-asks whether the switch for the TERT gene carries a change.
+asks whether the switch for the TERT gene carries a change. In a meningioma,
+finding one sets the grade at 3 on its own.
 
 **What your team does with it.** When the IDH test shows no change, this is one
 of three findings that can point to a glioblastoma even when the cells look
