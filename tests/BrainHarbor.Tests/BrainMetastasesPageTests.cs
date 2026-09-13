@@ -1524,12 +1524,25 @@ public sealed class BrainMetastasesPageContentTests
 }
 
 [Collection(DatabaseCollection.Name)]
-public sealed class BrainMetastasesPageRenderTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public sealed class BrainMetastasesPageRenderTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private const string Url = "/tumors/brain-metastases";
 
-    private HttpClient Client => factory.CreateClient();
+    private readonly WebApplicationFactory<Program> _factory;
+
+    /// <summary>
+    /// The connection string has to be pushed in, exactly as every other render
+    /// fixture in this suite does it. Taking the factory as-is works on a
+    /// developer machine because `dotnet user-secrets` supplies one, and fails
+    /// on CI where nothing does — so all six render tests went green locally
+    /// and red on the first push. A fixture that only works where the secrets
+    /// are is not a test.
+    /// </summary>
+    public BrainMetastasesPageRenderTests(WebApplicationFactory<Program> factory) =>
+        _factory = factory.WithWebHostBuilder(builder =>
+            builder.UseSetting("ConnectionStrings:BrainHarbor", TestDatabase.ConnectionString));
+
+    private HttpClient Client => _factory.CreateClient();
 
     [Fact]
     public async Task ThePageRenders()
