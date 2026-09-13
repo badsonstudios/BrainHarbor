@@ -1531,11 +1531,23 @@ public sealed class StereotacticRadiosurgeryPageContentTests
 /// </summary>
 [Collection(DatabaseCollection.Name)]
 [Trait("Category", "Database")]
-public sealed class StereotacticRadiosurgeryPageRenderTests(
-    WebApplicationFactory<Program> factory)
+public sealed class StereotacticRadiosurgeryPageRenderTests
     : IClassFixture<WebApplicationFactory<Program>>
 {
     private const string Url = "/treatments/stereotactic-radiosurgery";
+
+    private readonly WebApplicationFactory<Program> factory;
+
+    /// <summary>
+    /// The connection string has to be pushed in — see the twin of this
+    /// comment on <c>ProtonTherapyPageRenderTests</c>. A bare factory boots
+    /// fine on a machine with <c>dotnet user-secrets</c> set and throws
+    /// "Connection string 'BrainHarbor' not found" on a CI runner that has
+    /// none, so this is a defect no local run of any kind can reach.
+    /// </summary>
+    public StereotacticRadiosurgeryPageRenderTests(WebApplicationFactory<Program> raw) =>
+        factory = raw.WithWebHostBuilder(builder =>
+            builder.UseSetting("ConnectionStrings:BrainHarbor", TestDatabase.ConnectionString));
 
     private static string Page => CuratedPage.Read("treatments", "stereotactic-radiosurgery.md");
 

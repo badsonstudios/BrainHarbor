@@ -1227,10 +1227,30 @@ public sealed class ProtonTherapyPageContentTests
 /// </summary>
 [Collection(DatabaseCollection.Name)]
 [Trait("Category", "Database")]
-public sealed class ProtonTherapyPageRenderTests(WebApplicationFactory<Program> factory)
-    : IClassFixture<WebApplicationFactory<Program>>
+public sealed class ProtonTherapyPageRenderTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private const string Url = "/treatments/proton-therapy";
+
+    private readonly WebApplicationFactory<Program> factory;
+
+    /// <summary>
+    /// THE CONNECTION STRING HAS TO BE PUSHED IN, and a bare
+    /// <c>WebApplicationFactory&lt;Program&gt;</c> passes locally while failing
+    /// in CI. A developer machine has the connection string in
+    /// <c>dotnet user-secrets</c>, so the host boots and every render test is
+    /// green; the CI runner has no user secrets, so <c>Program.Main</c> throws
+    /// "Connection string 'BrainHarbor' not found" before a single page is
+    /// served. Four tests on each of this item's two pages failed that way, and
+    /// nothing on this machine could have caught it.
+    ///
+    /// Every other render class in the corpus does this; a primary constructor
+    /// taking the factory straight through is what dropped it. Kept as an
+    /// explicit constructor rather than a primary one so the wrapping is
+    /// visible at the point somebody would otherwise delete it.
+    /// </summary>
+    public ProtonTherapyPageRenderTests(WebApplicationFactory<Program> raw) =>
+        factory = raw.WithWebHostBuilder(builder =>
+            builder.UseSetting("ConnectionStrings:BrainHarbor", TestDatabase.ConnectionString));
 
     [Fact]
     public async Task ThePageIsServedAndCarriesNoUnresolvedDirectiveOrMarker()
