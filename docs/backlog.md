@@ -3280,7 +3280,7 @@ Start only after Dan has signed off WI-513's template.
 
 ### Wave 3 — meningioma, metastases, and the general page
 
-- [ ] **WI-527 Meningioma, deepened** — it starts on the covering, not in the
+- [x] **WI-527 Meningioma, deepened** — it starts on the covering, not in the
   brain, and the CSF cleft on the scan is the visible proof (genuinely
   reassuring, and explained nowhere) — with the honest limit that compression
   still causes real damage; **location matters more than size**; why so many are
