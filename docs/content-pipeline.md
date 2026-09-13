@@ -2010,6 +2010,178 @@ absolution alone.
 `/review` returned three blockers, fifteen should-fixes and a page of guard
 walk-throughs. The harness table stands at **147 breaks on LF and CRLF**.
 
+**Twelve more from the nineteenth one (WI-530, `/tests/ct-scan` and
+`/tests/planning-scans` — two pages in one item, and the item where a source
+page had been rewritten out from under its citations):**
+
+- **A SOURCE CAN STOP SAYING WHAT IT WAS CITED FOR, AND NOTHING IN THE PROJECT
+  WILL NOTICE.** The dossier's §2.2, §2.3 and §2.4 attribute **eight** claims to
+  `radiologyinfo.org/en/info/headct` — the warmth and flushing, the metallic
+  taste, the urge to urinate, "within 30 minutes", "less than a minute" for the
+  injection, the kidney screening. Fetched in full with a browser user agent
+  (51,913 bytes, "Last reviewed on June 15, 2026"), **that page has no "What
+  will I experience" section at all.** It is not gated, not 403, not a
+  JavaScript shell: it is a live page that has been restructured since the
+  research was gathered. This is a different failure from every citation defect
+  the project has recorded — the dossier was probably right when it was written.
+  All eight claims are carried verbatim by ACS's own CT page and were moved
+  there. **A URL that resolves is not a citation that holds. Re-fetch, and read
+  what is there now.**
+- **Two fetches through the summarizer can agree and both be incomplete.** Both
+  returned "those sections are not present"; only the raw fetch proved it,
+  because the summarizer cannot distinguish "the page does not say this" from
+  "the converter dropped it". When a fetch reports an ABSENCE that a claim rests
+  on, pull the bytes.
+- **A page written for a reader who has already had the test needs a different
+  first move.** Most `/tests/` pages are read before the appointment. The CT
+  page is read after it, by somebody who was told there was something there, so
+  the section it most needs is not "what happens" but **"the fast scan was the
+  right scan"**. ACS says a CT "aren't quite as good as MRI scans", which is
+  true and has to be printed; printed without "if a scan is needed right away",
+  it tells an emergency-room reader their hospital chose the weaker test. Both
+  halves, in the same section, with a test.
+- **A radiation section must not end on the fear, and the pin is END-anchored.**
+  RadiologyInfo's risk line is two sentences and the second is the answer: "the
+  benefit of an accurate diagnosis far outweighs the risk". The order is
+  asserted (fear stated, then answered) and the section's LAST sentence is
+  pinned, because WI-521 showed a correctly-pinned reassurance surviving a
+  sentence appended after it.
+- **A reassurance can be an unsourced causation claim wearing a kind voice.** A
+  draft closed the radiation section with *"Whatever you are carrying today, it
+  is not that"* — which is a claim that the scan did not cause the tumor, for
+  every reader, from no source. `/tumors/meningioma` makes that claim properly
+  and only about imaging doses versus childhood radiotherapy. Replaced with the
+  sourced half ("no radiation stays in your body afterward"), and there is now a
+  page-wide ban on the causation shape, checked against the sibling's wording.
+- **Where two sources disagree and BOTH are right, the page must say which
+  question each is answering.** The manufacturers say do not breastfeed for a
+  day or two after iodine contrast; the ACR says the amount reaching a baby is
+  extremely low. `/tests/mri` already tells its reader it is safe to carry on
+  after the MRI dye. Printing either CT answer alone reads as a correction of
+  the sibling, so the page prints the disagreement, names both sources, says
+  **"This is about the CT dye"**, and links. The guard bans resolving it in
+  EITHER direction, and reads the sibling so a change there goes red here.
+- **THE SCOPE LINE FOR A MERGED PAGE IS A TIME, NOT A TOPIC.** fMRI, DTI,
+  spectroscopy, perfusion and PET all have a before-treatment use and an
+  after-treatment use, and `/tests/follow-up-scans` (WI-521) already ships the
+  after-treatment half — pseudoprogression, radiation necrosis, the twelve-week
+  rule, and the honest "they help, and they do not settle it" reached from two
+  sources that disagree. So the split is not "which scans" but **"which side of
+  treatment"**. Written into the front matter (§12.8, WI-526) and guarded by
+  seven named branches, **each with its own canary**, plus a proven route.
+  The first draft had a redaction list instead, and `/review` proved the regex
+  matched nothing on the page even with the redactions removed — so the
+  allowlist exempted nothing and its comment documented a decision the guard had
+  never made. **A redaction you have not watched fire is dead code that reads
+  like care.**
+- **Name the direction a test fails in, or the limit is decoration.** The fMRI
+  section's real content is that neurovascular uncoupling produces a **false
+  negative**: near a tumor, a working region can stop producing the signal, so
+  it looks quiet, **and a quiet spot on the map looks like a spot that is safe
+  to operate on**. "The scan is not always right" tells a reader nothing and
+  lets them conclude either that it is useless or that it is proof. The guard
+  asserts the direction and the consequence separately.
+- **The most useful sentence on a page can be a permission, and it has to
+  survive the softening as well as the deletion.** RadiologyInfo: if a task is
+  too hard, tell the technologist, and they may give you different tasks or
+  easier questions. PMC4757221 found simpler tasks gave *more reliable* results.
+  A guard that only asserts the sentence is present is beaten by appending
+  *"Even so, try your best, because a poor result means a repeat"* — WI-525's
+  tier lesson, applied to a single claim. Ban the downgrade shapes inside the
+  section as well.
+- **Where a source does not support a distribution claim, ask the question
+  instead of hedging it.** Amino-acid PET is real and its uses are in the
+  guideline; "concentrated in academic centres" is the dossier's, uncited. A
+  draft softened it to "the answer is not the same everywhere", which is still
+  an assertion about availability. It now asks whether the scan is done where
+  the reader is treated, and the guard is **shape-based**: any sentence putting a
+  place-noun near a scarcity or coverage word is an availability claim, numeral
+  or not. It started as a word list and `/review` beat it in one line with
+  *"Not every hospital has one"*.
+- **`grey`, and a whole colour family nobody had swept for.** WI-529 swept
+  doubled consonants and `-ement`; every sweep before it looked at `-ise`,
+  `-our` and idiom. A draft of the DTI section wrote "your brain's grey parts".
+  Corpus-clean at the time of adding, and safe because `grey` is not a substring
+  of `gray` — the US form loses a letter rather than gaining one, so it cannot
+  hide the British one. Added to `CuratedPage.BritishForms`.
+- **The restatement check is now shared, and it needs two more exclusions than
+  WI-521 gave it.** A corpus-wide shingle run on a NEW page reports the corpus
+  colliding with itself unless you also strip **whole markdown links, label
+  included** (a link label is a page TITLE and the same door appears on a dozen
+  pages) and the **"What to ask your team"** section (§12.2 item 7 requires one
+  everywhere, and "Can I have a copy of my pictures?" is the question every scan
+  page owes its reader). With those in, it found nine genuine near-duplications
+  in one draft — including a whole "who reads it" paragraph and three separate
+  restatements of `/tests/mri`. Promoted to `CuratedPage.Shingles` and
+  `AssertDoesNotRestateTheCorpus` **the same day it was written**, because the
+  item's second page needed it: §12.8's threshold is the second use, not the
+  fifth. `AssertNoEscalationList` went the same way, for the same reason.
+
+**And five more from `/review`, which returned three blockers, twenty-six
+should-fixes and TWENTY-TWO EXECUTED GUARD WALK-THROUGHS — twelve of them
+beaten, each with the exact sentence that beat it:**
+
+- **A CORRECTLY-CITED SENTENCE CAN BE THE WRONG STRENGTH FOR THE PAGE IT LANDS
+  ON.** ACS says, verbatim, *"Tumor usually shows up on a PET scan, while scar
+  tissue does not."* The planning page printed it and it was the item's worst
+  defect — because `/tests/follow-up-scans` owns that question and refuses the
+  binary (*"Those help, and they do not settle it. Older reviews said outright
+  that they cannot reliably tell the two apart. Newer ones report them doing
+  better than that."*), reached from two sources that disagree. §12.10 is about
+  strengths, not about sourcing, and every previous item hit it between a page
+  and a sibling. **This is the first time the STRONGER version was the one with
+  the citation.** The page now keeps ACS's own hedge — "more likely to be" — and
+  routes, and the binary is a banned branch with a canary.
+- **A DOOR ADDED TO A SIBLING IS PROSE ON THAT SIBLING, AND IT CAN UNDO A
+  PREVIOUS ITEM'S FIX.** The new door on `/treatments/craniotomy` said the extra
+  scans "work out where those parts sit"; the same page says "to **suggest**
+  where those areas sit" 115 lines later, and §12.8 (WI-523) records that page
+  being corrected FROM the stronger verb TO the weaker one. §12.8 (WI-510)
+  already says the sentence above a block is shared prose; the same is true of
+  the sentence a door is appended to. **Diff a new door against the page it
+  lands on, not only against the page it points to.**
+- **Widening a guard needs the correct page re-run, immediately.** Four of the
+  branches added in response to `/review` fired on correct prose on the first
+  build: `most` within 35 characters of `scans` caught *"Most of the other scans
+  here show what tissue looks like"*, and the feeding guard caught the questions
+  list's *"I am breastfeeding."* §12.8 (WI-521) says invert a guard only after
+  checking the correct page survives it — that holds for every widening, not
+  only for inversions.
+- **An unsourced frequency claim can be about the READERSHIP.** *"For most
+  people who read this page, the CT was easy"* is a claim about how many people
+  feel a thing, and the share guard caught it rather than any reading did.
+  Rewritten as a conditional (*"If you are reading this after the scan…"*),
+  which asserts nothing about anybody.
+- **An escalation-shape guard's timing words must not be gated behind a verb,
+  and a list ITEM cannot be a lead-in.** `same day|today|tonight` sat behind
+  `call|ring|phone|dial`, so *"Get seen the same day if any of these happen:"* —
+  a complete same-day tier — walked through. Ungating them then made a questions
+  bullet reading "Why a CT **today**…" followed by nine more bullets look like an
+  urgent list, so marker lines are skipped: the lead-in is the preceding
+  PARAGRAPH (§12.8, WI-521). Both halves are canaried inside the shared helper,
+  against synthetic pages rather than against the real one.
+
+**The end-to-end read, eighteenth item running, found the one thing nothing else
+could — and it is about WHERE a tooltip lands.** A glossary tooltip fires on a
+word's **first** occurrence, so the position of that occurrence decides which
+paragraph gets the definition. A draft introduced `radiologist` inside the PET
+section's breastfeeding advice, and the rendered page put the definition of a
+radiologist in the middle of instructions about pumping milk — while **slot 9,
+the section that exists to explain who reads your scan, rendered with no tooltip
+at all**. The markdown contains neither the tooltip nor its position, so no gate
+and no reading of the source can see it; only the rendered page can. There is a
+test now, and **its first version failed a correct page**: it used a bare
+`IndexOf`, and "the radiologists' own guidance" contains the term as a substring
+while NOT firing the tooltip, because `GlossaryMarker` matches whole words.
+**Model the matcher, not the string.**
+
+Also from that read: RadiologyInfo's *"the x-rays used for CT scanning should
+have no immediate side effects"* is verbatim and was still cut from the step
+list, because **"immediate" opens a question the reader cannot answer from
+there** — the radiation section answers it thirty-nine lines later, and a
+frightened reader does not necessarily get that far. The half that survives is
+the one they can use: no radiation stays in your body afterward.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

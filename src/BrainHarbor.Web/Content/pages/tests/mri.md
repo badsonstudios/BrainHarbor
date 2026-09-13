@@ -60,7 +60,9 @@ There are three jobs, and the same machine does all three.
 - **To find out what is going on.** This is the scan that shows the growth in
   the first place.
 - **To plan.** Before surgery or radiation, your team needs a very exact
-  picture of where it is.
+  picture of where it is. Extra sets of pictures are sometimes added to answer
+  one specific question about the plan.
+  [The extra scans before treatment](/tests/planning-scans) goes through them.
 - **To keep watch.** After treatment, scans are compared with each other over
   time to see what has changed.
 
@@ -151,7 +153,8 @@ The dye is a liquid called gadolinium. It goes into a vein and makes some
 tissue stand out, which helps show a tumor more clearly.
 
 **Is it the same as the dye for a CT scan?** No. It has no iodine in it, and it
-only rarely causes a reaction of any kind.
+only rarely causes a reaction of any kind. [Your CT scan](/tests/ct-scan)
+covers the other one, which has different rules.
 
 **Who needs to speak up first?** Tell the staff before the scan if you have
 kidney disease, kidney failure, a kidney transplant or liver disease, or if you
@@ -269,6 +272,10 @@ and who is going to call me?
 ## Where to go next
 
 - [Just diagnosed? Start here](/start) if this is all new.
+- [Your CT scan](/tests/ct-scan) for the fast scan that usually came first, and
+  the one that does not use a magnet.
+- [The extra scans before treatment](/tests/planning-scans) if your team has
+  mentioned adding sequences to plan an operation or radiation.
 - [How tissue is taken](/tests/biopsy) for the step after this one, when a scan
   has gone as far as a scan can go.
 - [Waiting for your pathology results](/tests/waiting-for-results) if tissue has
