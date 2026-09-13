@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-530 — code-complete 2026-09-13**, pending commit/PR. Two NEW pages: `/tests/ct-scan` (grade 4.5) and `/tests/planning-scans` (grade 4.7). |
-| **Next up** | **WI-531 (X6 Proton therapy + X7 Stereotactic radiosurgery)** — two pages, one item. Proton splits out because **the reader's real question is access, not physics** (~50 US centres, travel, and insurance denial as a routine appealable step rather than a verdict). SRS splits out because **the name misleads** — people think it is surgery — and the day is entirely different. Do not state that frame or frameless is standard; the literature is actively arguing it. Depends on: WI-511. |
+| **In progress** | **WI-531 CODE-COMPLETE 2026-09-13**, awaiting PR. `/treatments/proton-therapy` (grade 5.4) and `/treatments/stereotactic-radiosurgery` (grade 5.0), two NEW pages in one item. **1860 tests**, ContentCheck **259/0**, **125 break-mutations green on LF and CRLF**. WI-530 shipped and live earlier the same day (PR #125 → develop, #126 → main, deploy green). |
+| **Next up** | **WI-532 (X9 Targeted and other systemic drugs)** — led by "your tumor's test result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it improved progression-free survival but not overall survival in newly diagnosed glioblastoma — it helps the scan, not the outcome. Depends on: WI-512. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -23,36 +23,55 @@
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
 
-### WI-530 scouting note (2026-09-13) — SPENT, kept for the record
+### WI-531 scouting note (2026-09-13) — SPENT, kept for the record
 
-The item is done. Everything below was the input and all of it held except the
-NCI-PDQ point, which turned out to be smaller than the real §2 problem: the
-RadiologyInfo head CT page no longer contains the eight claims the dossier cites
-to it. See the 2026-09-13 log entry.
+The item is done. Everything below was the input. All of it held except the
+centre count, which turned out to be a secondary citation in another paper's
+introduction and is not published at all. See the 2026-09-13 log entry.
 
-- **`tests-library.md` §2 and §3 cite NCI patient PDQ four times** — for what a
-  CT is, for MR spectroscopy, for PET and for SPECT. Every one of those claims is
-  carried by **ACS "Tests for Brain Tumors in Adults"**
-  (`.../detection-diagnosis-staging/how-diagnosed.html`), which was fetched
-  during WI-529 and covers fMRI, DTI, MRS, perfusion, PET and MRA/MRV in one
-  place. That page is already cited by `/tests/mri`, so the planning page can
-  rest on a source the corpus has verified.
-- **Dead or gated in §3, so do not plan around them:** `sciencedirect.com`,
-  `journals.lww.com`, `academic.oup.com`, `ajnr.org` (403 since WI-527),
-  `researchgate.net`. `link.springer.com` and `radiologyinfo.org` both work.
-- **Do not publish the CT radiation dose.** §2.4's ~4 mSv is sourced to WebMD and
-  the dossier's own §12 says the figure varies between sources and should be
-  ranged or omitted. §12.4 R2 says omit.
-- **The fMRI section is the one with a patient job in it** — finger tapping,
-  sentence completion, silent word generation, a possible breath-hold run — and
-  the honest limit is **neurovascular uncoupling**: a working region can fail to
-  light up next to a tumor, so fMRI is a planning map and awake mapping is the
-  reference standard. That pairs with `/treatments/awake-craniotomy` (WI-523).
-- **Scope against the siblings first** (the WI-529 lesson). `/tests/mri` owns the
-  machine, the noise, claustrophobia, gadolinium and the device card;
-  `/tests/follow-up-scans` owns scan-versus-treatment-change, which is where the
-  perfusion and PET "cannot reliably separate progression from pseudoprogression"
-  material probably belongs. Read both before drafting.
+- **The scope line for BOTH pages is `/treatments/radiation-therapy` (WI-511),
+  which already owns the mask, the simulation visit, fractionation, the weeks of
+  weekdays, the tiredness, the skin rules, the hair, somnolence syndrome, the
+  late effects, "am I radioactive", whole-brain radiation and re-irradiation.**
+  Its "you may hear several names for it" list already carries a one-line
+  Proton bullet and a one-line Stereotactic radiosurgery bullet. Those two
+  bullets are the doors. The proton page is **not** a second radiation page:
+  ACS says the proton patient experience is the photon experience, so the page
+  routes for the day and spends itself on **access**.
+- **`/tests/follow-up-scans` (WI-521) already owns radiation necrosis after
+  SRS**, by name, with the eight-month timing and the explicit note that the
+  clearest numbers come from SRS. The SRS page routes and must not restate it.
+- **The dossier's proton framing is thinner than ACS's own.** ACS's brain
+  radiation page says outright that proton "may be more helpful for brain
+  tumors that have distinct edges, such as chordomas", **and that it is not
+  clear whether it is as useful for tumors that grow into normal brain, such as
+  astrocytomas or glioblastomas** — which is most of this site's readers. ACS's
+  Getting Proton Therapy page lists, as a limitation in its own voice, that
+  "more research is needed to know if it's better than traditional radiation
+  therapy". That pair is the anti-hype spine and the dossier does not have it.
+- **Do not publish a dollar figure or "~60% more".** The dossier's cost claim
+  is sourced to `scienceinsights.org`; the real comparison (PMC13521102, Mayo
+  standardized Medicare rates) is roughly two and a half times, not 60%, and a
+  reimbursement rate is not what a reader pays.
+- **The access sources the dossier names are marketing, a law firm blog and a
+  content farm.** Replaced: **PMC13521102** (Int J Part Ther 2026) carries
+  "roughly 45" US centres, "most of these centers are in large cities and
+  academic centers", and the finding that people who live FARTHER from a centre
+  are more likely to get proton. **PMC11905844** carries the external-review
+  appeal route and what actually wins one. **PMC11699354** carries the prior
+  authorization burden and the 2026 CMS response-time rule.
+- **Brain metastases + SRS is §12.1-governed: ASCO-SNO-ASTRO 2022 only, never
+  NCI patient PDQ** — and the dossier sources the whole "which tumors" section
+  to NBK66023, which IS NCI patient PDQ. Open at **PMC8917399**; Rec 3.2 and
+  Rec 3.3 are the two sentences the page needs.
+- **Do not say frame or frameless is standard** (the backlog's own warning), and
+  note ACS leans one way — "frameless techniques are now available that make
+  this unnecessary" — while Cleveland Clinic presents two systems in use. Say
+  both exist and that which one you get depends on the machine at your centre.
+- **Do not publish Cleveland Clinic's "tumor control rate was 95%"**, Froedtert's
+  "success rate is impressive" / "no loss of hair", or Froedtert's cost
+  comparison. §12.13's shape: the richest patient-level source for the day is
+  also the one with the marketing in it.
 
 ### Open threads (2026-08-13)
 - **Daily pipeline is scheduled** ('BrainHarbor Pipeline', 06:00 daily, published
@@ -132,6 +151,76 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-13** — **WI-531 code-complete — `/treatments/proton-therapy` and
+  `/treatments/stereotactic-radiosurgery`, two NEW pages in one item, and the item where a
+  PREFERRED SOURCE'S OWN "LIMITATIONS" HEADING WAS THE SPINE.**
+  Grades **5.4** and **5.0**, **1860 tests** (1775 before), ContentCheck **259/0**,
+  **125 break-mutations green on LF and CRLF**. No new glossary entries (both candidates
+  argued and dropped), doors on six sibling pages.
+  **THE DOSSIER'S PROTON FRAMING IS THINNER THAN ACS'S OWN, AND THAT IS THE HEADLINE.**
+  `treatment-library.md` §6 frames proton around pediatric and slow-growing tumors. ACS's own
+  proton page has a heading called **"What are the limitations of proton therapy?"** whose last
+  line is *"More research is needed to know if it's better than traditional radiation therapy"*,
+  and its brain page says **it is not clear whether protons are as useful for tumors that grow
+  into normal brain, naming the astrocytoma and the glioblastoma** — which is most of this
+  site's readers. EANO says the guideline version. Two preferred sources, and the dossier has
+  neither. **Read the source's caveats section before you read the dossier's framing.**
+  **THE CENTRE COUNT IS NOT PUBLISHED.** "Roughly 45" is a sentence in PMC13521102's
+  *introduction* carrying somebody else's citation — the bundled-claim shape §12.8 (WI-512)
+  records three times, one layer up. A first draft printed it, called the paper "a recent
+  review" when it is a single-centre retrospective analysis, and rounded a 250-mile comparison
+  cut-off into an invented *"more than two hundred miles"*. ACS's own "a limited number, more
+  being built" is printed instead, and the page routes the reader to ask where their nearest one
+  is. What IS first-party in that paper — the travel comparison — is what the access section
+  rests on.
+  **The dossier's whole access section is a centre's blog, a law firm's blog and a content
+  farm.** Replaced by **PMC11905844** and **PMC11699354**, which carry it at research level: the
+  outside review is a legal right, its decision is **binding on the plan**, it **costs the
+  patient nothing**, and what wins one is guidelines, studies, trial eligibility and a
+  personalised letter. **`NBK66023` is NCI patient PDQ and §12.1 forbids it for
+  brain-metastasis radiation**, so the "which tumors" section rests on ASCO-SNO-ASTRO 2022
+  (**PMC8917399**) — Rec 3.2 and Rec 3.3, with all three of the guideline's scope words kept.
+  `/review`: **six blockers, twenty-seven should-fixes, and SIXTY-SEVEN OF SIXTY-NINE ATTACK
+  SENTENCES WALKING THROUGH THE GUARDS**, each with the exact sentence that beat it. The worst
+  blocker is a safety one: the SRS page's single invented tier, an infected pin site, shipped
+  with **no timing word at all**, two sections above the block, while `/treatments/craniotomy`
+  files a warm wound, a leaking wound and a fever as **same day**. A page inventing a tier
+  LOWER than the corpus files the identical symptoms, and the guard could not see it because a
+  downgrade check has nothing to downgrade when nothing was escalated. Two more: an invented
+  etymology for the word "surgery" on the page whose whole job is correcting that word, and an
+  invented "a few usually means somewhere between two and five".
+  **ONE REVIEW FINDING WAS WRONG AND IS RECORDED AS SUCH:** PMC13521102 was called a
+  multi-institution analysis; its Methods say "a single facility" and its Discussion says "a
+  large, urban, academic center", so the page's framing was right. The same finding's other
+  half — the invented mileage — was right and is fixed.
+  **THEN THE HARNESS FOUND EIGHT GUARDS THAT COULD NOT FAIL**, identically on LF and CRLF,
+  *after* all sixty-seven walk-throughs had been answered. Five real: **`the operation` had been
+  dropped from the determiner list** when that guard was narrowed, so "go home the same day as
+  the operation" walked the page's central safety property; the frame-or-mask choice was
+  asserted by PRESENCE while the page says the phrase four times; the second-share check was
+  section-scoped; **a `!%term%` marker inside a SHARED BLOCK suppresses that tooltip on every
+  page that composes it** and the test only read each page's own text (WI-510's recorded leak,
+  unseen until now); and a reachability floor of `>= 3` read a drop from four to three as
+  healthy. Two mutations were too weak, and **one still named a test this item had renamed** —
+  which is why the harness treats "filter matched NO test" as a failure.
+  **The end-to-end read of the RENDERED pages (twentieth item running) found six**, including
+  **a navigation instruction pointing at the wrong section because the composed `[ESCALATION]`
+  block brings its own heading and moves what the pointer points at**; the same claim in two
+  consecutive paragraphs, created by the `/review` fix that added it; "Where to go next"
+  re-committing a contradiction the body had just been corrected for; and two pieces of
+  site-voice meta (*"because no source gives a set answer"*).
+  **A new British family: everyday NOUNS.** `car park` reached a draft. Every previous sweep
+  looked at spellings and idiom. `petrol`, `motorway` and `dual carriageway` added with it —
+  and **`straight away` was proposed by `/review` and REJECTED**, because it is live on
+  `/treatments/chemotherapy` in four places including the fever rule, as was `chemist`, which
+  is a substring of `chemistry`. Fifteen lessons in **§12.8**, one of which is a new class: a test that passes on every developer machine BECAUSE the machine is configured. Both render classes booted the app with no connection string -- green here, red on the CI runner, and invisible to the suite, ContentCheck and the harness alike. There is a corpus guard now, and it is a SOURCE scan because the wrapping lives in a constructor body that reflection cannot see.
+
+- **2026-09-13** — **WI-530 is live.** PR #125 into `develop`, release PR #126 into `main`,
+  build-test green first time on both, deploy succeeded. `/tests/ct-scan` and
+  `/tests/planning-scans` return 200 on brainharbor.org with no authoring marker and no
+  unresolved block directive; the `radiologist` tooltip renders in the section that owns it.
+  Ten other pages smoke-checked at 200.
 
 - **2026-09-13** — **WI-530 done — `/tests/ct-scan` and `/tests/planning-scans`, two NEW pages in
   one item, and the item where a cited page had been rewritten out from under its citations.**

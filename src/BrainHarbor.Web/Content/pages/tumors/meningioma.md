@@ -433,7 +433,9 @@ after.
 **Radiation.** Used when a tumor cannot be removed, when some is left behind,
 or after surgery for grade 2 and grade 3 tumors. It can be given as a focused
 single treatment or a few, or as a longer course over weeks.
-[Radiation therapy](/treatments/radiation-therapy) covers what that involves.
+[Radiation therapy](/treatments/radiation-therapy) covers what that involves,
+and the focused single treatment, stereotactic radiosurgery, has
+[a page of its own](/treatments/stereotactic-radiosurgery).
 Doses and schedules are your team's to set, and they differ between tumors and
 between hospitals.
 

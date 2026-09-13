@@ -353,6 +353,30 @@ internal static class CuratedPage
         // substring of "gray", so the US form cannot hide the British one.
         "grey",
 
+        // WI-531. A draft of /treatments/stereotactic-radiosurgery wrote
+        // "sitting in a car park" and "the hard bit" — and neither is a
+        // spelling, so no previous sweep could have caught them. The everyday
+        // NOUNS are the family nobody had asked about: a US reader parks in a
+        // parking lot, buys gas rather than petrol, and drives on a highway.
+        // All four are corpus-clean and none is a substring of a US word.
+        "car park", "petrol", "motorway", "dual carriageway",
+        //
+        // TWO CANDIDATES WERE RUN OVER THE CORPUS AND REJECTED, and the reason
+        // is recorded so the next item does not re-reach the wrong answer
+        // (§12.8, WI-510, the RejectedCharacterisations pattern):
+        //   * "straight away" — /review proposed it, and §12.10 does describe
+        //     it as an idiom the escalation block avoids. But it is LIVE on
+        //     /treatments/chemotherapy in four places, including the fever
+        //     rule ("means calling your team straight away, at any hour"),
+        //     which is the single most load-bearing sentence in the treatment
+        //     library. Banning it would fail a shipped page, and §12.8's rule
+        //     is that a phrase belongs on this list only if no correct
+        //     sentence contains it.
+        //   * "chemist" — matches "chemistry" on /tests/waiting-for-results and
+        //     "immunohistochemistry" on /tests/molecular-markers and in a
+        //     glossary entry. WI-511's stemming defect exactly: a substring of
+        //     a correct word reads like a working rule.
+
         // Idioms. The half WI-510's draft actually got wrong ("you will be got
         // up", "tablets") was never about spelling, and a reader in Ohio is
         // offered "a lift" or given fluids "through a drip" by a page that
@@ -824,7 +848,24 @@ internal static class CuratedPage
             + @"at once|without waiting|as soon as)\b"
             + @"|(?i)\b(?:emergency|urgent(?:ly)?|cannot wait|can't wait|do not wait|don't wait)\b"
             + @"|(?i)\bgo\s+to\s+(?:the\s+)?(?:emergency|er\b|a&e)"
-            + @"|(?i)\bget\s+seen\b");
+            + @"|(?i)\bget\s+seen\b"
+            // WI-531. /review planted three complete escalation tiers on
+            // /treatments/proton-therapy and all three walked through, because
+            // a lead-in does not need an urgency WORD to be a lead-in — the
+            // structure alone is enough. "Ring the number on your appointment
+            // letter if any of these happen:", "Get in touch with your
+            // radiation team if any of these happen:" and "Your team needs to
+            // hear about any of these before your next visit:" are each a
+            // complete tier with no timing word and no urgency vocabulary.
+            // The shape is a CONTACT verb plus a conditional hand-off into a
+            // list, and it has no innocent use directly above a run of symptom
+            // bullets.
+            + @"|(?i)\b(?:call|ring|phone|dial|contact|tell|let|get in touch|"
+            + @"reach out|speak to|let .{0,20}know)\b[^.]{0,80}"
+            + @"\b(?:if any of these|if you (?:get|have|notice|develop) any of these|"
+            + @"about any of these|any of the following|for any of these)\b"
+            + @"|(?i)\b(?:needs? to hear|should hear|wants? to know|needs? to know)\b"
+            + @"[^.]{0,60}\b(?:any of these|any of the following)\b");
 
         var marker = new Regex(@"^\s*(?:[-*]|\d+\.)\s");
 
@@ -881,6 +922,16 @@ internal static class CuratedPage
                      "### When to go to the emergency room\n\n- A seizure.\n- A sudden headache.",
                      "Get seen the same day if any of these happen:\n\n- A new headache.\n- New weakness.",
                      "Your team needs to know today if any of these happen:\n\n- A rash.\n- A fever.",
+                     // WI-531: the three /review planted on
+                     // /treatments/proton-therapy, each of which walked through
+                     // the version above. None of them contains a timing word
+                     // or an urgency word.
+                     "Ring the number on your appointment letter if any of these happen:"
+                     + "\n\n- A fever.\n- New weakness.",
+                     "Get in touch with your radiation team if any of these happen:"
+                     + "\n\n- A fever.\n- New weakness.",
+                     "Your team needs to hear about any of these before your next visit:"
+                     + "\n\n- A fever.\n- New weakness.",
                  })
         {
             var plantedLines = Regex.Split(planted, @"\r?\n");

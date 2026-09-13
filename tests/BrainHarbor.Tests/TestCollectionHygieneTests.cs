@@ -52,6 +52,57 @@ public class TestCollectionHygieneTests
     }
 
     /// <summary>
+    /// WI-531. Every class that takes a raw
+    /// <see cref="WebApplicationFactory{T}"/> must push the test connection
+    /// string into it.
+    ///
+    /// **This is the test that would have caught it, and only CI could.** A
+    /// developer machine has the connection string in
+    /// <c>dotnet user-secrets</c>, so a bare factory boots and every render
+    /// test passes; a CI runner has no user secrets, so
+    /// <c>Program.Main</c> throws *"Connection string 'BrainHarbor' not
+    /// found"* before a page is served. WI-531 shipped two render classes that
+    /// way — eight tests, green on this machine, red on the runner — and the
+    /// whole local suite, ContentCheck and a 125-mutation break harness all
+    /// said the item was finished.
+    ///
+    /// A SOURCE SCAN, not reflection, and that is the opposite choice from the
+    /// test above: the wrapping happens inside a constructor BODY, which
+    /// reflection cannot see. The cost is that a class doing it through a
+    /// helper would read as an offender — so the check looks for the setting
+    /// key anywhere in the file, which any spelling of the fix satisfies.
+    /// </summary>
+    [Fact]
+    public void EveryClassTakingARawFactoryPushesTheTestConnectionStringIntoIt()
+    {
+        var root = Path.GetDirectoryName(typeof(TestCollectionHygieneTests).Assembly.Location)!;
+        var tests = Path.GetFullPath(Path.Combine(root, "..", "..", "..", ".."));
+        var files = Directory.EnumerateFiles(tests, "*.cs", SearchOption.AllDirectories)
+            .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
+                        && !f.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+            .ToList();
+
+        Assert.True(files.Count > 20,
+            $"only {files.Count} test source files were found under {tests}, so this guard is "
+            + "checking almost nothing. The path walk has broken.");
+
+        var offenders = files
+            .Select(f => (Name: Path.GetFileName(f), Text: File.ReadAllText(f)))
+            .Where(f => f.Text.Contains("IClassFixture<WebApplicationFactory<Program>>",
+                StringComparison.Ordinal))
+            .Where(f => !f.Text.Contains("ConnectionStrings:BrainHarbor", StringComparison.Ordinal))
+            .Select(f => f.Name)
+            .OrderBy(n => n, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(offenders.Count == 0,
+            "these files take a raw WebApplicationFactory<Program> and never push the test "
+            + "connection string into it. They pass here, because this machine has user "
+            + "secrets, and they fail in CI, which does not:\n  "
+            + string.Join("\n  ", offenders));
+    }
+
+    /// <summary>
     /// True when the class takes a web-host fixture, however it is spelled —
     /// <c>IClassFixture&lt;WebApplicationFactory&lt;Program&gt;&gt;</c>,
     /// <c>KestrelWebApplicationFactory</c>, or a subclass of either.
