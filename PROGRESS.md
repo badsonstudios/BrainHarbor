@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | none. **WI-528 (Brain metastases, deepened) SHIPPED 2026-09-12.** See the log entry below. |
-| **Next up** | **WI-529 (`all-brain-tumors` — "we don't have a name for it yet")** — the page for somebody told there is something on their scan and nothing else yet. The 7-step pathway, which turns silence into "step 3 of 7"; why imaging alone often cannot say what it is; and what to do with the wait. **WI-528 built the bridge to it**: the brain-metastases page now carries the honest version of "sometimes the brain scan is what finds the cancer", including cancer of unknown primary, so WI-529 must route to that rather than restate it. |
+| **In progress** | none. **WI-529 (`all-brain-tumors`) SHIPPED 2026-09-13.** See the log entry below. |
+| **Next up** | **WI-530 (T2 CT + T3 Extra scans for planning)** — two pages, one item. CT is deliberately short and mostly retrospective: it explains the ER scan that started everything. The planning page merges fMRI, DTI, MR spectroscopy, perfusion and PET, because patients are never offered "an fMRI" in isolation — they are told "we're adding some sequences". fMRI gets the longest section, as the only one where the patient has a task. Depends on: WI-506. **WI-529 built a door to it**: `/tumors/all-brain-tumors` step 2 is "a better picture", and the CT page is the one that explains the scan at step 1. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -38,6 +38,19 @@
   "Brain Harbor", the title/og:site_name/RSS/domain say "BrainHarbor". Dan's
   call 2026-08-14 — leave it; not a soft-launch blocker. Don't "fix" it in
   passing.
+- **For `/pm`, raised by WI-529, not blocking.** (1) The `tumor board` glossary
+  tooltip prints `blocks/tumor-board.md`'s own opening sentence, so every page
+  including the block shows the sentence twice; WI-529 suppresses it page-locally
+  and the corpus fix belongs to the block or the entry. (2) `lesion` has no
+  glossary entry and is used undefined on `/tests/biopsy`,
+  `/tumors/brain-metastases` and `/tumors/meningioma` — WI-529 defines it inline
+  and did not add an entry, because no citable definition could be fetched
+  (`cancer.gov`'s dictionary is JS-rendered). (3) `blocks/escalation.md` files a
+  sudden worst-ever headache as same-day; for a reader with an unread mass that
+  may be a bleed, and CDC's stroke page (already one of the block's sources) calls
+  a sudden severe headache a 911 call. That is a change to eighteen hubs and needs
+  its own item, not a passing edit. Add to the two hubs already logged against
+  that block.
 - Tiny polish backlog: `data` image theme matches 0 items (widen keywords or reassign slot).
 - Namecheap still has a conflicting `@` URL-Redirect record — harmless now that
   the A record answers, but worth deleting.
@@ -88,6 +101,67 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-13** — **WI-529 done — `/tumors/all-brain-tumors`, a NEW page rather than a
+  deepening, and the only page in the corpus written for a reader with no diagnosis at all.**
+  Grade **5.1**, **1724 tests** (1691 before), ContentCheck **253/0**, **147 break-mutations
+  green on LF and CRLF**. Twelve source rulings.
+  **THE BIGGEST CALL WAS A SCOPE ONE, AND IT WENT AGAINST THE RESEARCH PACK.** The backlog
+  hands this item the seven-step pathway, and §C.4's turnaround-time table carries the
+  sentence *"this is, editorially, the most valuable section in the whole brief"*.
+  **`/tests/waiting-for-results` shipped all of it twenty-two items ago** — the lab queue,
+  the durations, the UK national audit, the batching, the name changing — and `/tests/biopsy`
+  owns the two operations and the "without one" exception. What is genuinely unowned is
+  **the part before there is tissue**, which is exactly where this reader is standing. So the
+  page owns **steps 1 to 4** and routes 5 to 7, and a test reads both siblings and goes red if
+  their prose reappears here.
+  **THE CENTRAL SAFETY PROPERTY IS THAT THE PAGE MAY NEVER SAY WHAT THE THING IS**, in its
+  own voice, anywhere — which every other `/tumors/` page is allowed to do. Two shared blocks
+  say "your tumor" six times between them, so the page carries one explicit scoping note
+  above the first of them, and the blocks are not edited (§12.10, the WI-514 blast radius).
+  **`[CROSSWALK]` IS EXCLUDED FOR A THIRD REASON, WHICH IS NEITHER "UNNECESSARY" NOR
+  "FALSE": it is addressed to somebody else.** It opens *"If your paperwork was written
+  before that"* and closes *"Seeing an older name on your own report"*, and this reader is
+  defined by not having a report. **`[CAUSES]` IS INCLUDED — the opposite call from WI-528
+  one item earlier**, because its opening is true here and asserts nothing about this
+  reader's scan.
+  **Two of the research pack's claims are not in the paper it cites them to.** §C.8's
+  "major disagreements occurred in 12% of cases" and "novel molecular tests contributed in
+  55% of major-disagreement cases" are attributed to PMID 25972322 — which is *"Consultative
+  issues in surgical neuropathology: a retrospective review of the RATIONALE FOR SUBMITTING
+  cases"*, counts why 508 cases were referred, and reports **no disagreement rate at all**.
+  No figure published. And §C.1's "consensus within two working days" is sourced only to
+  academic.oup.com, which is dead — so step 3 is hedged rather than described, because the
+  claim is UK-shaped as well as unsourced.
+  **Five of the pack's claims are sourced to NCI patient PDQ**, which §12.1 bans on a tumor
+  hub. All five are carried at patient level by the American Cancer Society instead, verified
+  by fetching rather than assumed. `appliedradiology.com` (403) carries the whole
+  ring-enhancing differential and was replaced; **`link.springer.com` is NOT dead** and was
+  re-fetched at 627 KB with the claim present, which is the second item to reach that answer.
+  `/review`: **three blockers, fifteen should-fixes.** The blockers were `[MECHANISM]`'s FIRST
+  SENTENCE being false here (*"most people are told what they have long before anyone
+  explains what it is doing"*, three lines under *"Nobody knows yet whether that is what you
+  have"*) and the scoping note not reaching it; an unsourced *"and usually are"* appended to
+  the reassurance about the reader's own symptoms; and a definition of *grade* that
+  contradicted the page it links to one click later.
+  **A CORPUS SWEEP FOR DOUBLED-CONSONANT BRITISH FORMS FOUND THREE LIVE SPELLINGS ON FOUR
+  SHIPPED FILES** — `travelled` ×3 on `/tumors/brain-metastases`, `judgement` on two pages,
+  and `labelled` on `/tests/waiting-for-results` and in a **glossary entry, whose tooltip
+  fires site-wide**. Every previous sweep looked at `-ise`, `-our` and idiom; nobody had asked
+  about this family. All fixed at source and added to the shared guard.
+  **The harness found three guards it could not exercise, and two were real.** A canary aimed
+  at a front-matter COMMENT rather than the sentence; a mutation placed below a composed block,
+  which cannot move what the block's heading points at; and **a Razor view, which the harness
+  structurally cannot mutate** because views compile into the test assembly and it runs
+  `--no-build` — proven by hand instead and the absence recorded in the table.
+  **The end-to-end read (seventeenth item running) found three**, all duplication a shingle
+  check cannot see: the caregiver slice repeating the block's own *"not going behind their
+  back"*, the `tumor board` tooltip printing the block's opening sentence immediately above
+  the block's opening sentence, and "there is no screening test" said twice. **And fixing the
+  second one shipped a fail-open for one test run**: `!%tumor board%[TUMOR-BOARD]` stops the
+  directive composing, because the composer matches it only on a line of its own, and the
+  literal rendered inside a `<p>`. There is now a mutation for it.
+  Thirteen lessons in **§12.8**.
 
 - **2026-09-12** — **WI-528 done — `/tumors/brain-metastases`.** The 260-word stub became a
   full §12.3 seventeen-section hub. Grade **5.7**, **1691 tests**, ContentCheck **252/0**,

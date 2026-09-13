@@ -224,7 +224,7 @@ An addendum is not a correction. It is the rest of the answer.
 
 There is a second thing that can happen, and it is a different thing: a report
 is amended. That means something already in it has been changed. An amended
-report is labelled as one, and it normally says what was changed and why.
+report is labeled as one, and it normally says what was changed and why.
 
 The commonest reason is a correction, such as a typing mistake or a measurement
 that was wrong. Sometimes it is more than that, and something learned later,

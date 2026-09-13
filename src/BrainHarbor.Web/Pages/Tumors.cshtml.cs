@@ -52,6 +52,25 @@ public class TumorsModel(TaxonomyStore taxonomy, ContentStore content) : PageMod
     // belong here, but calling them tumor types would be wrong.
     private static readonly string[] CrossCutting = ["pediatric-brain-tumor", "all-brain-tumors"];
 
+    // WI-529. `all-brain-tumors` is two things at once: a filter axis in
+    // taxonomy.yml, and now a PAGE for somebody who has been told there is
+    // something on their scan and nothing else. Under the "Ways to group
+    // tumors" heading the label alone reads as a filter, so a reader who DOES
+    // have a diagnosis clicks it and lands on a page that opens by telling them
+    // they do not.
+    //
+    // The LABEL is deliberately not overridden — `TumorsPageTests` requires
+    // every taxonomy label to appear here so the filter and this list cannot
+    // drift apart, and that invariant is worth more than the wording. What this
+    // row gets instead is a summary that says who the link is for, in place of
+    // the page's own description.
+    private static readonly Dictionary<string, string> IndexSummaries = new(StringComparer.Ordinal)
+    {
+        ["all-brain-tumors"] =
+            "Also the page for anyone who has been told there is something on their scan "
+            + "and has not been given a name for it yet.",
+    };
+
     public void OnGet()
     {
         var all = taxonomy.TumorTypes;
@@ -86,7 +105,10 @@ public class TumorsModel(TaxonomyStore taxonomy, ContentStore content) : PageMod
                 // so out loud: a blank space reads as "this site has nothing
                 // for you", which is the opposite of true.
                 var page = content.GetPage($"tumors/{x.Slug}");
-                return new TumorEntry(x.Slug, x.Type!.Label, page is not null, page?.FrontMatter.Description);
+                var summary = IndexSummaries.TryGetValue(x.Slug, out var overridden)
+                    ? overridden
+                    : page?.FrontMatter.Description;
+                return new TumorEntry(x.Slug, x.Type!.Label, page is not null, summary);
             })
             .ToList();
 
