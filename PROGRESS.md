@@ -102,6 +102,11 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-09-13** — **WI-529 is live.** PR #123 into `develop`, release PR #124 into `main`,
+  both CI jobs green first time, deploy succeeded. `/tumors/all-brain-tumors` returns 200 on
+  brainharbor.org with no directive or authoring marker leaked and the outlook gate closed;
+  nine other pages smoke-checked at 200.
+
 - **2026-09-13** — **WI-529 done — `/tumors/all-brain-tumors`, a NEW page rather than a
   deepening, and the only page in the corpus written for a reader with no diagnosis at all.**
   Grade **5.1**, **1724 tests** (1691 before), ContentCheck **253/0**, **147 break-mutations
