@@ -1909,6 +1909,107 @@ guard walk-throughs**, every regex executed rather than eyeballed. The harness
 table stands at **123 breaks on LF and CRLF**, and it found four more guards
 that could not fail after all eighteen were answered.
 
+**Thirteen more from the eighteenth one (WI-529, `all-brain-tumors` — the only
+page in the corpus written for a reader with NO diagnosis, and the first NEW
+page rather than a deepening):**
+
+- **A SIBLING CAN ALREADY OWN THE ITEM'S HEADLINE CONTENT, and the research pack
+  will not know.** The backlog hands WI-529 the seven-step pathway, and §C.4's
+  turnaround-time table is the sentence *"this is, editorially, the most valuable
+  section in the whole brief"*. `/tests/waiting-for-results` shipped all of it
+  **twenty-two items earlier** — the lab queue, the durations, the UK national
+  audit, the batching, the name changing — and `/tests/biopsy` owns the two
+  operations. What was actually unowned is **the part before there is tissue**,
+  steps 1 to 4, which is exactly where this reader is standing. Read the
+  siblings before you read the dossier, or you will write the dossier.
+- **A shared block can be ADDRESSED TO SOMEBODY ELSE, which is a third thing
+  from unnecessary and from false.** `[CROSSWALK]` opens *"If your paperwork was
+  written before that"* and closes *"Seeing an older name on your own report"*.
+  Nothing in it is untrue here. **This reader is defined by not having a
+  report** — contract item 3 exists because readers arrive holding old
+  paperwork, and this is the one page whose reader does not. Excluded, block
+  unedited, and the one half that IS this reader's (gene results are part of the
+  name, which is why the name takes weeks) routed to the sibling that already
+  says it.
+- **And `[CAUSES]` was the OPPOSITE call from WI-528's, on the next item.**
+  There its opening is false because the cause is in the reader's chart; here it
+  is true and asserts nothing about this reader's scan. §12.10's test cuts both
+  ways, and the answer is per hub, not per block.
+- **A scoping note has to cover the block's FRAMING, not only its vocabulary.**
+  The first note taught the reader to read "your tumor" as "whatever this turns
+  out to be" — and left `blocks/mechanism.md`'s FIRST SENTENCE, *"Most people
+  are told what they have long before anyone explains what it is doing"*, three
+  lines under the page's own *"Nobody knows yet whether that is what you have"*.
+  `/review` caught it. The note now names that sentence and says *"for you that
+  is the other way round"*, and the guard requires both halves.
+- **AN AUTHORING MARKER ON A DIRECTIVE LINE STOPS THE DIRECTIVE COMPOSING.**
+  `!%tumor board%[TUMOR-BOARD]` was a page-local fix for a cosmetic problem, and
+  it fails open: the composer matches a directive only on a line of its own, so
+  the block silently stopped composing and the literal string `[TUMOR-BOARD]`
+  rendered inside a `<p>` on the reader's screen. Put the marker at the end of a
+  neighbouring sentence — it is page-wide, so the position is free. There is now
+  a mutation for it.
+- **Three live British spellings nobody had swept for, on four shipped files.**
+  `travelled` (three times on `/tumors/brain-metastases`), `judgement`
+  (`/treatments/anti-seizure-medicines`, `/tumors/meningioma`) and `labelled`
+  (`/tests/waiting-for-results` and `glossary/amended-report.md`, which is a
+  tooltip that fires site-wide). Every previous sweep looked at `-ise`, `-our`
+  and idiom; **doubled consonants and `-ement` are a whole family nobody had
+  asked about**, and none of the three is a substring of its US form, so they
+  were safe to add.
+- **A canary aimed at a front-matter COMMENT proves nothing.** The
+  non-duplication canary for `/treatments/watch-and-wait`'s scan interval
+  matched `every few months` — in the RULING that explains the sentence, not in
+  the sentence, which is hard-wrapped between "few" and "months". `Sibling()`
+  reads `ReaderText`, which strips front matter. The harness reported `ok`.
+  **Aim a canary at the body, and check the wrap.**
+- **A mutation BELOW a composed block does not move what the block's heading
+  points at.** Inserting a `## ` after `[MECHANISM]` left the composed order
+  unchanged, because the block brings its own `## ` with it. The mutation had to
+  go above the directive. The mutation was too weak, not the test (WI-516).
+- **THE HARNESS CANNOT MUTATE A RAZOR VIEW.** Views compile into the test
+  assembly, the harness runs `dotnet test --no-build`, and a change to
+  `Pages/Tumors.cshtml` is invisible to the running host — so it reported `ok`
+  for a guard it had never exercised, which is the same shape as WI-528's
+  broken-on-CRLF test. Prove those by hand: break, **rebuild**, confirm red,
+  restore, and record the absence in the mutation table.
+- **Widening a guard's SCOPE is not the same as widening its subject, and the
+  wrong one fails a correct page.** The registry share ban was section-scoped;
+  `/review` was right that "most brain tumors are not malignant" elsewhere would
+  pass. Run page-wide it fired on ACS's own *"Most brain tumors are found
+  because they start to cause something"*, which is correct and sourced. The fix
+  is to narrow the SUBJECT — quantifiers within 50 characters of
+  malignant/non-malignant/benign — and keep the full figure ban in its section.
+- **The vocabulary §12.5 REQUIRES the gate to teach is a duration to any regex
+  that reads it.** `five-year survival` is `five` plus `-year`, and it tripped
+  the guard written to stop this page republishing the sibling's turnaround
+  times. Redact the taught term and scan the remainder (§12.8, WI-527), with the
+  canary that proves the redaction did not swallow the sentence.
+- **A guard can be STRICTER INSIDE THE GATE THAN OUTSIDE IT, which is the wrong
+  way round.** The worded prognosis claims were banned where the reader had
+  consented and allowed where they had not, so *"some of the things on that list
+  people live with for years"* passed everywhere on the page. Both halves run in
+  both places; only the vocabulary is gate-only.
+- **`(?m)^:::outlook[ \t]*$` cannot match a CRLF checkout** — WI-527's bug, in
+  the file that records WI-527's bug, caught by `/review` before the page was
+  ever tracked. `[ \t]` does not consume a `\r` and multiline `$` does not match
+  before one. `\s*$`.
+
+**The end-to-end read, seventeenth item running,** found three, all of them
+duplication a shingle check cannot see because the wording differs. **The
+caregiver slice repeated the block's own reassurance** — the block says telling
+the team *"is not going behind their back"* and the page's third claim ended
+*"that is not going behind anybody's back"*, twelve lines apart in one section.
+**The glossary tooltip for `tumor board` printed the block's opening sentence
+immediately above the block's opening sentence**, which is a corpus-wide problem
+made unmissable here because this page gives the block a heading of its own.
+And **"there is no screening test for them" was said twice**, three hundred
+lines apart, once as a fact and once as absolution; the second now leans on the
+absolution alone.
+
+`/review` returned three blockers, fifteen should-fixes and a page of guard
+walk-throughs. The harness table stands at **147 breaks on LF and CRLF**.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

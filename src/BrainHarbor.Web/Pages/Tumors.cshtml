@@ -25,6 +25,19 @@
         you ask them better questions.
     </p>
 
+    @* WI-529. The door for the reader this list cannot serve. Someone who has
+       been told there is "something on your scan" has no word to pick, and the
+       page written for them sits at the bottom of this page under a heading
+       that says it is not a tumor type. A list of names is the wrong shape for
+       a person who has not been given one. *@
+    <p>
+        <strong>Not been given a name yet?</strong>
+        If you have been told there is something on your scan and nothing else
+        so far, start with
+        <a href="/tumors/all-brain-tumors">what happens between the scan and the
+        name</a>.
+    </p>
+
     @foreach (var group in Model.Groups)
     {
         <section aria-labelledby="group-@group.Heading.GetHashCode()">
