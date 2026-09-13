@@ -1819,6 +1819,96 @@ on the page before you write the entry.**
 The harness table stands at **98 breaks on LF and CRLF**, and the guard count
 went from 63 that could fail to 98.
 
+**Twelve more from the seventeenth one (WI-528, brain metastases — the hub where
+two of the shared blocks are WRONG rather than merely unnecessary):**
+
+- **A SHARED BLOCK CAN BE FALSE ON A HUB, not just unnecessary, and that is a
+  different problem with a different fix.** `[CAUSES]` opens *"For most brain
+  tumors, nobody knows the cause."* On a metastasis hub the cause is the cancer
+  in the reader's own chart, so the block would hand a frightened reader a lie
+  in a soothing voice. `[CROSSWALK]` fails the same way for a different reason:
+  it explains the 2021 rules for naming tumors that START in the brain, and this
+  reader's report follows their first cancer's rules. **Neither block was
+  edited** — doing that would push this page's answer onto six glioma hubs
+  (§12.10, the WI-514 blast radius) — and the page writes its own section. The
+  test proves the exclusion by asserting the block still says what it says, and
+  by banning the claim SHAPE in the page's own voice, because `/review` wrote
+  *"Nobody can say why the cancer chose your brain"* past a shingle check and a
+  literal-string render check in one line.
+- **Ask what the block was carrying for the reader before you drop it.**
+  `[CAUSES]` also answers *"could I have passed this on?"*, and on this hub that
+  question has a **different and better** answer — a few cancers do run in
+  families, and there is a referral behind it. Excluding a block is a decision
+  about a paragraph; the QUESTIONS it answered still have to go somewhere.
+- **Thirteen through nineteen were missing from every copy of `CountWord` in
+  the corpus.** `one…twelve, twenty, thirty…`. The figure WI-528 exists to
+  refuse is **nineteen** percent, and `/review` published it in one line.
+  `dozen` and `couple` went in at the same time.
+- **`leads` is not `lead`.** The guard banning "your original oncologist still
+  leads" was beaten by *"takes the lead"* — the same claim, one letter shorter —
+  and by *"your CANCER doctor stays the one who decides"*, because the second
+  branch demanded the noun sit next to "your". One missing inflection, one
+  missing word gap, and the refused claim is publishable.
+- **A drug NAME LIST is not a drug ban** (§12.14 again, applied to drugs). The
+  guard held thirteen hard-coded names and `/review` walked "entrectinib"
+  through it. Targeted cancer drugs are named by **suffix convention**, so the
+  shape is bannable: `\w{4,}(?:tinib|ciclib|parib|zomib|nib|mab)`.
+- **An allowance of one is an allowance of one MORE, when the page's own
+  sentence is not in the banned shape.** The uniqueness guard asserted
+  `claims.Count <= 1` — but the sentence the page keeps says what a section
+  *contains*, not that it beats the others, so it matched nothing and the
+  harness spent the free slot twice. Ban the shape at **zero** and pin the
+  legitimate sentence separately.
+- **`CuratedPage.Section` flattens.** Anything that needs to see a PARAGRAPH —
+  counting a section's own claims, for instance — has to cut the markdown
+  itself. And count paragraphs rather than bold runs: `/review` added a fourth
+  caregiver claim with no bold on it and the count stayed at three, which is
+  WI-527's lesson defeated by deleting the markup the count was reading.
+- **`List.IndexOf` returns -1, and `-1 < everything`.** Three section-order
+  assertions were `>`, so deleting a whole section — and with it every route to
+  the seizure pages and the driving authority — left the order test green.
+  **Assert every slot is PRESENT by name first**, then assert the order.
+- **A floor is not a count.** `leads.Count >= 5` let a sixth treatment option in
+  that contradicted the page's own medicine section. And count
+  **paragraph-leading** bold (`(?m)^\*\*`), because emphasis inside a paragraph
+  is not a list item.
+- **A guard scoped to `Body` cannot see the description, and the description is
+  the first paragraph the reader meets.** The British-form scan ran on `Body`,
+  so `description: "...a tumour that has spread..."` was green — on a page whose
+  own `Headline` helper exists because of exactly that (WI-524). Phrase guards
+  run on `Plain`; only directive checks want `Body`.
+- **A dead-domain list cannot express §12.1 when the page must cite the domain.**
+  This page cites `cancer.gov` for its framing sentence, so the banned-domain
+  loop structurally cannot hold "never NCI patient PDQ on a tumor hub".
+  `/review` added the adult-brain PDQ URL and every check passed. The rule needs
+  its own pattern: `cancer\.gov/[^\s"]*(?:/patient/|-pdq\b)`.
+- **The harness cannot see a test that is broken on CRLF.** It asks only whether
+  a mutated page FAILS the named test, and a test whose regex cannot match a
+  CRLF checkout fails for free — so it reports `ok` for every mutation pointed
+  at it. WI-527's meningioma outlook guard shipped that way
+  (`^## heading\s*\n\n:::outlook` cannot match `\r\n\r\n` at all: greedy `\s*`
+  eats both breaks and every shorter split leaves a `\r` where a `\n` is
+  required). **`\r?\n` everywhere, never a bare `\n` and never `\s*` standing in
+  for a blank line** — and the only thing that catches a violation is running the
+  suite on a CRLF working copy.
+
+**The end-to-end read, sixteenth item running,** found five, and two of them
+could not have come from anywhere else. **A glossary tooltip contradicted the
+section it rendered inside**: `neuro-oncologist` said *"They often lead the
+team"*, three lines from the section that refuses to say who leads, and the
+markdown contains neither sentence. **And `whole-brain-radiation` said it is
+used "when there is more than one tumor"** while the page said "too many to aim
+at one at a time" — one claim, two strengths, and the page carrying it was the
+one written for readers with several. Both entries were corrected to be true
+everywhere rather than patched for this hub. Also: *"the next section maps each
+part of the brain"* pointed two sections early, because the map lives inside
+`[MECHANISM]` and a composed block moves the thing it points at.
+
+`/review` returned three blockers, sixteen should-fixes and **eighteen proven
+guard walk-throughs**, every regex executed rather than eyeballed. The harness
+table stands at **123 breaks on LF and CRLF**, and it found four more guards
+that could not fail after all eighteen were answered.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

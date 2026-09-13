@@ -3290,7 +3290,7 @@ Start only after Dan has signed off WI-513's template.
   be stopped on diagnosis; HRT mixed; **standard combined oral contraceptives do
   not increase risk**) — these must not be merged into "hormones cause
   meningioma". Depends on: WI-513.
-- [ ] **WI-528 Brain metastases, deepened** — **this is your cancer in a new
+- [x] **WI-528 Brain metastases, deepened** — **this is your cancer in a new
   place, not a new cancer**, and it is still named for where it started, which
   is the single most confusing thing for these readers and decides the
   treatment; your original oncologist still leads; the one-way traffic and why;
