@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | none. **WI-529 (`all-brain-tumors`) SHIPPED 2026-09-13.** See the log entry below. |
+| **In progress** | none. **WI-529 SHIPPED AND LIVE 2026-09-13** (PR #123 → develop, release PR #124 → main, deploy green). WI-530 scouted only — **no code written**, see the scouting note below. |
 | **Next up** | **WI-530 (T2 CT + T3 Extra scans for planning)** — two pages, one item. CT is deliberately short and mostly retrospective: it explains the ER scan that started everything. The planning page merges fMRI, DTI, MR spectroscopy, perfusion and PET, because patients are never offered "an fMRI" in isolation — they are told "we're adding some sequences". fMRI gets the longest section, as the only one where the patient has a task. Depends on: WI-506. **WI-529 built a door to it**: `/tumors/all-brain-tumors` step 2 is "a better picture", and the CT page is the one that explains the scan at step 1. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -22,6 +22,35 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-530 scouting note (2026-09-13) — read this before planning that item
+
+Both pages are NEW files. Nothing was written; this is only what the dossier
+check turned up, banked so the next session does not repeat it.
+
+- **`tests-library.md` §2 and §3 cite NCI patient PDQ four times** — for what a
+  CT is, for MR spectroscopy, for PET and for SPECT. Every one of those claims is
+  carried by **ACS "Tests for Brain Tumors in Adults"**
+  (`.../detection-diagnosis-staging/how-diagnosed.html`), which was fetched
+  during WI-529 and covers fMRI, DTI, MRS, perfusion, PET and MRA/MRV in one
+  place. That page is already cited by `/tests/mri`, so the planning page can
+  rest on a source the corpus has verified.
+- **Dead or gated in §3, so do not plan around them:** `sciencedirect.com`,
+  `journals.lww.com`, `academic.oup.com`, `ajnr.org` (403 since WI-527),
+  `researchgate.net`. `link.springer.com` and `radiologyinfo.org` both work.
+- **Do not publish the CT radiation dose.** §2.4's ~4 mSv is sourced to WebMD and
+  the dossier's own §12 says the figure varies between sources and should be
+  ranged or omitted. §12.4 R2 says omit.
+- **The fMRI section is the one with a patient job in it** — finger tapping,
+  sentence completion, silent word generation, a possible breath-hold run — and
+  the honest limit is **neurovascular uncoupling**: a working region can fail to
+  light up next to a tumor, so fMRI is a planning map and awake mapping is the
+  reference standard. That pairs with `/treatments/awake-craniotomy` (WI-523).
+- **Scope against the siblings first** (the WI-529 lesson). `/tests/mri` owns the
+  machine, the noise, claustrophobia, gadolinium and the device card;
+  `/tests/follow-up-scans` owns scan-versus-treatment-change, which is where the
+  perfusion and PET "cannot reliably separate progression from pseudoprogression"
+  material probably belongs. Read both before drafting.
 
 ### Open threads (2026-08-13)
 - **Daily pipeline is scheduled** ('BrainHarbor Pipeline', 06:00 daily, published
