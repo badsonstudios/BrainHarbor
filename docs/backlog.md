@@ -3341,13 +3341,41 @@ Start only after Dan has signed off WI-513's template.
   owns every after-treatment use of perfusion and PET**, so this page is scoped
   to before-treatment and routes. Also swept the corpus for `grey`, which no
   previous sweep had asked about.
-- [ ] **WI-531 X6 Proton therapy + X7 Stereotactic radiosurgery** — two pages,
+- [x] **WI-531 X6 Proton therapy + X7 Stereotactic radiosurgery** — two pages,
   one item. Proton splits out because **the reader's real question is access,
   not physics** (~50 US centres, travel, and insurance denial as a routine
   appealable step rather than a verdict). SRS splits out because **the name
   misleads** — people think it is surgery — and the day is entirely different.
   Do not state that frame or frameless is standard; the literature is actively
   arguing it. Depends on: WI-511.
+  **Done 2026-09-13.** `/treatments/proton-therapy` (grade 5.4) and
+  `/treatments/stereotactic-radiosurgery` (grade 5.0), both NEW files.
+  **The item's headline framing held and the DOSSIER's did not.** ACS's own
+  proton page has a *"What are the limitations"* heading whose last line is
+  "more research is needed to know if it's better than traditional radiation
+  therapy", and its brain page says outright that the benefit **is not clear for
+  the tumors that grow into normal brain — astrocytoma and glioblastoma**,
+  which is most of this site's readers. EANO says the same thing at guideline
+  level. The dossier has neither, and that pair became the page's spine.
+  **The centre count is NOT published**: "roughly 45" is a secondary citation in
+  another paper's introduction, the paper was also mislabelled a review, and a
+  first draft rounded a 250-mile comparison threshold into an invented "two
+  hundred miles". ACS's own "a limited number, more being built" is printed
+  instead. The dossier's access sources — a centre's blog, a law firm's blog and
+  a content farm — were replaced by **PMC11905844** and **PMC11699354**, which
+  carry the appeal route at research level: binding, free to the patient, and
+  routinely not used. **`NBK66023` is NCI patient PDQ and §12.1 forbids it for
+  brain-metastasis radiation**, so the whole "which tumors" section rests on
+  ASCO-SNO-ASTRO 2022 (**PMC8917399**) instead. Cleveland Clinic's *"tumor
+  control rate was 95%"* and Froedtert's marketing are cited for the day and
+  never for outcomes.
+  `/review` returned **six blockers, twenty-seven should-fixes and sixty-seven
+  of sixty-nine attack sentences walking through the guards**. The sharpest
+  blocker was a safety one: the page's one invented tier, an infected pin site,
+  shipped with **no timing word at all**, two sections above the block, while
+  `/treatments/craniotomy` files the identical symptoms as same-day.
+  **1859 tests** (1775 before), ContentCheck **259/0**, **125 break-mutations on
+  LF and CRLF**. Fourteen lessons in §12.8.
 - [ ] **WI-532 X9 Targeted and other systemic drugs** — led by "your tumor's test
   result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant
   drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it

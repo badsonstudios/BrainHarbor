@@ -316,7 +316,8 @@ is taken when nobody yet knows where the cancer began.
 
 **Focused radiation.** Aimed at the spots rather than at the whole brain. It is
 the usual choice when there are only a few of them. It can often be given in one
-visit, or in a small number.
+visit, or in a small number. Its full name is stereotactic radiosurgery, and
+[it is not surgery](/treatments/stereotactic-radiosurgery) despite that.
 
 **Whole-brain radiation.** The whole brain is treated, not only the spots,
 usually because there are too many to aim at one at a time. Healthy tissue gets
@@ -408,9 +409,12 @@ goals are often about symptoms rather than about the scan.
 
 ## What is treatment actually like, and what is normal afterwards?
 
-Focused radiation is usually short. Often one visit, sometimes a few, with a
-mask made to hold your head still. Tiredness afterwards is common and it can
-arrive days later rather than on the day.
+Focused radiation is usually short. Often one visit, sometimes a few. Your head
+is held still, either by a mask or by a light frame pinned to your scalp under
+local anesthetic.
+[Stereotactic radiosurgery](/treatments/stereotactic-radiosurgery) goes through
+that day hour by hour. Tiredness afterwards is common and it can arrive days
+later rather than on the day.
 
 Whole-brain radiation runs over more days, and the tiredness builds. Hair loss
 is usual, and it does grow back. The tiredness can go on for weeks

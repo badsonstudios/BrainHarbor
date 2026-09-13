@@ -757,9 +757,16 @@ public sealed class RadiationTherapyPageContentTests
         Assert.Contains("side-effects-radiotherapy-adults", front, StringComparison.Ordinal);
     }
 
+    // WI-531: strip an explicit `{#id}` before comparing. §12.8 (WI-509) says
+    // heading anchors are written explicitly rather than derived, so the id is
+    // metadata on the line and is not part of the heading TEXT these tests are
+    // about. Without the strip, adding an anchor to a heading -- which is what
+    // the standard asks for, and what WI-531 needed in order to link into this
+    // page -- reads as "the section has been renamed" and fails three tests
+    // that are checking something else entirely.
     private static List<string> Headings() =>
         [.. Regex.Matches(Page, @"^## (.+)$", RegexOptions.Multiline)
-            .Select(m => m.Groups[1].Value.Trim())];
+            .Select(m => Regex.Replace(m.Groups[1].Value, @"\s*\{#[\w-]+\}\s*$", "").Trim())];
 
     private static IEnumerable<string> Shingles(string text, int n)
     {

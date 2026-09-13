@@ -383,6 +383,15 @@ What it is not is a gentler route to the same result. It is a different
 operation, for a different set of tumors, and it is not offered everywhere.
 Ask your team whether it applies to you rather than asking for it.
 
+The other name people have often heard is **stereotactic radiosurgery**, sold
+under names like Gamma Knife and CyberKnife. That one is not an operation at
+all. It is radiation aimed at one small target, and nothing is cut. It is not a
+softer version of this either: it suits a small target with an edge that can be
+drawn, and it takes nothing out, so there is no tissue for the laboratory.
+Unlike the paragraph above, this one is worth raising by name if it has not come
+up. [What it is, and what that day is
+like](/treatments/stereotactic-radiosurgery) sets out where it fits.
+
 ## What you need first, and what to bring
 
 Before the day, expect:

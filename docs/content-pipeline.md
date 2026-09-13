@@ -2182,6 +2182,156 @@ there** — the radiation section answers it thirty-nine lines later, and a
 frightened reader does not necessarily get that far. The half that survives is
 the one they can use: no radiation stays in your body afterward.
 
+**Fourteen more from the twentieth one (WI-531, `/treatments/proton-therapy`
+and `/treatments/stereotactic-radiosurgery` — two pages in one item, and the
+item where a preferred source's own LIMITATIONS section was the spine):**
+
+- **THE PREFERRED SOURCE MAY ALREADY CARRY THE ANTI-HYPE, AND THE DOSSIER MAY
+  NOT.** `treatment-library.md` §6 frames proton therapy around pediatric and
+  slow-growing tumors, which is true and is not the thing a reader needs. ACS's
+  brain radiation page says, verbatim, that proton "may be more helpful for
+  brain tumors that have distinct edges, such as chordomas" **and that "it's
+  not clear if it is as useful for tumors that typically grow into or mix with
+  normal brain tissue, such as astrocytomas or glioblastomas"** — which is most
+  of this site's readers. ACS's own proton page has a heading called "What are
+  the limitations of proton therapy?" whose last bullet is *"More research is
+  needed to know if it's better than traditional radiation therapy."* EANO says
+  the guideline version: *"RCTs are required to determine the tolerability,
+  safety and efficacy of these approaches compared with standard
+  radiotherapy."* Two independent preferred sources, and the dossier has
+  neither. **Read the source's own caveats section before you read the
+  dossier's framing.**
+- **A NUMBER IN A PAPER'S INTRODUCTION IS SOMEBODY ELSE'S NUMBER.** "Roughly 45
+  proton centers in the United States" is a sentence in PMC13521102's intro
+  carrying citation 5 — the bundled-claim shape §12.8 (WI-512) records three
+  times, one layer up. A first draft published it, attributed it to "a recent
+  review" (the paper is a single-center retrospective analysis, not a review —
+  §12.8, WI-519), and rounded a 250-mile comparison threshold into "some of
+  them lived more than two hundred miles away", which is in no source at all.
+  **Nothing is published now.** ACS says "a limited number ... but more are
+  being built" in its own voice, the page prints that and routes the reader to
+  ask where their nearest one is, and what the paper's OWN data supports — that
+  the proton group had travelled much farther on average — is what the travel
+  section rests on. A count that goes stale while the page sits there is worse
+  than no count.
+- **THE ACCESS SOURCES FOR A COMMERCIAL TREATMENT ARE MARKETING, AND THERE IS A
+  RESEARCH LITERATURE UNDERNEATH THEM.** The dossier's insurance material rests
+  on a proton center's own blog, a law firm's blog and a content farm. Europe
+  PMC has **PMC11905844** (a multistate analysis of external-review decisions
+  for proton therapy) and **PMC11699354** (a review of prior-authorization
+  burden in radiation oncology) — both open, both peer-reviewed, and between
+  them they carry the whole section: the appeal is a legal right, the outside
+  reviewer's decision is **binding on the plan**, the review **costs the patient
+  nothing**, and what actually wins one is guidelines, published studies, trial
+  eligibility and a personalised letter. Search the literature before accepting
+  a dossier's non-clinical sources.
+- **A SHARE CAN BE PUBLISHED WHEN IT ONLY PUSHES ONE WAY, AND IT GOES IN THE
+  SENTENCE THAT SCOPES IT.** The external-review overturn rate is the single
+  figure on either page. It is written in words, it is a little over four in
+  every ten rather than "close to half" (which rounded 42.1% toward hope), and
+  the study, the three states and the population are in the SAME sentence — not
+  in the two around it, which is what a first draft did while the front matter
+  claimed it was attributed (§12.8, WI-523: the front matter can claim what the
+  page does not do). It is published because a reader who supplies their own
+  number supplies "appeals never work", and because the only action it can
+  produce is *appeal* (§12.8, WI-520: ask which way a number pushes).
+- **A DISPARITY FINDING IS ACTIONABLE, AND IT IS NOT A STATISTIC.** Five studies
+  agree that who receives proton therapy is not decided by the tumor alone, and
+  that Black patients receive it less often than white patients with comparable
+  cancers. On a patient page that is not an epidemiology note: it is the reason
+  the page says **ask directly, do not wait to be offered.** No odds ratio, no
+  percentage, and the action sits in the same paragraph.
+- **THE NAME CAN BE THE DEFECT, AND A PAGE THAT CORRECTS IT MUST NOT SOURCE THE
+  CORRECTION FROM NOWHERE.** "Stereotactic radiosurgery" tells people they have
+  been offered an operation. A first draft explained the name with an invented
+  etymology ("the edge of the treated area is as sharp as a blade's"), which is
+  a worse state than not explaining it (§12.8, WI-510). Cleveland Clinic
+  actually says it: as accurate as a surgical knife, without cutting into your
+  body. **Also invented and cut: "a few usually means somewhere between two and
+  five"**, which no source gives.
+- **A GUARD ABOUT A NAME HAS TO BE ABOUT THE SUBJECT, NOT THE WORD.** The SRS
+  page's central safety property is that it never calls this treatment an
+  operation — and it discusses operations constantly, because an operation is
+  the other treatment. A determiner list of three (`this|the|your`) was beaten
+  by **"Gamma Knife surgery"**, which is the literal TITLE of the source the
+  page cites, and by "their surgery", "a surgery", "on the day of surgery" and
+  "Radiosurgery is an operation done with beams". Widened to every determiner,
+  it then failed three CORRECT sentences on the first build. The working form
+  keeps the determiners that point at the thing in hand and drops the
+  indefinite article.
+- **A SHARED BLOCK CAN BE RIGHT ON A PAGE AND STILL LEAVE A HOLE IN IT.**
+  `[ESCALATION]`'s two fever rules are scoped *"If you are having
+  chemotherapy"* and *"In the weeks after brain surgery"*. An SRS reader is
+  neither, and comes home with pin holes in their scalp — which no other page
+  in the corpus has, so the block cannot cover them. A first draft wrote the
+  rule with **no timing word at all**, two sections above the block, while
+  `/treatments/craniotomy` files a warm wound, a leaking wound and a fever as
+  **same day**. That is a page inventing a tier LOWER than the corpus files the
+  identical symptoms — the under-triage direction (§12.8, WI-511) — and the
+  guard could not see it because a downgrade check has nothing to downgrade
+  when nothing was escalated. **Assert the TIER WORD, put the page's own line
+  beneath the block (§12.10), and say out loud which of the block's lines is
+  not addressed to this reader.**
+- **A POINTER WRITTEN BEFORE A BLOCK POINTS AT THE WRONG PLACE AFTER IT.** The
+  page said the pin-site rule was "below the list at the end of this section" —
+  but `[ESCALATION]` brings its own heading, so the rule lands in a new section.
+  §12.8 (WI-528) records a composed block moving what a pointer points at; this
+  is the same defect in a navigation instruction, and **only the rendered page
+  shows it.**
+- **`the same` IS NOT AN EQUIVALENCE CLAIM, AND `goes? away` IS NOT `go away`.**
+  Two widenings failed correct prose on the first build for the same reason: a
+  token that is also ordinary English. `the same` fired on "you go home,
+  usually the same day", "the same mesh mask", "call your team the same day"
+  and the page's own "stays the same size"; the fix is to require the noun that
+  makes it a comparison. And `goes? away` matches "goes" and "goe" and never
+  "go", so a promise guard could not match its own canary. §12.8 (WI-530)'s
+  rule — re-run the correct page immediately after widening — applied five
+  times on this item, and every time the guard was wrong rather than the page.
+- **AN ESCALATION LIST DOES NOT NEED AN URGENCY WORD TO BE ONE.** `/review`
+  planted three complete tiers on the proton page and all three walked through
+  the shared `AssertNoEscalationList`: *"Ring the number on your appointment
+  letter if any of these happen:"*, *"Get in touch with your radiation team if
+  any of these happen:"*, *"Your team needs to hear about any of these before
+  your next visit:"*. None contains a timing word or an urgency word. The shape
+  is a CONTACT verb plus a conditional hand-off into a list, and it is now a
+  branch of the shared helper with all three as canaries.
+- **A BARE COUNT IS NOT A SHARE, AND AN ATTRIBUTION LOOKS LIKE ONE.** The
+  page-wide quantifier guard ported from WI-524 fired on ASCO's *"one or two of
+  them"* (a count of metastases) and on *"One hospital tells people..."* —
+  which is the attribution form §12.8 (WI-507) **requires**. `CountWord` came
+  out of the share vocabulary, and `of them` with it, because it points at
+  whatever the last noun was rather than at people.
+- **THE BRITISH FAMILY NOBODY HAD SWEPT IS EVERYDAY NOUNS.** `car park`. Every
+  previous sweep looked at spellings (`-ise`, `-our`, doubled consonants,
+  `grey`) and at idiom (`a lift`, `a drip`). A US reader parks in a parking lot,
+  buys gas, and drives on a highway; `car park`, `petrol`, `motorway` and `dual
+  carriageway` are corpus-clean and none is a substring of a US word. **Two
+  candidates were run and REJECTED with the reason recorded:** `straight away`,
+  which `/review` proposed and which is LIVE on `/treatments/chemotherapy` in
+  four places including the fever rule, and `chemist`, which is a substring of
+  `chemistry` and `immunohistochemistry` — WI-511's stemming defect exactly.
+- **THE SLOT ORDER TEST CAN ASSERT THE PAGE AGAINST ITSELF.** The SRS page ran
+  slot 8, slot 9, slot 7, caregiver — so the reader who needed to know what to
+  bring met it after the section about being treated a second time — and its
+  own order test listed the slots in the PAGE's order, which made the "order is
+  fixed" assertion vacuous. All three sibling treatment pages run **7 →
+  caregiver → 8 → 9**. §12.8 (WI-510)'s own lesson, committed inside the test
+  written to enforce it: **build the required list from the standard, then read
+  it against the page.**
+
+**And the end-to-end read of the RENDERED pages, twentieth item running,** found
+six things no gate could: the pointer above; the same claim in two consecutive
+paragraphs, created by the `/review` fix that added it (*"proton plans are among
+the most likely to be flagged"*, twice in four lines); "Where to go next"
+re-committing the contradiction the body had just been corrected for (*"All of
+it applies to proton therapy"*, four screens under *"The first difference is the
+room"*); *"often ... often"* inside one sentence in the section that reframes
+what success looks like; a pronoun with no antecedent (*"arrange a driver
+whichever they had"*); and **two pieces of site-voice meta** — *"because no
+source gives a set answer"* and *"so the site says one thing about it"* — which
+are §12.8 (WI-510)'s "we do not publish numbers" in a new coat. A reader has no
+use for what our sources do or do not give.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

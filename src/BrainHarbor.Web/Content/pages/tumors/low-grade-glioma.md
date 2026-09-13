@@ -232,6 +232,9 @@ results, where the tumor sits, how much of it came out, and what you want.
 - **Radiation**, usually after surgery, for people whose situation suggests
   treating now rather than waiting. [Radiation therapy: the mask, the daily
   visits, and what comes after](/treatments/radiation-therapy) goes through it.
+  If somebody has raised [proton therapy](/treatments/proton-therapy) with you,
+  that page explains what is different about it, and why it is a fair question
+  here even though the trials that would settle it have not been done.
 - **Chemotherapy**, usually PCV after radiation in this setting.
   [Chemotherapy: the drugs, your blood counts, and the fever
   rule](/treatments/chemotherapy) takes the drugs one at a time.
