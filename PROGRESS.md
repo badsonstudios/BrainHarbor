@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-531 CODE-COMPLETE 2026-09-13**, awaiting PR. `/treatments/proton-therapy` (grade 5.4) and `/treatments/stereotactic-radiosurgery` (grade 5.0), two NEW pages in one item. **1860 tests**, ContentCheck **259/0**, **125 break-mutations green on LF and CRLF**. WI-530 shipped and live earlier the same day (PR #125 → develop, #126 → main, deploy green). |
+| **In progress** | none. **WI-531 SHIPPED AND LIVE 2026-09-13** (PR #127 -> develop, release PR #128 -> main, deploy green). `/treatments/proton-therapy` and `/treatments/stereotactic-radiosurgery` both return 200 on brainharbor.org with no leaked markers or directives; ten neighbours smoke-checked at 200. |
 | **Next up** | **WI-532 (X9 Targeted and other systemic drugs)** — led by "your tumor's test result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it improved progression-free survival but not overall survival in newly diagnosed glioblastoma — it helps the scan, not the outcome. Depends on: WI-512. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -88,6 +88,14 @@ introduction and is not published at all. See the 2026-09-13 log entry.
   "Brain Harbor", the title/og:site_name/RSS/domain say "BrainHarbor". Dan's
   call 2026-08-14 — leave it; not a soft-launch blocker. Don't "fix" it in
   passing.
+- **For `/pm`, raised by WI-531, not blocking.** The `A11ySmokeTests` Kestrel
+  flake (WI-403) now has a named trigger: two CI runs firing on the SAME SHA, a
+  `push` to develop and the `pull_request` for the release, racing each other.
+  The push run failed and the PR run passed on identical code, and a re-run of
+  the failed job passed with nothing changed. `TestCollectionHygieneTests` stops
+  two test CLASSES contending; nothing stops two whole RUNS. Worth either
+  concurrency-grouping the workflow or giving the Kestrel host a retry.
+
 - **For `/pm`, raised by WI-529, not blocking.** (1) The `tumor board` glossary
   tooltip prints `blocks/tumor-board.md`'s own opening sentence, so every page
   including the block shows the sentence twice; WI-529 suppresses it page-locally
@@ -151,6 +159,26 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-13** — **WI-531 is live.** PR #127 into `develop`, release PR #128 into `main`,
+  deploy succeeded. `/treatments/proton-therapy` and `/treatments/stereotactic-radiosurgery`
+  return 200 on brainharbor.org with no authoring marker and no unresolved block directive;
+  the `stereotactic radiosurgery` tooltip is correctly suppressed on its own page while
+  `radiation necrosis` fires in the section that routes it. Ten other pages smoke-checked at
+  200.
+  **CI WAS NOT GREEN FIRST TIME, AND THE FAILURE WAS REAL.** The first `build-test` failed on
+  eight render tests with *"Connection string 'BrainHarbor' not found"* — both new render
+  classes took a raw `WebApplicationFactory<Program>` and never pushed the test connection
+  string in. **That passes on any machine with `dotnet user-secrets` set and fails only on a
+  runner that has none**, so the full suite, ContentCheck and a 125-mutation break harness all
+  called the item finished. Fixed in both, and guarded corpus-wide by a SOURCE scan (the
+  wrapping lives in a constructor body, which reflection cannot see). §12.8 has it as a new
+  class.
+  **The release run then hit the `A11ySmokeTests` Kestrel flake** (WI-403, "not proven fixed").
+  Two CI runs fired on the identical SHA — a `push` to develop and the `pull_request` — and the
+  push one failed while the PR one passed. A re-run of the failed job passed with nothing
+  changed. **This is the first evidence naming the trigger: two whole CI RUNS racing, which is
+  `TestCollectionHygieneTests`' contention story one level up.** Logged for `/pm`.
 
 - **2026-09-13** — **WI-531 code-complete — `/treatments/proton-therapy` and
   `/treatments/stereotactic-radiosurgery`, two NEW pages in one item, and the item where a
