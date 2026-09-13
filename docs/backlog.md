@@ -3375,7 +3375,9 @@ Start only after Dan has signed off WI-513's template.
   shipped with **no timing word at all**, two sections above the block, while
   `/treatments/craniotomy` files the identical symptoms as same-day.
   **1859 tests** (1775 before), ContentCheck **259/0**, **125 break-mutations on
-  LF and CRLF**. Fourteen lessons in §12.8.
+  LF and CRLF**. Fifteen lessons in §12.8, including a new class of defect:
+  both render classes booted the app with no connection string, which passes on
+  a machine with user-secrets set and fails only in CI.
 - [ ] **WI-532 X9 Targeted and other systemic drugs** — led by "your tumor's test
   result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant
   drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it

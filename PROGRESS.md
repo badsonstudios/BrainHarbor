@@ -214,7 +214,7 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
   looked at spellings and idiom. `petrol`, `motorway` and `dual carriageway` added with it —
   and **`straight away` was proposed by `/review` and REJECTED**, because it is live on
   `/treatments/chemotherapy` in four places including the fever rule, as was `chemist`, which
-  is a substring of `chemistry`. Fourteen lessons in **§12.8**.
+  is a substring of `chemistry`. Fifteen lessons in **§12.8**, one of which is a new class: a test that passes on every developer machine BECAUSE the machine is configured. Both render classes booted the app with no connection string -- green here, red on the CI runner, and invisible to the suite, ContentCheck and the harness alike. There is a corpus guard now, and it is a SOURCE scan because the wrapping lives in a constructor body that reflection cannot see.
 
 - **2026-09-13** — **WI-530 is live.** PR #125 into `develop`, release PR #126 into `main`,
   build-test green first time on both, deploy succeeded. `/tests/ct-scan` and

@@ -2182,7 +2182,7 @@ there** — the radiation section answers it thirty-nine lines later, and a
 frightened reader does not necessarily get that far. The half that survives is
 the one they can use: no radiation stays in your body afterward.
 
-**Fourteen more from the twentieth one (WI-531, `/treatments/proton-therapy`
+**Fifteen more from the twentieth one (WI-531, `/treatments/proton-therapy`
 and `/treatments/stereotactic-radiosurgery` — two pages in one item, and the
 item where a preferred source's own LIMITATIONS section was the spine):**
 
@@ -2318,6 +2318,26 @@ item where a preferred source's own LIMITATIONS section was the spine):**
   caregiver → 8 → 9**. §12.8 (WI-510)'s own lesson, committed inside the test
   written to enforce it: **build the required list from the standard, then read
   it against the page.**
+
+- **A TEST CAN PASS ON EVERY DEVELOPER MACHINE *BECAUSE* THE MACHINE IS
+  CONFIGURED, AND FAIL ONLY WHERE IT IS NOT.** This is a new class of defect for
+  the project and it is the only one here that no local check of any kind could
+  reach. Both of this item's render classes took a raw
+  `WebApplicationFactory<Program>` through a primary constructor and never
+  pushed the test connection string into it. A developer machine has that
+  string in `dotnet user-secrets`, so the host boots and all eight tests pass;
+  the CI runner has none, so `Program.Main` throws *"Connection string
+  'BrainHarbor' not found"* before a page is served. The full suite,
+  ContentCheck **and a 125-mutation break harness** all reported the item
+  finished. Every other render class in the corpus already wraps the factory —
+  the primary constructor is what dropped it, so both are explicit constructors
+  now with the reason written at the point somebody would delete it. There is a
+  corpus guard now (`EveryClassTakingARawFactoryPushesTheTestConnectionString
+  IntoIt`), and it is a **source scan rather than reflection**, which is the
+  opposite choice from the collection-hygiene test beside it: the wrapping
+  happens inside a constructor BODY, and reflection cannot see one. **The
+  general rule: when a test depends on ambient machine configuration, the thing
+  to assert is that the test supplies its own.**
 
 **And the end-to-end read of the RENDERED pages, twentieth item running,** found
 six things no gate could: the pointer above; the same claim in two consecutive
