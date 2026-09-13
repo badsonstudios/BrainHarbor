@@ -274,7 +274,8 @@ job you would notice losing. Surgery in or beside one of them carries the risk
 of affecting that job. Surgeons call a part of the brain like that an eloquent
 area, and you may hear the word or see it in your notes. That is why so much of
 the planning is about location, and why brain mapping and monitoring are used
-at all.
+at all. [The extra scans before treatment](/tests/planning-scans) covers the
+scans your team may add to suggest where those parts sit.
 
 Problems do not all show up at once. Something can appear right after surgery,
 or days or even weeks later. That is why you are watched closely at first and

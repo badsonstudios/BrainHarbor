@@ -234,7 +234,9 @@ Here is the path most people take. Not everyone goes down all of it, and some
 of it overlaps, but this is the shape.
 
 1. **A scan finds something.** Often a scan done for a symptom, and sometimes a
-   scan done for something else entirely.
+   scan done for something else entirely. If yours was the fast scan in an
+   emergency room, [your CT scan](/tests/ct-scan) explains what that one can and
+   cannot say.
 2. **A better picture.** Usually an MRI with contrast dye, if you have not had
    one yet. This is the step that narrows the list.
 3. **A referral to a specialist team.** Your images and your notes go to people
@@ -591,6 +593,7 @@ saw and what time it was, and use the number that day.
   sent.
 - [Having a biopsy](/tests/biopsy) if step 4 is where you are.
 - [MRI scans](/tests/mri) if the next thing is another scan.
+- [Your CT scan](/tests/ct-scan) if step 1 was a scan in an emergency room.
 - [What to do during a seizure](/seizures/what-to-do) if that is what started
   all this.
 - [The tumor pages](/tumors) for when you do have a name.

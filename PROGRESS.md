@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | none. **WI-529 (`all-brain-tumors`) SHIPPED 2026-09-13.** See the log entry below. |
-| **Next up** | **WI-530 (T2 CT + T3 Extra scans for planning)** — two pages, one item. CT is deliberately short and mostly retrospective: it explains the ER scan that started everything. The planning page merges fMRI, DTI, MR spectroscopy, perfusion and PET, because patients are never offered "an fMRI" in isolation — they are told "we're adding some sequences". fMRI gets the longest section, as the only one where the patient has a task. Depends on: WI-506. **WI-529 built a door to it**: `/tumors/all-brain-tumors` step 2 is "a better picture", and the CT page is the one that explains the scan at step 1. |
+| **In progress** | **WI-530 — code-complete 2026-09-13**, pending commit/PR. Two NEW pages: `/tests/ct-scan` (grade 4.5) and `/tests/planning-scans` (grade 4.7). |
+| **Next up** | **WI-531 (X6 Proton therapy + X7 Stereotactic radiosurgery)** — two pages, one item. Proton splits out because **the reader's real question is access, not physics** (~50 US centres, travel, and insurance denial as a routine appealable step rather than a verdict). SRS splits out because **the name misleads** — people think it is surgery — and the day is entirely different. Do not state that frame or frameless is standard; the literature is actively arguing it. Depends on: WI-511. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -22,6 +22,37 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-530 scouting note (2026-09-13) — SPENT, kept for the record
+
+The item is done. Everything below was the input and all of it held except the
+NCI-PDQ point, which turned out to be smaller than the real §2 problem: the
+RadiologyInfo head CT page no longer contains the eight claims the dossier cites
+to it. See the 2026-09-13 log entry.
+
+- **`tests-library.md` §2 and §3 cite NCI patient PDQ four times** — for what a
+  CT is, for MR spectroscopy, for PET and for SPECT. Every one of those claims is
+  carried by **ACS "Tests for Brain Tumors in Adults"**
+  (`.../detection-diagnosis-staging/how-diagnosed.html`), which was fetched
+  during WI-529 and covers fMRI, DTI, MRS, perfusion, PET and MRA/MRV in one
+  place. That page is already cited by `/tests/mri`, so the planning page can
+  rest on a source the corpus has verified.
+- **Dead or gated in §3, so do not plan around them:** `sciencedirect.com`,
+  `journals.lww.com`, `academic.oup.com`, `ajnr.org` (403 since WI-527),
+  `researchgate.net`. `link.springer.com` and `radiologyinfo.org` both work.
+- **Do not publish the CT radiation dose.** §2.4's ~4 mSv is sourced to WebMD and
+  the dossier's own §12 says the figure varies between sources and should be
+  ranged or omitted. §12.4 R2 says omit.
+- **The fMRI section is the one with a patient job in it** — finger tapping,
+  sentence completion, silent word generation, a possible breath-hold run — and
+  the honest limit is **neurovascular uncoupling**: a working region can fail to
+  light up next to a tumor, so fMRI is a planning map and awake mapping is the
+  reference standard. That pairs with `/treatments/awake-craniotomy` (WI-523).
+- **Scope against the siblings first** (the WI-529 lesson). `/tests/mri` owns the
+  machine, the noise, claustrophobia, gadolinium and the device card;
+  `/tests/follow-up-scans` owns scan-versus-treatment-change, which is where the
+  perfusion and PET "cannot reliably separate progression from pseudoprogression"
+  material probably belongs. Read both before drafting.
 
 ### Open threads (2026-08-13)
 - **Daily pipeline is scheduled** ('BrainHarbor Pipeline', 06:00 daily, published
@@ -101,6 +132,59 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-13** — **WI-530 done — `/tests/ct-scan` and `/tests/planning-scans`, two NEW pages in
+  one item, and the item where a cited page had been rewritten out from under its citations.**
+  Grades **4.5** and **4.7**, **1775 tests** (1724 before), ContentCheck **257/0**,
+  **154 break-mutations green on LF and CRLF**. One new glossary entry (`functional MRI`),
+  doors on six sibling pages.
+  **THE HEADLINE FINDING IS A NEW CLASS OF CITATION DEFECT.** The dossier's §2.2, §2.3 and §2.4
+  attribute **eight** claims to `radiologyinfo.org/en/info/headct` — the warmth and flushing, the
+  metallic taste, the urge to urinate, "within 30 minutes", the kidney screening. Fetched in full
+  with a browser user agent (51,913 bytes, "Last reviewed on June 15, 2026"), **that page has no
+  "What will I experience" section at all.** Not gated, not 403, not a JavaScript shell: a live
+  page restructured since the research was gathered. Every one of the eight is carried verbatim by
+  ACS's own CT page and was moved there. Two other §2 defects: the ABTA quotation is not on the
+  ABTA page (ABTA dropped entirely; ACS carries the comparison), and the ~4 mSv dose is omitted
+  per §12.4 R2 with the DIRECTION published instead.
+  **On the planning page, §3.1's "direct cortical stimulation remains the reference standard" is
+  not in the paper it is cited to** — PMC4757221 says close to the opposite about fMRI's standing —
+  so it is banned as a CLAIM, not only as a citation. `researchgate.net` and `journals.lww.com`
+  were both recovered open (PMC5669348 for neurovascular uncoupling, PMC8050646 for the DTI tract
+  patterns). 2-HG, SPECT and DOTATATE dropped: no reachable patient-level source.
+  **THE SCOPE LINE IS A TIME, NOT A TOPIC.** All five planning scans have an after-treatment use,
+  and `/tests/follow-up-scans` (WI-521) already ships that half from two sources that disagree. So
+  the page is scoped to before-treatment and routes — seven banned branches, each with its own
+  canary.
+  `/review`: **three blockers, twenty-six should-fixes, and twenty-two executed guard
+  walk-throughs of which TWELVE were beaten.** The worst blocker is a new shape:
+  **ACS says, verbatim, "Tumor usually shows up on a PET scan, while scar tissue does not" — and
+  printing it was the defect**, because the sibling that owns the question refuses the binary.
+  §12.10 is about strengths, not sourcing, and this is the first time the stronger version was the
+  one with the citation. The second: **a door appended to `/treatments/craniotomy` restated a claim
+  one notch stronger than the same page states it 115 lines later**, undoing a fix WI-523 recorded.
+  The third: the guard written to keep the after-treatment material off the page **matched nothing**,
+  so its redaction list was dead code documenting a decision it had never made.
+  **The end-to-end read (eighteenth item running) found twenty**, including an unsourced
+  causation absolution in a kind voice (*"Whatever you are carrying today, it is not that"*), one
+  claim said twice fifteen lines apart, and **`grey` — a whole colour family no previous corpus
+  sweep had asked about**, now on the shared British-forms list. **The one nothing else could
+  see is about WHERE A TOOLTIP LANDS:** a glossary term fires on its FIRST occurrence, and a draft
+  introduced `radiologist` inside the PET section's breastfeeding advice — so the rendered page
+  defined a radiologist in the middle of instructions about pumping milk, and slot 9, the section
+  that exists to say who reads your scan, rendered with no tooltip at all. The markdown contains
+  neither the tooltip nor its position. There is a test now, and its first version failed a
+  correct page because it used a bare `IndexOf` while `GlossaryMarker` matches whole words.
+  **The harness then caught a stale test name in its own mutation table** — which is exactly why
+  it treats "filter matched NO test" as a failure rather than a pass.
+  Two helpers promoted to `CuratedPage` the day they were written, because the item's second page
+  needed them: the corpus-wide restatement check and the escalation-shape check. Seventeen lessons
+  in **§12.8**.
+
+- **2026-09-13** — **WI-529 is live.** PR #123 into `develop`, release PR #124 into `main`,
+  both CI jobs green first time, deploy succeeded. `/tumors/all-brain-tumors` returns 200 on
+  brainharbor.org with no directive or authoring marker leaked and the outlook gate closed;
+  nine other pages smoke-checked at 200.
 
 - **2026-09-13** — **WI-529 done — `/tumors/all-brain-tumors`, a NEW page rather than a
   deepening, and the only page in the corpus written for a reader with no diagnosis at all.**

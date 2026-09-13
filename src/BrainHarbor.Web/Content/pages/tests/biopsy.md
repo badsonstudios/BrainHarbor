@@ -121,7 +121,8 @@ recovery are all different.
    Small markers may be stuck on your scalp for it. A computer turns the pictures
    into a map of the inside of your head, and that map is called neuronavigation.
    [The scan just before surgery](/tests/mri#navigation-scan) goes through that
-   appointment.
+   appointment, and [your CT scan](/tests/ct-scan) covers it when the map is
+   made from a CT instead.
 2. **Asleep, or awake.** A needle biopsy can be done under general anesthesia,
    so you are asleep. It can also be done with you awake, with the skin numbed
    where the cut goes. Ask which yours will be.

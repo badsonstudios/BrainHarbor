@@ -208,6 +208,8 @@ why your team asks so many questions about you first.
 3. **Maybe a special scan.** Some hospitals do a functional MRI. You do simple
    tasks inside the scanner while it watches which parts of your brain get
    busy. It helps plan the operation. It does not replace the test in the room.
+   [The extra scans before treatment](/tests/planning-scans#fmri) goes through
+   that appointment, including what happens if a task is too hard.
 
 ### On the day
 

@@ -481,6 +481,8 @@ Before treatment starts, expect:
   [What an MRI is like, and what to ask](/tests/mri) goes through that
   appointment.
 - The planning CT scan, in your mask, at the visit described above.
+  [Your CT scan](/tests/ct-scan) covers what a CT is, if this is the first one
+  you have thought about.
 - Your pathology and gene results, because they affect whether radiation is
   given and when. [The words on your gene
   results](/tests/molecular-markers) takes them one at a time.

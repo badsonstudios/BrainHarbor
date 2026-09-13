@@ -432,6 +432,8 @@ thing to ask for, and asking does not use anything up.
 ## Where to go next {#where-to-go-next}
 
 - [Your MRI scan](/tests/mri) for the scan itself, the dye, and the machine.
+- [The extra scans before treatment](/tests/planning-scans) for what those same
+  extra scans are used for before an operation or radiation.
 - [Waiting for your results](/tests/waiting-for-results) for the longer wait
   after tissue has been taken, and for the choice about reading a report on
   your own.
