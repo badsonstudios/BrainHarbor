@@ -77,6 +77,17 @@ public sealed class WatchAndWaitPageContentTests
         // library page so a reader moving between them recognises it.
         "Get help now if you need to talk to a person today.",
 
+        // WI-527. This page's two sentences that /tumors/meningioma now quotes
+        // deliberately, and the allowlist is on both sides. That item's review
+        // found the meningioma hub stating the watch-and-wait trigger at a
+        // DIFFERENT strength from this page ("if it grows", where the sources
+        // and this page say growth that keeps going) and dropping the
+        // counterweight this page carries. Fixing both means the hub says what
+        // this page says, because the alternative is two pages nearly-agreeing
+        // about when a plan changes (§12.10).
+        "ask your team how much change would make them act",
+        "more people ended up having treatment than not",
+
         // EORTC 22845's survival half, in the words /tumors/oligodendroglioma
         // printed first and /tumors/low-grade-glioma now prints too. /review
         // found the three pages stating it three ways ("lived about as long",

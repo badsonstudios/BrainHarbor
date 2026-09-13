@@ -32,8 +32,10 @@ numbness or tingling, or changes in the bladder and bowel.
 Where along the spine the tumor sits decides which parts of the body are
 affected, because each level of the cord serves different areas.
 
-New weakness or new bladder trouble is a reason to be seen quickly, not to wait
-for the next appointment.
+**New weakness or new bladder trouble is a reason to be seen quickly, not to
+wait for the next appointment.** Do not wait for it to get bad first, because
+the early signs are often vague ones. The others worth knowing are a change in
+how you walk and numbness around the saddle area.
 
 ## For the person caring for someone with this
 
