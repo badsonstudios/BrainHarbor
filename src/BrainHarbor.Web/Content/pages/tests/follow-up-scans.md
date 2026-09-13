@@ -346,7 +346,10 @@ months afterward on average, with a spread running from one month to well over
 three years. How likely it is varied a lot even inside that group, depending on
 what was treated and how strong the dose was, and it is not the same picture as
 the weeks of daily treatment most people with a glioma have. Ask your own
-radiation team what it means for the treatment you had.
+radiation team what it means for the treatment you had. If that focused
+treatment is the one you had,
+[what it is and what the day is like](/treatments/stereotactic-radiosurgery)
+covers the rest of it.
 
 The useful part is the same as the section above. **A changed scan does not
 automatically mean one thing**, and your team will usually want another look

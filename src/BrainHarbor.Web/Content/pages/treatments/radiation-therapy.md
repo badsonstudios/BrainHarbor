@@ -82,9 +82,11 @@ shaped, not a different treatment.**
   can shorten each session.
 - **Stereotactic radiosurgery.** For a small, well-defined target. It can be
   done in one visit or a few, instead of a course lasting weeks. Nothing is
-  cut, in spite of the name.
+  cut, in spite of the name. [What that day is
+  like](/treatments/stereotactic-radiosurgery) goes through it hour by hour.
 - **Proton therapy.** A different kind of particle, given at a small number of
-  centers.
+  centers. [What is different about it, and how people get to
+  one](/treatments/proton-therapy) covers the travel and the insurance side.
 - **Whole-brain radiation.** The whole brain rather than one spot. It has its
   own section further down.
 - **Radiation to the brain and spinal cord together.** Used when a tumor has
@@ -280,7 +282,7 @@ asking. Tell the therapist how it is going, every day if you need to. They are
 in the room with you more than anyone else on your team, and they are the ones
 who can change how this goes for you.
 
-## Side effects during treatment, and in the weeks after
+## Side effects during treatment, and in the weeks after {#side-effects}
 
 Most of what turns up during radiation eases off in the weeks after it
 finishes, often over about six to twelve weeks. One thing on this list works
@@ -473,7 +475,7 @@ whole-brain radiation is being talked about, ask this: **"Can my radiation be
 planned to avoid the memory part of my brain, and should I be on memantine?"**
 Your radiation oncologist will know the question at once.
 
-## What you need first, and what to bring
+## What you need first, and what to bring {#what-you-need-first}
 
 Before treatment starts, expect:
 
@@ -508,7 +510,7 @@ On the day, bring or wear:
 - Your questions, written down.
 - Something to pass the time in the waiting room. You will be doing this a lot.
 
-## For the person caring for someone through radiation
+## For the person caring for someone through radiation {#caregiver}
 
 [CAREGIVER]
 
