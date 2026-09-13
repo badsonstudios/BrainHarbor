@@ -41,7 +41,7 @@ sources:
   # risk" and is mixed, and CUH's own trade-off clause is on the page
   # ("menopausal symptoms may be more troubling than your meningioma");
   # other oral contraceptives show no apparent increase. CPA is named as
-  # gender-affirming hormone therapy, non-judgementally, because a trans woman
+  # gender-affirming hormone therapy, non-judgmentally, because a trans woman
   # taking it will not learn this anywhere else. NO DOSE IS PRINTED: the MHRA
   # threshold is a figure in milligrams (§12.4 R1), and naming the drugs is
   # not naming a dose.
@@ -471,7 +471,7 @@ conversation about alternatives, and there are alternatives.
 the menopause **seems to** raise the risk, and the evidence is less settled
 than for the medicines above. The advice is to avoid it where you can if you
 have a meningioma or have had one removed. **But menopausal symptoms can be
-worse to live with than the meningioma**, and that is a judgement to make with
+worse to live with than the meningioma**, and that is a judgment to make with
 a doctor rather than alone. Do not stop HRT on your own on the strength of a
 web page.
 

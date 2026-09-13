@@ -3300,7 +3300,7 @@ Start only after Dan has signed off WI-513's template.
   leptomeningeal disease as its own signposted section, including that a
   negative spinal tap does not rule it out. 33–66% of brain metastases are the
   first sign of cancer, which bridges to WI-529. Depends on: WI-513.
-- [ ] **WI-529 `all-brain-tumors` — "we don't have a name for it yet"** — the
+- [x] **WI-529 `all-brain-tumors` — "we don't have a name for it yet"** — the
   page for someone told there is something on their scan. The 7-step pathway,
   which converts silence into "step 3 of 7"; why imaging alone often cannot say
   (the ring-enhancing differential includes an abscess, demyelination and an
@@ -3308,6 +3308,17 @@ Start only after Dan has signed off WI-513's template.
   comfort word in the brain** and why registries say *non-malignant* instead;
   there is no stage; primary vs secondary; the tumor board the patient does not
   attend; second opinions including on the tissue itself. Depends on: WI-507.
+  **A NEW page rather than a deepening, and the only one in the corpus whose
+  reader has no diagnosis** — so the page may never say what the thing is, in
+  its own voice, anywhere. Grade **5.1**, **1724 tests**, ContentCheck **253/0**,
+  **147 break-mutations on LF and CRLF**. The biggest call was a scope one:
+  `/tests/waiting-for-results` (WI-507) already owns the lab queue the research
+  pack calls "the most valuable section in the whole brief", so **this page owns
+  steps 1 to 4 and routes 5 to 7**. `[CROSSWALK]` excluded — not false here,
+  *addressed to somebody else* — while `[CAUSES]` is included, the opposite call
+  from WI-528 one item earlier. Also swept the corpus for doubled-consonant
+  British forms and found **three live spellings on four shipped files**. Thirteen
+  lessons in §12.8.
 - [ ] **WI-530 T2 CT + T3 Extra scans for planning** — two pages, one item. CT
   is deliberately short and mostly retrospective: it explains the ER scan that
   started everything. The planning page merges fMRI, DTI, MR spectroscopy,

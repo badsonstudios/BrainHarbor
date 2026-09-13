@@ -136,7 +136,7 @@ at all. That last one is a question worth asking out loud.
 
 ## What is a brain metastasis?
 
-It is cancer that started somewhere else and travelled.
+It is cancer that started somewhere else and traveled.
 
 Cells break away from the first cancer, move through the blood, and settle in
 the brain. They keep behaving like the cancer they came from. So what grows in
@@ -180,7 +180,7 @@ or where it will happen again, which is why new symptoms get looked at rather
 than waited out. That is a hard sentence and it is the true one.
 
 Your report may say **stage 4**, or **advanced**, or **metastatic**. All three
-are about the first cancer having travelled. They are not a countdown, and they
+are about the first cancer having traveled. They are not a countdown, and they
 are not a grade.
 
 ## Where does it grow, and why does it cause these symptoms?
@@ -274,7 +274,7 @@ brain rather than in lumps. That is a different situation and it has its own
 section below.
 
 **Stage 4, advanced, metastatic.** All three mean the first cancer has
-travelled. They say nothing about how fast anything is growing.
+traveled. They say nothing about how fast anything is growing.
 
 ## Who is looking after me now?
 

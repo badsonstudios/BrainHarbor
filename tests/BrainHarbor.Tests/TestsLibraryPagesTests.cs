@@ -330,6 +330,19 @@ internal static class CuratedPage
         // the next one is to keep reading.
         "standardis", "normalis", "prioritis", "utilis", "emphasise",
 
+        // WI-529 ran the whole corpus for doubled-consonant and -ement forms,
+        // which no previous sweep had looked at, and found THREE live British
+        // spellings on FOUR shipped files: `travelled` three times on
+        // /tumors/brain-metastases, `judgement` on
+        // /treatments/anti-seizure-medicines and /tumors/meningioma, and
+        // `labelled` on /tests/waiting-for-results and in
+        // glossary/amended-report.md, which is a tooltip that fires site-wide.
+        // All fixed at source. None is a substring of a correct US word:
+        // "judgment", "labeled" and "traveled" all lose a letter rather than
+        // gaining one, so the British form cannot hide inside the US one.
+        "travelled", "travelling", "traveller",
+        "judgement", "labelled", "labelling",
+
         // Idioms. The half WI-510's draft actually got wrong ("you will be got
         // up", "tablets") was never about spelling, and a reader in Ohio is
         // offered "a lift" or given fluids "through a drip" by a page that

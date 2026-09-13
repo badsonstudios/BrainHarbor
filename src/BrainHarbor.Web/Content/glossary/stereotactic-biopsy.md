@@ -8,4 +8,5 @@ sources:
 ---
 
 Taking a small sample through a narrow opening in the skull, guided by a scan,
-instead of a full opening. It is used when a tumor is hard or risky to reach.
+instead of a full opening. It is used when the area to be sampled is hard or
+risky to reach.

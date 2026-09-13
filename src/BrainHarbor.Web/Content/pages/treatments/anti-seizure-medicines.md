@@ -294,7 +294,7 @@ happened at home last Tuesday.
 
 If a seizure is why you were started on it, expect this to be measured in years
 rather than weeks. Coming off is a conversation people do have, usually after a
-long stretch with no seizures, and it is your team's judgement and not a fixed
+long stretch with no seizures, and it is your team's judgment and not a fixed
 rule.
 
 **The short course is the other story.** Some people have never had a seizure

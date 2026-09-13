@@ -8,5 +8,5 @@ sources:
 ---
 
 A report in which something already written has been changed, not added to. It
-is labelled as amended. It normally says what changed and why. Most changes are
+is labeled as amended. It normally says what changed and why. Most changes are
 small ones, like a typing mistake.
