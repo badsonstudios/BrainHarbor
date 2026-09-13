@@ -343,6 +343,16 @@ internal static class CuratedPage
         "travelled", "travelling", "traveller",
         "judgement", "labelled", "labelling",
 
+        // WI-530. "grey" reached a draft of /tests/planning-scans ("your brain's
+        // grey parts") and no sweep had ever asked about the colour family —
+        // WI-529 swept doubled consonants and -ement, and every sweep before it
+        // looked at -ise, -our and idiom. Corpus-clean at the time of adding
+        // (the only other occurrence is a VERBATIM SOURCE QUOTE inside that
+        // page's front matter, which this gate does not read: it is body text
+        // only, for the reason the class comment gives). "grey" is not a
+        // substring of "gray", so the US form cannot hide the British one.
+        "grey",
+
         // Idioms. The half WI-510's draft actually got wrong ("you will be got
         // up", "tablets") was never about spelling, and a reader in Ohio is
         // offered "a lift" or given fluids "through a drip" by a page that
@@ -773,6 +783,218 @@ internal static class CuratedPage
         // triage by phone.
         Assert.DoesNotMatch(new Regex(@"fever", RegexOptions.IgnoreCase), later);
         Assert.DoesNotMatch(new Regex(@"fever", RegexOptions.IgnoreCase), here);
+    }
+
+    /// <summary>
+    /// This page has NOT grown an escalation list.
+    ///
+    /// For the pages whose reader has nothing to escalate — a plain head CT, an
+    /// extra MRI sequence — the absence is the right answer, and it needs a
+    /// SHAPE check rather than a phrase check (§12.8, WI-520): /review beat a
+    /// four-heading ban by writing a fifth, and beat a bold-lead-in regex three
+    /// ways. Inverted, it cannot be walked around, because the bullets are what
+    /// make it a list (§12.8, WI-521 and WI-526).
+    ///
+    /// Two things this got wrong on its first outing, both found by review:
+    ///
+    ///   * <c>same day|today|tonight</c> were gated behind <c>call|ring|phone|
+    ///     dial</c>, so "Get seen the same day if any of these happen:" — an
+    ///     entire same-day tier — walked straight through. Under-triage is the
+    ///     more dangerous direction (§12.8, WI-511), so the timing words are
+    ///     their own top-level branch now.
+    ///   * A LIST ITEM cannot be a lead-in. With the timing words ungated, a
+    ///     questions-list bullet reading "Why a CT today…" followed by nine more
+    ///     bullets reads as an urgent tier. The lead-in is the preceding
+    ///     PARAGRAPH (§12.8, WI-521), so marker lines are skipped.
+    /// </summary>
+    public static void AssertNoEscalationList(string page, string slug)
+    {
+        // `ReaderText(page)`, NOT `ReaderText(Body(page))`. `ReaderText` strips
+        // the front matter itself, and fed a body with no `\n---` in it,
+        // `IndexOf` returns -1 and the helper returns `body[3..]` — three
+        // characters off the front, silently. §12.8 (WI-520) records this, and
+        // records it appearing again thirty lines from the comment warning
+        // about it.
+        var lines = Regex.Split(ReaderText(page), @"\r?\n");
+
+        var urgency = new Regex(
+            @"(?i)\b(?:call|ring|phone|dial|contact|tell|let)\b[^.]{0,40}"
+            + @"\b(?:911|ambulance|straight away|right away|immediately|at once)\b"
+            + @"|(?i)\b(?:same day|today|tonight|straight away|right away|immediately|"
+            + @"at once|without waiting|as soon as)\b"
+            + @"|(?i)\b(?:emergency|urgent(?:ly)?|cannot wait|can't wait|do not wait|don't wait)\b"
+            + @"|(?i)\bgo\s+to\s+(?:the\s+)?(?:emergency|er\b|a&e)"
+            + @"|(?i)\bget\s+seen\b");
+
+        var marker = new Regex(@"^\s*(?:[-*]|\d+\.)\s");
+
+        var offenders = new List<string>();
+        for (var i = 0; i < lines.Length; i++)
+        {
+            // A bullet is not a lead-in.
+            if (marker.IsMatch(lines[i]) || !urgency.IsMatch(lines[i]))
+            {
+                continue;
+            }
+
+            // Count the list items that follow, allowing the indented
+            // continuation lines a hard-wrapped bullet produces (§12.8, WI-522:
+            // a finder needing two consecutive marker lines finds nothing when
+            // every bullet wraps).
+            var bullets = 0;
+            for (var j = i + 1; j < lines.Length; j++)
+            {
+                var line = lines[j];
+                if (marker.IsMatch(line))
+                {
+                    bullets++;
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(line) || Regex.IsMatch(line, @"^\s{2,}\S"))
+                {
+                    continue;
+                }
+
+                break;
+            }
+
+            if (bullets >= 2)
+            {
+                offenders.Add(lines[i].Trim());
+            }
+        }
+
+        Assert.True(offenders.Count == 0,
+            $"{slug} has grown an escalation list. It must not: every symptom such a list would "
+            + "carry is already tiered elsewhere in the corpus, and a second copy is a second copy "
+            + "to keep in step. These lead-ins introduce symptom bullets:\n  "
+            + string.Join("\n  ", offenders));
+
+        // The canary, run over a synthetic page rather than the real one, so the
+        // shape check is proved able to fire before its pass means anything
+        // (§12.8, WI-523). All four shapes review used to beat the first
+        // version are here.
+        foreach (var planted in new[]
+                 {
+                     "**Call your team the same day for any of these:**\n\n- A fever.\n- New weakness.",
+                     "### When to go to the emergency room\n\n- A seizure.\n- A sudden headache.",
+                     "Get seen the same day if any of these happen:\n\n- A new headache.\n- New weakness.",
+                     "Your team needs to know today if any of these happen:\n\n- A rash.\n- A fever.",
+                 })
+        {
+            var plantedLines = Regex.Split(planted, @"\r?\n");
+            var fired = false;
+            for (var i = 0; i < plantedLines.Length && !fired; i++)
+            {
+                if (marker.IsMatch(plantedLines[i]) || !urgency.IsMatch(plantedLines[i]))
+                {
+                    continue;
+                }
+
+                fired = plantedLines.Skip(i + 1).Count(l => marker.IsMatch(l)) >= 2;
+            }
+
+            Assert.True(fired, $"the escalation-shape guard cannot see this list:\n{planted}");
+        }
+    }
+
+    /// <summary>
+    /// Eight-word shingles over a page's reader text, for the corpus-wide
+    /// restatement check (§12.8, WI-521: a guard that checks the siblings you
+    /// thought of is a guard that finds nothing).
+    ///
+    /// Four things are stripped first, each because leaving it in reports the
+    /// corpus colliding with itself rather than a page restating another:
+    /// HEADINGS, because slot 9's is identical on all 29 library pages by
+    /// prescription; WHOLE MARKDOWN LINKS, label included, because a link label
+    /// is a page TITLE and the same door appears on a dozen pages; the
+    /// "Where to go next" section, which is an index by design; and the
+    /// "What to ask your team" section, which §12.2 item 7 requires on every
+    /// page and which necessarily repeats the question every scan page owes.
+    ///
+    /// A window needs three CONTENT words before it counts, because eight
+    /// function words in a row collide by chance.
+    ///
+    /// Written page-locally by WI-530's CT page and promoted the same day,
+    /// because the same item's second page needed it — §12.8's own threshold is
+    /// the second use, not the fifth.
+    /// </summary>
+    public static HashSet<string> Shingles(string page)
+    {
+        var text = ReaderText(page);
+
+        text = Regex.Replace(
+            text, @"(?ms)^## Where to go next.*?(?=^## |\z)", " ", RegexOptions.Multiline);
+        text = Regex.Replace(
+            text, @"(?ms)^## What to ask your team.*?(?=^## |\z)", " ", RegexOptions.Multiline);
+
+        text = Regex.Replace(text, @"(?m)^#{1,6} .*$", " ");
+        text = Regex.Replace(text, @"\[[^\]]*\]\([^)]*\)", " ");
+        text = Regex.Replace(text, @"[^A-Za-z]", " ").ToLowerInvariant();
+
+        var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var set = new HashSet<string>(StringComparer.Ordinal);
+        for (var i = 0; i + 8 <= words.Length; i++)
+        {
+            var window = words[i..(i + 8)];
+            if (window.Count(w => !ShingleFunctionWords.Contains(w)) < 3)
+            {
+                continue;
+            }
+
+            set.Add(string.Join(' ', window));
+        }
+
+        return set;
+    }
+
+    private static readonly HashSet<string> ShingleFunctionWords = new(StringComparer.Ordinal)
+    {
+        "the", "a", "an", "and", "or", "but", "is", "are", "was", "were", "be", "been",
+        "it", "its", "that", "this", "those", "these", "of", "to", "in", "on", "at",
+        "for", "with", "as", "by", "from", "you", "your", "they", "them", "their",
+        "not", "no", "so", "if", "what", "which", "who", "how", "when", "there",
+        "can", "cannot", "will", "would", "may", "might", "do", "does", "did", "have",
+        "has", "had", "one", "than", "then", "out", "up", "about", "into", "over",
+    };
+
+    /// <summary>
+    /// This page states nothing that already lives somewhere else in the corpus,
+    /// except the short, named list of sentences that are shared ON PURPOSE.
+    ///
+    /// <paramref name="deliberatelyShared"/> entries must be LONGER than a
+    /// shingle: the comparison asks whether the allowed sentence contains the
+    /// eight-word run, and WI-521's first implementation asked it the other way
+    /// round and did nothing at all.
+    /// </summary>
+    public static void AssertDoesNotRestateTheCorpus(
+        string page, string slug, params string[] deliberatelyShared)
+    {
+        var mine = Shingles(page);
+        var offenders = new List<string>();
+
+        foreach (var (otherSlug, text) in AllPages())
+        {
+            if (otherSlug.Equals("pages/" + slug, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var shared = mine.Intersect(Shingles(text), StringComparer.Ordinal)
+                .Where(s => !deliberatelyShared.Any(a => a.Contains(s, StringComparison.Ordinal)))
+                .Take(4)
+                .ToList();
+
+            if (shared.Count > 0)
+            {
+                offenders.Add($"{otherSlug}: {string.Join(" | ", shared)}");
+            }
+        }
+
+        Assert.True(offenders.Count == 0,
+            $"{slug} restates prose that already lives somewhere else in the corpus:\n  "
+            + string.Join("\n  ", offenders));
     }
 }
 

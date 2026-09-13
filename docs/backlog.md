@@ -3319,12 +3319,28 @@ Start only after Dan has signed off WI-513's template.
   from WI-528 one item earlier. Also swept the corpus for doubled-consonant
   British forms and found **three live spellings on four shipped files**. Thirteen
   lessons in §12.8.
-- [ ] **WI-530 T2 CT + T3 Extra scans for planning** — two pages, one item. CT
+- [x] **WI-530 T2 CT + T3 Extra scans for planning** — two pages, one item. CT
   is deliberately short and mostly retrospective: it explains the ER scan that
   started everything. The planning page merges fMRI, DTI, MR spectroscopy,
   perfusion and PET, because patients are never offered "an fMRI" in isolation —
   they are told "we're adding some sequences". fMRI gets the longest section, as
   the only one where the patient has a task. Depends on: WI-506.
+  **Done 2026-09-13.** `/tests/ct-scan` (grade 4.5) and `/tests/planning-scans`
+  (grade 4.7), both NEW files, **1775 tests** (1724 before), ContentCheck
+  **257/0**, **154 break-mutations on LF and CRLF**. Three dossier defects, and one of them is the whole of §2's
+  patient-experience material: **§2.2, §2.3 and §2.4 attribute eight claims to
+  the RadiologyInfo head CT page and that page carries none of them** — fetched
+  in full with a browser user agent, it has no "what will I experience" section
+  at all. All eight re-sourced to ACS's own CT page. §2.1's ABTA quotation is
+  not on the ABTA page either, so ABTA is not cited; and the ~4 mSv dose is
+  omitted per §12.4 R2, with the DIRECTION published instead. On the planning
+  page, §3.1's "direct cortical stimulation remains the reference standard" is
+  **not in the paper it is cited to** and is banned as a claim, not just a
+  citation; researchgate and journals.lww.com were both recovered open
+  (PMC5669348, PMC8050646). The scope call is that **`/tests/follow-up-scans`
+  owns every after-treatment use of perfusion and PET**, so this page is scoped
+  to before-treatment and routes. Also swept the corpus for `grey`, which no
+  previous sweep had asked about.
 - [ ] **WI-531 X6 Proton therapy + X7 Stereotactic radiosurgery** — two pages,
   one item. Proton splits out because **the reader's real question is access,
   not physics** (~50 US centres, travel, and insurance denial as a routine
