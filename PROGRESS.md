@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | none. **WI-527 (Meningioma, deepened) SHIPPED 2026-09-12.** See the log entry below. |
-| **Next up** | **WI-528 (Brain metastases, deepened)** — the hub whose one job is *"this is your cancer in a new place, not a new cancer"*: still named for where it started, original oncologist still leads, the one-way traffic and why. One spot or many; focused vs whole-brain radiation with **R3 applied**; CNS-penetrant drugs framed as *"ask whether your cancer has been tested for a marker with a brain-active drug"*, never "there are pills for brain mets"; leptomeningeal disease in its own signposted section, including that **a negative spinal tap does not rule it out**. §12.3's seventeen-section TUMOR HUB order, as WI-527 used. |
+| **In progress** | none. **WI-528 (Brain metastases, deepened) SHIPPED 2026-09-12.** See the log entry below. |
+| **Next up** | **WI-529 (`all-brain-tumors` — "we don't have a name for it yet")** — the page for somebody told there is something on their scan and nothing else yet. The 7-step pathway, which turns silence into "step 3 of 7"; why imaging alone often cannot say what it is; and what to do with the wait. **WI-528 built the bridge to it**: the brain-metastases page now carries the honest version of "sometimes the brain scan is what finds the cancer", including cancer of unknown primary, so WI-529 must route to that rather than restate it. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -88,6 +88,38 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-12** — **WI-528 done — `/tumors/brain-metastases`.** The 260-word stub became a
+  full §12.3 seventeen-section hub. Grade **5.7**, **1691 tests**, ContentCheck **252/0**,
+  **123 break-mutations green on LF and CRLF**. Ten source rulings, and **two of them are
+  against the backlog item itself**. **(1) THE ITEM'S HEADLINE NUMBER IS WRONG.** It claims
+  "33-66% of brain metastases are the first sign of cancer"; the largest series that asks the
+  question gives **19.0%** (PMC6267666, n = 2419), and the nearby 25% and ~15% answer different
+  questions. No figure published; the page carries the shape and the reassurance inside it.
+  **(2) "YOUR ORIGINAL ONCOLOGIST STILL LEADS" IS AN OVER-CLAIM** — the source names a
+  different team and no leader at all, so the page says what is supported and gives the action
+  (ask who is coordinating, because it is now more than one team).
+  **AND TWO SHARED BLOCKS ARE WRONG ON THIS HUB RATHER THAN MERELY UNNECESSARY.** `[CAUSES]`
+  opens "For most brain tumors, nobody knows the cause", which is false when the cause is the
+  cancer in the reader's chart; `[CROSSWALK]` explains naming rules this reader's report does
+  not follow. Both excluded, **neither block edited**, and the page writes its own self-blame
+  section — including the inherited-risk question the block was carrying, which has a different
+  answer here.
+  `/review`: **three blockers, sixteen should-fixes, eighteen proven guard walk-throughs** with
+  every regex executed rather than eyeballed. The sharpest blocker was a real safety defect:
+  new leg weakness plus new bladder trouble was filed as a thing to raise at the next
+  appointment, when in somebody with metastatic cancer that pair is cord compression and the
+  window is hours. It now carries the corpus's own sentence, word for word, as a scoped line
+  above `[ESCALATION]` — three pages, one wording.
+  **Then the harness found four more guards that could not fail**, after all eighteen
+  walk-throughs were answered. Twelve lessons in **§12.8**, including the one that explains why
+  WI-527's CRLF bug survived its own harness: the harness asks only whether a mutated page
+  FAILS the named test, and a test broken on CRLF fails for free.
+  **The end-to-end read (sixteenth item running) found five**, two of which nothing else could
+  see: a glossary tooltip asserting the neuro-oncologist "leads the team" three lines from the
+  section that refuses to say who leads, and a second tooltip putting whole-brain radiation at
+  "more than one tumor" while the page said "too many to aim at one at a time". Both glossary
+  entries corrected to be true everywhere.
 
 - **2026-09-12** — **WI-527 done — `/tumors/meningioma`.** The 198-word stub became a full
   §12.3 seventeen-section hub. Grade **5.6**, **1663 tests**, ContentCheck **252/0**, **98

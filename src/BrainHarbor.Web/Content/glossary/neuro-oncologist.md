@@ -8,4 +8,4 @@ sources:
 ---
 
 A doctor who specializes in tumors of the brain and spine. They often lead the
-team and are a good person to ask who your one named contact is.
+brain tumor team, and are a good person to ask who your one named contact is.
