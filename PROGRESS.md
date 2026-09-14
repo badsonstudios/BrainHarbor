@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-532 — `/treatments/targeted-therapy`. WRITTEN, REVIEWED, ALL GATES GREEN, NOT YET COMMITTED.** Working tree on `develop`, uncommitted. **1895 tests**, ContentCheck **260/0**, grade **5.5**. `/review` done: six blockers + sixteen should-fixes all addressed, 71 guard walk-throughs all closed. **STILL OWED: (1) the break harness — `mutations.py` has NOT been written for this item; (2) the rendered end-to-end read; (3) §12.8 lessons + backlog checkbox; (4) commit/PR/merge/deploy.** See the WI-532 resume note below. WI-531 shipped and live 2026-09-13. |
+| **In progress** | **WI-532 — code-complete, all gates green, being committed.** Grade **5.4**, **1895 tests**, ContentCheck **260/0**, **88 break-mutations on LF and CRLF**, three render guards proved by script, rendered end-to-end read done (seven findings, all fixed). §12.8 + backlog updated. Remaining: commit → PR into `develop` → release PR into `main` → deploy → smoke-check. |
 | **Next up** | **WI-533 (X10 Tumor Treating Fields / Optune)** — a lived-experience decision rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying the device, caregiver dependency. R1 keeps the 18 hours because it *is* the decision. Depends on: WI-502. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -22,61 +22,6 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
-
-### WI-532 resume note (2026-09-14) — READ THIS FIRST IF WI-532 IS STILL OPEN
-
-**State:** the page and its 34 tests are written and every gate is green. The
-work is uncommitted on `develop`. Nothing is broken; the item is simply not
-finished.
-
-**Files in the working tree:** new `pages/treatments/targeted-therapy.md` and
-`tests/BrainHarbor.Tests/TargetedTherapyPageTests.cs`; doors appended to six
-siblings (`tests/molecular-markers`, `treatments/chemotherapy`,
-`tumors/astrocytoma`, `tumors/brain-metastases`, `tumors/glioblastoma`,
-`tumors/low-grade-glioma`); one allowlist entry added to
-`AntiSeizureMedicinesPageTests`.
-
-**What is still owed, in order:**
-
-1. **THE BREAK HARNESS HAS NOT BEEN RUN AND `mutations.py` DOES NOT EXIST FOR
-   THIS ITEM.** Copy `break-tests.py` and `dryrun.py` from
-   `.claude/work_files/wi531-sources/` into `.claude/work_files/wi532-sources/`,
-   repoint the `sys.path` line in both at `wi532-sources`, and write a fresh
-   `mutations.py` **with the Write tool** — the heredoc rule broke again on
-   WI-532 (sixth item running), turning `\b` into backspace characters.
-   Dry-run for no-ops, then run on LF and CRLF. Expect it to find guards
-   `/review` could not: WI-531's harness found eight after 67 walk-throughs had
-   been answered.
-2. **The rendered end-to-end read**, which is mandatory and has caught something
-   on twenty consecutive items. Start the site, fetch the page, convert to text,
-   read it as a person. **Kill the dev server before any build** or every build
-   fails MSB3027.
-3. **Fifteen-or-so lessons into `docs/content-pipeline.md` §12.8**, the backlog
-   checkbox, and this table.
-4. **Commit, PR into `develop`, merge, release PR into `main`, watch the deploy,
-   smoke-check the live URL.**
-
-**The findings worth not re-deriving:**
-
-- **`avastin.com` is banned by §12.2 item 6 BY NAME**, and the dossier sources
-  the entire bevacizumab section to it. Replaced by ACS's brain-specific
-  targeted-therapy page, which carries all six drug families. The "28 days
-  before or after surgery" figure is gone with it and is not published.
-- **The dossier covers three drug families; ACS covers six** — it is missing
-  H3 K27M (dordaviprone), mTOR (everolimus) and NTRK entirely.
-- **The vorasidenib trial excluded anyone who had had chemotherapy or
-  radiation.** The dossier omits this; the FDA page states it verbatim.
-- **Dordaviprone's approval is ACCELERATED** with the confirmatory ACTION trial
-  still running — a sharper version of the WI-535 flag already logged below.
-- **`NBK66023` is NCI patient PDQ** and is not cited; the brain-metastasis
-  material rests on ASCO-SNO-ASTRO 2022 (PMC8917399).
-- **The page's spine turned out bigger than the backlog's framing.** Bevacizumab
-  is not the only anti-hype case: four drugs were judged on four different
-  measures, so the page's central section is "what would it mean to say this
-  worked?".
-- **A seventh door was REFUSED by `/treatments/watch-and-wait`'s own
-  end-anchored pin**, and the door was dropped rather than the pin loosened.
-  There is a test recording why, so nobody adds it back.
 
 ### WI-531 scouting note (2026-09-13) — SPENT, kept for the record
 
@@ -151,6 +96,16 @@ introduction and is not published at all. See the 2026-09-13 log entry.
   two test CLASSES contending; nothing stops two whole RUNS. Worth either
   concurrency-grouping the workflow or giving the Kestrel host a retry.
 
+- **For `/pm`, raised by WI-532, not blocking.** `out of hours` is British, is
+  **not** on `CuratedPage.BritishForms`, and the corpus is split on it: the
+  escalation block says "the after-hours number", `tumors/glioblastoma` and
+  `tumors/oligodendroglioma` say "after hours", and six files still say the
+  British form — `seizures/what-to-do`, `treatments/anti-seizure-medicines`,
+  `treatments/chemotherapy` (×4), `tumors/astrocytoma`, `tumors/glioma`,
+  `tumors/high-grade-glioma`. §12.10 wants one wording for one instruction.
+  The item is: add `out of hours` / `out-of-hours` to the shared list and sweep
+  the six in the same change. WI-532 used "after hours" rather than becoming
+  the eighth carrier, and did not sweep — nine files is its own item.
 - **For `/pm`, raised by WI-529, not blocking.** (1) The `tumor board` glossary
   tooltip prints `blocks/tumor-board.md`'s own opening sentence, so every page
   including the block shows the sentence twice; WI-529 suppresses it page-locally
@@ -214,6 +169,80 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-14** — **WI-532 code-complete — `/treatments/targeted-therapy`, and the item
+  where a guard proved only that a file existed.**
+  Grade **5.4**, **1895 tests** (1860 before), ContentCheck **260/0**, **92 break-mutations
+  green on LF and CRLF**, plus the three Kestrel render guards proved by a script that
+  mutates, rebuilds, confirms red and restores. No new glossary entries (all seven candidates
+  argued and dropped), six doors, and a seventh REFUSED by a sibling's own end-anchored pin.
+  **§12.2 ITEM 6 BANS `avastin.com` BY NAME AND THE DOSSIER SOURCES THE ENTIRE BEVACIZUMAB
+  SECTION TO IT** — what the drug is, what it is for, the side effects and the surgery
+  interval. Replaced wholesale by ACS's brain-specific page, and **the manufacturer's "at
+  least 28 days before or after surgery" is not published**: ACS says "within a few weeks"
+  and the page says outright that there is no one number that fits everybody.
+  **The dossier covers three drug families and ACS covers six** — a page built from the
+  dossier alone would have told a reader holding an H3 K27M, NTRK or mTOR result that there
+  is nothing for them. **The vorasidenib trial EXCLUDED anyone who had had chemotherapy or
+  radiation**, verbatim on the FDA page and absent from the dossier, which matters because
+  four other pages carry vorasidenib as an option. Dordaviprone's approval is ACCELERATED
+  with the ACTION trial unreported. `ivosidenib` is not named at all — both its citations are
+  on the dead `academic.oup.com`, and naming a drug the page cannot describe is how a reader
+  asks for the wrong one.
+  **The backlog's headline claim held AND was not the whole spine.** Bevacizumab is the
+  named anti-hype case, but four drugs here were judged on four different measures, so the
+  central section is *what would it mean to say this worked?*.
+  **THE BREAK HARNESS FOUND THREE GUARDS THAT COULD NOT FAIL**, identically on LF and CRLF,
+  *after* `/review`'s six blockers, sixteen should-fixes and all 71 walk-throughs had been
+  answered. **Two were real.** `Assert.Matches(@"(?i)\bWhat is measured\b", sibling)` — the
+  guard proving `/tests/molecular-markers` still owns the marker definitions — stays green
+  when that page loses **all fifteen** of its `**What is measured.**` entries, because it
+  also says *"Each one below says what is measured"* in ordinary lowercase prose. **A
+  case-insensitive anchor on a phrase the sibling also uses as prose is not an anchor; it
+  proves the file exists.** And a bare `Assert.Contains("/tumors/low-grade-glioma", sibling)`
+  passed after the route was deleted from the paragraph that refused the door, because that
+  page's "Where to go next" index carries the slug four screens later — presence-not-position,
+  third recurrence. **The third was the harness's own input**: the corpus-restatement break
+  planted *"It is useful for what it is useful for."*, verbatim from `/tumors/glioblastoma`,
+  and `Shingles()` skips any eight-word window with fewer than three CONTENT words. A
+  mutation made of function words is not a mutation.
+  **Finding the first one took four probes because every count run while chasing it was
+  case-SENSITIVE while the assertion was `(?i)`** — so `RepoRoot()`, the build output, a
+  stale assembly and the heredoc backspace bug were all suspected and all innocent. What
+  broke the deadlock was replacing the whole sibling with a four-line stub, which failed the
+  assertion and proved the read was live.
+  **THEN `/review` BEAT BOTH REPLACEMENTS WITH WORKED COUNTER-EXAMPLES, which is the item's
+  sharpest lesson: a guard rewritten because the harness beat it is a NEW guard that has had
+  no harness run against it.** The door guard's replacement measured 400 characters from the
+  pin, and failed BOTH ways — `IndexOf` takes the first occurrence page-wide, so an unrelated
+  link to the same hub elsewhere on that page turned it RED on a correct edit, while `Math.Abs`
+  accepts a route AFTER the pin, so moving the route into the next paragraph (121 characters)
+  stayed GREEN. It slices the paragraph now, and the door ban is scoped to that paragraph so a
+  later "Where to go next" entry there is not failed against a reason that does not apply.
+  The markers guard's replacement counted the convention with a floor of `>= 10`, and
+  **deleting the only two entries this page routes readers to — IDH and BRAF — drops fifteen
+  to thirteen**, so the floor stayed green through exactly the change its message claimed to
+  catch; it asserts the two anchors by name now. Four mutations encoding those
+  counter-examples are in the table, which is why the count is 92 rather than 88.
+  `/review` also caught that "Your blood pressure is checked" was still an inference — ACS
+  states a monitoring instruction for the SKIN and a report-this instruction for the LIVER and
+  says nothing about blood pressure, while the drug raising it IS sourced — so it is hedged to
+  "usually checked" with the inference recorded in the front matter.
+  **The end-to-end read of the RENDERED page (twenty-first item running) found seven**, the
+  worst a sourcing defect: **a ranking deleted in one section had survived in another, in
+  different words.** The front matter records killing *"high blood pressure is the common
+  one"* as an avastin.com-only ranking, and 130 lines earlier the step-by-step still said
+  *"because high blood pressure is the side effect this drug is most watched for"*. Also
+  **site-voice meta one item after WI-531 removed the identical construction** (*"so the site
+  says one thing about them"*, plus two more of the family in the same section); **a page
+  restating ITSELF**, which `AssertDoesNotRestateTheCorpus` skips by design, twice; **`out of
+  hours`**, British and not on the shared list, which would have made this the eighth page
+  carrying it; and a pronoun correct about pills that reads as the patient in a caregiver
+  section. **Recorded as NOT a defect so the next read does not re-flag it:** glossary
+  popovers are hidden until activated, so a definition appearing mid-sentence in flattened
+  text does not interrupt the rendered sentence. Seventeen lessons in **§12.8**.
+  The `A11ySmokeTests` Kestrel-flake trigger and the `out of hours` spread are still for
+  `/pm`, not blocking.
 
 - **2026-09-13** — **WI-531 is live.** PR #127 into `develop`, release PR #128 into `main`,
   deploy succeeded. `/treatments/proton-therapy` and `/treatments/stereotactic-radiosurgery`

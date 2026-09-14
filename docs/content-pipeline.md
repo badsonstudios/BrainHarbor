@@ -2352,6 +2352,163 @@ source gives a set answer"* and *"so the site says one thing about it"* — whic
 are §12.8 (WI-510)'s "we do not publish numbers" in a new coat. A reader has no
 use for what our sources do or do not give.
 
+**WI-532 — `/treatments/targeted-therapy`, and the item where a guard proved
+only that a file existed.** Grade **5.4**, **1895 tests** (1860 before),
+ContentCheck **260/0**, **88 break-mutations green on LF and CRLF**, three
+render guards proved by a script rather than by hand. No new glossary entries;
+six doors, and a seventh refused.
+
+- **A CONTRACT ITEM CAN BAN A DOMAIN BY NAME AND THE DOSSIER CAN SOURCE A WHOLE
+  SECTION TO IT.** §12.2 item 6 names `avastin.com`, and
+  `treatment-library.md` §9 sources the ENTIRE bevacizumab section to it — what
+  the drug is, what it is for, the side effects, and the surgery interval.
+  Replaced wholesale by ACS's brain-specific targeted-therapy page, which
+  carries every one of those claims at patient level. **The manufacturer's "at
+  least 28 days before or after surgery" goes with it and is not published**:
+  no non-manufacturer source in the reachable set gives a number, ACS says
+  "usually it can't be given within a few weeks of surgery", and that is what
+  shipped, with the page saying outright that there is no one number that fits
+  everybody. §12.14 in its purest form.
+- **THE DOSSIER COVERS THREE DRUG FAMILIES AND THE PERMITTED SOURCE COVERS
+  SIX.** ACS adds H3 K27M (dordaviprone), mTOR (everolimus) and NTRK. A page
+  built from the dossier alone would have told a reader holding one of those
+  three results that there is nothing for them. **A replacement source is not
+  automatically the narrower one — read its scope before you assume what it
+  costs you.**
+- **AN EXCLUSION IS A FACT WITH A CONSEQUENCE.** The vorasidenib trial
+  "excluded" anyone who had had chemotherapy or radiation, verbatim on the FDA
+  page and absent from the dossier's eligibility bullet. Four other pages carry
+  vorasidenib as an option; without this, a reader who has had either reads all
+  of them as addressed to them.
+- **AN ACCELERATED APPROVAL IS A DIFFERENT CLAIM FROM AN APPROVAL**, and
+  "contested" is the wrong word for it. Dordaviprone was approved on early
+  results with the confirmatory ACTION trial still running, and that trial has
+  not reported. Say the shape, not the doubt.
+- **THE BACKLOG'S FRAMING WAS SMALLER THAN THE PAGE.** The item names
+  bevacizumab as "the anti-hype teaching case". Four drugs here were judged on
+  four different measures — the scan, time before growth, early results, and
+  ACS's own "not clear if it can help people live longer" — so the central
+  section is *what would it mean to say this worked?* rather than one drug's
+  cautionary tale. The backlog's headline claim being right does not make it
+  the whole spine.
+
+**The break harness found three guards that could not fail, after `/review`
+had returned six blockers and sixteen should-fixes and all 71 guard
+walk-throughs had been answered. Two were real and the third was the harness's
+own input.**
+
+- **A CASE-INSENSITIVE ANCHOR ON A PHRASE THE SIBLING ALSO USES AS PROSE IS NOT
+  AN ANCHOR. This is a new class.** `Assert.Matches(@"(?i)\bWhat is measured\b",
+  sibling)` was written to prove `/tests/molecular-markers` still owns the
+  marker definitions this page routes to. That page can lose **all fifteen** of
+  its `**What is measured.**` entries and the guard stays green, because it also
+  says, in ordinary lowercase prose, *"Each one below says what is measured,
+  what your team does with it"*. The guard proved the file existed, which is not
+  what the comment above it claimed. **Pin the CONVENTION, case-sensitively, and
+  count it.**
+- **And the four probes it took to find that are the other half of the lesson.**
+  Every count run while chasing it was case-SENSITIVE while the assertion was
+  `(?i)`, so the file read as clean at every step and the read path itself came
+  under suspicion instead — `RepoRoot()`, the build output, a stale assembly,
+  even the heredoc backspace bug, all checked and all innocent. **The experiment
+  that broke the deadlock was replacing the whole sibling with a four-line
+  stub**: that failed the assertion, proved the read was live, and sent the
+  search back to the only thing left, which was the pattern. When a guard will
+  not fail and the mechanism checks out, suspect the comparison before the
+  plumbing.
+- **PRESENCE IS NOT POSITION, THIRD RECURRENCE, THIS TIME IN A DOOR GUARD.**
+  `Assert.Contains("/tumors/low-grade-glioma", sibling)` was meant to prove that
+  `/treatments/watch-and-wait` still offers the route this page is reachable by
+  instead of the door its pin refused. Deleting that route from the vorasidenib
+  paragraph left the guard green, because the same page's "Where to go next"
+  index carries the identical slug four screens later. Distance-checked against
+  the pinned sentence now, the same way a door is.
+- **A MUTATION MADE OF FUNCTION WORDS IS NOT A MUTATION.** The
+  corpus-restatement break planted *"It is useful for what it is useful for."* —
+  verbatim from `/tumors/glioblastoma` — and the guard stayed green, because
+  `Shingles()` skips any eight-word window carrying fewer than THREE content
+  words and that sentence is eight function words around two. The guard was
+  fine; the harness was lying about it. **§12.8's "too weak is not a pass"
+  applies to the harness's own inputs: when a break does not fail, ask first
+  whether the mutation reached the mechanism at all.**
+- **THEN `/review` BEAT BOTH REPLACEMENTS, WITH WORKED COUNTER-EXAMPLES, AND
+  THAT IS THE SHARPEST LESSON OF THE ITEM.** A guard rewritten in response to a
+  harness failure is a NEW guard and has had no harness run against it. Both of
+  these were written to close a demonstrated hole and both opened another:
+  - The door guard's replacement measured **400 characters** from the pinned
+    sentence. `IndexOf` returns the FIRST occurrence page-wide, so an unrelated
+    link to the same hub earlier in the body turned the test red with a message
+    accusing the vorasidenib paragraph of something it had not done — a false
+    RED on a correct edit. And `Math.Abs` accepts a route AFTER the pin, so
+    moving the route into the very next paragraph (121 characters) stayed green
+    — the same false GREEN, one paragraph over. **A character distance is a
+    proxy for "the same paragraph". Slice the paragraph and the proxy is not
+    needed**, and the ban on the door can be scoped to that paragraph too, so a
+    later item adding this page to that sibling's "Where to go next" index — a
+    correct edit that does not touch the end-anchored pin — does not fail
+    against a reason that does not apply to it.
+  - The markers guard's replacement counted the sibling's convention with a
+    floor of `>= 10`. **Deleting the two entries this page actually routes
+    readers to — IDH and BRAF, the two its own front matter names — drops
+    fifteen to thirteen**, so the floor stays green through exactly the change
+    its failure message claims to catch. A headcount is not the property. Assert
+    the anchors the page depends on **by name**, and keep the count only as a
+    second signal with a message that admits the corpus-rename case.
+  Four mutations encoding those counter-examples are now in the table, so the
+  harness owns them from here: **when a guard is rewritten, the harness runs
+  again on the new one, and the new one gets its own mutations.**
+- **Seventh item running for the heredoc rule**, which `mutations.py` was
+  written with the Write tool to obey. And the three Kestrel render guards the
+  harness structurally cannot reach — it runs `--no-build`, and the host serves
+  Content copied at BUILD time — are now proved by a committed script that
+  mutates, REBUILDS, confirms red, restores and rebuilds, rather than by hand
+  and by memory.
+
+**And the end-to-end read of the RENDERED page, twenty-first item running,
+found seven, one of which is a safety-adjacent sourcing defect nothing else
+could see.**
+
+- **A RANKING DELETED IN ONE SECTION SURVIVED IN ANOTHER, IN DIFFERENT WORDS.**
+  The front matter records killing *"high blood pressure is the common one"*
+  because ACS lists bevacizumab's common effects UNRANKED and the only source
+  for a ranking was the banned manufacturer bullet. A hundred and thirty lines
+  earlier, the step-by-step still said *"because high blood pressure is the side
+  effect this drug is most watched for"* — the same unsourced ranking with an
+  unsourced monitoring claim wrapped around it. **§12.14's shape inside a single
+  page: when you remove a claim, grep the whole page for it rather than the
+  section you happened to notice it in.**
+- **SITE-VOICE META, ONE ITEM AFTER WI-531 REMOVED THE IDENTICAL
+  CONSTRUCTION.** *"so the site says one thing about them"* — WI-531's entry
+  above names *"so the site says one thing about it"* by name. Two more of the
+  family were in the same section: *"they are the reason that section of the
+  list exists"* and *"they are the reason this page gives you a rule"*. A page
+  explaining its own editorial decisions is talking to us, not to the reader.
+- **A PAGE CAN RESTATE ITSELF AND NO CHECK SEES IT.**
+  `AssertDoesNotRestateTheCorpus` compares against every OTHER page and skips
+  its own, by design. *"frequent early on and usually settle into a pattern"*
+  appeared verbatim in two sections, and the "How long does it take?" opener and
+  its own first bullet said the same sentence three lines apart.
+- **`out of hours` IS BRITISH AND IS NOT ON THE SHARED LIST.** The escalation
+  block says *after-hours*. Six shipped files already carry the British form
+  (`seizures/what-to-do`, `treatments/anti-seizure-medicines`,
+  `treatments/chemotherapy` ×4, `tumors/astrocytoma`, `tumors/glioma`,
+  `tumors/high-grade-glioma`) while `tumors/glioblastoma` and
+  `tumors/oligodendroglioma` say *after hours* — a §12.10 one-instruction,
+  two-wordings split that `CuratedPage.BritishForms` is structurally blind to
+  because the phrase is not on it. This page would have been the eighth
+  carrier. Logged for `/pm` as an add-to-the-list-and-sweep item; not fixed in
+  passing, because it is nine files.
+- **A pronoun that is correct about pills reads as the patient in a caregiver
+  section** — *"Work out together where they live"*, three lines under a
+  sentence about the person being cared for.
+- **GLOSSARY POPOVERS ARE NOT A TOOLTIP-POSITION DEFECT, and this is recorded
+  so the next end-to-end read does not re-flag it.** They render as `popover`
+  elements, hidden until activated, so a definition that appears mid-sentence in
+  the FLATTENED text does not interrupt the rendered sentence — three of them
+  land inside load-bearing claims here and none of them hurts. WI-530's finding
+  was about which SECTION gets the tooltip and about a definition being wrong
+  where it landed, which are different things and still apply.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

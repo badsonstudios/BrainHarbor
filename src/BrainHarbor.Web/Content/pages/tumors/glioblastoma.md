@@ -317,6 +317,8 @@ a better time of it. That is why it is the standard for that group.
 **Bevacizumab** is a drug used for the swelling around a glioblastoma. It can make scans
 look better and cut down the need for steroids. But in the trials in newly
 diagnosed glioblastoma it **did not help people live longer**.
+[Targeted drugs](/treatments/targeted-therapy) covers what being on it
+involves, including the rule about surgery.
 
 It is useful for what it is useful for. The thing worth holding on to is the
 difference between a treatment that improves a picture and one that changes an

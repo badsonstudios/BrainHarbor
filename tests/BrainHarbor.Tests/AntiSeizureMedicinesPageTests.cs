@@ -125,6 +125,13 @@ public sealed class AntiSeizureMedicinesPageContentTests
         // is about the medicine that is meant to prevent it.
         "another seizure starting before they have come round from the first",
 
+        // WI-532. The corpus's one wording for an ambulance instruction, which
+        // /treatments/targeted-therapy now also carries for the serious
+        // bevacizumab harms. §12.10 wants ONE wording for one instruction, so
+        // the right answer is the allowlist rather than rewording either page
+        // and putting two versions of an emergency line on the site.
+        "is an ambulance call. 911, or your local emergency number.",
+
         // The corpus's sentence for what is NOT an ambulance call, likewise.
         // /treatments/steroids and the escalation block both carry it; three
         // pages saying it three ways is how the line moves.

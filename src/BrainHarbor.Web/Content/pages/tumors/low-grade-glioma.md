@@ -239,7 +239,9 @@ results, where the tumor sits, how much of it came out, and what you want.
   [Chemotherapy: the drugs, your blood counts, and the fever
   rule](/treatments/chemotherapy) takes the drugs one at a time.
 - **Vorasidenib**, a newer medicine taken by mouth, for some people. Its own
-  section below.
+  section below, and [what the trial did and did not
+  study](/treatments/targeted-therapy#what-worked-means) if you have already had
+  radiation or chemotherapy.
 - **Seizure medicine**, which for many people here is not a side issue but one
   of the main goals of treatment.
 
