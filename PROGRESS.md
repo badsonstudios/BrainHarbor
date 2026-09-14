@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-532 — code-complete, all gates green, being committed.** Grade **5.4**, **1895 tests**, ContentCheck **260/0**, **88 break-mutations on LF and CRLF**, three render guards proved by script, rendered end-to-end read done (seven findings, all fixed). §12.8 + backlog updated. Remaining: commit → PR into `develop` → release PR into `main` → deploy → smoke-check. |
+| **In progress** | **WI-533 — `/treatments/tumor-treating-fields` (X10, Optune).** Starting 2026-09-14. WI-532 shipped and live the same day. See the WI-533 scouting note below — **the scope question is settled before drafting: both hubs already own most of this material, including the 18 hours.** |
 | **Next up** | **WI-533 (X10 Tumor Treating Fields / Optune)** — a lived-experience decision rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying the device, caregiver dependency. R1 keeps the 18 hours because it *is* the decision. Depends on: WI-502. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -22,6 +22,51 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-533 scouting note (2026-09-14) — READ BEFORE DRAFTING
+
+Gathered while WI-532's release CI ran. All of it is from reading the shipped
+corpus, not from the dossier.
+
+- **`/tumors/glioblastoma` ALREADY OWNS MOST OF WHAT THE BACKLOG HANDS THIS
+  ITEM.** It carries a whole `### Tumor treating fields, the device you wear`
+  section with: the name to ask about, that the device is called **Optune**,
+  alternating electric fields through scalp pads, that it runs alongside
+  temozolomide after radiation, **"usually started around four to seven weeks
+  after radiation ends"**, who it is for (tumor in the upper part of the brain,
+  managing reasonably well day to day), skin irritation as the main side
+  effect, **"at least eighteen hours a day"**, shaving your head, and the
+  framing that this is "a legitimate thing to weigh rather than a test of how
+  hard you are trying".
+- **THE BACKLOG SAYS "R1 KEEPS THE 18 HOURS BECAUSE IT *IS* THE DECISION" — AND
+  THE 18 HOURS ARE ALREADY SHIPPED ON THAT HUB.** So the item's FIRST decision
+  is the §12.10 one and it must be made before a word is drafted: either the two
+  pages share the wording verbatim with an allowlist entry (the WI-522/WI-532
+  answer, and the one that keeps one claim at one strength), or the hub is
+  reworded to route. Do NOT let the new page state it a second way.
+- **`/tumors/high-grade-glioma` owns the DISAGREEMENT**, and it is the
+  anti-hype spine: the European guideline "calls its role controversial and says
+  it is not widely available there", with the instruction to ask your team
+  rather than assume either way. A page that sells the device without this is
+  the §12.13 shape.
+- **A GLOSSARY ENTRY ALREADY EXISTS** — `Content/glossary/tumor-treating-fields.md`,
+  term `tumor treating fields`, alias `Optune`, sourced to PMC12467656. Its
+  tooltip fires site-wide, so the new page will define its own subject in a
+  popover unless it suppresses it (`!%tumor treating fields%`). That is the
+  WI-519/WI-521 shape — and note WI-532's own ruling that an entry suppressed
+  only where it is defined is decoration; here the entry is already earning its
+  keep on two hubs, so suppression on the new page is the right call rather
+  than deletion.
+- **CHECK "four to seven weeks after radiation ends" AGAINST §12.4** when the
+  item runs. It is a numeric range already live on the glioblastoma hub, and
+  WI-532's lesson is that a figure inherited from a sibling still needs its
+  source read.
+- What is genuinely UNOWNED, and therefore the page: **carrying the device**
+  (the bag, the batteries, the plugging-in at night), **scalp care and what the
+  pads actually do to skin over months**, **the shaved head as a visible thing
+  other people react to**, and **what it asks of the person alongside them**.
+  The backlog's own framing — "a lived-experience decision rather than a
+  clinical one" — is right, and the clinical half is already shipped twice.
 
 ### WI-531 scouting note (2026-09-13) — SPENT, kept for the record
 
@@ -169,6 +214,19 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-14** — **WI-532 is live.** PR #129 into `develop`, release PR #130 into `main`,
+  **build-test green first time on both**, deploy succeeded (5m25s).
+  `/treatments/targeted-therapy` returns 200 on brainharbor.org with no authoring marker and
+  no unresolved block directive; the spine sentence and all four rendered-read fixes are on
+  the live page and the site-voice meta is gone. **All six doors point here from their
+  siblings, and `/treatments/watch-and-wait` correctly has ZERO** — the seventh door stays
+  refused in production. Both deep-link anchors resolve (`#what-worked-means` here,
+  `#fever-rule` on the chemotherapy page). Fourteen other pages smoke-checked at 200.
+  **The release PR fired TWO `build-test` runs on the identical SHA again** — the
+  `A11ySmokeTests` race named in the WI-531 entry — and this time **both passed** (3m42s and
+  3m33s). The trigger is confirmed as real and still unfixed; it simply did not bite. Still
+  for `/pm`: a workflow concurrency group.
 
 - **2026-09-14** — **WI-532 code-complete — `/treatments/targeted-therapy`, and the item
   where a guard proved only that a file existed.**
