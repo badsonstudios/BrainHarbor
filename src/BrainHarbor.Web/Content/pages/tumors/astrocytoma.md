@@ -284,6 +284,8 @@ much of it can safely be removed.
   [Watching a tumor, step by step](/treatments/watch-and-wait) covers the plan itself.
 - **Vorasidenib**, a newer medicine taken by mouth, for some people with a grade
   2 IDH-mutant tumor after surgery. It works on the IDH change itself.
+  [Targeted drugs](/treatments/targeted-therapy) covers what taking one
+  involves.
 
 Alongside these there is supportive treatment: medicine to bring swelling down,
 medicine to control seizures if you have had one, and help with tiredness.

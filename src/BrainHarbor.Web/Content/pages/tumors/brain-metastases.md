@@ -359,7 +359,9 @@ change from the one you started with.** If tissue was
 taken from your brain, it is fair to ask whether that tissue was tested too, and
 not only the original sample.
 
-[What the markers mean](/tests/molecular-markers) explains the testing itself.
+[What the markers mean](/tests/molecular-markers) explains the testing itself,
+and [targeted drugs](/treatments/targeted-therapy) explains how that kind of
+drug works and what being on one asks of you.
 
 **None of this means there is a pill for brain metastases.** It means there is a
 question with a real answer, the answer differs from person to person, and

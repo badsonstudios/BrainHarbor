@@ -3378,11 +3378,23 @@ Start only after Dan has signed off WI-513's template.
   LF and CRLF**. Fifteen lessons in §12.8, including a new class of defect:
   both render classes booted the app with no connection string, which passes on
   a machine with user-secrets set and fails only in CI.
-- [ ] **WI-532 X9 Targeted and other systemic drugs** — led by "your tumor's test
+- [x] **WI-532 X9 Targeted and other systemic drugs** — led by "your tumor's test
   result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant
   drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it
   improved progression-free survival but not overall survival in newly diagnosed
   glioblastoma — it helps the scan, not the outcome. Depends on: WI-512.
+  **Done 2026-09-14.** `/treatments/targeted-therapy`, grade **5.4**,
+  **1895 tests** (1860 before), ContentCheck **260/0**, **92 break-mutations on
+  LF and CRLF** plus three render guards proved by script.
+  **The backlog's teaching case held and was not the whole spine**: four drugs
+  were judged on four different measures, so the central section is *what would
+  it mean to say this worked?*. **§12.2 item 6 bans `avastin.com` BY NAME and
+  the dossier sources the entire bevacizumab section to it** — replaced by ACS,
+  and the manufacturer's 28-day surgery interval is not published. The dossier
+  covers three drug families and ACS covers six. The harness found three guards
+  that could not fail after 71 walk-throughs were answered, two of them real:
+  a `(?i)` anchor on a phrase the sibling also uses as lowercase prose, and
+  presence-not-position in a door guard. Seventeen lessons in §12.8.
 - [ ] **WI-533 X10 Tumor Treating Fields (Optune)** — a lived-experience decision
   rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying
   the device, caregiver dependency. R1 keeps the 18 hours because it *is* the

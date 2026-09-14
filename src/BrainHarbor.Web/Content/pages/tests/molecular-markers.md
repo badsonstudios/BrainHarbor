@@ -230,6 +230,8 @@ made to act on BRAF changes, so your team may test for it with treatment in mind
 **What it does not tell you.** Finding a change does not mean a drug is right for
 you. Whether one is an option depends on the whole picture, and it is a
 conversation to have with your team.
+[Targeted drugs](/treatments/targeted-therapy) covers what that
+conversation is about, for BRAF and for the other changes a drug exists for.
 
 ### MGMT promoter methylation {#mgmt}
 
