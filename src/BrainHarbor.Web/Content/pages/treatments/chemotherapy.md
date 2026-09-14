@@ -62,6 +62,11 @@ the whole shelf. If you have read about a drug for a different cancer and
 wondered why nobody has offered it to you, ask. There is usually a reason, and
 it is a fair question.
 
+**There is a second, narrower group of drugs, and they work differently.** A
+targeted drug is built to act on one particular change inside tumor cells, so
+it only applies if your tumor carries that change.
+[Targeted drugs](/treatments/targeted-therapy) is the page for those.
+
 Chemotherapy is given in **cycles**: a period of treatment, then a rest period
 to let your body recover. How long each one lasts depends on the drug and on
 your plan.
