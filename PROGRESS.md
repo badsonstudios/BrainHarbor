@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | none. **WI-531 SHIPPED AND LIVE 2026-09-13** (PR #127 -> develop, release PR #128 -> main, deploy green). `/treatments/proton-therapy` and `/treatments/stereotactic-radiosurgery` both return 200 on brainharbor.org with no leaked markers or directives; ten neighbours smoke-checked at 200. |
-| **Next up** | **WI-532 (X9 Targeted and other systemic drugs)** — led by "your tumor's test result decides this". Vorasidenib, bevacizumab, BRAF/MEK, and the CNS-penetrant drugs for metastases. **Bevacizumab is the anti-hype teaching case**: it improved progression-free survival but not overall survival in newly diagnosed glioblastoma — it helps the scan, not the outcome. Depends on: WI-512. |
+| **In progress** | **WI-532 — `/treatments/targeted-therapy`. WRITTEN, REVIEWED, ALL GATES GREEN, NOT YET COMMITTED.** Working tree on `develop`, uncommitted. **1895 tests**, ContentCheck **260/0**, grade **5.5**. `/review` done: six blockers + sixteen should-fixes all addressed, 71 guard walk-throughs all closed. **STILL OWED: (1) the break harness — `mutations.py` has NOT been written for this item; (2) the rendered end-to-end read; (3) §12.8 lessons + backlog checkbox; (4) commit/PR/merge/deploy.** See the WI-532 resume note below. WI-531 shipped and live 2026-09-13. |
+| **Next up** | **WI-533 (X10 Tumor Treating Fields / Optune)** — a lived-experience decision rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying the device, caregiver dependency. R1 keeps the 18 hours because it *is* the decision. Depends on: WI-502. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -22,6 +22,61 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-532 resume note (2026-09-14) — READ THIS FIRST IF WI-532 IS STILL OPEN
+
+**State:** the page and its 34 tests are written and every gate is green. The
+work is uncommitted on `develop`. Nothing is broken; the item is simply not
+finished.
+
+**Files in the working tree:** new `pages/treatments/targeted-therapy.md` and
+`tests/BrainHarbor.Tests/TargetedTherapyPageTests.cs`; doors appended to six
+siblings (`tests/molecular-markers`, `treatments/chemotherapy`,
+`tumors/astrocytoma`, `tumors/brain-metastases`, `tumors/glioblastoma`,
+`tumors/low-grade-glioma`); one allowlist entry added to
+`AntiSeizureMedicinesPageTests`.
+
+**What is still owed, in order:**
+
+1. **THE BREAK HARNESS HAS NOT BEEN RUN AND `mutations.py` DOES NOT EXIST FOR
+   THIS ITEM.** Copy `break-tests.py` and `dryrun.py` from
+   `.claude/work_files/wi531-sources/` into `.claude/work_files/wi532-sources/`,
+   repoint the `sys.path` line in both at `wi532-sources`, and write a fresh
+   `mutations.py` **with the Write tool** — the heredoc rule broke again on
+   WI-532 (sixth item running), turning `\b` into backspace characters.
+   Dry-run for no-ops, then run on LF and CRLF. Expect it to find guards
+   `/review` could not: WI-531's harness found eight after 67 walk-throughs had
+   been answered.
+2. **The rendered end-to-end read**, which is mandatory and has caught something
+   on twenty consecutive items. Start the site, fetch the page, convert to text,
+   read it as a person. **Kill the dev server before any build** or every build
+   fails MSB3027.
+3. **Fifteen-or-so lessons into `docs/content-pipeline.md` §12.8**, the backlog
+   checkbox, and this table.
+4. **Commit, PR into `develop`, merge, release PR into `main`, watch the deploy,
+   smoke-check the live URL.**
+
+**The findings worth not re-deriving:**
+
+- **`avastin.com` is banned by §12.2 item 6 BY NAME**, and the dossier sources
+  the entire bevacizumab section to it. Replaced by ACS's brain-specific
+  targeted-therapy page, which carries all six drug families. The "28 days
+  before or after surgery" figure is gone with it and is not published.
+- **The dossier covers three drug families; ACS covers six** — it is missing
+  H3 K27M (dordaviprone), mTOR (everolimus) and NTRK entirely.
+- **The vorasidenib trial excluded anyone who had had chemotherapy or
+  radiation.** The dossier omits this; the FDA page states it verbatim.
+- **Dordaviprone's approval is ACCELERATED** with the confirmatory ACTION trial
+  still running — a sharper version of the WI-535 flag already logged below.
+- **`NBK66023` is NCI patient PDQ** and is not cited; the brain-metastasis
+  material rests on ASCO-SNO-ASTRO 2022 (PMC8917399).
+- **The page's spine turned out bigger than the backlog's framing.** Bevacizumab
+  is not the only anti-hype case: four drugs were judged on four different
+  measures, so the page's central section is "what would it mean to say this
+  worked?".
+- **A seventh door was REFUSED by `/treatments/watch-and-wait`'s own
+  end-anchored pin**, and the door was dropped rather than the pin loosened.
+  There is a test recording why, so nobody adds it back.
 
 ### WI-531 scouting note (2026-09-13) — SPENT, kept for the record
 
