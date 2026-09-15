@@ -2676,6 +2676,109 @@ suppressed here and kept.
 - **The harness copy was checked this time**: every copied script was grepped for
   its `sys.path` before the first run (§12.8, WI-533).
 
+**WI-535 — `/tumors/diffuse-midline-glioma` and `/tumors/dipg`, two hubs written as
+one because their sources keep merging them.** Grade **4.9** and **5.0**,
+**2019 tests** (1959 before), ContentCheck **267/0**, **128 break-mutations on LF and
+CRLF**, all caught on the fifth and final harness run (three guards were beaten and
+rewritten on the runs before it), ten render guards proved by rebuild across both
+pages, five rendered reads and **three `/review` rounds** (3 blockers, then 1, then
+none). Glossary:
+`pons`, `thalamus`, `palliative-care`. Doors: `/treatments/targeted-therapy` to the
+DMG `#dordaviprone` section; the `/tumors/high-grade-glioma` "still short" note
+retired, because DMG was its last thin destination.
+
+- **AN APPROVAL'S INDICATION AND ITS EVIDENCE CAN COVER DIFFERENT PEOPLE.** The FDA's
+  dordaviprone indication has no location limit. The efficacy studies "excluded"
+  DIPG and primary spinal tumors and were mostly adults, while the label's SAFETY
+  population included DIPG and ACS says it "may be an option" for DIPG. A page that
+  quotes only the indication tells a DIPG parent the evidence is about their child;
+  one that says "no evidence" overstates the other way. Scope the gap to what was
+  measured (whether it shrinks tumors), and read the eligibility paragraph and the
+  Drug Trials Snapshot, not only the first sentence of the approval.
+- **A SYMPTOM ON A LATE-STAGE LIST IS NOT A SIDE EFFECT TO EXPLAIN AWAY.** Both first
+  drafts said tiredness "comes from the treatment". Together by St. Jude lists
+  "Fatigue or drowsiness" under "Common symptoms of late stage DIPG", and the shared
+  block's same-day tier has "Sleeping much more than being awake". WI-534's recovery-
+  section lesson, found this time in "Everyday life", which nobody reads as a warning
+  section. The sentence now names both causes and the tier.
+- **"WORTH TELLING THE TEAM" IS NOT A TIER.** New swallowing trouble had no timing, and
+  "coughing while eating" was in no source. St. Jude: "Problems swallowing. This may
+  lead to aspiration pneumonia." Same-day, with the reason, beside the unchanged
+  choking ambulance line.
+- **OUTLOOK OUTSIDE THE GATE ARRIVES AS A POINTER, A EUPHEMISM OR A KINDNESS.** Three
+  shapes on one page, none of them a banned word: a support bullet describing the
+  Registry's pages "on care near the end of life"; palliative care that should
+  start "early, not at the end"; and a caregiver paragraph about families who "use
+  the time" with wish-granting organizations. The gate held the end-of-life
+  paragraph and all three undid it for a reader who declined. Rendered read 2 and
+  `/review` found the third independently. The gate test now checks a phrase list,
+  case-insensitively, against the WHOLE page minus the gate.
+- **A SOURCE'S SCOPE TRAVELS WITH THE TIER IT JUSTIFIES.** The spinal-cord override
+  cites Cancer Research UK, whose page is about METASTATIC compression ("the cancer
+  has spread to the spine"). The right-away tier is kept because it is the safe
+  direction; the reason is attributed to what the source covers, not asserted of a
+  glioma inside the cord. Its first wording also said "newly weak" under a symptom
+  line reading "weakness that keeps getting worse": WI-534's "a conditional that
+  names signs under-triages the rest", in the TENSE this time.
+- **A NEW GLOSSARY ENTRY CAN ECHO THE SENTENCE IT LANDS IN.** `thalamus` beside "which
+  sits deep in the center of the brain", `pons` beside "the part of the brain stem
+  that carries the nerves for ...", `palliative care` beside its own definition. The
+  tooltip renders inline, so the rendered page read each sentence twice. WI-529 logged
+  the shape for `tumor board`; the item that writes an entry is where it is created.
+- **AN INSTRUCTION LOSES ITS CAVEAT ON THE WAY TO THE PAGE.** PMC10778507 says trial
+  evaluation comes first "unless radiation therapy is urgently needed". "Ask about
+  trials before radiation starts" without it can delay radiation for a child whose
+  symptoms need it now. A test now requires the caveat on every "ask at the start".
+- **A POINTER'S TIMING CAN CONTRADICT THE PAGE IT SITS ON.** Both pages linked
+  `/treatments/radiation-therapy#why-am-i-having-radiation-again`, which says a
+  second course "usually needs a long gap first, and around a year or more". St. Jude
+  re-irradiates DIPG at recurrence. The pointer is gone and the disagreement is
+  printed with PMC9144327's own reason.
+- **THE UNSOURCED COMPARATIVE WAS ON A SHIPPED SIBLING.** "A larger trial" had been on
+  `/treatments/targeted-therapy` since WI-532. No fetched file gives ACTION's size, and
+  ACTION is in newly diagnosed patients. Fixed at source; §12.11's class, sixth item.
+- **THE HARNESS BEAT THREE GUARDS OVER THREE RUNS, ALL LOOSENESS OF THE SAME KIND.** A
+  Roman-numeral regex without IgnoreCase passed "**Grade IV.**"; a gate guard asserting
+  the WORD "median" passed with the definition paragraph deleted, off "a median cannot
+  show you them" one paragraph later; and the spinal rule's worsening clause, added
+  after rendered read 1, was never asserted. A vocabulary guard asserts the
+  definition sentence, and a clause added for safety gets its own assertion.
+- **`SentencesOf(Flatten(ReaderText(section)))` returned "es." for "**Yes.".** Use
+  `SentencesOf(Flatten(Section(...)))`, as HighGradeGliomaPageTests does.
+- **A SENTENCE SPLITTER FED READER TEXT MERGES A HEADING INTO THE SENTENCE UNDER IT.**
+  Two page-wide guards written for `/review` round 2 went red on correct prose:
+  "### Clinical trials, and why to ask early" joined "Some trials start at diagnosis"
+  and read as an uncaveated "ask about trials early", and "what is normal afterwards?"
+  joined "may be given medicine to sleep" and read as a normalised warning sign. A
+  heading ends with no full stop, so the splitter cannot see its end. Strip markdown
+  heading lines before splitting, in every guard that reasons about sentences.
+- **FIX SCRIPTS THAT CHECK EVERY ANCHOR BEFORE WRITING ABORT SAFELY.** Two of them hit
+  a line-wrapped anchor and wrote nothing, which is the point; the cost was a chained
+  suite run over unchanged content, because `&&` stopped the script and `;` did not
+  stop the suite.
+- **A TIER A PAGE WRITES ITSELF MUST HONOUR THE CONDITIONALS OF THE BLOCK ABOVE IT.**
+  Round 1's fixes added two same-day lines of the page's own (much more sleep;
+  symptoms coming back after radiation). The [ESCALATION] block on the same page
+  says that for a reader with a shunt "everything on the same-day list above is a
+  right-away call instead", and the DIPG page mentions shunts. `/review` round 2 found
+  it: a fix for one blocker created the next. WI-534's "a conditional wherever that
+  reader lands" includes the lines the item writes after the block, and a test now
+  requires every same-day sentence the page writes to say what changes for a shunt.
+- **A HARD SENTENCE SOFTENED BEHIND THE GATE IS STILL A SECOND STRENGTH.** "Today's
+  treatments do not usually cure it", inside the outlook gate, sat beside St. Jude's
+  "DIPG has no cure at this time" and `/tumors/glioma`'s "not curable", which the
+  sibling hubs state OUTSIDE the gate with a shared landing sentence. Moving a claim
+  behind the gate does not exempt it from §12.10; it moves to where the siblings put
+  it, at their strength, and a test reads the sibling.
+- **A FIX CAN MISATTRIBUTE WHAT IT RE-SOURCES.** Round 1 added PMC9144327's reason for
+  not recommending re-irradiation as "a 2022 review found it slowed the tumor". The
+  review was citing a SIOP analysis. Report what a review SAYS, not a finding it quotes.
+- **THE CONFLATION IS IN THE MAINSTREAM SOURCES.** The Brain Tumour Charity and Boston
+  Children's say DMG was "previously called DIPG"; ACS writes "DIPG, also called
+  diffuse midline glioma"; Together by St. Jude says DIPG can "rarely" be grade 2.
+  WHO CNS5 governs; the conflation is quoted once and corrected in the next sentence,
+  and a test holds the correction to that sentence.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
