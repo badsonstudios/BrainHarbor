@@ -11,8 +11,9 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-534 — X13 Shunts and hydrocephalus.** Picked up 2026-09-15, straight after WI-533 went live. **First draft written** on `feature/wi-534-shunts-hydrocephalus`: `/treatments/shunts` + `ShuntsPageTests.cs`; a CONDITIONAL shunt rule added to `blocks/escalation.md` (routes to `#warning-signs`, NINDS + Hydrocephalus Association added to the block's sources) and registered in `EscalationBlockTests`; doors appended to `blocks/mechanism.md` and `/tests/mri`. First draft green (1953 tests, grade 4.6, ContentCheck 262/0). **`/review` round 1 returned 4 blockers, 13 should-fix, 9 nits — saved in full at `.claude/work_files/wi534-sources/review-1.md`, with the first rendered read at `rendered-read-1.md`.** Blockers: the "ambulance list" pointer goes to /get-help-now, which has none; the warning list omits hard-to-wake (HA: "requires urgent attention"), blurred vision, confusion, coordination, infant signs; the recovery section calls tiredness/headache/sore belly normal while the list says right away; the new EscalationBlockTests rule reads RAW hubs and never runs. Verified before fixing: HA list ✓, MedlinePlus "about 1 1/2 hours" vs ACS "about an hour" ✓ (print both), PMC8827213 shunting a median 1.9 months after surgery ✓, FDA "use the ear opposite the shunt" ✓; the reviewer's NINDS "blurred/fixed downward/bulging" and Walton "999 list" are NOT in the fetched text — cite HA instead. Also in scope now: `/treatments/craniotomy`'s caregiver same-day list (headache/confusion/sleeping more) needs a shunt conditional linking `#warning-signs`; meningioma front-matter ruling (13) needs a shunt exception. Harness scripts already copied and repointed to `wi534-sources` (break-tests, dryrun, probe; handproof rewritten for `ShuntsPageRenderTests`). **Fix pass DONE** (page rewritten; block conditional now covers the whole same-day list; craniotomy caregiver line; mechanism pressure clause; meningioma ruling; EscalationBlockTests reads COMPOSED hubs with a positive count; ShuntsPageTests rewritten against every counter-example). Correction to the note above: NINDS DOES carry "Blurred or double vision", the bulging fontanel and "fixed downward" eyes in its general hydrocephalus list — the reviewer was right. **CODE-COMPLETE 2026-09-15:** suite 1958/0, grade 4.8, ContentCheck 262/0, rendered read ×2, 62 break-mutations green on LF and CRLF (one guard beaten and re-proved), four render guards handproofed, docs written (backlog ✓, §12.8 WI-534 entry, log). Next: commit → PR into develop → release PR into main → deploy smoke check. |
-| **Next up** | **WI-534 (X13 Shunts and hydrocephalus)** — obstructive vs communicating in plain words; what a shunt is and what living with one means. R2 applies to failure rates. Depends on: WI-502. A `hydrocephalus` glossary entry already exists — check which pages it fires on before writing a definition. |
+| **In progress** | **WI-439 (Kestrel test-host flake) — CODE-COMPLETE 2026-09-15, shipping** (commit → PR into develop → release PR into main → deploy check), branch `feature/wi-439-kestrel-host-start`. Suite 1959/0 three runs in a row, 10× the Kestrel classes green, 5 mutations caught on LF and CRLF, `/review` 0 blockers / 3 should-fix all taken. **WI-535 scouting is well along** (see its note below; a first DMG draft is at `.claude/work_files/wi535-draft/`, NOT in the content tree). Weighed and taken before WI-535: three firings today, and on `main` it silently skips the deploy. **Root cause found in the ASP.NET Core source:** both hosts in `KestrelWebApplicationFactory.CreateHost` come from ONE `DeferredHostBuilder`, whose `DeferredHost.StartAsync` does not start anything — it awaits a `TaskCompletionSource` SHARED by every host that builder builds. `_kestrelHost.Start()` completes it, so `testHost.Start()` returns instantly whether or not the TestServer has started; each app entry point runs DbUp (advisory lock) + the admin seeder on its own thread first, so when the test host loses that race `CreateClient()` hits "The server has not been started". Fix: start the hosts one after another, and wait for each host's OWN `ApplicationStarted`. Proof: a start-delay knob that fails the old code every time. WI-534 (`/treatments/shunts`) is LIVE — PR #133/#134. The historical WI-534 pickup notes follow. | 
+| **WI-534 (done — history)** | Picked up 2026-09-15, straight after WI-533 went live. **First draft written** on `feature/wi-534-shunts-hydrocephalus`: `/treatments/shunts` + `ShuntsPageTests.cs`; a CONDITIONAL shunt rule added to `blocks/escalation.md` (routes to `#warning-signs`, NINDS + Hydrocephalus Association added to the block's sources) and registered in `EscalationBlockTests`; doors appended to `blocks/mechanism.md` and `/tests/mri`. First draft green (1953 tests, grade 4.6, ContentCheck 262/0). **`/review` round 1 returned 4 blockers, 13 should-fix, 9 nits — saved in full at `.claude/work_files/wi534-sources/review-1.md`, with the first rendered read at `rendered-read-1.md`.** Blockers: the "ambulance list" pointer goes to /get-help-now, which has none; the warning list omits hard-to-wake (HA: "requires urgent attention"), blurred vision, confusion, coordination, infant signs; the recovery section calls tiredness/headache/sore belly normal while the list says right away; the new EscalationBlockTests rule reads RAW hubs and never runs. Verified before fixing: HA list ✓, MedlinePlus "about 1 1/2 hours" vs ACS "about an hour" ✓ (print both), PMC8827213 shunting a median 1.9 months after surgery ✓, FDA "use the ear opposite the shunt" ✓; the reviewer's NINDS "blurred/fixed downward/bulging" and Walton "999 list" are NOT in the fetched text — cite HA instead. Also in scope now: `/treatments/craniotomy`'s caregiver same-day list (headache/confusion/sleeping more) needs a shunt conditional linking `#warning-signs`; meningioma front-matter ruling (13) needs a shunt exception. Harness scripts already copied and repointed to `wi534-sources` (break-tests, dryrun, probe; handproof rewritten for `ShuntsPageRenderTests`). **Fix pass DONE** (page rewritten; block conditional now covers the whole same-day list; craniotomy caregiver line; mechanism pressure clause; meningioma ruling; EscalationBlockTests reads COMPOSED hubs with a positive count; ShuntsPageTests rewritten against every counter-example). Correction to the note above: NINDS DOES carry "Blurred or double vision", the bulging fontanel and "fixed downward" eyes in its general hydrocephalus list — the reviewer was right. **CODE-COMPLETE 2026-09-15:** suite 1958/0, grade 4.8, ContentCheck 262/0, rendered read ×2, 62 break-mutations green on LF and CRLF (one guard beaten and re-proved), four render guards handproofed, docs written (backlog ✓, §12.8 WI-534 entry, log). Next: commit → PR into develop → release PR into main → deploy smoke check. |
+| **Next up** | **WI-535 — Diffuse midline glioma + DIPG, deepened** (Wave 4, written as one item; see backlog.md). Nothing scouted yet. Carry forward from WI-534: `blocks/escalation.md` now has THREE conditionals (chemo fever, post-surgery fever, shunt) — a new hub that includes it inherits all three, and a hub reached through [MECHANISM] now routes to `/treatments/shunts`, so it must include [ESCALATION] too (`EscalationBlockTests` enforces it on COMPOSED hubs). Both DMG and DIPG are stubs today that include neither block. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -23,7 +24,68 @@
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
 
-### WI-534 scouting note (2026-09-15) — READ BEFORE DRAFTING
+### WI-535 scouting note (2026-09-15, partial, corpus only; no sources fetched yet) — READ BEFORE DRAFTING
+
+Written while WI-439's suite ran. Nothing drafted, no branch.
+
+- **TWO §12.3 HUBS, NOT A LIBRARY PAGE.** Read §12.3 for the order and §12.9 for the
+  proved template (`[CAUSES]` demoted, retired-name crosswalk slice, `[ESCALATION]`
+  inside the symptoms section, `:::outlook` gate). Both stubs today are ~40 lines, cite
+  only `cancer.gov/types/brain` (NCI, which §12.1 bars for naming), and include neither
+  [ESCALATION] nor [MECHANISM]. Brain-stem location means [MECHANISM] likely belongs,
+  and then [ESCALATION] must come with it (shunt rule, `EscalationBlockTests` on
+  COMPOSED hubs).
+- **THE DOSSIER IS ONE LINK.** `docs/research/tumor-guides/glioma-family.md` §"Diffuse
+  midline glioma" = PMC11640674, nothing else. Real sourcing is this item's work.
+- **DORDAVIPRONE IS ALREADY SHIPPED, AND ALREADY SOURCED.** `/treatments/targeted-therapy`
+  lists "An H3 K27M change, in a diffuse midline glioma that has kept growing after other
+  treatment. Dordaviprone, taken by mouth." Its front matter carries ACS verbatim ("if the
+  tumor is still growing despite prior treatment", "typically once a week") and
+  PMC13224274 verbatim: FDA **accelerated** approval in 2025, confirmatory phase III ACTION
+  trial (overall survival + PFS vs placebo) not yet reported — which that note says is
+  more precise than the backlog's "contested". §12.10: share or route, do not restate at
+  a third strength. NO survival figures from PMC13224274.
+- **ALREADY OWNED ELSEWHERE:** `/tests/molecular-markers#h3-k27` owns K27M vs
+  K27-altered (older reports vs the 2021 rules) — route, don't redefine.
+  `/tumors/glioma` crosswalk bullet: DIPG "described where the tumor sat. Most of these
+  are now called diffuse midline glioma, H3 K27-altered" — the DMG stub's "Most of these
+  tumors have a change called H3 K27" is a different claim; reconcile to one strength.
+  `glossary/h3-k27-altered.md` exists.
+- **GUARDS THAT FLIP WHEN THE DMG PAGE PASSES 4000 CHARS:**
+  `HighGradeGliomaPageTests.ThePageWarnsThatTheChildPagesItRoutesToAreStillStubs` and
+  `AstrocytomaPageTests.TheHighGradeHubStillWarnsThatItsOtherDestinationsAreThin` —
+  DMG is the LAST thin destination, so `/tumors/high-grade-glioma` lines 80–82 ("still
+  short at the moment") must come down in the same change (backlog: "WI-535 retires it").
+- **TAXONOMY PINS (WI-412):** DIPG is the pontine CHILD of DMG, not a synonym
+  (`TaxonomyTests` 256–273, `taxonomy.yml` 53–62). Pages must say the same.
+- **Audience:** DIPG is mostly children, so the reader is often a parent (WI-538's
+  framing). Outlook gate is load-bearing here; no figures anywhere (§12.5).
+- **SOURCES FETCHED (2026-09-15, by agent, 32 files):** `.claude/work_files/wi535-sources/`
+  with `NOTES.md` (verbatim quotes per topic, each tagged with its .txt file; 160 quotes
+  script-checked against the saved text). Spot-grepped by hand: FDA exclusion line ✓,
+  DailyMed "confirmatory trial(s)" ✓, ACS DIPG/dordaviprone ✓, Together by St. Jude chemo ✓.
+- **THE FINDING THAT SHAPES THE DORDAVIPRONE PARAGRAPH:** the FDA approval page says the
+  pivotal evidence EXCLUDED "Patients with diffuse intrinsic pontine glioma, primary spinal
+  tumors, atypical histologies, or cerebrospinal fluid dissemination", while the indication
+  itself has no location limit and ACS's children's page says for DIPG "dordaviprone may be
+  an option for tumors that grow after radiation treatment". So the DIPG page must not
+  imply the evidence covers pontine tumors. Label: accelerated approval "based on response
+  rate and duration of response"; only PMC13224274 names ACTION.
+- **DISAGREEMENTS TO PRINT OR RESOLVE:** chemotherapy (St. Jude "not offered as part of
+  standard care for DIPG" / Dana-Farber / NCI-CONNECT "sometimes given" / CCS lists drugs);
+  re-irradiation (St. Jude "can be done safely" / PMC9144327 2022 "not typically
+  recommended"); biopsy (safe / often / sometimes, with risk / skipped if risk too high);
+  radiation length (St. Jude 6–7 weeks or ~3 weeks hypofractionated).
+- **NAMING TRAPS IN THE SOURCES:** Brain Tumour Charity and Boston Children's say DMG was
+  "previously called DIPG" (wrong — DIPG is the pontine subset); ACS conflates DIPG = DMG
+  and uses "grade III or IV"; Together by St. Jude "rarely ... grade 2" vs WHO grade 4
+  regardless of histology; CRUK/CCS use "brain stem glioma". WHO CNS5 (Louis 2021) governs.
+- **THIN:** thalamic symptoms (no source), DIPG-specific sedation, ETV (none for DMG;
+  shunts covered by St. Jude, NCI-CONNECT, CCS), liquid biopsy (research only).
+- Dead: GOSH, CHOP (403), AANS, three Cancer.net, two Brain Tumour Charity, two Boston
+  Children's, CCLG, stjude.org/disease, link.springer.com (200 bot wall).
+
+### WI-534 scouting note (2026-09-15) — SPENT, kept for the record
 
 Branch `feature/wi-534-shunts-hydrocephalus` (from develop at 90b79db). Sources
 fetched to `.claude/work_files/wi534-sources/` (text copies alongside). Nothing
@@ -272,6 +334,48 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-15** — **WI-439 code-complete — the Kestrel flake was a race in the test factory,
+  found in the ASP.NET Core source.** Weighed before WI-535 and taken, because it fired three
+  times today and on `main` it silently skips the deploy.
+  **ROOT CAUSE:** `KestrelWebApplicationFactory.CreateHost` built both hosts from ONE
+  `DeferredHostBuilder`, which gives every host it builds the same `_hostStartTcs`.
+  `DeferredHost.StartAsync` starts nothing. It awaits that shared signal while the app's own
+  `app.Run()` starts the host on an entry-point thread. So `_kestrelHost.Start(); testHost.Start();`
+  made the second call a no-op, and both entry points ran DbUp and the seeder concurrently.
+  When the TestServer lost, the first `CreateClient()` got "The server has not been started".
+  That explains WI-503's 9-of-10 (only the first test in the class drew it) and why it kept
+  landing on `TheReaderChoiceGateOpensAndClosesWithJavaScriptDisabled`. The factory never
+  "poisoned itself". A retry would have hidden the cause.
+  **FIX:** start the TestServer host first (a genuine `Start()`), then build the Kestrel host and
+  wait on its OWN `ApplicationStarted`, polling for disposal so a failed start reports in
+  ~300 ms, not 90 s. The error says honestly that the Kestrel entry point's exception is
+  dropped by the shared signal. A half-started factory stops both hosts.
+  **PROOF:** `KestrelWebApplicationFactoryStartTests` (3 tests, test-only start levers).
+  Against the old `CreateHost` the first fails every time with the EXACT production message.
+  5 mutations, one per guard, were each caught on LF and CRLF. Full suite **1959/0** three
+  times (1956 + 3). The Kestrel classes ran 10× green.
+  **`/review`:** 0 blockers. 3 should-fix, all taken: the Kestrel start exception was lost behind
+  a 90 s wait and a wrong message; the half-started factory leaked both hosts; the doc comments
+  overstated. The harness's own parser matched no test on its first run ("Total tests:" at
+  normal verbosity) and was fixed, then re-run.
+  **For `/pm`, not blocking:** `TestCollectionHygieneTests.UsesAWebHost` cannot see a factory
+  created inside a test body. Mvc.Testing 10's `UseKestrel()`/`StartServer()` might retire the
+  dual host — untried.
+
+- **2026-09-15** — **WI-534 is live.** PR #133 into `develop`, release PR #134 into `main`, deploy
+  succeeded first time on the merge commit. **The release PR's two same-commit `build-test` runs
+  split again**: one passed, the other hit the `A11ySmokeTests` Kestrel flake
+  (`TheReaderChoiceGateOpensAndClosesWithJavaScriptDisabled`, 1955 passed / 1 failed), and a
+  re-run of the failed job passed with nothing changed. That is THREE firings today (WI-533's merge
+  commit on a lone run, and this one on a paired run) — the `/pm` item wants a start retry or the
+  root cause, not only a concurrency group.
+  **Smoke check:** `/treatments/shunts` 200 with the `#warning-signs` anchor, the lead instruction
+  and the ambulance sentence; `def-hydrocephalus` absent there and present on `/tests/ct-scan`; no
+  unresolved directive or marker. `/tumors/glioma` composes the escalation block's shunt rule with
+  its `#warning-signs` link, and the [MECHANISM] door and pressure clause.
+  `/treatments/craniotomy` carries the shunt line; `/tests/mri` carries the door. Six other pages
+  200.
 
 - **2026-09-15** — **WI-534 code-complete — `/treatments/shunts`, and the item that created an
   escalation tier.** Grade **4.8**, **1958 tests** (1929 before), ContentCheck **262/0**,
