@@ -136,7 +136,11 @@ sources:
   # in its ambulance tier ("suddenly not being able to speak, move one side,
   # or see") and the hydrocephalus picture is its same-day tier (worsening
   # headache, repeated vomiting, new confusion, sleeping much more than being
-  # awake). What it does NOT cover is SPINAL CORD COMPRESSION, which is a
+  # awake) -- EXCEPT for a reader who already has a shunt: since WI-534 the
+  # block carries a conditional making that whole same-day list a right-away
+  # call for them, per NINDS ("seek medical help immediately") and routed to
+  # /treatments/shunts#warning-signs. What it does NOT cover is SPINAL CORD
+  # COMPRESSION, which is a
   # spinal meningioma's own emergency and appears nowhere in the corpus. That
   # is added as a scoped line ABOVE the block rather than by editing the
   # block, because it is true of one location and false of every other hub.

@@ -2604,6 +2604,78 @@ glossary entry; the existing one suppressed here and kept for the two hubs.
   **Read the first mutation NAMES a run prints before trusting its `ok`s, and grep
   every copied script for the old item number, not just the one you ran.**
 
+**WI-534 — `/treatments/shunts`, and the item that created an escalation tier.**
+Grade **4.8**, **1958 tests** (1929 before), ContentCheck **262/0**, **62
+break-mutations green on LF and CRLF** (one guard beaten on the first run, rewritten
+and re-proved),
+four render guards proved by rebuild. No new glossary entry; `hydrocephalus`
+suppressed here and kept.
+
+- **A TREATMENT CAN CHANGE THE TIER OF A SYMPTOM THE CORPUS ALREADY TIERS.** The
+  shared [ESCALATION] block files a bad headache, repeated vomiting, confusion and
+  much more sleep as same-day, which is right for a reader without a shunt. For a
+  reader WITH one, NINDS says "seek medical help immediately" and the Hydrocephalus
+  Association says the emergency department. The page OWNS the shunt tier (as
+  `/seizures/what-to-do` owns seizures, so it does not call
+  `AssertNoEscalationList`), and every surface a shunt reader can meet routes to it
+  with the IDENTICAL instruction: a third conditional in [ESCALATION] (§12.10,
+  WI-563's shape), a line under `/treatments/craniotomy`'s caregiver lists (the
+  likeliest shunt reader, on a page that does not include the block), and a clause
+  on [MECHANISM]'s "worth a phone call rather than a wait". A threshold phrase that
+  is right for most readers can be wrong for one, and the fix is a conditional
+  wherever that reader lands, not a softer sentence for everyone.
+- **A CONDITIONAL THAT NAMES SIGNS UNDER-TRIAGES THE ONES IT DOES NOT NAME.** The
+  first block line listed three signs. A shunt reader with new confusion on a hub
+  read the same-day list, found confusion there, and found no shunt override for
+  it. The line now flips the WHOLE same-day list for a shunt reader.
+- **A POINTER TO A LIST IS A CLAIM ABOUT THE OTHER PAGE.** "Anything on the
+  ambulance list is still an ambulance call ... Get help now keeps that list" —
+  `/get-help-now` has no ambulance list. Diff a pointer against the page it points
+  at, exactly as a door (§12.8, WI-530); the cases are stated in the paragraph now,
+  checked against `/treatments/craniotomy`'s list by reading it.
+- **A RECOVERY SECTION CAN NORMALISE THE WARNING SIGNS.** "The tiredness can be a
+  surprise", a sore belly cut and "headaches after the operation vary" sat above a
+  list saying headache, sleepiness and belly pain need help right away. A tired,
+  impaired reader picks the reassurance. Recovery and warning are told apart by
+  DIRECTION: normal recovery gets slowly better; a headache getting worse,
+  sleepiness getting deeper or pain that keeps growing is not recovery.
+- **A TEST OVER RAW FILES CANNOT SEE A ROUTE THAT ARRIVES THROUGH A BLOCK.**
+  `AHubThatRoutesIntoATreatmentCarriesThatTreatmentsSafetyRule` checked
+  `text.Contains(route)` on each hub FILE. No hub file links `/treatments/shunts`;
+  they reach it through [MECHANISM], so the new rule never ran. It reads the
+  COMPOSED hub now, with a positive count that the shunt rule was evaluated.
+- **THE DOSSIER'S NUMBER IS NOT ITS PAPER'S NUMBER, AGAIN.** "27.8% shunt failure;
+  13% single, 14% multiple revisions" is attributed to PMC8976775, which says 33%
+  (28 of 85). Neither is published (R2). And a number's START POINT is part of it:
+  PMC8827213's early failures came "within about five weeks" of the shunt GOING IN,
+  which was itself a median 1.9 months after surgery — "the weeks after surgery"
+  would have told a reader shunted at three months that the watch was over.
+- **A PAPER'S BACKGROUND IS NOT ITS FINDING.** PMC6257011's "obstructive, typically
+  at diagnosis ... communicating, usually later" is its opening sentence, and a
+  first draft printed it as "in one study, the blocked kind usually came at
+  diagnosis". Dropped with the source.
+- **CHECK YOUR OWN SEARCH BEFORE REJECTING A FINDING.** The reviewer quoted NINDS for
+  blurred vision, a bulging soft spot and eyes "fixed downward"; a grep came back
+  empty and the finding was nearly recorded as unverified. They are in NINDS's
+  general hydrocephalus list, which the malfunction-list grep had not reached.
+  WI-533 recorded checking the review's quotation; this is the other half.
+- **TWO OPERATION TIMES, PRINTED SIDE BY SIDE** — ACS "about an hour", MedlinePlus
+  "about 1 1/2 hours". §12.8 (WI-511) applies to durations as much as frequencies.
+- **FIFTEEN SELF-RESTATEMENTS ON ONE PAGE** (make and model ×4, who to call ×4,
+  "is on the list" ×4 — one of them false —, temporary drain ×3, for now or for good
+  ×3, …). Pinned one owner per point, and the review's "on the list" pointer that was
+  false became a ban.
+- **A RULE'S OWN LINK CAN SATISFY THE CHECK FOR THE RULE.** The composed-hub fix
+  above was beaten by the break harness on its first run: the block's shunt rule
+  links `/treatments/shunts#warning-signs`, so every composed hub contained the
+  route through the very paragraph the test was looking for, and deleting
+  [MECHANISM]'s actual door left the "rule was evaluated" count above zero — a
+  positive count that could not go to zero. A route now means the treatment page's
+  path NOT followed by a fragment. Third item running where the guard rewritten in
+  response to a finding needed its own harness run (§12.8, WI-532).
+- **The harness copy was checked this time**: every copied script was grepped for
+  its `sys.path` before the first run (§12.8, WI-533).
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
