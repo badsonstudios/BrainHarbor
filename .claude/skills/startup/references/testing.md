@@ -42,6 +42,13 @@ dotnet run --project src/BrainHarbor.Pipeline -- --once   # single pipeline run
   Razor pages) + front-matter validation via
   `tools/BrainHarbor.ContentCheck`; axe-core smoke on key pages (Playwright)
   once pages exist.
+- **Real-socket tests** (`A11ySmokeTests`, `SyncApiClientIntegrationTests`) use
+  `KestrelWebApplicationFactory`, which runs a TestServer host and a Kestrel twin
+  built from ONE deferred builder. Those hosts share a single start signal, so a
+  second host's `Start()` returns at once (WI-439). **Start them one after
+  another and wait on each host's own lifetime.** `KestrelWebApplicationFactoryStartTests`
+  forces each ordering with test-only levers. Touch `CreateHost` and those tests
+  must stay green.
 
 ## Rules
 

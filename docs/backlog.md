@@ -564,8 +564,44 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   806 tests, ContentCheck 50/0. Refs: Pages/Shared/_Layout.cshtml,
   wwwroot/css/site.css, A11ySmokeTests.
 
-- [ ] **WI-439 The Kestrel test host must start deterministically, or retry**
-  (Dan, 2026-08-21, after it blocked a production deploy)
+- [x] **WI-439 The Kestrel test host must start deterministically, or retry**
+  (Dan, 2026-08-21, after it blocked a production deploy) *(done 2026-09-15)*
+  **Done — the deterministic route; no retry.** The race was in the test factory,
+  and the ASP.NET Core source shows it (`Mvc.Testing` `DeferredHostBuilder`,
+  release/10.0). Both hosts in `CreateHost` come from ONE deferred builder, which
+  hands every host it builds the SAME `_hostStartTcs`. `DeferredHost.StartAsync`
+  starts nothing: the app's own `app.Run()` starts the host on the resolver's
+  entry-point thread, and `StartAsync` only awaits that shared signal. The old code
+  built both hosts and then called `_kestrelHost.Start(); testHost.Start();`, so
+  the second call was always a no-op. Both entry points then ran DbUp (advisory
+  lock) and the admin seeder at the same time. Whenever the TestServer host lost
+  that race, the first `CreateClient()` met an unstarted TestServer: *"The server
+  has not been started"*.
+  **This explains both earlier readings.** The factory never "poisoned itself".
+  Only the first test xUnit ran in the class drew the half-started server; by the
+  next test's `EnsureServer` it had finished. That is WI-503's 9 of 10, and why it
+  kept landing on `TheReaderChoiceGateOpensAndClosesWithJavaScriptDisabled`. A
+  retry would have worked, by accident, and hidden the cause.
+  **Fix.** Build and fully start the TestServer host first. Its `Start()` is
+  genuine, because nothing has released the signal yet, and it rethrows that
+  entry point's exception. Only then build the Kestrel host, and wait on ITS OWN
+  `ApplicationStarted`. A failed start disposes its host, so the wait notices
+  within 200 ms instead of sitting out the 90 s timeout. It says plainly that the
+  Kestrel entry point's own exception is dropped by the shared signal and names
+  what a second start can hit. A half-started factory stops and disposes both
+  hosts. `EnsureServer`'s message names the base exception instead of guessing.
+  **Proof.** `KestrelWebApplicationFactoryStartTests` uses test-only start levers
+  (delay the TestServer host, delay the Kestrel host, fail the Kestrel host).
+  Against the OLD `CreateHost`, the first test fails every time with the exact
+  production message. Five mutations, one per guard, were each caught on LF and
+  CRLF.
+  **Not done, for `/pm`:** `TestCollectionHygieneTests.UsesAWebHost` only sees
+  fixtures taken through interfaces or constructors, so a class that news a factory
+  inside a test body (as this one does) is not held to the `[Collection]` rule.
+  Also: Mvc.Testing 10 ships `UseKestrel()`/`StartServer()`, which might retire the
+  dual host altogether — untried.
+  The analysis below is kept for the record; its "poisons itself" and retry leads
+  are superseded by the paragraphs above.
   Goal: a red `main` always means something is actually wrong.
   **Problem.** `A11ySmokeTests` intermittently fails at start-up with
   *"The Kestrel test host did not start"* wrapping *"The server has not been
