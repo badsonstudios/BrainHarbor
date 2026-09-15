@@ -304,6 +304,8 @@ The main side effect is skin irritation where the pads sit. It means wearing it
 **at least eighteen hours a day** and shaving your head. Some people find that a
 reasonable trade and some do not, and that is a legitimate thing to weigh rather
 than a test of how hard you are trying.
+[Living with the device](/treatments/tumor-treating-fields) covers what wearing
+it asks of you, and of the person helping you.
 
 ### If you are older, or not well enough for the full course
 

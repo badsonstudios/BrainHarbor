@@ -2509,6 +2509,101 @@ could see.**
   was about which SECTION gets the tooltip and about a definition being wrong
   where it landed, which are different things and still apply.
 
+**WI-533 — `/treatments/tumor-treating-fields`, and the item whose clinical half
+was already shipped twice.** Grade **4.4**, **1929 tests** (1895 before),
+ContentCheck **261/0**, **103 break-mutations green on LF and CRLF** (34 of them
+`/review`'s counter-examples and one from the second rendered read), three render
+guards proved by script. No new
+glossary entry; the existing one suppressed here and kept for the two hubs.
+
+- **DECIDE §12.10 BEFORE DRAFTING, AND SHARE THE PHRASE, NOT THE CLAUSE.**
+  `/tumors/glioblastoma` already shipped the device, the 18 hours, the shaved head
+  and the start interval; `/tumors/high-grade-glioma` shipped EANO's disagreement.
+  The page reuses "at least eighteen hours a day" and the EANO sentence verbatim.
+  A six-word phrase is shorter than a restatement shingle, so it needs no
+  allowlist entry — **it needs a test that reads the hub instead**. And the
+  restatement check still fired, on the words AROUND the phrase: "it at least
+  eighteen hours a day and" matched the hub's sentence because the draft had
+  mirrored its clause. The EANO sentence is fifteen words and IS allowlisted.
+- **A SECOND STRENGTH ARRIVES AS AN IDIOM, NOT A NUMBER.** Every numeric second
+  strength was banned before drafting, and the page still said "From then on it
+  runs day and night", "wearing something that never comes off" (both caught by
+  `/review`) and, after that fix, "The cap and the bag are always there" (caught by
+  the rendered read). Each one says twenty-four hours.
+- **A 200 IS NOT A PAGE.** `virtualtrials.org/optune.cfm`, the dossier's source for
+  the 18 hours, the pad changes and the support-person bullet, answers HTTP 200
+  with a zero-byte body behind a Sucuri firewall. Check the body size, not the
+  status code. Its other source was `optunegio.com`, the manufacturer, which is
+  §12.2 item 6's rule by extension — and the contraindication list it alone
+  carries is not published.
+- **ONE TREATMENT, TWO READERS, AND A SENTENCE TRUE OF ONLY ONE.** The device is
+  used alongside temozolomide when newly diagnosed and INSTEAD of chemotherapy at
+  recurrence. "Some of what you feel will be the temozolomide" was addressed to
+  both, and the recurrence reader is not on it — `/review`'s second blocker. A
+  conditional ("If you are also taking temozolomide") is the fix, and a guard now
+  requires it on every sentence that addresses the reader about the drug.
+- **THE WORD HAS TO MATCH THE SHARE, AND THE STUDY DESIGN HAS TO ALLOW THE WORD.**
+  From one 30-patient study: 55% became "about half", not "most"; 3% of 30 became
+  "one person", not "a few people"; the adaptation time is the median and range
+  (14 days, 0–90), not the mean (24). And "most still kept wearing it" was
+  deleted outright: **the study enrolled only people who had already completed two
+  months**, so everyone in it was still wearing it. A survivorship artifact is not
+  a finding.
+- **FLATTENING "SOME" INTO "THE".** "The doctors called it a good option, and also
+  said it may not be the right choice" — the source's nine clinicians ALL called it
+  a good option and SOME said it may not suit everyone. A bold lead ("Doctors who
+  offer it say both things") then generalised nine doctors at one centre to all.
+- **A SOURCE'S INSTRUCTION CAN BE FLIPPED BY WHERE IT LANDS.** PMC7399624 says wear
+  breathable headwear *to avoid overheating*. Placed under "You decide what to
+  share", a hat became concealment and cooling at once. It lives beside the warmth
+  paragraph now.
+- **FUNDED SOURCES, CITED FOR WHAT THEY CAN CARRY.** Two of the three
+  patient-experience sources have manufacturer ties. They are cited for skin-care
+  practice and for what participants said, never for effect; the finding leaned on
+  hardest (head shaving was the reason decliners gave most often) cuts against the
+  funder. The reason the hours matter is the independent HTA's, with its hedge.
+- **CHECK THE REVIEW'S QUOTATION TOO.** §12.14's last rule, one layer up: `/review`
+  quoted CADTH as saying "Optune is visible even with headwear", which is not in
+  the fetched text, and flagged "the main cancer guidelines" as one guideline when
+  the cited paper names three (NCCN, ASCO, ASTRO 2025). Both rejected with the
+  verbatim in the front matter; the hat sentence was fixed anyway, to what the
+  source does say.
+
+**`/review` beat the first guards with worked counter-examples, and every one is a
+`review-` mutation in the harness now.**
+
+- **A CASE-INSENSITIVE REDACTION ERASES THE CONTEXT IT SITS IN.** The hours guard
+  blanked the shared phrase before scanning, so "at least eighteen hours a day on
+  most days" and "…, or as many as you can manage" were green. The phrase is
+  replaced by a TOKEN now, and a qualifier hung on either side of the token fails.
+- **A GUARD THAT PASSES ON A REPEAT FAILS THE FIX FOR THE REPEAT.** The duration
+  slot opens "At least eighteen hours a day", capitalised; the ordinal `Contains`
+  passed only because a bullet repeated the phrase in lowercase — so removing that
+  self-restatement, a correct §12.8 (WI-532) edit, would have turned it red.
+- **A PARAGRAPH IS NOT THE SUBSECTION.** The hub check read the one paragraph
+  holding the phrase; "worn most of the day" added to the paragraph above it, in the
+  same `###` device subsection, stayed green. It slices the subsection.
+- **A LIST OF CLAIMS, EACH WITH ITS ONE STUDY.** "Every 'most people' paragraph
+  names a study" was a floor that accepted either study, so swapping "German" for
+  "Chicago" stayed green, and "The majority said" was never selected. Each claim is
+  listed with the study it belongs to, the other study's name is banned from its
+  paragraph, and unlisted share-shaped claims fail.
+- **INFLECTIONS AGAIN.** `lives?` does not match "lived"; the lookbehind allowed
+  "thought to" and failed CADTH's own "believed to".
+- **A PAGE CAN RESTATE ITSELF SEVEN TIMES.** Plug into the wall ×3, wet pads ×2,
+  visiting nurse ×3, implants ×3, expensive ×2, training ×2, scans ×2. Each
+  practical point is pinned to the one section that owns it. **And the fix for the
+  hub-framing paraphrase created an eighth**, which only the second rendered read
+  saw.
+- **A COPIED HARNESS RUNS THE TABLE IT LOADS, AND `ok` DOES NOT SAY WHICH.** The
+  first WI-533 run printed 54 `ok` lines for WI-532's mutations against WI-532's
+  page: `break-tests.py` had its docstring updated and its `sys.path` line left
+  pointing at `wi532-sources`, while `dryrun.py` — which DID point at the new table —
+  reported 103 clean mutations. Killed mid-run it left a live mutation on
+  `/treatments/targeted-therapy` and eight siblings LF-normalised, restored from git.
+  **Read the first mutation NAMES a run prints before trusting its `ok`s, and grep
+  every copied script for the old item number, not just the one you ran.**
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

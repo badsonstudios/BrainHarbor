@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-532 — code-complete, all gates green, being committed.** Grade **5.4**, **1895 tests**, ContentCheck **260/0**, **88 break-mutations on LF and CRLF**, three render guards proved by script, rendered end-to-end read done (seven findings, all fixed). §12.8 + backlog updated. Remaining: commit → PR into `develop` → release PR into `main` → deploy → smoke-check. |
-| **Next up** | **WI-533 (X10 Tumor Treating Fields / Optune)** — a lived-experience decision rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying the device, caregiver dependency. R1 keeps the 18 hours because it *is* the decision. Depends on: WI-502. |
+| **In progress** | **WI-533 — `/treatments/tumor-treating-fields` (X10, Optune).** Picked up 2026-09-15 on `feature/wi-533-tumor-treating-fields`; sources fetched to `.claude/work_files/wi533-sources/`. **§12.10 call made before drafting: SHARED WORDING, not a reworded hub.** The 18 hours stay on `/tumors/glioblastoma` as "at least eighteen hours a day" and the new page uses that exact phrase and no other strength; the EANO sentence is shared verbatim with `/tumors/high-grade-glioma` (allowlisted); both pinned by tests that READ the hubs. "Four to seven weeks" was checked: it is verbatim in PMC12467656 ("initiated 4–7 weeks post-radiotherapy") — the hub keeps it, the new page routes. `virtualtrials.org` (the dossier's main source) returns a 0-byte Sucuri page: dead. |
+| **Next up** | **WI-534 (X13 Shunts and hydrocephalus)** — obstructive vs communicating in plain words; what a shunt is and what living with one means. R2 applies to failure rates. Depends on: WI-502. (After WI-533 ships: code-complete 2026-09-15, suite 1929/0, grade 4.4, ContentCheck 261/0, /review answered, rendered read ×2; break harness then handproof then PR — see the log.) |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -22,6 +22,53 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-533 scouting note (2026-09-14) — SPENT, kept for the record
+
+The item is done. Everything below held: the §12.10 call went to shared wording,
+the glossary entry was suppressed rather than deleted, "four to seven weeks" was
+verified at PMC12467656, and the unowned half became the page. See the
+2026-09-15 log entry.
+
+- **`/tumors/glioblastoma` ALREADY OWNS MOST OF WHAT THE BACKLOG HANDS THIS
+  ITEM.** It carries a whole `### Tumor treating fields, the device you wear`
+  section with: the name to ask about, that the device is called **Optune**,
+  alternating electric fields through scalp pads, that it runs alongside
+  temozolomide after radiation, **"usually started around four to seven weeks
+  after radiation ends"**, who it is for (tumor in the upper part of the brain,
+  managing reasonably well day to day), skin irritation as the main side
+  effect, **"at least eighteen hours a day"**, shaving your head, and the
+  framing that this is "a legitimate thing to weigh rather than a test of how
+  hard you are trying".
+- **THE BACKLOG SAYS "R1 KEEPS THE 18 HOURS BECAUSE IT *IS* THE DECISION" — AND
+  THE 18 HOURS ARE ALREADY SHIPPED ON THAT HUB.** So the item's FIRST decision
+  is the §12.10 one and it must be made before a word is drafted: either the two
+  pages share the wording verbatim with an allowlist entry (the WI-522/WI-532
+  answer, and the one that keeps one claim at one strength), or the hub is
+  reworded to route. Do NOT let the new page state it a second way.
+- **`/tumors/high-grade-glioma` owns the DISAGREEMENT**, and it is the
+  anti-hype spine: the European guideline "calls its role controversial and says
+  it is not widely available there", with the instruction to ask your team
+  rather than assume either way. A page that sells the device without this is
+  the §12.13 shape.
+- **A GLOSSARY ENTRY ALREADY EXISTS** — `Content/glossary/tumor-treating-fields.md`,
+  term `tumor treating fields`, alias `Optune`, sourced to PMC12467656. Its
+  tooltip fires site-wide, so the new page will define its own subject in a
+  popover unless it suppresses it (`!%tumor treating fields%`). That is the
+  WI-519/WI-521 shape — and note WI-532's own ruling that an entry suppressed
+  only where it is defined is decoration; here the entry is already earning its
+  keep on two hubs, so suppression on the new page is the right call rather
+  than deletion.
+- **CHECK "four to seven weeks after radiation ends" AGAINST §12.4** when the
+  item runs. It is a numeric range already live on the glioblastoma hub, and
+  WI-532's lesson is that a figure inherited from a sibling still needs its
+  source read.
+- What is genuinely UNOWNED, and therefore the page: **carrying the device**
+  (the bag, the batteries, the plugging-in at night), **scalp care and what the
+  pads actually do to skin over months**, **the shaved head as a visible thing
+  other people react to**, and **what it asks of the person alongside them**.
+  The backlog's own framing — "a lived-experience decision rather than a
+  clinical one" — is right, and the clinical half is already shipped twice.
 
 ### WI-531 scouting note (2026-09-13) — SPENT, kept for the record
 
@@ -169,6 +216,55 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-15** — **WI-533 code-complete — `/treatments/tumor-treating-fields`, and the item
+  whose clinical half was already shipped twice.**
+  Grade **4.4**, **1929 tests** (1895 before), ContentCheck **261/0**, **103 break-mutations
+  green on LF and CRLF** (every `/review` counter-example among them; a first run was
+  misdirected at WI-532's table and killed — §12.8 has it), plus the
+  three Kestrel render guards proved by script. No new glossary entry: the existing
+  `tumor treating fields` entry (alias Optune) is suppressed on this page and kept for the two
+  hubs. Doors on `/tumors/glioblastoma` (in the device paragraph) and
+  `/tumors/high-grade-glioma` (in the EANO paragraph).
+  **THE §12.10 CALL WAS MADE BEFORE DRAFTING: SHARED WORDING.** The page uses the glioblastoma
+  hub's "at least eighteen hours a day" and no other strength, and the high-grade-glioma hub's
+  EANO sentence verbatim (allowlisted); both pinned by tests that READ the hubs. Who it suits
+  and when it starts stay on the hub. **"Four to seven weeks" was read at its source** — verbatim
+  in PMC12467656, "initiated 4–7 weeks post-radiotherapy" — and not restated.
+  **THE DOSSIER'S MAIN SOURCE IS A ZERO-BYTE PAGE THAT ANSWERS 200** (`virtualtrials.org`,
+  Sucuri), and its other is `optunegio.com`, the manufacturer. Re-sourced to ACS (two pages),
+  CADTH's HTA, EANO, PMC12467656, the Brain Tumour Charity, a skin-care review and two
+  patient-experience studies (Chicago, Novocure-funded; Germany, no conflict), each cited only
+  for what it can carry. The manufacturer's contraindication list is not published.
+  **`/review` returned 2 blockers, 24 should-fixes and 10 nits.** Blockers: "From then on it
+  runs day and night" (a 24-hour second strength past a guard that banned every NUMBER), and
+  temozolomide addressed to the recurrence reader, who is not on it. Should-fixes included a
+  survivorship artifact ("most still kept wearing it" from a study that enrolled only people
+  two months in), 55% printed as "most", "some doctors" flattened to "the doctors", a hat
+  offered as concealment, and the page restating itself seven times. Two findings rejected
+  with the verbatim in the front matter (a CADTH quote not in CADTH; "guidelines" plural is
+  supported by three named). The guards were rewritten against every counter-example and each
+  is a `review-` mutation.
+  **The rendered read (twenty-second item running) ran twice.** Round one found ten, including
+  the alarms ranked "one of the most disturbing parts" when the source only rated them
+  disturbing. Round two found "The cap and the bag are always there" — a third idiom for
+  twenty-four hours — and a self-restatement created by a `/review` fix.
+  **For `/pm`, not blocking:** `feeling sick` (British for nauseous) is on
+  `/treatments/chemotherapy` and seven other files, and is not on `CuratedPage.BritishForms`;
+  add `virtualtrials.org` to the known-dead list; both door hubs sit at 5.8 and 5.7.
+
+- **2026-09-14** — **WI-532 is live.** PR #129 into `develop`, release PR #130 into `main`,
+  **build-test green first time on both**, deploy succeeded (5m25s).
+  `/treatments/targeted-therapy` returns 200 on brainharbor.org with no authoring marker and
+  no unresolved block directive; the spine sentence and all four rendered-read fixes are on
+  the live page and the site-voice meta is gone. **All six doors point here from their
+  siblings, and `/treatments/watch-and-wait` correctly has ZERO** — the seventh door stays
+  refused in production. Both deep-link anchors resolve (`#what-worked-means` here,
+  `#fever-rule` on the chemotherapy page). Fourteen other pages smoke-checked at 200.
+  **The release PR fired TWO `build-test` runs on the identical SHA again** — the
+  `A11ySmokeTests` race named in the WI-531 entry — and this time **both passed** (3m42s and
+  3m33s). The trigger is confirmed as real and still unfixed; it simply did not bite. Still
+  for `/pm`: a workflow concurrency group.
 
 - **2026-09-14** — **WI-532 code-complete — `/treatments/targeted-therapy`, and the item
   where a guard proved only that a file existed.**

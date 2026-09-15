@@ -3395,10 +3395,22 @@ Start only after Dan has signed off WI-513's template.
   that could not fail after 71 walk-throughs were answered, two of them real:
   a `(?i)` anchor on a phrase the sibling also uses as lowercase prose, and
   presence-not-position in a door guard. Seventeen lessons in §12.8.
-- [ ] **WI-533 X10 Tumor Treating Fields (Optune)** — a lived-experience decision
+- [x] **WI-533 X10 Tumor Treating Fields (Optune)** — a lived-experience decision
   rather than a clinical one: 18 hours a day, shaved head, scalp care, carrying
   the device, caregiver dependency. R1 keeps the 18 hours because it *is* the
   decision. Depends on: WI-502.
+  **Done 2026-09-15.** `/treatments/tumor-treating-fields`, grade **4.4**,
+  **1929 tests** (1895 before), ContentCheck **261/0**, **103 break-mutations green on LF and CRLF**, plus three
+  render guards proved by script. **The §12.10 call was made before drafting**:
+  shared wording with both hubs, not a reworded hub — the glioblastoma hub's "at
+  least eighteen hours a day" and the high-grade-glioma hub's EANO sentence, both
+  pinned by tests that read the hubs. "Four to seven weeks" was read at its source
+  (verbatim in PMC12467656) and left on the hub. **The dossier's main source,
+  virtualtrials.org, returns HTTP 200 with a zero-byte body**, and its other one is
+  the manufacturer. `/review` returned 2 blockers, 24 should-fixes and 10 nits,
+  and the blockers were both reader-harm: "runs day and night" (a second strength
+  for the hours) and temozolomide addressed to the recurrence reader, who is not
+  on it. Lessons in §12.8.
 - [ ] **WI-534 X13 Shunts and hydrocephalus** — obstructive vs communicating in
   plain words; what a shunt is and what living with one means. R2 applies to
   failure rates. Depends on: WI-502.
