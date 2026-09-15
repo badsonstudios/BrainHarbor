@@ -3468,10 +3468,36 @@ Start only after Dan has signed off WI-513's template.
 Each inherits complete libraries, so these are writing items rather than
 research items. Same shared contract throughout.
 
-- [ ] **WI-535 Diffuse midline glioma + DIPG, deepened** — written as one item
+- [x] **WI-535 Diffuse midline glioma + DIPG, deepened** — written as one item
   because DIPG is the pontine subset of DMG and writing them apart is how they
   drift (WI-412 already had to pin this with a test). H3 K27M. If dordaviprone
   is mentioned, mention that its approval is contested. Depends on: WI-515.
+  *(done 2026-09-15)*
+  **Done.** Both stubs rewritten as full §12.3 hubs, each with [MECHANISM] and
+  [ESCALATION]. Grade **4.9** (DMG) and **5.0** (DIPG), **2019 tests**, ContentCheck
+  **267/0**, **128 break-mutations on LF and CRLF, all caught on the fifth and final
+  harness run** (three guards beaten and rewritten on earlier runs), ten render guards
+  proved by rebuild, five rendered reads, three `/review` rounds (3 blockers, then 1,
+  then none). DMG is the umbrella (name,
+  grade, chemotherapy note, dordaviprone, trials); DIPG owns the pons (the MRI-only
+  diagnosis and the biopsy choice, radiation length, the stretch after radiation,
+  anesthesia, palliative care, end-of-life text behind the gate) and routes to DMG.
+  **"Contested" was made precise:** accelerated approval on response rate, efficacy
+  studies mostly in adults that excluded DIPG and spinal tumors, trials still
+  checking survival. **Safety decisions:** a page-local right-away rule for a tumor in
+  the spinal cord (the shared block files new weakness as same-day); tiredness never
+  explained away (St. Jude lists it as a late-stage symptom); new swallowing trouble
+  a same-day call, and every same-day line the pages write says what changes for a
+  reader with a shunt. `/review` round 1 returned 3 blockers (tiredness, swallowing, an
+  outlook leak outside the DIPG gate) and 19 should-fix; round 2 returned 1 blocker
+  (those new same-day lines were silent about shunts) and 11 should-fix, including
+  curability, now stated in both grade sections at the sibling hubs' strength. Glossary `pons`,
+  `thalamus`, `palliative-care`; door on `/treatments/targeted-therapy`, whose
+  unsourced "a larger trial" was fixed at source; `/tumors/high-grade-glioma`'s
+  honesty note retired. Lessons in §12.8.
+  **For `/pm`:** WI-538 (pediatric hub) inherits the parent audience, anesthesia and
+  palliative framing from `/tumors/dipg`; tumor-board and NOS/NEC tooltip echoes are
+  still corpus-wide (WI-529 note); "feeling sick" is still in [MECHANISM] (WI-533).
 - [ ] **WI-536 Ependymoma, deepened.** Depends on: WI-514.
 - [ ] **WI-537 Medulloblastoma, deepened** — including craniospinal radiation and
   the 14-day rule before staging lumbar puncture. Depends on: WI-513.
