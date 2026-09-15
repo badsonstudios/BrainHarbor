@@ -489,6 +489,11 @@ is any of these:
 
 If you are not sure which list this is, call.
 
+**If they have a shunt, the same-day list is a right-away list.** Get help right
+away, at any hour: call your team, or go to the emergency department.
+[Signs a shunt is not working](/treatments/shunts#warning-signs) has the full
+list.
+
 **How long are you doing this for?** The intense part is the first few weeks.
 Most people take a month or two to feel like themselves. The invisible part, the
 tiredness and the attention and the words, often runs on past that. Plan for

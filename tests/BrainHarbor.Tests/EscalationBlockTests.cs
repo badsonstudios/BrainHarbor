@@ -110,9 +110,16 @@ public class EscalationBlockTests
                 "/treatments/chemotherapy#fever-rule"),
             ("/treatments/craniotomy", "after brain surgery, a fever is its own rule too",
                 "/treatments/craniotomy"),
+            // WI-534. A reader with a shunt is under-triaged by the same-day
+            // tier: NINDS says "seek medical help immediately". The conditional
+            // is true on every hub and false on none, and it routes to the page
+            // that owns the list.
+            ("/treatments/shunts", "If you have a shunt, the signs it has stopped working are their own rule",
+                "/treatments/shunts#warning-signs"),
         ];
 
         var offenders = new List<string>();
+        var shuntRuleEvaluated = 0;
 
         foreach (var (slug, text) in TumorHubs())
         {
@@ -120,9 +127,27 @@ public class EscalationBlockTests
 
             foreach (var (route, owed, anchor) in rules)
             {
-                if (!text.Contains(route, StringComparison.Ordinal))
+                // COMPOSED, not raw (WI-534 /review): no hub FILE links
+                // /treatments/shunts; hubs reach it through [MECHANISM]. A raw
+                // check never ran for that rule, and a hub including
+                // [MECHANISM] without [ESCALATION] would route readers to the
+                // shunt page with no shunt rule and stay green.
+                // A ROUTE IS A LINK TO THE TREATMENT PAGE ITSELF, not the rule's own
+                // deep link. The harness beat the first composed version: the
+                // block's shunt rule links "/treatments/shunts#warning-signs", so
+                // every composed hub "routed" to the shunt page through the very
+                // rule this test is checking for, and deleting [MECHANISM]'s real
+                // door left the evaluated count above zero. `(?![\w#/-])` refuses a
+                // path followed by a fragment or a deeper segment.
+                var routes = new Regex(Regex.Escape(route) + @"(?![\w#/-])");
+                if (!routes.IsMatch(text) && !routes.IsMatch(composed))
                 {
                     continue;
+                }
+
+                if (route == "/treatments/shunts")
+                {
+                    shuntRuleEvaluated++;
                 }
 
                 if (!Regex.IsMatch(composed, owed, RegexOptions.IgnoreCase)
@@ -132,6 +157,12 @@ public class EscalationBlockTests
                 }
             }
         }
+
+        // A positive count beside the iterate-and-check (§12.10, WI-517): the
+        // first version of the shunt rule matched no hub at all and passed.
+        Assert.True(shuntRuleEvaluated > 0,
+            "no tumor hub routes to /treatments/shunts, raw or composed, so the shunt safety rule "
+            + "was never checked — [MECHANISM]'s door has gone or the hubs stopped including it");
 
         Assert.True(offenders.Count == 0,
             "these tumor hubs route readers into a treatment without its safety rule — "
