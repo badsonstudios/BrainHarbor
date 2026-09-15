@@ -300,7 +300,8 @@ fields. It is called **tumor treating fields**, and it applies to some
 glioblastomas. It is worth knowing that experts disagree about it: the European
 guideline calls its role controversial and says it is not widely available
 there. So ask your team what they think of it for you, rather than assuming
-either way.
+either way. [Living with the device](/treatments/tumor-treating-fields) covers
+what wearing it is like, and why experts differ about it.
 
 ## What is treatment actually like, and what is normal afterwards?
 
