@@ -56,21 +56,9 @@ sources:
     # publishes a five-year relative survival figure (mostly adult data). That figure
     # is not carried (§12.2 item 5), and it is not followed as a curability claim: the
     # reviews above, not a pooled survival rate, carry that.
-  # The spinal-cord rule under [ESCALATION]. The shared block files new weakness
-  # as same-day, which under-triages a reader whose tumor is IN the cord. This
-  # page is about METASTATIC spinal cord compression ("Metastatic means that the
-  # cancer has spread to the spine"), not a glioma inside the cord, so the page
-  # keeps the tier (the safe direction) and attributes the reason to what the
-  # source actually covers (/review). Verbatim: "Spinal cord compression is an
-  # emergency and needs to be treated quickly"; signs "back pain", "weakness in
-  # your legs or arms", "numbness", "difficulty walking", "difficulty
-  # controlling your bladder or bowel". UK source; "A&E" and "GP" not carried.
-  # /review round 2 noted that "weaker than it was" at any hour may send some
-  # readers in for expected progression. Accepted knowingly: over-triage is the
-  # direction the corpus chooses (§12.8, WI-534).
-  - url: https://www.cancerresearchuk.org/about-cancer/coping/physically/spinal-cord-compression
-    title: "Spinal cord compression | Coping Physically | Cancer Research UK"
-    accessed: 2026-09-15
+  # The spinal-cord rule after [ESCALATION] is the shared [SPINAL-CORD] block
+  # since WI-536 (ependymoma was its second use); its source and the reasoning
+  # for its tier live in blocks/spinal-cord.md.
   - url: https://together.stjude.org/en-us/about-pediatric-cancer/types/brain-spinal-tumors/diffuse-intrinsic-pontine-glioma-dipg.html
     title: "Diffuse Intrinsic Pontine Glioma (DIPG) in Children - Together by St. Jude™"
     accessed: 2026-09-15
@@ -225,18 +213,11 @@ and throwing up, and being very sleepy.
 
 In the spinal cord: weakness that keeps getting worse, numbness, and trouble
 controlling the bladder or bowel. For a tumor in the spinal cord, these have
-their own rule, just after the list below.
+their own rule, at the end of the section on when to call for help, below.
 
 [ESCALATION]
 
-**If the tumor is in the spinal cord, new signs from the cord are their own
-rule.** For you, an arm or a leg that is newly weak, or weaker than it was, is a
-right-away call, not a same-day one.
-
-So are new trouble walking, new numbness or tingling, new or worse back pain,
-and new trouble controlling the bladder or bowel. Call your team right away, at
-any hour, or go to the emergency department. When cancer presses on the spinal
-cord, Cancer Research UK calls it an emergency that needs treating quickly.
+[SPINAL-CORD]
 
 ## How do doctors find out it is this?
 

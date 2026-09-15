@@ -3498,7 +3498,42 @@ research items. Same shared contract throughout.
   **For `/pm`:** WI-538 (pediatric hub) inherits the parent audience, anesthesia and
   palliative framing from `/tumors/dipg`; tumor-board and NOS/NEC tooltip echoes are
   still corpus-wide (WI-529 note); "feeling sick" is still in [MECHANISM] (WI-533).
-- [ ] **WI-536 Ependymoma, deepened.** Depends on: WI-514.
+- [x] **WI-536 Ependymoma, deepened.** Depends on: WI-514. *(done 2026-09-15)*
+  **Done.** The stub (40 lines, cited only NCI's patient PDQ, had neither [MECHANISM]
+  nor [ESCALATION]) rewritten as a full §12.3 hub: grade **5.4**, **2064 tests**
+  (2019 before), ContentCheck **271/0**, **142 break-mutations on LF and CRLF, all
+  caught**, nine render guards proved by rebuild, six rendered reads, **four `/review`
+  rounds (2 blockers, then 2, then 1, then none)**. Sources: 51 files, 241 script-checked quotes
+  (`.claude/work_files/wi536-sources/NOTES.md`).
+  **§12.10 DECISION (the carry-forward):** the spinal-cord right-away rule WI-535 wrote
+  page-local became **`blocks/spinal-cord.md` ([SPINAL-CORD])**, a SCOPED block included
+  after [ESCALATION] only by hubs whose tumor can sit in the cord — not a conditional in
+  `escalation.md`, which MeningiomaPageTests and BrainMetastasesPageTests pin free of
+  spinal words. DMG's copy was removed and its CRUK source moved into the block.
+  **Handed to WI-543, and ENFORCED rather than remembered:** `/tumors/meningioma`,
+  `/tumors/brain-metastases` and `/tumors/spinal-cord-tumor` still say "seen quickly,
+  not to wait for the next appointment", a weaker strength than the block's "right
+  away, at any hour". The gap is not uniform (`/review` round 4): meningioma and the
+  spinal-cord stub are a full tier lower, while brain-metastases already opens with
+  "that is its own emergency" and only its second sentence is weaker. `/review` round 3 called that a blocker; the three siblings are
+  NOT re-tiered here (meningioma's wording was set by its own item, with its own source
+  and review, and WI-543 owns the subject), but
+  `SpinalCordBlockTests.TheStrengthSplitWithTheSiblingHubsIsPinnedUntilWi543SettlesIt`
+  now reads all three siblings, pins the divergent sentence verbatim, asserts none of
+  them includes the block, and pins the block's own tier — so drift on either side fails
+  the build. WI-543 will also need "in or pressing on the cord", because a meningioma
+  sits beside the cord rather than in it.
+  **What the page decides:** CNS5 names by site + gene result (PFA/PFB, ZFTA, YAP1,
+  MYCN, myxopapillary grade 2, subependymoma grade 1, site-only names), retired names
+  (anaplastic, classic, RELA/C11orf95-RELA, myxopapillary grade 1, the pattern names)
+  only as retired; curability at ACS strength ("sometimes ... when all of it can be
+  taken out"), with the ABTA/2025-review "cured"/"usually curative" quotes left out
+  because both are about SUBEPENDYMOMA; late recurrence and years of scans; the spinal
+  tap timing spread printed; the radiation age line printed as the disagreement it is;
+  ACNS0831 with its population and "at least so far"; posterior fossa syndrome with an
+  at-home tier. **Also:** `/tumors/glioma`'s "grade 2 and above ... not curable" scoped
+  "for most gliomas" with a pointer to this page (it contradicted ependymoma); glossary
+  `posterior-fossa`, `posterior-fossa-syndrome`. Lessons in §12.8.
 - [ ] **WI-537 Medulloblastoma, deepened** — including craniospinal radiation and
   the 14-day rule before staging lumbar puncture. Depends on: WI-513.
 - [ ] **WI-538 Pediatric brain tumor, deepened** — **the audience is a parent,
@@ -3513,7 +3548,17 @@ research items. Same shared contract throughout.
 - [ ] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
   caveat that steroids given before biopsy can obscure the diagnosis (verify
   before publishing). Depends on: WI-519.
-- [ ] **WI-543 Spinal cord tumor, deepened** — stays under its own heading. The
+- [ ] **WI-543 Spinal cord tumor, deepened** — **settles the strength split WI-536
+  handed over**: this hub, `/tumors/meningioma` and `/tumors/brain-metastases` file new
+  weakness and bladder trouble as "a reason to be seen quickly", while
+  `blocks/spinal-cord.md` files the same signs as right-away, at any hour. Check each
+  page before re-tiering: brain-metastases already opens that passage with "that is its
+  own emergency", so only its second sentence is weaker.
+  `SpinalCordBlockTests.TheStrengthSplitWithTheSiblingHubsIsPinnedUntilWi543SettlesIt`
+  pins the divergence and must be rewritten, not deleted, when it is settled. Decide the
+  tier from the sources, and word the block's opener "in or pressing on the cord" if this
+  hub includes it, because a meningioma sits beside the cord rather than in it.
+  Also: stays under its own heading. The
   taxonomy is explicit that a spinal cord tumor is not a brain tumor and must
   never surface under a brain filter; WI-412 pinned that with a test and this
   item must not undo it. Depends on: WI-513.

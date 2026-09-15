@@ -110,6 +110,13 @@ public sealed class DiffuseMidlineGliomaPageContentTests
     {
         Assert.Contains("[MECHANISM]", Section(LocationHeading), StringComparison.Ordinal);
         Assert.Contains("[ESCALATION]", Section(SymptomHeading), StringComparison.Ordinal);
+        // WI-536: the spinal-cord rule is shared now. Its position after
+        // [ESCALATION] and its wording are SpinalCordBlockTests'.
+        Assert.Contains("[SPINAL-CORD]", Section(SymptomHeading), StringComparison.Ordinal);
+        // WI-536 /review round 1: the rule renders after the whole when-to-call block,
+        // sign-off links included, so "just after the list" pointed at the wrong place.
+        Assert.Contains("these have their own rule, at the end of the section on when to call for help, below",
+            Section(SymptomHeading), StringComparison.Ordinal);
         Assert.Contains("[CROSSWALK]", Section(ReportHeading), StringComparison.Ordinal);
         Assert.Contains("[TUMOR-BOARD]", Section(TreatmentHeading), StringComparison.Ordinal);
         Assert.Contains("[CAUSES]", Section(CauseHeading), StringComparison.Ordinal);
@@ -138,43 +145,6 @@ public sealed class DiffuseMidlineGliomaPageContentTests
         CuratedPage.AssertEscalationTiers(Page, Slug, SymptomHeading);
 
     [Fact]
-    public void TheSpinalCordRuleFollowsTheBlockAndPutsEverySignInTheRightAwayTier()
-    {
-        var raw = SectionRawLf(SymptomHeading);
-        var block = raw.IndexOf("[ESCALATION]", StringComparison.Ordinal);
-        var rule = raw.IndexOf("If the tumor is in the spinal cord", StringComparison.Ordinal);
-
-        Assert.True(block >= 0, "the symptoms section has lost [ESCALATION]");
-        Assert.True(rule > block,
-            "the spinal cord rule must come AFTER the shared block, because it overrides a tier the block sets");
-
-        var tier = ParagraphIn(SymptomHeading, "**If the tumor is in the spinal cord");
-        var signs = ParagraphIn(SymptomHeading, "So are new trouble walking");
-
-        Assert.Contains("right-away call, not a same-day one", tier, StringComparison.Ordinal);
-        // Rendered read 1: "newly weak" alone under-triaged "weakness that keeps
-        // getting worse". Harness run 2 deleted this clause and nothing failed.
-        Assert.Contains("weaker than it was", tier, StringComparison.Ordinal);
-        Assert.Matches(new Regex(@"\bnewly weak\b"), tier);
-
-        // Every sign the source lists for pressure on the cord, as whole words, in
-        // the sentence that puts them in the right-away tier.
-        var soAre = CuratedPage.SentencesOf(signs).First();
-        foreach (var sign in new[] { @"\bwalking\b", @"\bnumbness\b", @"\bback pain\b", @"\bbladder\b", @"\bbowel\b" })
-        {
-            Assert.Matches(new Regex(sign), soAre);
-        }
-
-        Assert.Contains("at any hour", signs, StringComparison.Ordinal);
-        Assert.Contains("emergency department", signs, StringComparison.Ordinal);
-
-        // The source is about metastatic compression: attribute, do not assert.
-        Assert.Contains("When cancer presses on the spinal cord, Cancer Research UK calls it an emergency",
-            signs, StringComparison.Ordinal);
-        Assert.DoesNotContain("Pressure on the spinal cord is an emergency", signs, StringComparison.Ordinal);
-    }
-
-    [Fact]
     public void EverySameDayLineOnThePageHonoursTheShuntRule()
     {
         // /review round 2's blocker. The escalation block on this page says that for
@@ -187,13 +157,18 @@ public sealed class DiffuseMidlineGliomaPageContentTests
             .Where(s => Regex.IsMatch(s, @"\bsame[- ]day\b", RegexOptions.IgnoreCase))
             .ToList();
 
-        Assert.True(sameDay.Count >= 3, $"only {sameDay.Count} same-day sentences, so this test checks almost nothing");
+        // WI-536: the spinal rule's "not a same-day one" left the raw page for a
+        // block, so the old ">= 3" counted an exempt sentence. The property is that
+        // at least one same-day line the page writes was actually checked.
+        Assert.True(sameDay.Count >= 2, $"only {sameDay.Count} same-day sentences, so this test checks almost nothing");
+        var checkedLines = 0;
 
         foreach (var sentence in sameDay)
         {
-            // Exempt: the swallowing tier (not a shunt sign), and the spinal rule,
-            // which is already stronger than same-day.
-            if (Regex.IsMatch(sentence, @"\bswallow|right-away call, not a same-day", RegexOptions.IgnoreCase))
+            // Exempt: the swallowing tier (not a shunt sign). The spinal rule, which
+            // is already stronger than same-day, is a block since WI-536 and is not
+            // on the raw page.
+            if (Regex.IsMatch(sentence, @"\bswallow", RegexOptions.IgnoreCase))
             {
                 continue;
             }
@@ -204,7 +179,10 @@ public sealed class DiffuseMidlineGliomaPageContentTests
             Assert.Matches(
                 new Regex(@"right[- ]away[^.]{0,30}\bshunt|\bshunt[^.]{0,40}right[- ]away", RegexOptions.IgnoreCase),
                 sentence);
+            checkedLines++;
         }
+
+        Assert.True(checkedLines >= 1, "every same-day sentence on the page was exempt, so the shunt rule was never checked");
     }
 
     [Fact]
@@ -618,8 +596,8 @@ public sealed class DiffuseMidlineGliomaPageContentTests
             Assert.DoesNotContain(barred, front, StringComparison.OrdinalIgnoreCase);
         }
 
-        Assert.Contains("cancerresearchuk.org/about-cancer/coping/physically/spinal-cord-compression",
-            front, StringComparison.Ordinal);
+        // The spinal-cord source moved to blocks/spinal-cord.md with the rule (WI-536).
+        Assert.DoesNotContain("spinal-cord-compression", front, StringComparison.Ordinal);
         Assert.Contains("drug-trials-snapshots-modeyso", front, StringComparison.Ordinal);
     }
 }
@@ -662,7 +640,7 @@ public sealed class DiffuseMidlineGliomaPageRenderTests : IClassFixture<WebAppli
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
         foreach (var directive in new[]
-                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]", "[ESCALATION]" })
+                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]", "[ESCALATION]", "[SPINAL-CORD]" })
         {
             Assert.DoesNotContain(directive, html, StringComparison.Ordinal);
         }
@@ -673,6 +651,8 @@ public sealed class DiffuseMidlineGliomaPageRenderTests : IClassFixture<WebAppli
                      "nobody knows the cause", "tumor board", "caring for someone",
                      // The shunt rule the [MECHANISM] door obliges (WI-534).
                      "If you have a shunt",
+                     // [SPINAL-CORD] (WI-536).
+                     "weaker than it was",
                  })
         {
             Assert.Contains(canary, html, StringComparison.OrdinalIgnoreCase);
