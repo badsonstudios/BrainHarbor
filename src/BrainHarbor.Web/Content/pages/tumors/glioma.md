@@ -114,12 +114,15 @@ cells behave, not a promise that it will not cause trouble.
 cured by surgery, if the surgeon can safely reach all of it. For those, "they
 got it all" can genuinely mean finished.
 
-**Grade 2 and above are different.** These grow out into the brain around them,
-so there is no edge to cut around. They are malignant, and with today's
+**Grade 2 and above are different for most gliomas.** Most of them grow out into
+the brain around them, so there is no edge to cut around. They are malignant, and with today's
 treatments they are not curable. That is a hard sentence and it is here on
 purpose. Being told "low grade" and hearing "not serious" is the commonest
 misunderstanding about these tumors. It falls apart later, at the worst possible
 moment.
+
+[Ependymoma](/tumors/ependymoma) is different from the gliomas this paragraph
+describes, and its page explains how.
 
 **Not curable is not the same as untreatable, and it is not a timeline.**
 Treatment can work for a long time. Some of these tumors are watched rather than
