@@ -11,8 +11,8 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-533 — `/treatments/tumor-treating-fields` (X10, Optune).** Picked up 2026-09-15 on `feature/wi-533-tumor-treating-fields`; sources fetched to `.claude/work_files/wi533-sources/`. **§12.10 call made before drafting: SHARED WORDING, not a reworded hub.** The 18 hours stay on `/tumors/glioblastoma` as "at least eighteen hours a day" and the new page uses that exact phrase and no other strength; the EANO sentence is shared verbatim with `/tumors/high-grade-glioma` (allowlisted); both pinned by tests that READ the hubs. "Four to seven weeks" was checked: it is verbatim in PMC12467656 ("initiated 4–7 weeks post-radiotherapy") — the hub keeps it, the new page routes. `virtualtrials.org` (the dossier's main source) returns a 0-byte Sucuri page: dead. |
-| **Next up** | **WI-534 (X13 Shunts and hydrocephalus)** — obstructive vs communicating in plain words; what a shunt is and what living with one means. R2 applies to failure rates. Depends on: WI-502. (After WI-533 ships: code-complete 2026-09-15, suite 1929/0, grade 4.4, ContentCheck 261/0, /review answered, rendered read ×2; break harness then handproof then PR — see the log.) |
+| **In progress** | **WI-534 — X13 Shunts and hydrocephalus.** Picking up 2026-09-15, straight after WI-533 went live (PR #131/#132, deployed and smoke-checked the same day). Nothing drafted yet. |
+| **Next up** | **WI-534 (X13 Shunts and hydrocephalus)** — obstructive vs communicating in plain words; what a shunt is and what living with one means. R2 applies to failure rates. Depends on: WI-502. A `hydrocephalus` glossary entry already exists — check which pages it fires on before writing a definition. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
 **Branch model (since 2026-08-11): feature → `develop` (default branch) → release PR → `main` → auto-deploy to Azure.** Merging develop into main IS the deploy (CI deploy job + smoke check). Never merge main red.
@@ -216,6 +216,23 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-15** — **WI-533 is live.** PR #131 into `develop`, release PR #132 into `main`.
+  `build-test` was green on the feature PR and on both develop runs, and **FAILED ON THE MERGE
+  COMMIT TO `main`**: the `A11ySmokeTests` Kestrel flake
+  (`TheReaderChoiceGateOpensAndClosesWithJavaScriptDisabled`, "The Kestrel test host did not
+  start"), one test failing and 1926 passing. The deploy job was skipped, so the live site was
+  briefly behind `main`. `gh run rerun --failed` passed with nothing changed, and the deploy
+  succeeded.
+  **NEW EVIDENCE FOR `/pm`: this time there was ONLY ONE run on that commit.** WI-531 and
+  WI-532 blamed two runs racing on the same commit (a push and a pull_request). This merge
+  commit had a single push run and still failed, so a concurrency group alone will not fix it.
+  The Kestrel host needs a start retry, or the root cause, which is still unknown.
+  **Smoke check:** `/treatments/tumor-treating-fields` returns 200. The shared "at least
+  eighteen hours a day", the EANO sentence and the temozolomide condition are all on the page.
+  `def-tumor-treating-fields` is absent and `def-temozolomide` is present. No unresolved
+  directive or authoring marker. Both hubs return 200 and carry the link, and their own
+  tooltip still fires. Nine other pages return 200.
 
 - **2026-09-15** — **WI-533 code-complete — `/treatments/tumor-treating-fields`, and the item
   whose clinical half was already shipped twice.**
