@@ -2779,6 +2779,151 @@ retired, because DMG was its last thin destination.
   WHO CNS5 governs; the conflation is quoted once and corrected in the next sentence,
   and a test holds the correction to that sentence.
 
+**WI-536 — `/tumors/ependymoma`, and the item that decided where a second page-local
+rule goes.** Grade **5.4**, **2064 tests** (2019 before), ContentCheck **271/0**,
+**142 break-mutations caught on LF and CRLF**, nine render guards proved by rebuild,
+six rendered reads, four `/review` rounds (2 blockers, then 2, then 1, then none). Glossary: `posterior-fossa`, `posterior-fossa-syndrome`. Sources:
+51 files, 241 script-checked quotes.
+
+- **A SECOND HUB NEEDING A PAGE-LOCAL RULE IS A BLOCK, BUT NOT NECESSARILY THE SHARED
+  ONE.** WI-535 wrote the spinal-cord right-away rule page-local; ependymoma was its
+  second use. It became `blocks/spinal-cord.md`, included after `[ESCALATION]` only by
+  hubs whose tumor can sit in the cord — **not** a conditional inside `escalation.md`,
+  which two live tests (meningioma, brain-metastases) deliberately pin free of spinal
+  words, and where a cord paragraph would be noise on every hub in the list people read
+  at two in the morning. §12.10's conditional rule says what MAY go in the shared block;
+  it does not say everything conditional should.
+- **A CONDITIONAL'S OPENING CLAUSE DECIDES WHO IS COVERED, AND THE FIRST ONE COVERED TOO
+  FEW.** "If the tumor is in the spinal cord" left out the reader whose tumor SPREAD to
+  the spine — on two pages that both say it spreads through the fluid, and with a source
+  that is itself about spread ("Metastatic means that the cancer has spread to the
+  spine"). Now "in the spinal cord, or has spread to the spine".
+- **A PAGE CAN NAME A SIGN THE RULE IT POINTS AT DOES NOT.** The page listed "back or
+  neck pain" and routed to a rule saying "back pain", while the rule's own source says
+  the pain "could be anywhere in your back, spine or neck". A test reads the BLOCK now
+  and requires every sign the page's spinal line names.
+- **A POINTER'S "JUST AFTER" MUST MATCH THE RENDERED PAGE.** `[SPINAL-CORD]` composes
+  after the whole when-to-call block, sign-off links included, so "just after the list
+  below" pointed at the wrong place on both hubs.
+- **A SOURCE'S "CURED" CAN BELONG TO A DIFFERENT TUMOR IN THE SAME FAMILY.** ABTA's "can
+  be cured by surgery alone" and a 2025 review's "usually curative" are both about
+  SUBEPENDYMOMA. Read the heading the quote sits under. The strength for ependymoma is
+  ACS's "sometimes ... if the entire tumor can be removed".
+- **A SIBLING HUB'S HARD SENTENCE CAN BE WRONG FOR A MEMBER OF ITS OWN FAMILY, AND THE
+  FIX IS WHERE THE NEXT DEFECT COMES FROM.** `/tumors/glioma` said grade 2 and above
+  grow into the brain and are not curable, on the page that lists ependymoma as a
+  glioma. The first fix inserted the exception between "no edge to cut around" and "They
+  are malignant ... not curable", so rendered, "They" read as ependymoma. The second
+  said "one exception to this paragraph", which excepted ependymoma from "malignant"
+  too — and grade 3 ependymoma IS malignant. A pointer that makes no claim of its own,
+  after the hard sentence, is the version that survives.
+- **"SOME ARE AND SOME ARE NOT" WENT PAST EVERY SOURCE.** No cited source calls a grade 2
+  ependymoma not-cancer, and the claim clashed with the page's own spinal rule ("When
+  cancer presses on the spinal cord"). The answer leads with the grade instead.
+- **A TRIAL RESULT CARRIES ITS POPULATION.** ACNS0831 randomized ages 1-21 after gross or
+  near-total removal, and says "Further follow-up is important to assess its effect on
+  late relapses". On a page about late recurrence, "did not help" without "at least so
+  far" is the wrong sentence.
+- **AN AGE LINE IS A DISAGREEMENT, AND "OTHER SOURCES SAY UNDER 3" READS AS ITS
+  OPPOSITE.** The cited review agreed with St. Jude (radiation from about age 1, with 1
+  to 3 year olds given chemotherapy to defer it); only ACS's GENERAL page says 3. Name
+  who says what, and do not turn a patient-education sentence into a claim about one
+  hospital's practice ("St. Jude gives").
+- **A REASSURANCE NEEDS A SOURCE AS MUCH AS A WARNING DOES.** "It is not the tumor coming
+  back" was in no fetched file — the kind of sentence nobody asks for a citation for.
+  StatPearls calls posterior fossa syndrome "A well-known complication of posterior fossa
+  surgery", so the page says that.
+- **REVIEW QUOTES FAIL IN BOTH DIRECTIONS, AND A NAIVE GREP INVENTS "UNSOURCED".** Two of
+  `/review` round 1's own quotes were not in the sources. In the other direction, the
+  first verification script reported zero hits for phrases that WERE in the files:
+  non-breaking spaces and curly quotes. Normalise (NFKC, quotes, dashes, whitespace)
+  before concluding anything is absent (§12.8, WI-535's "grep the quotation AND the
+  source").
+- **A SENTENCE-WINDOW NORMALISATION GUARD CANNOT SEE A PARAGRAPH.** "Most children slowly
+  get better" sat three sentences from the symptoms it reassures about, so the guard
+  never checked the posterior fossa paragraph at all — and its "at least two
+  neighbourhoods" count was satisfied elsewhere, which is what made it look healthy. It
+  is paragraph-scoped now and names the paragraphs it must have checked. Also:
+  **reassurance is not a tier**, and while it sat in the answered list the harness could
+  delete it with nothing failing.
+- **AN ORDINAL IDIOM BAN MISSES THE START OF A BULLET.** "- Being sick, ..." walked
+  through a case-sensitive `being sick`. The same hole is still in the DMG copy of that
+  guard.
+- **A MUTATION'S ANCHOR MUST BE UNIQUE, OR A WEAK MUTATION READS EXACTLY LIKE A WEAK
+  GUARD.** `', even years'` matched the short version first, so the harness proved
+  nothing about the paragraph it was aimed at.
+- **A THEORY THAT RE-TYPES ITS OWN LIST AS `InlineData` STOPS COVERING THE LIST.**
+  `MemberData` from the same array, so a third including hub cannot skip the check.
+- **A TIER THE PAGE WRITES CAN UNDERCUT THE BLOCK ABOVE IT, NOT ONLY MISS ITS
+  CONDITIONAL.** WI-535's blocker was a same-day line that ignored the shunt rule. This
+  one was worse: the posterior fossa section told a parent to call "the same day" if a
+  child stops talking, while `[ESCALATION]`, composed higher up the same page, files
+  "Suddenly not being able to speak" as an **ambulance** call. Two tiers for one sign,
+  and the page's was the weaker (WI-512). The page carves the sign out and says the
+  ambulance rule still stands, then tiers only the signs it actually covers.
+  `/treatments/craniotomy` is not the precedent to copy: it describes SMA syndrome with
+  no tier at all, so nothing competes with the block.
+- **ANSWERING "IS IT CANCER?" FOR ONE GRADE LEAVES THE REST TO INFER THE OPPOSITE.**
+  Round 1 correctly killed "Some are and some are not" as beyond source; the replacement
+  answered for grade 3 only, three words before the page says most are grade 2 or 3. The
+  contrast ("grade 3 IS cancer ... grade 2 is low grade") invites exactly the "low grade
+  means not serious" reading §12.3 exists to prevent. No source calls a grade 2
+  ependymoma cancer or not-cancer, so the answer is in behaviour terms: low grade is
+  about how fast it grows, and it is still surgery and years of scans.
+- **A SYMPTOM CAN BE SOURCED ONLY AS A COMPLICATION.** Every "swallowing" hit in the
+  cited files is post-operative (St. Jude's surgery complications, the posterior fossa
+  syndrome page, the 2025 review's cranial-nerve damage). The one source listing it as a
+  presenting symptom was the naming-trap source the page bars by domain. It was in the
+  symptom list anyway, with a tier attached.
+- **A BLOCK THAT COMPOSES LAST OWNS THE SECTION'S LANDING.** `[SPINAL-CORD]` displaced
+  the escalation block's deliberate ending ("If you are not sure whether to call, call")
+  and closed the whole when-to-call section on the frightening half. §12.6 is a review
+  rule, not a preference: the attribution moved ahead of the instruction so the last
+  sentence is the action, and a test pins it.
+- **A TEST WHOSE TWO ASSERTIONS NEVER MEET.** `EverySpinalSignThePageNames
+  IsInTheBlocksRule` checked that a word was on the page and that the word appeared
+  somewhere in the block — so a sign the block had DEMOTED out of the right-away tier
+  still passed, which is the drift the test was written to catch. It matches the
+  right-away sentences now.
+- **A RECORDED JUSTIFICATION CAN BE FALSE OF ONE OF THE PAGES IT CITES.** The block's own
+  comment said both including pages tell the reader the tumor can spread through the
+  fluid. `/tumors/diffuse-midline-glioma` says it only in a front-matter comment. The
+  clause is still right there (§12.10: a conditional only has to be true of the reader it
+  names), but the reasoning in the file was wrong, and a later item would have trusted it.
+- **A CROSSWALK CAN MISS THE STRINGS ON THE REPORT ITSELF.** PF-EPN-A, PF-EPN-B and
+  ST-EPN-RELA are how two of the page's own sources write the groups, and they turn up on
+  methylation reports; "PF-EPN-A" does not obviously map to "group PFA" for a frightened
+  reader.
+- **A DEFERRAL THAT LIVES IN A DOCUMENT IS NOT ENFORCED.** The block files new leg
+  weakness, numbness and bladder trouble as right-away; `/tumors/spinal-cord-tumor`,
+  `/tumors/meningioma` and `/tumors/brain-metastases` file the same signs as "a reason to
+  be seen quickly", each with its own source and its own `/review` behind it. One claim,
+  two strengths (§12.10) — and WI-536 does not own the subject, so it goes to WI-543 with
+  the stub it rewrites. What changed is that the split is now **asserted by a test that
+  reads all three siblings**, so drift on either side fails the build instead of waiting
+  to be rediscovered. Record a deferral as a guard, not as a sentence in the backlog.
+- **NARROWING A TIER CAN STRAND A SIGN.** Round 2 replaced "if any of it" with three named
+  signs, and the fourth one the same paragraph lists (behavior) was left with no
+  instruction, on a page whose shared block covers "New confusion" but not behavior. The
+  normalisation guard could not see it either: its symptom pattern had `mood` and not
+  `behavio`.
+- **A REPLACEMENT JUSTIFICATION NEEDS THE SAME CHECK AS THE CLAIM (§12.14).** Round 2
+  moved a grading citation off NCI-CONNECT and wrote "both ACS pages carry that claim".
+  Neither does alone: one carries the general grade framing, the other carries grade 3 for
+  ependymoma, and the sentence is the two together.
+- **A GRADE SECTION MUST SAY SOMETHING TO THE GRADES IT DOES NOT RULE ON.** After two
+  rounds the section answered for grade 3 and grade 2, while the page itself names a
+  grade 1 type and says the molecular names often carry no grade at all. No source calls
+  grade 1 benign, so the answer is scope ("the slowest-growing kind", and a name with no
+  grade is not a missing answer), not a verdict.
+- Smaller, each found by a gate rather than a reader: a copied front-matter quote carries
+  **en dashes** (NoEmDashInCopyTests reads comments); a **glossary definition may not
+  rank** a finding ("slowly get better" failed on "better" and "slow"); a **subsection
+  heading is reader text**, so "### Can it be cured?" is cure-family text outside the
+  gate; a front-matter comment that says a source "is NEVER cited for a grade" can cite
+  it for one four lines later; and the scouting brief's own StatPearls ID was a hernia
+  chapter.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
