@@ -11,7 +11,7 @@
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
 | **Phase** | **M3 MERGED to `main`** (PR #5, 2026-07-31). Next: **M4 — Azure + trials + digest → v1 launch.** |
-| **In progress** | **WI-534 — X13 Shunts and hydrocephalus.** Picking up 2026-09-15, straight after WI-533 went live (PR #131/#132, deployed and smoke-checked the same day). Nothing drafted yet. |
+| **In progress** | **WI-534 — X13 Shunts and hydrocephalus.** Picked up 2026-09-15, straight after WI-533 went live. **First draft written** on `feature/wi-534-shunts-hydrocephalus`: `/treatments/shunts` + `ShuntsPageTests.cs`; a CONDITIONAL shunt rule added to `blocks/escalation.md` (routes to `#warning-signs`, NINDS + Hydrocephalus Association added to the block's sources) and registered in `EscalationBlockTests`; doors appended to `blocks/mechanism.md` and `/tests/mri`. First draft green (1953 tests, grade 4.6, ContentCheck 262/0). **`/review` round 1 returned 4 blockers, 13 should-fix, 9 nits — saved in full at `.claude/work_files/wi534-sources/review-1.md`, with the first rendered read at `rendered-read-1.md`.** Blockers: the "ambulance list" pointer goes to /get-help-now, which has none; the warning list omits hard-to-wake (HA: "requires urgent attention"), blurred vision, confusion, coordination, infant signs; the recovery section calls tiredness/headache/sore belly normal while the list says right away; the new EscalationBlockTests rule reads RAW hubs and never runs. Verified before fixing: HA list ✓, MedlinePlus "about 1 1/2 hours" vs ACS "about an hour" ✓ (print both), PMC8827213 shunting a median 1.9 months after surgery ✓, FDA "use the ear opposite the shunt" ✓; the reviewer's NINDS "blurred/fixed downward/bulging" and Walton "999 list" are NOT in the fetched text — cite HA instead. Also in scope now: `/treatments/craniotomy`'s caregiver same-day list (headache/confusion/sleeping more) needs a shunt conditional linking `#warning-signs`; meningioma front-matter ruling (13) needs a shunt exception. Harness scripts already copied and repointed to `wi534-sources` (break-tests, dryrun, probe; handproof rewritten for `ShuntsPageRenderTests`). **Fix pass DONE** (page rewritten; block conditional now covers the whole same-day list; craniotomy caregiver line; mechanism pressure clause; meningioma ruling; EscalationBlockTests reads COMPOSED hubs with a positive count; ShuntsPageTests rewritten against every counter-example). Correction to the note above: NINDS DOES carry "Blurred or double vision", the bulging fontanel and "fixed downward" eyes in its general hydrocephalus list — the reviewer was right. **CODE-COMPLETE 2026-09-15:** suite 1958/0, grade 4.8, ContentCheck 262/0, rendered read ×2, 62 break-mutations green on LF and CRLF (one guard beaten and re-proved), four render guards handproofed, docs written (backlog ✓, §12.8 WI-534 entry, log). Next: commit → PR into develop → release PR into main → deploy smoke check. |
 | **Next up** | **WI-534 (X13 Shunts and hydrocephalus)** — obstructive vs communicating in plain words; what a shunt is and what living with one means. R2 applies to failure rates. Depends on: WI-502. A `hydrocephalus` glossary entry already exists — check which pages it fires on before writing a definition. |
 | **Blockers** | none. WI-401, WI-404 (ESP), WI-408 (soft launch) need Dan's hands (accounts, DNS, money). |
 
@@ -22,6 +22,62 @@
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-534 scouting note (2026-09-15) — READ BEFORE DRAFTING
+
+Branch `feature/wi-534-shunts-hydrocephalus` (from develop at 90b79db). Sources
+fetched to `.claude/work_files/wi534-sources/` (text copies alongside). Nothing
+drafted yet.
+
+- **SLUG: `/treatments/shunts`** (no sitemap entry exists; backlog title "Shunts and
+  hydrocephalus").
+- **THE CORPUS ALREADY OWNS THE DEFINITION.** `blocks/mechanism.md` (8 hubs, all of
+  which also include [ESCALATION]) says a tumor can block the fluid, "the usual
+  treatment is a **shunt**. That is a thin tube that carries the fluid to another part
+  of the body, where it is absorbed." `glossary/hydrocephalus.md` exists (StatPearls
+  NBK560875) — suppress it on the page, do not delete. The page must not restate the
+  block at another strength. Door: append one sentence to that block paragraph.
+  `/tumors/ependymoma` is a 39-line stub that says the tumor "can block the flow of
+  fluid" and does NOT include [ESCALATION] — see the next bullet before adding a door.
+- **THE ESCALATION CONFLICT IS THE ITEM'S SAFETY DECISION.** For a reader WITH a shunt,
+  NINDS says "seek medical help immediately if symptoms develop that suggest the shunt
+  system is not working properly" (list: headache, double vision/light sensitivity,
+  nausea or vomiting, neck/shoulder soreness, seizures, redness or tenderness along the
+  tract, low-grade fever, sleepiness, symptoms coming back), and the Hydrocephalus
+  Association (complications-of-shunt-systems) says "see your doctor or go to the
+  emergency department". `blocks/escalation.md` files headache/vomiting/sleepiness as
+  SAME-DAY. Plan: a CONDITIONAL line in the block, after the two fever rules ("If you
+  have a shunt, ... right away, at any hour, or the emergency department"), routing to
+  `/treatments/shunts#warning-signs`, and a rule added to
+  `EscalationBlockTests.AHubThatRoutesIntoATreatmentCarriesThatTreatmentsSafetyRule`.
+  The page OWNS the tier (like /seizures/what-to-do), so it does not call
+  `AssertNoEscalationList`; the shared instruction wording gets an allowlist entry.
+  That rule means a hub linking `/treatments/shunts` must include [ESCALATION] — so NO
+  door on the ependymoma stub yet; log it for that hub's item.
+- **THE DOSSIER (treatment-library.md §13) IS WEAK.** Its patient source is
+  healthline.com (its own note: "replace before publishing"); it also cites NBK66023
+  (NCI patient PDQ — avoid). **Its "27.8% shunt failure; 13% single, 14% multiple
+  revisions" is NOT what PMC8976775 says**: 28 of 85 (33%) had one or more failures,
+  1/5/10-year success 77/71/67%. R2: publish qualitatively anyway. PMC8827213 (same
+  Oslo cohort): early failures cluster in the first weeks (median 20 days) — attribute.
+  Its ETV and programmable-valve points were marked "[Verify]": NINDS and AANS confirm
+  ETV ("a limited number of patients"); FDA confirms magnets can change programmable
+  valve settings and "suggests keeping products that contain magnets two or more inches
+  away" (actionable number, FDA-attributed, adjustable valves only).
+- **A DISAGREEMENT TO PRINT, NOT SPLIT:** ACS surgery page "Shunts can be temporary or
+  permanent" vs Hydrocephalus Association "you will need it for the rest of your life";
+  NINDS "multiple surgeries to repair or replace a shunt throughout their lifetime".
+- **Usable verbatim:** ACS — "Placing a shunt normally takes about an hour", "hospital
+  stay ... typically 1 to 3 days", VP into abdomen or "less often, into the heart (VA)".
+  Walton Centre (NHS, UK — attribute) — "you may be able to feel the valve of your shunt
+  behind your ear", "if you are thin ... feel the tubing ... in your neck". Hydrocephalus
+  Association — overdrainage "headaches that worsen when sitting or standing and improve
+  when lying down"; underdrainage "especially in the morning or after lying down"; shunt
+  infection most likely 1–3 months after surgery. AANS — infant signs (vomiting, head
+  growth, "sunsetting eyes"). MedlinePlus ENCYCLOPEDIA (not a drug monograph, so not the
+  PLAN §5 ban) — the route behind the ear, down the neck and chest to the belly.
+- Candidate second door: `/tests/mri` device/metal section (adjustable valves need a
+  check around MRI — confirm source before writing).
 
 ### WI-533 scouting note (2026-09-14) — SPENT, kept for the record
 
@@ -216,6 +272,36 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 - Next: `/next-item` for WI-101, or `/autopilot M1`.
 
 ## Log (newest first)
+
+- **2026-09-15** — **WI-534 code-complete — `/treatments/shunts`, and the item that created an
+  escalation tier.** Grade **4.8**, **1958 tests** (1929 before), ContentCheck **262/0**,
+  **62 break-mutations green on LF and CRLF** — the first run found ONE guard that could not
+  fail (the escalation rule's "was evaluated" count, satisfied by the block's own
+  `#warning-signs` link), rewritten and re-proved — plus four Kestrel render guards proved by
+  rebuild. No new glossary entry
+  (`hydrocephalus` suppressed here, kept for `/tests/ct-scan`).
+  **THE SAFETY DECISION:** for a reader WITH a shunt, NINDS says "seek medical help
+  immediately" for symptoms the shared [ESCALATION] block files as same-day. The page owns the
+  shunt tier; `blocks/escalation.md` gains a third CONDITIONAL (everything on its same-day list is
+  a right-away call for a shunt reader) routing to `#warning-signs`; `/treatments/craniotomy`'s
+  caregiver lists and `blocks/mechanism.md`'s raised-pressure line carry the same instruction;
+  `EscalationBlockTests` now reads COMPOSED hubs with a positive count. Doors on
+  `blocks/mechanism.md` (8 hubs) and `/tests/mri`. Meningioma's front-matter escalation ruling
+  updated.
+  **SOURCES:** the dossier's patient source was healthline.com and its "27.8% shunt failure" is
+  not in PMC8976775 (33%); neither printed. Re-sourced to NINDS, the Hydrocephalus Association
+  (three pages), AANS, ACS, MedlinePlus's encyclopedia, StatPearls, FDA (magnets: two inches, the
+  other ear), the Walton Centre (UK, attributed), NHS GGC MRI Physics (staff guidance) and CDC.
+  Two disagreements printed: operation time (ACS an hour / MedlinePlus an hour and a half) and
+  permanence (ACS temporary or permanent / Hydrocephalus Association for life).
+  **`/review` round 1: 4 blockers, 13 should-fix, 9 nits** (saved at
+  `.claude/work_files/wi534-sources/review-1.md`), all answered — the blockers were a pointer to an
+  ambulance list on `/get-help-now`, which has none; a warning list missing hard-to-wake,
+  confusion, blurred vision and balance; a recovery section calling three warning signs normal;
+  and an escalation-test rule over raw hub files that could never run. Rendered read ran twice.
+  **For `/pm`, not blocking:** the `/tumors/ependymoma` stub says its tumor "can block the flow of
+  fluid" and includes neither [ESCALATION] nor [MECHANISM], so it has no shunt door and no shunt
+  rule — its hub item must add both together. `feeling sick` corpus sweep is still open (WI-533).
 
 - **2026-09-15** — **WI-533 is live.** PR #131 into `develop`, release PR #132 into `main`.
   `build-test` was green on the feature PR and on both develop runs, and **FAILED ON THE MERGE

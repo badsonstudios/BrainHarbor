@@ -3411,9 +3411,21 @@ Start only after Dan has signed off WI-513's template.
   and the blockers were both reader-harm: "runs day and night" (a second strength
   for the hours) and temozolomide addressed to the recurrence reader, who is not
   on it. Lessons in §12.8.
-- [ ] **WI-534 X13 Shunts and hydrocephalus** — obstructive vs communicating in
+- [x] **WI-534 X13 Shunts and hydrocephalus** — obstructive vs communicating in
   plain words; what a shunt is and what living with one means. R2 applies to
   failure rates. Depends on: WI-502.
+  **Done 2026-09-15.** `/treatments/shunts`, grade **4.8**, **1958 tests** (1929
+  before), ContentCheck **262/0**, **62 break-mutations green on LF and CRLF**, plus four render guards proved by
+  rebuild. **The item created an escalation tier the corpus did not have**: for a
+  reader with a shunt, NINDS says "seek medical help immediately" for symptoms the
+  shared [ESCALATION] block files as same-day. The page owns the tier; the block,
+  `/treatments/craniotomy` and `[MECHANISM]` route to it with the identical
+  instruction, and `EscalationBlockTests` now checks COMPOSED hubs. The dossier's
+  patient source was healthline.com and its "27.8% shunt failure" is not in the
+  paper it cites (33%, and R2 keeps both out). `/review` returned 4 blockers — a
+  pointer to an ambulance list on a page that has none, a warning list missing
+  hard-to-wake and confusion, a recovery section calling three warning signs
+  normal, and a test rule that could never run. Lessons in §12.8.
 
 ### Wave 4 — the remaining tumor types
 

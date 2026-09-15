@@ -182,7 +182,9 @@ If you have a device fitted, bring its card. That one thing solves most of it.
 Many newer devices are fine in an MRI, including some pacemakers, heart
 defibrillators, nerve stimulators, cochlear implants and medicine pumps. What
 the staff need is the exact make and model, which is what the card gives them.
-Without it they may have to be cautious for no reason.
+Without it they may have to be cautious for no reason. If you have a shunt,
+[Shunts and hydrocephalus](/treatments/shunts#living-with-it) says what to tell
+them.
 
 A few things do stop a scan. Some clips used on blood vessels in the brain are
 made of metal that a magnet pulls on, so the team checks which kind you have.

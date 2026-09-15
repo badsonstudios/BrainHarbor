@@ -38,6 +38,17 @@ sources:
   - url: https://www.cancerresearchuk.org/about-cancer/treatment/drugs/pcv
     title: "Procarbazine, lomustine and vincristine (PCV) | Cancer Information | Cancer Research UK"
     accessed: 2026-09-08
+  # WI-534: the THIRD conditional rule, for a reader with a shunt. This block's
+  # same-day tier is right for a reader without one and under-triages one with
+  # one: NINDS says "seek medical help immediately" and the Hydrocephalus
+  # Association says "see your doctor or go to the emergency department". The
+  # full list lives on /treatments/shunts#warning-signs; this block routes to it.
+  - url: https://www.ninds.nih.gov/health-information/disorders/hydrocephalus
+    title: "National Institute of Neurological Disorders and Stroke: Hydrocephalus"
+    accessed: 2026-09-15
+  - url: https://www.hydroassoc.org/complications-of-shunt-systems/
+    title: "Hydrocephalus Association: Complications of Shunt Systems - Signs and Symptoms"
+    accessed: 2026-09-15
   - url: https://www.ummhealth.org/health-library/discharge-instructions-for-craniotomy
     title: "Discharge Instructions for Craniotomy | UMass Memorial Health"
     accessed: 2026-09-08
@@ -80,6 +91,13 @@ why, and what number your team will give you.
 **In the weeks after brain surgery, a fever is its own rule too**, especially
 with a stiff neck or a bad headache.
 [What comes after a craniotomy](/treatments/craniotomy) has the rest of that
+list.
+
+**If you have a shunt, the signs it has stopped working are their own rule.** For
+you, everything on the same-day list above is a right-away call instead, and so
+are a few other signs. Get help right away, at any hour: call your team, or go to
+the emergency department.
+[Signs a shunt is not working](/treatments/shunts#warning-signs) has the full
 list.
 
 **If you are not sure whether to call, call.** Nobody on that team minds a

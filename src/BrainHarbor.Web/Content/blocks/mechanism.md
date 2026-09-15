@@ -29,7 +29,8 @@ rises, there is a pattern doctors watch for: headaches that are worse in the
 morning, feeling sick and throwing up, odd eye movements, seizures, and being
 confused or very drowsy. Not everybody with raised pressure has all of it, and
 some people have almost none of it. If this pattern is new for you, it is worth
-a phone call rather than a wait.
+a phone call rather than a wait. If you have a shunt, it means getting help right
+away.
 
 **It can set off seizures.** A tumor and the irritated brain around it can upset
 the normal electrical activity of that part of the brain. For some people a
@@ -41,7 +42,8 @@ flow, so the fluid backs up and the pressure goes up. This is more likely with
 tumors near the narrow channels the fluid passes through. It can be treated, and
 the usual treatment is a **shunt**. That is a thin tube that carries the fluid
 to another part of the body, where it is absorbed. It is the word your team will
-use.
+use. [Shunts and hydrocephalus](/treatments/shunts) covers what having one is
+like, and the signs it has stopped working.
 
 ## Why your symptoms are the ones you have
 
