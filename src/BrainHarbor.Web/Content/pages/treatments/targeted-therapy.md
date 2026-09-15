@@ -328,6 +328,8 @@ Here is the shape of it. Where you sit in it is a question for your team.
   rather than a change on your report.
 - **An H3 K27M change, in a diffuse midline glioma that has kept growing after
   other treatment.** Dordaviprone, taken by mouth.
+  [Diffuse midline glioma](/tumors/diffuse-midline-glioma#dordaviprone) says what
+  its early approval does and does not show.
 - **A tumor called a subependymal giant cell astrocytoma that cannot be fully
   removed.** Everolimus, a pill.
 - **An NTRK gene change.** These are rare in brain tumors. There are three pills
@@ -430,7 +432,7 @@ worth asking your team about directly, because the answer is theirs and not this
 page's.
 
 **Dordaviprone has what is called an accelerated approval.** That means it was
-allowed onto the market on early results, with a larger trial still running to
+allowed onto the market on early results, with a trial still running to
 find out whether it helps people live longer. That trial has not
 reported. A reader offered this drug should know it is genuinely new ground.
 
