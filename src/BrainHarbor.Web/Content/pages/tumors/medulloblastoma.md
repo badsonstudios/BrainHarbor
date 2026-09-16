@@ -202,12 +202,27 @@ sources:
     # checking the sources for one showed the page was making the claim with nothing in
     # its own front matter behind it.
     #
-    # The glossary entry itself is DEFERRED with a reason: today "embryonal tumor"
-    # appears on this page alone, and this page defines it inline in the next sentence,
-    # so an entry would either echo that sentence or have to be suppressed with
-    # !%embryonal tumor% and help nobody. It earns its place when a second page needs
-    # it, which is §12.8's factor-at-the-second-use threshold applied to vocabulary
-    # rather than to prose. WI-538 and an ATRT hub are the likely second use.
+    # THE DEFERRAL RECORDED HERE IS SPENT: WI-538 was the second use, so
+    # glossary/embryonal-tumor.md now exists and this page suppresses it with
+    # a page-wide suppression marker on the term (written out in the body, and
+    # deliberately NOT repeated here: a literal copy in this comment is the FIRST
+    # occurrence in the file, which silently absorbed the harness mutation aimed at the
+    # real one), because the sentence below glosses the term inline and an
+    # unsuppressed tooltip would print the definition directly above the definition
+    # (§12.8, WI-535). Left as a record rather than deleted, because the
+    # factor-at-the-second-use threshold applied to VOCABULARY rather than to prose is
+    # the reusable part.
+    #
+    # THE MARKER IS DELIBERATELY NOT BESIDE THE TERM, and that is not a typo.
+    # Suppression is page-wide (GlossaryMarker collects every !%...% in the document
+    # before matching), and a marker placed in the "What is a medulloblastoma?" section
+    # BREAKS TheRetiredNameAppearsOnlyAsRetiredAndTheTrialNamesAreNotDiagnoses: that
+    # guard builds its `retired` string from the RAW section and subtracts it from
+    # ReaderText, which strips markers, so the subtraction silently stops matching and
+    # the PNET sentence it exempts falls back into scope. WI-538 hit exactly that, and
+    # its harness carries a mutation (medulloblastoma-marker-back-in-the-raw-read-section)
+    # that puts the marker back to prove the failure is real. /review round 1 suggested
+    # moving it beside the term; REJECTED, with that mutation as the evidence.
   - url: https://www.cancer.org/cancer/types/brain-spinal-cord-tumors-children/detection-diagnosis-staging/how-diagnosed.html
     title: "Tests for Brain and Spinal Cord Tumors in Children | American Cancer Society"
     accessed: 2026-09-15
@@ -221,6 +236,13 @@ sources:
     # Follow-up content: the exam list, "In some cases, scoliosis, or a curve in the
     # spine, can develop after treatment", and the fertility conversation ("ask about
     # options for preserving fertility, such as sperm banking or egg freezing").
+    #
+    # ALSO the blood-test line, unrecorded here until /review round 4: "Blood tests such
+    # as blood counts, hormone levels, and kidney and liver function tests." That is what
+    # the hormones bullet points at now. WI-538 removed "and it is treatable" from that
+    # bullet: the endocrine source cited above carries the DAMAGE and stops at "Learn
+    # more." before any treatment detail, and /tumors/pediatric-brain-tumor made the same
+    # claim from the same file and lost it in the same pass.
   - url: https://www.ncbi.nlm.nih.gov/books/NBK1151/
     title: "Nevoid Basal Cell Carcinoma Syndrome - GeneReviews® - NCBI Bookshelf"
     accessed: 2026-09-15
@@ -473,7 +495,7 @@ fair, and it is a question teams expect.
   check-ups.
 - **Growth and hormones.** Radiation near the gland at the base of the brain can
   change the hormones that run growth and other body systems. This is checked for
-  years, and it is treatable.
+  years, and hormone levels are part of the regular blood tests.
 - **Tiredness** can come from the treatment, and it can also come from the tumor
   or from fluid that is not draining. Sleeping much more than being awake is a
   same-day call, or a right-away call if there is a shunt.
@@ -514,7 +536,7 @@ counseling to families of children with SHH tumors whatever the family history,
 and to some others depending on the gene result. If your family has one of these
 conditions, say so early, because children with Gorlin syndrome are unusually
 sensitive to radiation and it can change which treatment is chosen. Tell your team
-before treatment is planned.
+before treatment is planned.!%embryonal tumor%
 
 ## What might happen over time
 

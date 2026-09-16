@@ -3073,6 +3073,541 @@ files, 225 script-checked quotes. New block: `blocks/posterior-fossa-syndrome.md
   inside the row looks new. And **do not narrate a redaction using the literal token**, or
   the repository inherits a permanent false positive for the next item to re-triage.
 
+**WI-538 — `/tumors/pediatric-brain-tumor`, the first page in the corpus whose reader
+is not the patient.**
+
+- **THE SOURCE PACK'S HEADLINE FACT WAS ALREADY SHIPPED ON A SIBLING, AND THAT IS
+  WI-529'S FIRST LESSON LANDING AGAIN.** The scouting brief called "pediatric-type
+  describes the tumor's biology, not the reader's age" the clearest single fact for
+  this page. `/tumors/glioma` already says it almost verbatim, and
+  `glossary/pediatric-type.md` says it a second time. Five more route-versus-own
+  checks came back OWNED: the radiation mask and planning visit
+  (`/treatments/radiation-therapy`'s most detailed section), the post-operative drain
+  (`/treatments/craniotomy`, nearly word for word the sentence the source pack
+  offered), proton cost, insurance and travel (`/treatments/proton-therapy`, which
+  carries explicit no-cost-multiplier and no-center-count rulings), when to stop
+  eating before surgery (`/tests/getting-ready-for-surgery`), and the shunt warning
+  list (`/treatments/shunts`). What was genuinely unowned is the PARENT'S position:
+  medicine to sleep for a scan (`/tests/mri` has no sedation content at all), daily
+  anesthesia for radiation, telling your child and telling their brothers and
+  sisters, school law, and **chemotherapy safety at home, which no page in the corpus
+  mentions**. Read the siblings before the source pack, or you write the source pack.
+
+- **AN AUTHORING MARKER CAN SILENTLY DISABLE A SIBLING'S TEST, AND THE MECHANISM IS
+  RAW TEXT SUBTRACTED FROM READER TEXT.**
+  `MedulloblastomaPageContentTests.TheRetiredNameAppearsOnlyAsRetiredAndTheTrialNames
+  AreNotDiagnoses` builds its `retired` string from the RAW section and subtracts it
+  from `ReaderText(Page)`. `ReaderText` strips `!%…%`. The moment this item put a
+  suppression marker inside that section, the raw string stopped being a substring of
+  the reader text, `.Replace(retired, "")` removed NOTHING, and the PNET sentence the
+  subtraction exists to take out of scope stayed in it — so a correct page went red.
+  A marker is page-wide, so its position is free (WI-529): move the marker rather
+  than weaken another item's test. Worth recording because the fragility is still
+  there for any guard that mixes a raw section with reader text.
+
+- **"AN ALL-ZERO PROBE RUN IS PROOF THE PROBE IS BROKEN" IS AMBIGUOUS AS WRITTEN, AND
+  THE AMBIGUITY POINTS THE DANGEROUS WAY.** §12.8 carries that rule from WI-537, and
+  this item implemented it literally in the post-deploy smoke: if no positive fragment
+  matched anywhere, print "PROBE BROKEN -- do not report a failed deploy". Then the
+  smoke was run BEFORE deploying, as a negative control, and it did exactly that. But
+  nothing had deployed, so the truthful answer was "the deploy has not landed". **A
+  totally failed production deploy would have been reported as a broken test, and the
+  real alarm suppressed** -- the precise inversion of what a smoke exists for. Zero
+  matches has two causes and the rule named only one.
+  **The fix is CONTROL FRAGMENTS: text present BOTH before and after the change**, on a
+  page the item barely touches. Then the cases separate: controls miss -> the probe is
+  broken; controls hit while the new fragments miss -> the deploy did not land. The
+  corrected run reports controls 2/2 and exits on real failures instead.
+
+  **And the practice that found it is worth more than the fix: RUN THE SMOKE BEFORE
+  DEPLOYING AND REQUIRE IT TO FAIL.** A smoke that has never failed is one nobody has
+  tested, and it will be trusted at exactly the moment it is least examined. The
+  pre-deploy run also proved each probe can FIRE -- including the negative probe, which
+  correctly reported the unsourced "it is treatable" still live in production. A
+  negative probe that has never once matched is indistinguishable from a typo.
+
+- **A FRONT-MATTER COMMENT TURNS A FIRST-OCCURRENCE MUTATION INTO A NO-OP, AND THE
+  HARNESS THEN REPORTS A SURVIVING GUARD.** Twice in this item, and both decoys were
+  comments this item wrote itself. `rep(old, new)` replaces with `count=1`, so a
+  mutation lands on the FIRST occurrence of its anchor. Run 1: the anchor
+  `'does not apply.'` first appears in the `[SPINAL-CORD]` ruling in YAML. Run 2: the
+  bare marker `!%embryonal tumor%` first appears in the comment recording where that
+  marker lives and why it is not beside the term. In both cases the file CHANGED — which
+  is all `dryrun` verifies, since it only asks whether a mutation is a no-op on the file
+  — while the text the guard reads was untouched, so the guard stayed correctly green and
+  the harness printed a SURVIVOR. **A survivor reads identically whether the guard is
+  weak or the mutation is. Ask which occurrence the anchor actually hit before touching
+  the guard** — the wrong diagnosis here weakens a guard to accommodate a broken probe.
+  Anchor every mutation on text that is unique in the BODY.
+
+  **And the same comment made the GUARD weak in the opposite direction.** The assertion
+  read the RAW file, so the front-matter comment ALONE satisfied it: delete the real
+  marker, keep the sentence explaining it, and the check still passes. WI-537 recorded a
+  URL in a comment making a check pass for the wrong reason; this is that, in a second
+  place, on a page's own authoring marker. Now scoped to the body — and it must use
+  `Body`, **not** `ReaderText`, because `ReaderText` strips the very markers it is
+  asserting on. The duplicate literal is gone from the comment as well, so the trap
+  cannot be re-armed by someone re-adding the mutation's old anchor.
+
+  **AND THE TRAP IS NOW CHECKED MECHANICALLY RATHER THAN REMEMBERED**, which is the
+  durable half of this lesson. `anchor-audit.py` asks each mutation's OWN CLOSURE where
+  it will actually bite — `rep` closes over `old`, while `ws` and `after` close over a
+  COMPILED pattern that can locate its own first match across a hard wrap exactly as the
+  mutation will — and compares that offset against the end of the front matter. All 81
+  audited: 3 bites land in YAML, every one named `front-matter-*` and deliberate.
+  **It also covers the half the harness structurally CANNOT see.** The harness only
+  reveals a front-matter bite when the guard reads the body, because then the guard
+  correctly stays green and a survivor is printed. When the guard reads the RAW file,
+  the same broken mutation still turns it red — looking perfectly healthy while proving
+  nothing about the prose it names. No run, of any length, would ever have surfaced
+  that; only asking the mutation where it lands does.
+
+- **A FILTERED HARNESS RUN REPORTED THE ENTIRE TABLE AS PROVED.** `break-tests.py`
+  filtered inside its loop and then printed `len(MUTATIONS)` unconditionally, so a
+  run of ONE mutation ended with "all 70 breaks fail correctly, on LF and on CRLF".
+  §12.8 already records not piping the harness through a small `tail` because that
+  reads like a half-run; **this is the dangerous direction, because a partial run
+  reads like a complete one**, and WI-536 and WI-537 both used filtered runs. Select
+  first, report what actually ran, and make a filtered run say so in its own summary.
+
+- **THE CORPUS RESTATEMENT CHECK HAS THREE OUTCOMES AND ONLY ONE OF THEM IS
+  "REWORD".** It found 17 collisions, then 9 more after the first round of fixes.
+  (1) REAL DUPLICATION — the caregiver slice repeated the `[CAREGIVER]` block
+  composed twelve lines above it, which is precisely the defect WI-529's rendered
+  read found in this same section, caught mechanically this time; reworded, and the
+  page now carries two per-page claims instead of three. (2) DELIBERATE SHARING THAT
+  MUST NOT BE REWORDED — the shunt clause is identical on four hubs because §12.10
+  wants one claim at one strength, and WI-537 recorded that changing either side
+  creates the two-strengths defect the block exists to prevent; it belongs in the
+  helper's allowlist. (3) PRESCRIBED VOCABULARY — §12.5 dictates what an outlook gate
+  must teach, so a new gate collides with all eight existing ones; rewording beat
+  allowlisting there because it also sharpened what makes this gate different (on a
+  cross-cutting page, outlook belongs to the tumor's name and not to an age group).
+  **The allowlist is for claims that MUST match, not for sentences that happen to.**
+
+- **REPLICATE AN EXPENSIVE GUARD OFFLINE WHEN YOU ARE ITERATING AGAINST IT.** The
+  restatement check is pure text analysis over markdown files, so a short Python
+  replica of `CuratedPage.Shingles` plus the intersection answered in under a second
+  what a 90-second suite cycle was answering. It reported 0 collisions across 2,883
+  shingles and the real suite then agreed. Two more rounds of reword-and-hope became
+  none.
+
+  **AND VALIDATE THE REPLICA AGAINST A KNOWN-CLEAN RUN BEFORE TRUSTING IT — THIS ONE
+  FAILED THAT CHECK.** Saved as a script at the end of the item, it was first run
+  against a page the suite had JUST reported clean. It claimed collisions with EIGHT
+  other pages, and every colliding phrase was shared-BLOCK prose: "a tumor and the
+  irritated brain around it" against `/seizures/what-to-do`, "at any hour call your
+  team or go" against `/treatments/shunts` and `/treatments/craniotomy`. The cause is
+  one word in the call site. The guard is invoked as
+  `AssertDoesNotRestateTheCorpus(Page, Slug, ...)` with the **RAW** page, so
+  `[MECHANISM]` stays a literal directive and the blocks' words are never in the
+  comparison at all. Composing the page first — which seemed so obviously right that
+  the first draft did it without asking — injects every shared block and then collides
+  with every hub that includes the same ones. It counted 5,018 shingles where the suite
+  sees about 3,000, which was the tell. **A replica that disagrees with its guard does
+  not fail loudly; it sends you rewording innocent sentences,** at the same cost as the
+  three false negatives recorded below and with more apparent authority, because it
+  looks like a measurement. Validate against a known result before the first real use;
+  and if the guard takes an allowlist, copy its entries from the TEST rather than from
+  memory, because entries are matched by CONTAINMENT and a half-remembered one silently
+  suppresses nothing.
+
+- **READ-ONLY PREDICTION BEATS WAITING FOR THE FAILURE OUTPUT.** Two defects were
+  found by grepping the item's own new files while a suite run was in flight and
+  editing was unsafe: **`practise` twice in reader text** (a corpus-wide guard that
+  lives inside `RadiationTherapyPageTests.cs` then confirmed it), and three
+  assertions anchored on a literal `\n`, **one of which could never match because its
+  continuation line is indented two spaces inside a list item**. Reading the page's
+  actual hard wraps turned a whole failure cycle into zero.
+
+- **A CLAIM WHOSE SOURCE COULD NOT BE READ IS NOT A SOURCED CLAIM.** The FDA's
+  pediatric anesthesia warning is the best-known statement of the under-3 concern and
+  it could not be fetched at either of two URLs (the server refuses the fetcher). It
+  is cited NOWHERE on the page; St. Jude states the same point first-hand and carries
+  it instead. The dead URLs are recorded in the front matter so the next item does
+  not re-derive the claim from memory.
+
+- **A PAPER CAN DISAGREE WITH ITSELF ON ONE PAGE, AND THAT IS THE ARGUMENT FOR
+  PUBLISHING NO NUMBER AT ALL.** The anesthesia age threshold is "≥ 12" in one
+  paper's abstract, "≥13" in its results and "until age 13" in its discussion; a
+  second paper uses 4 for general anesthesia and 7 for deep sedation. §12.4's usual
+  remedy is to attribute the figure in the sentence that prints it. Here the honest
+  output is the SHAPE — younger children usually need it, older children often do
+  not, and some older children still do — and the guard bans the ages the sources
+  argue over while deliberately allowing the sourced under-3 developmental point,
+  which is a different claim about a different thing.
+
+- **A SOURCE CAN BE BARRED FOR NAMING AND STILL BE ESSENTIAL, AND IT CAN CONTRADICT
+  ITSELF INSIDE ONE PAGE.** ACS's children's types page puts "Pediatric-type diffuse
+  high-grade gliomas" (CNS5) and "grade III or IV" (pre-CNS5) in the same sentence,
+  and uses Arabic grades in its own explainer directly above the Roman ones in its
+  list. Resolved per-claim and written into the front matter where the next reader of
+  it will see it (§12.13). **Cancer Research UK went further and is cited nowhere at
+  all**: its children's pages are the best written in the set, and its idiom sits in
+  the exact sentences this page wants — "GP" thirteen times, and the symptom list
+  itself written as "feeling or being sick".
+
+- **THE SHARED `[ESCALATION]` BLOCK IS ADULT-SHAPED, AND A PARENT PAGE IS WHERE THAT
+  SHOWS.** Nothing in its tiers covers a head growing too fast, a bulging soft spot,
+  or a baby who is only irritable. §12.10's remedy applied literally: include the
+  block, then add the page's own tier BENEATH it, carrying the mechanism that makes
+  the list make sense (a baby's skull is not fixed shut, so pressure can build for
+  longer before anything shows) and the sign that stands in for a child too young to
+  say it hurts — a worsening headache showing up only as a child who is anxious,
+  irritated or whiny.
+
+- **THE CAREGIVER SECTION INVERTS ON A PAGE ALREADY WRITTEN TO THE CAREGIVER.**
+  Everywhere else `[CAREGIVER]` is the one part addressed to somebody other than the
+  patient; here the whole page is, so the section says so out loud rather than
+  reading as an editing mistake. Its per-page claims then have to be diffed against
+  the block, which is exactly where one of them turned out to be the block's own
+  advice repeated.
+
+- **A PAGE'S OWN SOURCING RULING CAN BE FALSE OF THE RENDERED PAGE, BECAUSE BLOCK
+  SOURCES REACH THE READER'S SOURCE LIST.** This page's front matter declared, at
+  length and with reasons, that "Cancer Research UK is not cited at all" — and the
+  rendered page shows the reader TWO CRUK entries, one of them under the visibly
+  British title "Brain tumour symptoms". They arrive from `blocks/escalation.md`.
+  §12.10 already records that block sources merge in and render; the new half is that
+  a page's front-matter JUSTIFICATION about its own sourcing is a claim about the
+  COMPOSED page, and a test that reads only the page's own front matter will confirm
+  the wrong half of it forever. The claim is now "nothing on this page is TAKEN from
+  CRUK", and the test reads the BLOCK, so if the block ever drops CRUK the comment
+  goes red instead of quietly becoming a half-truth. WI-536's "a recorded
+  justification deserves the same check as a claim", found this time by a rendered
+  read rather than by review.
+
+- **AN EXISTING GLOSSARY TOOLTIP CAN RESTATE THE SENTENCE YOU JUST WROTE.** WI-535
+  recorded one direction: a NEW entry echoing the sentence it lands in. This is the
+  mirror, and it is easier to miss, because the entries were already shipped and
+  correct. The page glossed "pediatric-type" and "adult-type" in its own words, both
+  terms already have entries saying the same thing, and the rendered paragraph
+  therefore said it three times in a row. §12.8's WI-509 rule resolves it — where a
+  page defines a word the glossary also defines, suppress it there — but the rule
+  only fires if you read the page RENDERED, since the source markdown looks clean.
+
+- **THE §12.8 SELF-RESTATEMENT CLASS RECURRED AGAIN, AND AGAIN ONLY THE RENDERED READ
+  SAW IT.** The page's self-blame closing landed on "turning this over at three in
+  the morning", four lines under the `[CAUSES]` block's own "turning this over at
+  three in the morning". The wording differs enough that the corpus shingle check
+  cannot see it — which is precisely what WI-529's rendered read found in its
+  caregiver slice. A composed block plus a page's own slice will keep producing this,
+  and the only detector is reading the two together as a reader does.
+
+- **A SHARED BLOCK'S VOICE NEEDS SCOPING, NOT ONLY ITS CLAIMS.** The scoping note
+  above `[MECHANISM]` handled "your tumor". But `[ESCALATION]` composes six screens
+  lower and its same-day tier is also written to the patient — "a headache that wakes
+  **you** from sleep" — and that is the most safety-critical content on the page. A
+  parent should not have to carry a translation that far, so the page now carries a
+  one-line reminder directly above the directive. WI-529's lesson said a scoping note
+  must cover the block's FRAMING as well as its vocabulary; the extension is that it
+  must cover **every** patient-voiced block the page includes, at each one.
+
+- **A POINTER TO A BLOCK NATURALLY ECHOES THE BLOCK, WHICH IS EXACTLY WHAT THE
+  NON-DUPLICATION GUARD FORBIDS.** One sentence — telling a parent that some signs
+  carry a different rule if the tumor reaches the spine — took THREE attempts to word,
+  and both failures were the same mistake. The obvious way to point at a conditional
+  block is to restate its condition, so the first draft opened "for a tumor in the
+  spinal cord, or one that has spread" (collided with `/tumors/ependymoma`) and the
+  second opened "is in the spinal cord, or has" (collided with `blocks/spinal-cord.md`
+  itself, the very block it points at). **A page that routes to a block is structurally
+  drawn toward the block's own opening clause.** Write the pointer from the READER's
+  situation ("if the tumor has reached your child's spine") rather than from the
+  block's wording, and expect the restatement check to referee it.
+
+  **And the same pull can arrive as a well-meant consistency request.** A `/review`
+  nit asked the cord lead-in to match the block's anatomy — "in the spinal cord" rather
+  than the looser "sits in the spine" — which is correct on the medicine and imported
+  the block's exact opening clause along with it. The collision that followed was then
+  misdiagnosed twice, because the obvious suspect was the pointer. **Matching a block's
+  anatomy is not the same as matching its sentence:** take the vocabulary, not the
+  clause, and re-run the corpus check after any edit made for consistency with a block.
+
+  **AND THE THIRD FORM OF THE SAME PULL IS A SIBLING'S TRUE SENTENCE BECOMING THIS
+  PAGE'S FALSE ONE.** The pointer told a parent the cord rule came "at the end of this
+  section" — which is exactly what `/tumors/ependymoma` and `/tumors/medulloblastoma`
+  say, and it is TRUE on those pages, because the block is last there. Here three
+  paragraphs follow it (the scoping confirmation, the baby tier, the pre-verbal tier),
+  so a parent taking the instruction literally scrolls past the rule being pointed at
+  and lands on the baby paragraph. **Copying a sibling's shape copies its
+  PRECONDITIONS, and nothing checks them.** Caught by `/review` round 3; now banned by
+  a guard rather than merely corrected, because the siblings still say it and copying
+  them is how it arrived.
+
+- **CHANGING A SENTENCE MEANS FINDING EVERY REFERENCE TO IT, INCLUDING INSIDE ONE
+  TEST.** Updating the voice reminder's two `Assert.Contains` strings left an
+  `IndexOf("The lists that follow")` four lines below them searching for text that no
+  longer existed; it returned -1 and the position assertion failed. Same class as the
+  eight dead mutation anchors earlier in this item — prose moved, a second reference to
+  it did not — but inside a single method, where it is easiest to believe you have
+  finished. Grep the old phrase after every reword, not just the file you were editing.
+
+  **AND GREP THE WHOLE SENTENCE, NOT A MEMORABLE PIECE OF IT.** `/review` round 3 asked
+  for the cord pointer to be reworded. Before touching it I swept the repo for "at the
+  end of this section" — its SECOND sentence — found the mutation anchor, moved that,
+  and believed the sweep complete. The guard quoted the FIRST sentence ("Some of these
+  signs carry a different rule") and went red on the next run. **A search for part of a
+  changed sentence is not a search for the sentence:** take the head AND the tail, or
+  normalise the whole thing and search that. This was the fifth false negative of the
+  item and the fourth distinct mechanism — line wrapping, then wrapping again, then
+  punctuation, then a too-narrow fragment — which is the argument for making the search
+  mechanical rather than remembering four separate traps.
+
+- **A SCOPING FIX CAN FAIL BY NOT REACHING FAR ENOUGH, AND ONLY THE NEXT RENDERED
+  READ SHOWS IT.** Read 1 found `[ESCALATION]`'s tiers in patient voice and added a
+  reminder directly above the directive: "the list below is written to the person who
+  has the tumor". Read 3 found that same defect one block further down. Composed, this
+  section carries TWO patient-voiced blocks, and between the reminder and the second
+  one a parent passes both tiers, both fever rules, the shunt rule and two sign-off
+  links — "the list below" had plainly ended, and the cord block then opens "**For
+  you**, an arm or a leg that is newly weak". §12.14 says a fix can recreate the
+  defect it fixed; this is the quieter version, where the fix is correct and merely
+  too narrow. **Scope to the SECTION, not to the next paragraph, and count how many
+  composed blocks the reader actually passes.**
+
+- **I READ A POSITION GUARD AS A WIDER CONSTRAINT THAN IT IS, AND THE SIBLINGS ALREADY
+  HAD THE ANSWER.** `SpinalCordBlockTests` forbids anything BETWEEN `[ESCALATION]` and
+  `[SPINAL-CORD]`. I recorded that as "the page-owned lead-in CANNOT precede the
+  block", and wrote that reason into the page's front matter, a test comment, the
+  progress log and this file. It is false: the guard says nothing about a
+  forward-pointing sentence earlier in the section, and **both sibling hubs carry
+  exactly that** — "those signs have their own rule, at the end of the section on when
+  to call for help, below." So the scoping could always have arrived before the alarm,
+  and a parent was meeting "**For you**, an arm or a leg that is newly weak" before
+  learning the rule might not be theirs. `/review` round 2 found it.
+  **Read what a guard actually asserts, not what its subject suggests — and when a
+  shared block constrains layout, check how the hubs that already include it solved
+  the same problem.** The page now points forward before the block and confirms after
+  it, which is the sibling shape.
+
+- **A REASSURANCE WRITTEN TO FIX AN OVER-WARNING BECAME AN UNSOURCED CLAIM POINTING THE
+  WRONG WAY.** Round 1 asked whether the section over-warns; the answer added "Most
+  childhood brain tumors never do" to the sentence that decides whether the right-away
+  cord rule is yours. No source in the set quantifies how often childhood tumors reach
+  the spine — and the page's own cited ACS source points the other way for the tumors
+  it teaches: embryonal tumors "tend to grow quickly and **often spread through the
+  CSF**", with "embryonal tumor" glossed as the childhood word two sections earlier.
+  §12.14 again, in its most dangerous form: a fix for a tone problem created a
+  §12.12 over-reassurance on a triage sentence. It now says only that some childhood
+  tumors can reach the spine and some cannot, with a guard banning the frequency shape.
+
+- **`ReaderText` ON A SECTION SILENTLY EATS THREE CHARACTERS, AND IT IS LIVE ON FOUR
+  OTHER PAGES.** §12.8 (WI-520) records `ReaderText(Body(page))` as the trap; the same
+  helper applied to a SECTION is the same bug, because it strips front matter by
+  seeking `\n---`, finds none, and returns `body[3..]`. It does not throw, and it does
+  not fail a `Contains` assertion anchored further in, so a test written this way goes
+  green carrying a latent defect — **this item's did, on the very run that was meant to
+  catch it.** Found by reading my own test, not by any gate.
+
+  A sweep of the whole test directory then found **six live instances on four shipped
+  files**, all currently green: `ReaderText` on a section in `BiopsyPageTests` and
+  `SteroidsPageTests`, and the documented `ReaderText(Body(page))` form three times
+  each in `AstrocytomaPageTests` and `HighGradeGliomaPageTests`. The rule is written
+  down in `TestsLibraryPagesTests` and was re-committed four times anyway, which says
+  the helper's shape is the problem rather than anyone's care: `ReaderText` accepts a
+  string and cannot tell a page from a section.
+
+  **Raised as its own backlog item rather than fixed here, and NOT filed under the
+  existing idiom sweep.** WI-538 is a content item; those are six pre-existing guards
+  on four unrelated pages, each needing its own harness proof. The nearest open sweep
+  (WI-564) is specifically about British idiom — WI-537 appended to it legitimately
+  because that entry already named the exact word and file it was adding, and there is
+  no equivalent justification here. Filing a test-helper bug under an idiom sweep
+  because it is the nearest open item is how a defect gets lost. The durable fix is to
+  make the helper refuse — throw when handed a string with no front-matter delimiter,
+  so the -1 branch cannot silently return `body[3..]` again. **Compose, then section,
+  then flatten; `ReaderText` belongs on a whole page or not at all.**
+
+- **QUOTING A SHARED BLOCK IN A FRONT-MATTER COMMENT TRIPS THAT BLOCK'S OWN
+  NON-DUPLICATION GUARD.** Explaining *why* the cord block is included meant quoting
+  its opening clause in the page's front matter — and
+  `SpinalCordBlockTests.EveryIncludingHubComposesTheRuleAndNoneRetypesIt` reads the
+  RAW file, front matter included, so the page "retyped" a sentence no reader will
+  ever see and a correct page went red. WI-537 recorded the same surface making a
+  check PASS for the wrong reason (`Assert.Contains(url, front)` satisfied by a URL in
+  a comment); this is it making one FAIL for the wrong reason. Two fixes were
+  available — paraphrase the comment, or move the guard onto `ReaderText` — and the
+  paraphrase won, because loosening a guard four hubs depend on to accommodate one
+  page's commentary is the larger risk. **A front-matter comment is inside the string
+  every raw-file guard reads. Paraphrase the corpus; do not quote it there.**
+
+- **MY OWN VERIFICATION GREP PRODUCED A FALSE NEGATIVE, AND I NEARLY DISMISSED A
+  CORRECT FINDING ON IT.** §12.8 already records that REVIEW quotes fail in both
+  directions, so this item verified every load-bearing claim before acting — and two
+  of `/review` round 1's claims did not survive that check, which looked like the
+  rule working. One of them was my error, not the reviewer's: a sweep for an
+  ependymoma age comparative across all 100 source files returned one irrelevant hit,
+  and I was one step from recording the finding as unsourced. Re-checking with a
+  different pattern found the sentence exactly where the reviewer said it was.
+
+  **It then happened a SECOND time in the same item, and the second one cost more.** A
+  grep for the siblings' forward-pointing scope sentence returned nothing, so I recorded
+  that a page-owned lead-in "cannot precede" the cord block — and wrote that false
+  reason into the page's front matter, a test comment, the progress log and this file,
+  where it stood for several rounds until `/review` round 2 quoted the sentences back at
+  me. Both hubs carry them.
+
+  **It happened a THIRD time, and the third one proves the rule is broader than
+  wrapping.** Hunting the last restatement collision, a whitespace-tolerant search for
+  the offending 8-gram reported it absent from the page — so I reworded a different
+  sentence, twice, while the real culprit sat untouched. The page says "tumor is in the
+  spinal cord**,** or has"; my search joined the words with `\s+` and a COMMA is not
+  whitespace. `Shingles` strips every non-letter before matching, so the guard saw a
+  collision my search structurally could not.
+
+  **The root cause is mechanics, and the rule is: normalise the way the GUARD
+  normalises.** Not "tolerate line breaks" — letters only, lowercased, exactly as
+  `Shingles` does (`[^A-Za-z] -> ' '`). A verification that is more literal than the
+  check it is verifying will keep exonerating the guilty sentence. This corpus is
+  hard-wrapped AND punctuated, and a line-based or whitespace-only search cannot match
+  a sentence across either. Both misses were
+  multi-line sentences. The corpus's own tooling already knows this — `CuratedPage`
+  flattens before every prose assertion, `ws()` in the mutation table joins anchor words
+  with `\s+` for exactly this reason, and §12.8 records a canary that failed because the
+  phrase it aimed at was wrapped between two words. The verification habit had simply
+  not inherited it. **Search prose whitespace-tolerantly (flatten first, or join the
+  words with `\s+`), and treat an empty result against a specific quoted claim as
+  evidence about the search until proved otherwise** — the same shape as the
+  broken-probe and dead-scan lessons below.
+
+- **A RECORDED REASON CAN BE WRONG ABOUT THE BLOCK RATHER THAN ABOUT THE PAGE.**
+  WI-536 established that a justification deserves the same check as a claim; those
+  cases were all reasons that misdescribed the PAGE. This one misdescribed a shared
+  BLOCK: the item excluded `blocks/spinal-cord.md` on the grounds that it "asserts a
+  cord rule outright" and therefore fails §12.10's "hub you have thought about least"
+  test. It does not assert anything outright — it opens **"If the tumor is in the
+  spinal cord, or has spread to the spine"**, which is the CONDITIONAL form §12.10
+  (WI-563) explicitly says survives that test, and which the same page used two
+  sections later to justify including `[POSTERIOR-FOSSA-SYNDROME]`. (The stale version
+  of that same argument survived in this file to the very end of the item — see the final
+  bullet.) The page argued
+  both sides of one rule and nothing caught it, because the test pinned the
+  conclusion rather than the reasoning. Cost: a pre-diagnosis parent whose child had
+  new leg weakness met the shared block's SAME-DAY tier where the corpus files that
+  reader RIGHT AWAY — §12.10's dangerous direction. **Before excluding a block, quote
+  its opening clause and check whether it is conditional.**
+
+- **A SHARED GUARD CAN ENCODE A PROXY INSTEAD OF ITS PROPERTY, AND THE FOURTH
+  INCLUDER IS WHERE THAT SHOWS.** `SpinalCordBlockTests` asserted the including hub's
+  section heading was literally "## What symptoms does it cause?" while its own
+  comment said the property was "the section is the symptoms section". Three hubs
+  written for patients shared that wording, so the proxy held. The first includer
+  written for a PARENT heads it "What symptoms look like in a child", and the literal
+  assertion would have forced it to adopt a patient-voiced heading or drop a safety
+  block. Generalised to `^## What symptoms`, which is still tight and is the property.
+
+- **A REVIEW NIT CAN BE ACTIVELY WRONG, AND THE HARNESS CAN PROVE IT.** Round 1 asked
+  for the sibling page's suppression marker to be moved next to the term it
+  suppresses, which reads better and is what the other page does. It is also exactly
+  what broke that page's own retired-name guard earlier in this item, for the
+  raw-versus-reader-text reason recorded above — and the harness already carries a
+  mutation that puts the marker back to prove the failure is real. **Rejected with the
+  mutation as the evidence**, and the reason written into the sibling's front matter so
+  the next reader does not re-propose it. A nit that reads as tidying can be a defect
+  in a costume.
+
+- **A PRE-COMMIT SCAN THAT DIES MID-RUN REPORTS NOTHING, AND IT LOOKS LIKE A
+  RESULT.** The privacy scan printed "files in the diff: 6" and then threw:
+  `subprocess.run(..., text=True)` decodes with the Windows default cp1252, which
+  raised `UnicodeDecodeError` on a tracked file containing `§`, killed the reader
+  thread, returned `None`, and crashed `re.findall`. Every per-file comparison it
+  exists to make never ran. **Decode UTF-8 explicitly and never trust a captured
+  stream's default codec on Windows** — and treat a scan that produced a header but
+  no findings as broken rather than clean, which is the same shape as §12.8's rule
+  that an all-zero probe run is proof the PROBE is broken.
+  Two design notes that made the corrected run usable, both from WI-537's three
+  triage passes: it compares **net-new against HEAD per file** (whole-file counts
+  invent findings), and its pattern list deliberately omits the bare word *secrets*,
+  which is what made WI-537's scan flag the sentence reporting its own result. Result:
+  0 net-new across all 6 changed files, with no false positives to triage.
+
+- **BOTH SHARED BLOCKS ARE INCLUDED — AND THIS FILE SPENT MOST OF THE ITEM SAYING
+  OTHERWISE.** The bullet that stood here read "`[SPINAL-CORD]` EXCLUDED,
+  `[POSTERIOR-FOSSA-SYNDROME]` INCLUDED, and the difference is whether the block scopes
+  itself". It was written before the exclusion was reversed (see the reversal bullet
+  above) and then left standing, so the draft argued both sides of the same call for
+  several rounds. Pasted, §12.8 would have carried a lesson contradicting the item that
+  filed it, and taught the next hub to exclude a safety block from a page whose reader is
+  a parent. **The correct statement is that both are included, and both for the SAME
+  reason:** each opens with a conditional that scopes itself — "If the tumor is in the
+  spinal cord, or has spread to the spine", and "after surgery low at the back of the
+  brain" — which is the form §12.10 (WI-563) says survives the "hub you have thought
+  about least" test. This page is the third includer of the posterior-fossa block and the
+  fourth of the cord block, and the first of either that is not a single tumor. Both
+  inclusions are pinned by an exactly-asserted `IncludingHubs` list and by the page's
+  closed-set directive guard. **A lessons draft is itself a recorded justification, so
+  WI-536's rule applies to it: when a conclusion is reversed, hunt it down everywhere it
+  was written — including the file you intend to paste from.** This item wrote the same
+  false reason into four places once already and needed `/review` to find it; that is
+  twice, and the second time the reviewer was me, one read before pasting.
+
+- **AN ITERATE-AND-CHECK GUARD CANNOT SEE AN OMISSION, AND THAT IS WHERE THE BLOCKER
+  WAS.** The pre-verbal paragraph named a warning sign — a worsening headache showing
+  up only as a child who is anxious, irritated or whiny — and then stopped, in the one
+  section where TIERS are the content. The only instruction in it belonged to a
+  different sign (cannot be woken → ambulance), so a parent at 2am with an irritable
+  toddler chose between the ambulance sentence beside it and nothing at all. The shared
+  block could not rescue it: `[ESCALATION]` does file a worsening headache as same-day,
+  but in PATIENT voice, and the page closes that voice two paragraphs earlier. **No
+  guard could see it**, and the reason is structural rather than careless:
+  `EverySameDayLineThePageWritesItselfHonoursTheShuntRule` SELECTS sentences matching
+  `same[- ]day` and then checks each one for the shunt clause, so a sentence carrying no
+  tier at all never enters the filter. The guard was green because the defect was an
+  ABSENCE. WI-517 recorded that an iterate-and-check guard is green on a page it never
+  looked at; this is the sharper version — green on a SENTENCE it never looked at, in
+  the most safety-critical section of the page. **A guard that iterates over matches can
+  only police the matches. To catch a missing tier you must enumerate the SIGNS and
+  demand a tier for each one.**
+
+- **A SOURCE ADDED TO ANSWER A SOURCING NIT CAN BACK THE OTHER HALF OF THE SENTENCE —
+  AND THE FRONT-MATTER COMMENT WILL SAY SO, IF ANYONE READS IT.** Round 2 objected that
+  "there is treatment for it" rested on only generic support, and the fix cited St.
+  Jude's endocrine late-effects page. That page carries the DAMAGE ("Some cancer
+  treatments, particularly radiation to the brain, may damage these glands") and a
+  definition of growth hormone deficiency that ends at "Learn more." — the treatment
+  detail lives on a child page that was never fetched. So the quote recorded in the
+  page's own front matter was itself evidence that the fix had NOT worked, sitting in
+  the file for a full round until `/review` round 3 read it back. §12.14 in its quietest
+  form: the citation is real, the quote is real, and neither one touches the disputed
+  clause. **When you add a source to settle a sourcing objection, quote the clause that
+  supports THE DISPUTED HALF — and if no such clause exists, the claim goes, not the
+  objection.**
+
+- **ONE INTENSIFIER CAN COVER TWO NAMES, AND THE UNSUPPORTED HALF RIDES IN ON THE
+  SUPPORTED ONE.** "Glioblastoma and meningioma are **far** more common in adults" is
+  two claims sharing a magnitude word. Meningioma's is sourced — ACS says "much less
+  common in children and teens than in adults". Glioblastoma's is not: the only source
+  cited for it says "more common in adults compared to AYA and children", and the
+  page's own front matter quotes that WEAKER wording hundreds of lines above the
+  sentence that strengthens it. `/review` round 3 worked this very sentence, verified
+  the meningioma half, and left the other unchecked — because a compound subject reads
+  as ONE claim and gets ONE check. **Split the sentence when the evidence differs per
+  name.** Worth recording because the item had already written the rule it was
+  breaking into that same front matter: "the magnitude word is the SOURCE's rather than
+  a softening of it." Found at round 4, in a sentence two rounds had already touched.
+
+- **A DELIBERATELY SHARED CLAUSE HAS A CEILING, AND COMPOSED, THIS ONE REACHES THE
+  READER FIVE TIMES.** Twice page-owned (the baby tier and the pre-verbal tier added at
+  round 3), plus `blocks/escalation.md`, `blocks/mechanism.md` ("If you have a shunt, it
+  means getting help right away") and `blocks/posterior-fossa-syndrome.md" ("or right
+  away if there is a shunt"). Each attaches to a DIFFERENT trigger, so none is redundant
+  and §12.10's one-claim-at-one-strength rule is being honoured rather than abused —
+  `/review` round 4 ruled the two consecutive page-owned ones should stay, because a 2am
+  reader meets one paragraph or the other (their child is either a baby or a toddler who
+  cannot talk yet, not both) and making the second refer back would cost a lookup on the
+  most safety-critical content on the page. **But the count is only visible on the
+  COMPOSED page and nothing measures it.** Five is the ceiling — the argument against a
+  sixth, not against these five.
+
+- **AN UNSOURCED CLAIM MAY ALREADY HAVE BEEN INHERITED, SO FIXING ONE PAGE LEAVES IT
+  SHIPPED.** The same sentence lived on `/tumors/medulloblastoma` ("This is checked for
+  years, and it is treatable"), drawn from the same file with the same gap, shipped by
+  WI-537 the day before. Fixing only the page under review would have left a known
+  over-reassurance live on a page this very item links to twice, and would have made the
+  corpus disagree with itself about whether the claim is supportable. **When a sourcing
+  defect is found, grep the CORPUS for the claim before fixing the page.** The cost is
+  one grep; the alternative is knowingly shipping the defect you just documented.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
