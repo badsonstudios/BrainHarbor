@@ -32,9 +32,17 @@ public sealed class PosteriorFossaSyndromeBlockTests
     /// <summary>
     /// Every hub that includes the block, stated rather than discovered, so a new
     /// includer has to be added here and its placement read (§12.10: read the tiers
-    /// against the tumor before including). WI-538's pediatric hub is the likely third.
+    /// against the tumor before including).
     /// </summary>
-    private static readonly string[] IncludingHubs = ["ependymoma", "medulloblastoma"];
+    // WI-538: /tumors/pediatric-brain-tumor is the third, and it is the first includer
+    // that is NOT a single tumor. It qualifies on the CONDITIONAL rule: the block's own
+    // opening clause scopes it to "surgery low at the back of the brain", so a parent
+    // whose child was operated on somewhere else is not addressed by it, and it is false
+    // on nobody. It is included there rather than left to the two tumor hubs because that
+    // page's reader often arrives BEFORE the tumor has a name, and the carve-out (a sudden
+    // loss of speech stays an ambulance call) is the half that cannot wait for a diagnosis.
+    private static readonly string[] IncludingHubs =
+        ["ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check.</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];
