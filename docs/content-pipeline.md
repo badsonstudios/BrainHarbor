@@ -3105,6 +3105,27 @@ is not the patient.**
   than weaken another item's test. Worth recording because the fragility is still
   there for any guard that mixes a raw section with reader text.
 
+- **"AN ALL-ZERO PROBE RUN IS PROOF THE PROBE IS BROKEN" IS AMBIGUOUS AS WRITTEN, AND
+  THE AMBIGUITY POINTS THE DANGEROUS WAY.** §12.8 carries that rule from WI-537, and
+  this item implemented it literally in the post-deploy smoke: if no positive fragment
+  matched anywhere, print "PROBE BROKEN -- do not report a failed deploy". Then the
+  smoke was run BEFORE deploying, as a negative control, and it did exactly that. But
+  nothing had deployed, so the truthful answer was "the deploy has not landed". **A
+  totally failed production deploy would have been reported as a broken test, and the
+  real alarm suppressed** -- the precise inversion of what a smoke exists for. Zero
+  matches has two causes and the rule named only one.
+  **The fix is CONTROL FRAGMENTS: text present BOTH before and after the change**, on a
+  page the item barely touches. Then the cases separate: controls miss -> the probe is
+  broken; controls hit while the new fragments miss -> the deploy did not land. The
+  corrected run reports controls 2/2 and exits on real failures instead.
+
+  **And the practice that found it is worth more than the fix: RUN THE SMOKE BEFORE
+  DEPLOYING AND REQUIRE IT TO FAIL.** A smoke that has never failed is one nobody has
+  tested, and it will be trusted at exactly the moment it is least examined. The
+  pre-deploy run also proved each probe can FIRE -- including the negative probe, which
+  correctly reported the unsourced "it is treatable" still live in production. A
+  negative probe that has never once matched is indistinguishable from a typo.
+
 - **A FRONT-MATTER COMMENT TURNS A FIRST-OCCURRENCE MUTATION INTO A NO-OP, AND THE
   HARNESS THEN REPORTS A SURVIVING GUARD.** Twice in this item, and both decoys were
   comments this item wrote itself. `rep(old, new)` replaces with `count=1`, so a
