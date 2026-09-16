@@ -2931,6 +2931,35 @@ Start only after Dan has signed off WI-513's template.
   `blocks/escalation.md` must match — WI-563 pinned the two together with a test
   that reads the sibling's `{#fever-rule}` section, so they cannot drift again.
   **Depends on:** WI-563.
+- [ ] **WI-566 `CuratedPage.ReaderText` silently eats three characters, on six live
+  guards** *(raised by WI-538)* — `ReaderText` strips front matter by seeking
+  `\n---`. Handed a string that has none — a SECTION, or a body that has already been
+  stripped — `IndexOf` returns -1 and it returns `body[3..]`. It does not throw, and it
+  does not fail an `Assert.Contains` anchored further in, so **every affected guard is
+  green today while scanning text with its first three characters missing.**
+  Demonstrated: `"Some things should not wait…"` becomes `"e things should not wait…"`.
+  **Six instances, four files, all currently passing:**
+  `ReaderText` on a section in `BiopsyPageTests:102` and `SteroidsPageTests:738`; the
+  `ReaderText(Body(page))` form three times each in `AstrocytomaPageTests` (455, 481,
+  1001) and `HighGradeGliomaPageTests` (486, 515, 1366).
+  **The rule is already written down** — `TestsLibraryPagesTests` carries the comment
+  "`ReaderText(page)`, NOT `ReaderText(Body(page))`", and §12.8 (WI-520) records it
+  appearing again thirty lines from the comment warning about it. It has now been
+  re-committed six times regardless, which points at the helper rather than at anyone's
+  care: **it takes a string and cannot tell a page from a section.**
+  **The durable fix is to make it refuse** — throw a `FormatException` when handed a
+  string with no front-matter delimiter, so the -1 branch cannot truncate silently ever
+  again — then fix the six call sites (compose, then section, then flatten). Expect the
+  throw to surface more call sites than the six above; that is the point.
+  **Each corrected guard needs its own break-mutation**, because a guard that was
+  scanning truncated text may have been passing for the wrong reason, and the change
+  is exactly the kind §12.8 (WI-532) says must be re-proved rather than assumed.
+  **NOT filed under WI-564.** That item is a British-idiom sweep; WI-537 appended to it
+  legitimately because its entry already named the exact word and file being added, and
+  there is no equivalent justification here. Filing a test-helper correctness bug under
+  the nearest open sweep is how a defect gets lost.
+  **Depends on:** nothing. Blocks nothing, but it silently weakens every guard it
+  touches, so do it before the corpus doubles.
 - [x] **WI-517 Oligodendroglioma, deepened** *(done 2026-09-08 — `/tumors/oligodendroglioma`)* —
   a 172-word stub became the §12.3 seventeen-section hub. Reading grade **5.8**,
   **1357 tests** (1322 before), ContentCheck **232/0**, **all 47
@@ -3585,10 +3614,61 @@ research items. Same shared contract throughout.
   second use; `EscalationBlockTests`' hub list could derive from `DirectBlockNames`.
   Lessons in §12.8, including the item's through-line: three rounds, three tests pinning a
   claim that was wrong (unsourced, then unattributed, then overstated).
-- [ ] **WI-538 Pediatric brain tumor, deepened** — **the audience is a parent,
-  not the patient.** Coordinate with WI-453, which asks whether children get a
-  section or a sister site; this item writes the page that exists either way.
-  Depends on: WI-513.
+- [x] **WI-538 Pediatric brain tumor, deepened.** Depends on: WI-513. *(done 2026-09-16)*
+  **Done.** The 47-line stub (which cited only `cancer.gov/types/brain`, barred by
+  §12.1 for naming, and carried `[CAREGIVER]` alone) rewritten as a **cross-cutting
+  page written to a PARENT** — the first page in the corpus whose reader is not the
+  patient: grade **5.6**, suite **2155/2155** (+38 tests), ContentCheck **273/0**,
+  **81 break-mutations caught on LF and CRLF**, **8 render
+  guards proved by rebuild**, **five rendered reads**, **4 `/review` rounds**.
+  Sources: 100 files, **368 quotes script-checked**. New glossary entry
+  `embryonal-tumor`, added at its second use and suppressed on both pages that gloss
+  it inline. **The item was mostly scope work, and WI-529's first lesson landed
+  again:** the source pack's headline fact for this page — that "pediatric-type"
+  describes biology, not the reader's age — is already shipped on `/tumors/glioma`,
+  and five more checks came back owned (the radiation mask, the post-operative drain,
+  proton cost and travel, pre-surgery fasting, shunt warning signs). What was
+  genuinely unowned, and is why the page earns its place: **medicine to sleep for a
+  scan** (`/tests/mri` has no sedation content at all), daily anesthesia for
+  radiation, telling your child and their brothers and sisters, school law (IEP and
+  504, with the jurisdiction note §12.3 §9 demands), the pediatric follow-up
+  structure, and **chemotherapy safety at home, which no page in the corpus
+  mentions**. **Block decisions, all pinned by tests:** `[SPINAL-CORD]` and
+  `[POSTERIOR-FOSSA-SYNDROME]` both INCLUDED, and for the same reason — each opens
+  with a conditional that scopes itself, which §12.10 says survives the "hub you have
+  thought about least" test. This page is the **fourth includer of the cord block and
+  the third of the posterior-fossa block, and the first of either that is not a single
+  tumor**. The cord block was excluded in the first draft on a reason that was simply
+  false about the block, and `/review` found it. `[MECHANISM]` and `[ESCALATION]`
+  included with **voice-scoping reminders at each**, since both are written to the
+  patient and this reader is the patient's parent; and because the shared tiers are
+  adult-shaped, the page adds **its own baby and toddler tier beneath `[ESCALATION]`**.
+  **No threshold age is published for anesthesia** — one paper disagrees with itself
+  on one page (12, 13, 13) — so the page gives the shape. **Cancer Research UK is
+  taken from nowhere** despite writing the best children's pages in the set, though
+  two CRUK entries do reach the reader via `blocks/escalation.md`; ACS's children's
+  types page is cited but **barred for naming and grading**. **No FDA page is cited**:
+  the pediatric anesthesia warning failed to fetch at two URLs, and a claim whose
+  source could not be read is not a sourced claim. **Siblings:**
+  `/tumors/medulloblastoma` gained the `!%embryonal tumor%` suppression, and both
+  `PosteriorFossaSyndromeBlockTests.IncludingHubs` and
+  `SpinalCordBlockTests.IncludingHubs` gained this hub — the latter also had its
+  heading assertion generalised from a literal patient-voiced heading to
+  `^## What symptoms`, because a parent page heads that section differently and the
+  literal string was a proxy for the property. **WI-566 filed** for a test-helper
+  defect found here and live on four other pages. Lessons in §12.8.
+  **For `/pm`:** the pediatric hub now EXISTS, which settles half of WI-453 (whether
+  children get a section or a sister site) — this page is the one that exists either
+  way. WI-539 inherits three things. The shunt clause now reaches a COMPOSED reader
+  **five times**, each attached to a distinct trigger and none redundant, which is a
+  ceiling rather than a target. `[SPINAL-CORD]` has four includers and
+  `[POSTERIOR-FOSSA-SYNDROME]` three, both asserted exactly, so a fifth or fourth
+  includer fails until registered. And three tools are now saved instead of re-derived
+  each item: `privacy-scan.py` (enumerates UNTRACKED files — the throwaway version did
+  not, and reported "clean" on roughly half the change), `shingles.py` with
+  `allowlist.txt` (offline replica of the corpus restatement guard, validated against a
+  known-clean run, which it initially FAILED), and `anchor-audit.py` (finds mutations
+  that bite front matter instead of the body — a trap this item hit twice).
 - [ ] **WI-539 Pituitary tumor, deepened** — links to WI-553 (transsphenoidal)
   and WI-551 (vision and hormone tests) as its primary paths. Depends on: WI-513.
 - [ ] **WI-540 Craniopharyngioma, deepened.** Depends on: WI-539.

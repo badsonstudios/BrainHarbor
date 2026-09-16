@@ -679,7 +679,13 @@ public sealed class MedulloblastomaPageContentTests
         Assert.Contains("Cisplatin and radiation to the head can both affect hearing", life, StringComparison.Ordinal);
         Assert.Contains("Hearing tests find it early", life, StringComparison.Ordinal);
         Assert.Contains("can change the hormones that run growth and other body systems", life, StringComparison.Ordinal);
-        Assert.Contains("it is treatable", life, StringComparison.Ordinal);
+        // WI-538 removed "and it is treatable" here. The endocrine source this page
+        // cites carries the DAMAGE ("Some cancer treatments, particularly radiation to
+        // the brain, may damage these glands") and a definition of growth hormone
+        // deficiency that ends at "Learn more." -- the treatment detail lives on a child
+        // page that was never fetched. The sibling /tumors/pediatric-brain-tumor made the
+        // same claim from the same file and lost it for the same reason.
+        Assert.Contains("hormone levels are part of the regular blood tests", life, StringComparison.Ordinal);
 
         // Follow-up is not only scans, and the scoliosis line is the one nobody expects.
         var scans = CuratedPage.Flatten(Section(ScansHeading));

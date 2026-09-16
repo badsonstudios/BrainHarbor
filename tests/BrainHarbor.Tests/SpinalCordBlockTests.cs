@@ -28,7 +28,14 @@ public sealed class SpinalCordBlockTests
     /// </summary>
     // WI-537: medulloblastoma joins them — it spreads through the fluid to the spine,
     // which is the reader the block's "or has spread to the spine" clause names.
-    private static readonly string[] IncludingHubs = ["diffuse-midline-glioma", "ependymoma", "medulloblastoma"];
+    // WI-538: /tumors/pediatric-brain-tumor joins them, and it is the first includer
+    // that is not a single tumor. Its first draft excluded the block on the grounds
+    // that it "asserts a cord rule outright"; it does not, it opens with a conditional,
+    // and §12.10 says a conditional survives the "hub you have thought about least"
+    // test. Excluding it left a pre-diagnosis parent with the shared block's same-day
+    // tier for signs this block files as right-away.
+    private static readonly string[] IncludingHubs =
+        ["diffuse-midline-glioma", "ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check (/review round 1).</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];
@@ -82,9 +89,14 @@ public sealed class SpinalCordBlockTests
         Assert.All(lines[(escalation + 1)..spinal], l => Assert.True(l.Trim().Length == 0,
             $"{slug} puts '{l.Trim()}' between [ESCALATION] and [SPINAL-CORD]"));
 
-        // And the section is the symptoms section (§12.9).
+        // And the section is the symptoms section (§12.9). WHICH SECTION is the
+        // property; the exact wording is not. WI-538's cross-cutting hub is written to a
+        // parent and heads it "What symptoms look like in a child", which is right for
+        // its reader and is still the symptoms section. A literal-heading assertion would
+        // have forced that page to either adopt a heading written for the patient or drop
+        // the block, and dropping it is the under-triage direction (§12.10).
         var heading = lines[..escalation].Last(l => l.StartsWith("## ", StringComparison.Ordinal));
-        Assert.StartsWith("## What symptoms does it cause?", heading, StringComparison.Ordinal);
+        Assert.Matches(new Regex(@"^## What symptoms\b", RegexOptions.IgnoreCase), heading);
     }
 
     [Fact]
