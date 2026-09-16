@@ -19,9 +19,9 @@ children.
 
 ## Why children are not small adults here
 
-The types are different. %%Medulloblastoma%% and some midline tumors are far
-more common in children, while %%glioblastoma%% and %%brain metastases%% are
-far more common in adults.
+The types are different. [Medulloblastoma](/tumors/medulloblastoma) and some
+midline tumors are far more common in children, while %%glioblastoma%% and
+%%brain metastases%% are far more common in adults.
 
 The same tumor name can also behave differently in a child than in an adult,
 and be treated differently.

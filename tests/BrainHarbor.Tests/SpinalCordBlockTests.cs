@@ -26,7 +26,9 @@ public sealed class SpinalCordBlockTests
     /// includer has to be added here and its placement read (§12.10: read the
     /// tiers against the tumor before including).
     /// </summary>
-    private static readonly string[] IncludingHubs = ["diffuse-midline-glioma", "ependymoma"];
+    // WI-537: medulloblastoma joins them — it spreads through the fluid to the spine,
+    // which is the reader the block's "or has spread to the spine" clause names.
+    private static readonly string[] IncludingHubs = ["diffuse-midline-glioma", "ependymoma", "medulloblastoma"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check (/review round 1).</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];

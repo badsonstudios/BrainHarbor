@@ -2924,6 +2924,155 @@ six rendered reads, four `/review` rounds (2 blockers, then 2, then 1, then none
   it for one four lines later; and the scouting brief's own StatPearls ID was a hernia
   chapter.
 
+**WI-537 — `/tumors/medulloblastoma`, and the item where the tests kept protecting the
+defects.** Grade **5.6**, **2117 tests** (2065 before), ContentCheck **271/0**, **166
+break-mutations caught on LF and CRLF**, nine render guards proved by rebuild, **four
+rendered reads**, **three `/review` rounds (2 blockers, then 1, then none)**. Sources: 62
+files, 225 script-checked quotes. New block: `blocks/posterior-fossa-syndrome.md`.
+
+- **THREE ROUNDS, THREE TESTS PINNING A CLAIM THAT WAS WRONG. This is the item's main
+  lesson.** Round 1: a test asserting an **unsourced** sentence — the page claimed
+  posterior fossa syndrome happens "more so than after most other operations there", a
+  comparative no cited source makes and which St. Jude contradicts in kind ("also can
+  happen after surgery to remove other kinds of brain tumors in the posterior fossa. Those
+  include astrocytoma and ependymoma"). Round 2: a test asserting an **unattributed**
+  claim — the medulloblastoma bullet added to `/treatments/chemotherapy` traced to nothing
+  in THAT page's front matter, whose ten sources were all adult or drug-specific. Round 3:
+  a test asserting an **overstated** claim — "**most often** cisplatin, vincristine and
+  cyclophosphamide", a frequency ranking of regimens the sources do not make (they say
+  "Common regimens include", "typically", "include"). §12.10's existing traps are about
+  asserting the wrong THING (presence where position was the property); this is asserting a
+  thing that should not be on the page at all, and the guard then makes it harder to
+  remove. **The question that catches all three: if this sentence were wrong, would this
+  test tell me, or would it enforce it?**
+- **A CLAIM CAN BE TRACED ON THE PAGE THAT MAKES IT AND UNTRACED ON THE SIBLING YOU
+  EDITED.** This item diagnosed and fixed exactly that defect for its new block after a
+  rendered read, then shipped it on `/treatments/chemotherapy`, because the check was run
+  on the block and not on the sibling page the same change touched. §12.2 item 2 is
+  per-page: when an item adds a claim to a sibling, that sibling's own front matter is the
+  thing to check.
+- **A WORD CAN COLLIDE WITH ITSELF ACROSS A PAGE, AND PINNING BOTH SENTENCES ENFORCES THE
+  CONTRADICTION.** "Grade 4 ... describes the tumor's **kind**" used "kind" to mean *type
+  of tumor*, while every other use on the page means *molecular group* ("the kind changes
+  the treatment plan", "which kind the tumor is decides who gets offered testing"). Read
+  with the page's own vocabulary it claimed the grade tells you the group, which the
+  section denies six lines later — in the section a frightened parent reads first, with
+  both sentences pinned by tests. No gate can catch this. Only reading the page as a reader
+  does.
+- **BANNING VOCABULARY IS NOT BANNING THE CLAIM, AND A FIX CAN RECREATE THE DEFECT IT
+  FIXED (§12.14, twice in one item).** Round 1 replaced an ungated "most children with that
+  kind do well" with "because that kind responds to today's treatment" — the same
+  group-level outcome claim with the adverb removed, which then slipped past the "responds
+  well/best/better" bans round 1 had just extended. And the page's outlook gate carries the
+  same claim a third way, as "Treatment works well enough for the WNT kind", which no
+  vocabulary regex was going to see. Guard **position** (this claim family belongs inside
+  `:::outlook`), not phrasing. The warning now rests on a fact instead: every
+  medulloblastoma is grade 4 whatever its kind, so the number cannot be about one child.
+- **THE CHARACTERISATION LIST GROWS AN INFLECTION HOLE EVERY FEW ITEMS, AND THE FIX CAN
+  OVERSHOOT.** "do well" was missing beside "does better"/"responds well"/"responds best",
+  the third such hole after "responds best" (WI-517) and "aggressive" (WI-528). But as a
+  bare substring it fails the standard this list applies to everything else: these
+  pediatric hubs are written in a school register where "do well at school" is the natural
+  sentence, so it belongs in `RejectedCharacterisations` with the reason, like "went well"
+  and "back to normal".
+- **`Assert.Contains(url, frontMatter)` PASSES ON A COMMENT.** Three attribution assertions
+  would have stayed green with the `- url:` entry deleted and the URL surviving in a nearby
+  comment — and this corpus really does mention URLs in front-matter comments, so it is a
+  live way to lose a citation silently. Count `- url:` ENTRIES, and separately assert the
+  COMPOSED source list, because reaching the reader's source list is the property.
+  Relatedly: **`Compose(...).Sources` is block sources only** and does not include the
+  page's own front matter, so a test asking it for a page source fails — or worse, passes
+  by accident on a hub where some block cites the same URL.
+- **A SECOND HUB NEEDING THE SAME PASSAGE IS A BLOCK, AND THE CARVE-OUT IS WHY IT IS ONE.**
+  What makes the posterior fossa paragraphs a block rather than two copies is the ambulance
+  carve-out: `[ESCALATION]` composes higher up every including page and files "Suddenly not
+  being able to speak" as an ambulance call, so a page describing a syndrome whose first
+  sign is exactly that must say the ambulance rule still stands. Factored, every includer
+  gets it for free. Scoped like `blocks/spinal-cord.md`, not folded into `escalation.md`:
+  it is about one operation, not every tumor.
+- **FACTORING CAN SILENTLY DROP A HEDGE.** WI-536's page-local wording was "**usually**
+  starts in hospital". The block lost "usually", which both contradicted the block's own
+  next paragraph (it tiers onset AFTER you are home) and widened an unhedged claim onto a
+  second hub. §12.10: a hedge in a block is scope, and the scope grows with every includer.
+  Diff factored prose against the original word for word.
+- **FIXING ONE HUB'S SOURCE LIST CAN BREAK THE OTHER'S.** A rendered read showed the only
+  support for the block's complication sentence on `/tumors/medulloblastoma` was a
+  StatPearls chapter titled "Ependymoma", so the medulloblastoma cohort study was added to
+  the block — creating the mirror problem on `/tumors/ependymoma`. Moving the impairment
+  sentence INTO the block was the tempting fix and the wrong one: that finding is
+  medulloblastoma survivors, and a block asserts its prose on every includer. The answer is
+  a **tumour-neutral** source whose title is true on every hub, with the specific one kept
+  page-local.
+- **A TOOLTIP CAN FIRE TWICE INSIDE ONE NAME, AND ONLY A RENDERED READ FINDS IT.** The page
+  suppressed the LONGER glossary term on the theory that longest-name-wins protects the
+  shorter one. It does, at one position. The page names "posterior fossa syndrome" TWICE
+  (the section, and the support list signposting St. Jude), tooltips are
+  first-occurrence-only, so by the second mention the longer term was spent and the bare
+  "posterior fossa" matched inside the phrase. Suppress the SHORTER term.
+- **PROMOTING A GUARD EXPOSES HOLES THAT WERE INVISIBLE ON A RAW PAGE.** The normalisation
+  guard had to move to the COMPOSED page because the reassurance it checks moved into the
+  block, and read raw it went green by losing its subject. Composed, it fired immediately
+  on `[ESCALATION]`'s own bullet "A headache much worse **than usual**", where "usual" is
+  part of the warning rather than a reassurance about it, and it could not see that a **list
+  item's tier lives in its lead-in paragraph** — the same structural point
+  `AssertNoEscalationList` records from the other direction. It is
+  `CuratedPage.AssertNoWarningSignIsNormalised` now, with a mandatory positive half.
+- **REVIEW QUOTES FAIL IN BOTH DIRECTIONS, THREE TIMES IN ONE ITEM, AND THE HYPHEN FAMILY
+  IS WIDER THAN §12.8 SAID.** A verifier that folded U+2013 and U+2014 but not **U+2010**
+  reported a CNS5 phrase absent and then crashed printing it: fold U+2010 through U+2015. A
+  review then asserted a drug trio was "verbatim ONLY in an adult paper", which was false —
+  it is in at least four pediatric files, including a table row for the exact under-3
+  radiation-sparing context the sentence was about, and following the claim would have cost
+  the better citation. **Verify a reviewer's negative claims, not only its positive ones.**
+  And a **recorded justification deserves the same check as a claim**: this item wrote a
+  ban-list reason quoting a sentence that is not on the page and never was.
+- **AN ANALOGY CAN MOVE A THRESHOLD, AND THE DIRECTION IS THE WHOLE QUESTION.** "A piece
+  bigger than a small coin" stood in for a residual-tumor threshold that is an AREA of
+  1.5 cm². A dime's face is about 2.5 cm², so the analogy raised the bar by roughly seventy
+  percent in the REASSURING direction and turned a two-dimensional measurement into a
+  three-dimensional "piece". Where §12.4 R1 keeps the figure out, route to the measurement
+  rather than inventing a picture of it.
+- **CHECK WHETHER A NAME IS ACTUALLY RETIRED BEFORE CALLING IT RETIRED.** The draft said
+  group 3 and group 4 "used to be called" that. They are current CNS5 names
+  ("Medulloblastomas, non-WNT/non-SHH (Groups 3 and 4)"; St. Jude "Group 3 tumors are the
+  second most common"), and the page used them in the present tense thirty-five lines
+  earlier. On the report-reading section that told a parent holding a "Group 4" report the
+  label was obsolete.
+- **AN UNDER-TRIAGE INHERITED FROM THE PREVIOUS ITEM, FIXED ON BOTH HUBS AT ONCE.** Both
+  hubs filed "new or worse trouble with walking or balance" as SAME-DAY while
+  `blocks/spinal-cord.md`, composed lower on the same page, files the same observable sign
+  as RIGHT AWAY for a tumor in or spread to the cord. WI-512's shape, dangerous direction.
+  The clause went onto **both** hubs in one change, worded per hub, because fixing only the
+  newer page would have created the two-strengths defect the block exists to prevent.
+- **HARNESS HYGIENE, TWO NEW WAYS TO FOOL YOURSELF.** A mutation anchored on a LITERAL dies
+  silently when the prose rewraps: restoring the "usually" hedge turned one into a no-op,
+  which `dryrun.py` caught and a harness run would have reported as `ok`. Locate paragraphs
+  by regex. And **do not pipe the harness through a small `tail`** — a 313-line run through
+  `tail -180` shows 23 LF lines against 155 CRLF ones and reads like a half-run. Also:
+  handproof's served-at-its-URL case passed when mutated because **the route is the file
+  path, not the front-matter `slug:`** (`ContentStore.GetPage` maps the url onto
+  `Root + urlPath + ".md"`, and `ContentFrontMatter.Slug` is read by nothing in the
+  routing) — a weak MUTATION, not a weak guard, and reading it the other way would have
+  meant "fixing" a healthy test.
+- Smaller, each caught by a gate or a read rather than by a person: an **en dash in a copied
+  front-matter quote** (NoEmDashInCopyTests reads comments); **"Straight after surgery"**, a
+  British idiom §12.10 names and no spelling gate catches; **restating a sibling's owned
+  sentence**, caught by `/treatments/proton-therapy`'s own restatement test; and a
+  four-"or" tier sentence that could not be split because splitting breaks the
+  same-day/shunt adjacency the shunt guard requires, so it took a comma instead.
+- **A PRE-COMMIT PRIVACY SCAN THAT GREPS FOR A TOKEN WILL FLAG THE SENTENCE REPORTING THAT
+  THE TOKEN IS ABSENT.** This item's scan cost three triage passes on its own output: three
+  hits on the literal word "secrets" inside the sentence "Privacy/secrets scan done"; one on
+  the `sk-` key pattern stemming into "ri**sk-s**tratification" in a source title; one on a
+  GitHub account name that survived only in the sentence recording its removal; and one on a
+  credentials filename written while reporting that no such file was in the diff. Two rules
+  come out of it. **Compare net-new against HEAD, per file** — whole-file counts invent
+  findings (a long-standing file mentioning a name ninety times reads as ninety new ones),
+  and a raw added-line grep is useless on `PROGRESS.md`, whose single-line table rows show
+  as wholly "added" the moment any part of them is edited, so every pre-existing mention
+  inside the row looks new. And **do not narrate a redaction using the literal token**, or
+  the repository inherits a permanent false positive for the next item to re-triage.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

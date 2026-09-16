@@ -56,16 +56,9 @@ public sealed class EpendymomaPageContentTests
         CuratedPage.SentencesOf(CuratedPage.Flatten(Regex.Replace(
             CuratedPage.ReaderText(Page), @"^[ \t]*#{1,6}[ \t].*$", "", RegexOptions.Multiline)));
 
-    /// <summary>
-    /// Reader-text paragraphs (blank-line bounded, heading lines removed, list items
-    /// their own paragraphs), flattened.
-    /// </summary>
-    private static List<string> PageParagraphs() =>
-        [.. Regex.Split(
-                Regex.Replace(CuratedPage.ReaderText(Page).Replace("\r\n", "\n"), @"^[ \t]*#{1,6}[ \t].*$", "", RegexOptions.Multiline),
-                @"\n[ \t]*\n|\n(?=[ \t]*- )")
-            .Select(p => CuratedPage.Flatten(p).Trim())
-            .Where(p => p.Length > 0)];
+    /// <summary>The COMPOSED text of one <c>###</c> subsection. Shared (WI-537, /review round 1).</summary>
+    private static string ComposedSubsectionLf(string heading) =>
+        CuratedPage.ComposedSubsection(Page, heading);
 
     /// <summary>The raw (LF) text of one `##` section, heading included.</summary>
     private static string SectionRawLf(string heading)
@@ -211,7 +204,15 @@ public sealed class EpendymomaPageContentTests
         // 2025 review says "Ataxia may emerge or worsen postoperatively".
         var line = ParagraphIn(SymptomHeading, "New or worse trouble with walking or balance");
 
-        Assert.Contains("is a same-day call, or a right-away call if there is a shunt", line, StringComparison.Ordinal);
+        // WI-537 /review round 2: the page filed new trouble walking as SAME-DAY while
+        // [SPINAL-CORD], composed further down the same page, files the same observable
+        // sign as RIGHT AWAY for a tumor in or spread to the cord. One claim, two
+        // strengths, and the page's was the weaker (WI-512's shape, dangerous direction).
+        // The clause is added to BOTH including hubs in one change: fixing only the newer
+        // page would have created the split the block exists to prevent.
+        Assert.Contains(
+            "is a same-day call, or a right-away call if there is a shunt, or if the tumor is in the spinal cord or has spread to the spine",
+            line, StringComparison.Ordinal);
 
         // /review round 2: swallowing is in the cited sources ONLY as a post-operative
         // problem (St. Jude's surgery complications and the posterior fossa syndrome
@@ -227,11 +228,17 @@ public sealed class EpendymomaPageContentTests
         // WI-535 round 2: the [ESCALATION] block on this page makes the whole same-day
         // tier right-away for a reader with a shunt, so a same-day line the page
         // writes itself has to say so too. Raw page: the block carries its own rule.
+        // WI-537: the posterior fossa paragraphs (and their same-day tier) moved into
+        // blocks/posterior-fossa-syndrome.md at their second use, so this page now
+        // writes four same-day lines itself rather than five. The block's own tier is
+        // guarded by PosteriorFossaSyndromeBlockTests, which asserts the shunt clause
+        // once for every including hub — the count is lowered deliberately, not because
+        // a line lost its rule.
         var sameDay = PageSentences()
             .Where(s => Regex.IsMatch(s, @"\bsame[- ]day\b", RegexOptions.IgnoreCase))
             .ToList();
 
-        Assert.True(sameDay.Count >= 5, $"only {sameDay.Count} same-day sentences, so this test checks almost nothing");
+        Assert.True(sameDay.Count >= 4, $"only {sameDay.Count} same-day sentences, so this test checks almost nothing");
 
         foreach (var sentence in sameDay)
         {
@@ -259,38 +266,15 @@ public sealed class EpendymomaPageContentTests
         // sat three sentences from its symptoms. A paragraph that names a warning sign
         // AND reassures must carry a tier or the other cause, in that paragraph or the
         // next. Reassurance is not an answer (harness run 1).
-        var paragraphs = PageParagraphs();
-        var normaliser = new Regex(
-            @"\b(normal|expected|nothing to worry|common|usual|side effects?|part of (the )?treatment|(can )?comes? from (the )?(treatment|surgery)|usually (comes?|is) from|go on for a while|get better)\b",
-            RegexOptions.IgnoreCase);
-        var symptom = new Regex(
-            // /review round 3: `behavio\w*` was missing, so the guard could not fire on a
-            // behavior change — the one posterior fossa sign the tier had stranded.
-            @"\b(headaches?|vomit\w*|throwing up|sleep\w*|tired\w*|drows\w*|weak\w*|numb\w*|swallow\w*|talk\w*|speak\w*|speech|walk\w*|balance|mood|behavio\w*|irritab\w*|dizz\w*)\b",
-            RegexOptions.IgnoreCase);
-        var answered = new Regex(
-            @"also come from the tumor|same-day call|call your team the same day|right away|right-away|ambulance",
-            RegexOptions.IgnoreCase);
-
-        var checkedParagraphs = new List<string>();
-        for (var i = 0; i < paragraphs.Count; i++)
-        {
-            if (!symptom.IsMatch(paragraphs[i]) || !normaliser.IsMatch(paragraphs[i]))
-            {
-                continue;
-            }
-
-            checkedParagraphs.Add(paragraphs[i]);
-            var context = paragraphs[i] + " " + (i + 1 < paragraphs.Count ? paragraphs[i + 1] : "");
-            Assert.True(answered.IsMatch(context),
-                $"a paragraph names a warning sign and reassures, with no tier: \"{paragraphs[i]}\"");
-        }
-
-        // Positive: the three reassuring places this page has were all checked.
-        foreach (var expected in new[] { "Most children slowly get better", "can go on for a while after spinal surgery", "Tiredness" })
-        {
-            Assert.Contains(checkedParagraphs, p => p.Contains(expected, StringComparison.Ordinal));
-        }
+        // WI-537 promoted this guard to CuratedPage at its second use, and fixed two
+        // holes that only became live once it ran on the COMPOSED page: "worse than
+        // usual" is a warning rather than a reassurance, and a list item's tier sits in
+        // its lead-in paragraph. The three paragraphs named here are the reassuring
+        // places this page has, and the guard must have examined all of them.
+        CuratedPage.AssertNoWarningSignIsNormalised(Composed, Slug,
+            "Most children slowly get better",
+            "can go on for a while after spinal surgery",
+            "Tiredness");
 
         var spine = CuratedPage.Flatten(SubsectionRawLf("After surgery on the spine"));
         Assert.Contains("New or worse pain in the back or neck, and weakness or numbness that is new or worse, is a right-away call",
@@ -329,7 +313,19 @@ public sealed class EpendymomaPageContentTests
     [Fact]
     public void PosteriorFossaSyndromeIsTimedAndHonestAndCarriesNoFigure()
     {
-        var sub = CuratedPage.Flatten(SubsectionRawLf("After surgery at the back of the brain"));
+        // WI-537: COMPOSED. The paragraphs moved into
+        // blocks/posterior-fossa-syndrome.md at their second use, so every string below
+        // now arrives by composition. What this test still owns is that THIS page's
+        // reader meets them, in this subsection, with this page's own lead-in and
+        // surgeon question around them; the block's wording and its both-directions
+        // no-retype check belong to PosteriorFossaSyndromeBlockTests.
+        var sub = CuratedPage.Flatten(ComposedSubsectionLf("After surgery at the back of the brain"));
+
+        // This page's own sentence, which the block deliberately does not carry: the
+        // block is written for any hub whose surgery is low at the back of the brain,
+        // and naming the tumor is the including page's job.
+        Assert.Contains("Some children get this after surgery for an ependymoma at the back of the brain",
+            sub, StringComparison.Ordinal);
 
         foreach (var required in new[]
                  {
@@ -790,7 +786,14 @@ public sealed class EpendymomaPageRenderTests : IClassFixture<WebApplicationFact
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
         foreach (var directive in new[]
-                 { "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]", "[ESCALATION]", "[SPINAL-CORD]" })
+                 {
+                     "[MECHANISM]", "[CROSSWALK]", "[CAUSES]", "[CAREGIVER]", "[TUMOR-BOARD]",
+                     // WI-537: this hub's posterior fossa paragraphs are a block now, so the
+                     // directive has to be checked here too. Without it, a block that failed
+                     // to resolve on THIS page would leave the page rendering the literal
+                     // directive and this test green.
+                     "[ESCALATION]", "[SPINAL-CORD]", "[POSTERIOR-FOSSA-SYNDROME]",
+                 })
         {
             Assert.DoesNotContain(directive, html, StringComparison.Ordinal);
         }
@@ -800,6 +803,9 @@ public sealed class EpendymomaPageRenderTests : IClassFixture<WebApplicationFact
                      "closed box", "Call your team the same day", "Roman numeral grades",
                      "nobody knows the cause", "tumor board", "caring for someone",
                      "If you have a shunt", "weaker than it was",
+                     // The new block's canary: a directive that resolves to nothing is as
+                     // bad as one that fails to resolve, and only a canary sees it.
+                     "Most children slowly get better",
                  })
         {
             Assert.Contains(canary, html, StringComparison.OrdinalIgnoreCase);
