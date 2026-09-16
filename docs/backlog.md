@@ -2890,6 +2890,20 @@ Start only after Dan has signed off WI-513's template.
   *nauseated*, and it sits on a raised-pressure symptom line on every hub the
   block composes onto. Half-fixing an idiom pair is worse than not starting:
   the remaining half now looks deliberate.
+  **WI-537 adds two things here rather than raising a duplicate item** (its `/review`
+  round 3 found this entry already names both the word and the file, and splitting the
+  decision across two items is how the fever-line split went wrong at WI-563):
+  (1) **switch the idiom guards to the COMPOSED page.** `feeling sick` is in no shared
+  list at all, only in per-page idiom arrays, and every one of those reads the **raw**
+  page — so the phrase is structurally invisible even on the two hubs whose spelling
+  guard already reads composed text, and no amount of deferring will ever turn it red.
+  (2) **Priority note:** in `blocks/mechanism.md` the phrase sits in a coordination that
+  also carries the unambiguous US term ("feeling sick **and throwing up**"), so a US
+  reader disambiguates from context. That is a weaker defect than WI-563's blocker, where
+  "Being sick over and over" stood alone on an escalation **trigger** line and a misread
+  changed what the reader did. Fix it, but rank it accordingly. Deferred now by WI-518,
+  WI-529, WI-533 and WI-537: four deferrals is the point at which a deferral has become a
+  decision.
   **Goal:** promote `being sick`, `feeling sick`, `straight away`, `straight
   after`, `out of hours`, `come round` and `advice line` into a shared idiom
   list, fix the
@@ -3534,8 +3548,43 @@ research items. Same shared contract throughout.
   at-home tier. **Also:** `/tumors/glioma`'s "grade 2 and above ... not curable" scoped
   "for most gliomas" with a pointer to this page (it contradicted ependymoma); glossary
   `posterior-fossa`, `posterior-fossa-syndrome`. Lessons in §12.8.
-- [ ] **WI-537 Medulloblastoma, deepened** — including craniospinal radiation and
-  the 14-day rule before staging lumbar puncture. Depends on: WI-513.
+- [x] **WI-537 Medulloblastoma, deepened** — including craniospinal radiation and
+  the 14-day rule before staging lumbar puncture. Depends on: WI-513. *(done 2026-09-15)*
+  **Done.** The stub (~27 lines, cited only `cancer.gov/types/brain`, carried `[CAREGIVER]`
+  alone) rewritten as a full §12.3 hub: grade **5.6**, **2117 tests** (2065 before),
+  ContentCheck **271/0**, **166 break-mutations on LF and CRLF, all caught**, nine render
+  guards proved by rebuild, **four rendered reads**, **three `/review` rounds (2 blockers,
+  then 1, then none)**. Sources: 62 files, 225 script-checked quotes
+  (`.claude/work_files/wi537-sources/NOTES.md`).
+  **NEW BLOCK `blocks/posterior-fossa-syndrome.md`**, factored out of `/tumors/ependymoma`
+  at its second use (§12.8). The **ambulance carve-out is why it is a block**: `[ESCALATION]`
+  composes higher on every including page and files sudden loss of speech as an ambulance
+  call, so a section describing a syndrome whose first sign is exactly that must say the
+  ambulance rule still stands. Scoped like `blocks/spinal-cord.md`, not folded into
+  `escalation.md`. Both hubs keep their own lead-in and surgeon question; the block carries
+  the timing, the carve-out, the recovery shape and the at-home tier, and publishes no
+  frequency figure.
+  **What the page decides:** CNS WHO grade 4 for every type, with WHO's own warning that the
+  number misleads, rested on a fact rather than on any group's outcome ("every
+  medulloblastoma is grade 4 whatever its kind, so the number cannot tell you how one child
+  will do"); histology and molecular group as TWO AXES of one layered diagnosis, with group
+  3 and group 4 named as CURRENT names; the CSF timing rule printed with the disagreement
+  inside a single national standard (at least 14 days in one place, 10 to 14 in another);
+  craniospinal radiation explained by why rather than named; the under-3 radiation floor
+  attributed to both sources and said to be moving; the de-escalation trials named as
+  unpublished; no survival figure, no Gy, no mg, no frequency percentage.
+  **Siblings:** `/treatments/chemotherapy` gained a medulloblastoma bullet **with its own
+  two sources** (a `/review` blocker: the bullet first traced to nothing in that page's own
+  front matter), and `/tumors/pediatric-brain-tumor` now links the hub instead of
+  tooltipping it. **An under-triage inherited from WI-536 was fixed on BOTH hubs at once:**
+  each filed new trouble walking as same-day while `[SPINAL-CORD]`, composed lower on the
+  same page, files it right away for a tumour in or spread to the cord.
+  **Handed on:** WI-564 gained the composed-page idiom-guard switch and a priority note
+  (`feeling sick` is in no shared list and every per-page guard reads the RAW page, so
+  nothing will ever turn it red); a glossary entry for "embryonal tumor" waits for its
+  second use; `EscalationBlockTests`' hub list could derive from `DirectBlockNames`.
+  Lessons in §12.8, including the item's through-line: three rounds, three tests pinning a
+  claim that was wrong (unsourced, then unattributed, then overstated).
 - [ ] **WI-538 Pediatric brain tumor, deepened** — **the audience is a parent,
   not the patient.** Coordinate with WI-453, which asks whether children get a
   section or a sister site; this item writes the page that exists either way.

@@ -31,6 +31,29 @@ sources:
   - url: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9259966/
     title: "Carmustine Wafers Implantation in Patients With Newly Diagnosed High Grade Glioma: Is It Still an Option? (Front Oncol, 2022)"
     accessed: 2026-09-04
+  # WI-537 added the medulloblastoma bullet to the tumor-by-tumor list below, and these
+  # two are its sources. /review round 2 caught the bullet citing NOTHING on this page:
+  # every other bullet maps to a source above, and this page's ten were all adult or
+  # drug-specific. It is the same defect WI-537 had just fixed one layer over, in
+  # blocks/posterior-fossa-syndrome.md, and the check was run on the block and not on the
+  # sibling page the same item edited (§12.2 item 2: a claim traces to a source in the
+  # page's own front matter).
+  - url: https://together.stjude.org/en-us/conditions/cancers/medulloblastoma.html
+    title: "Medulloblastoma in Children and Teens - Together by St. Jude™"
+    accessed: 2026-09-15
+    # Verbatim: "A combination of chemotherapy medicines is used to treat
+    # medulloblastoma." and, for the under-3 line, "In children under age 3, chemotherapy
+    # may be used to help delay radiation until the child is older."
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12003599/
+    title: "Advancing medulloblastoma therapy: strategies and survival insights - PMC"
+    accessed: 2026-09-15
+    # For the three drugs by name, in a PEDIATRIC context: "Common regimens include
+    # cisplatin, vincristine, and cyclophosphamide, as seen in trials like SIOP PNET 4
+    # and COG protocols." (/review round 2 said the bare trio was verbatim only in an
+    # ADULT paper and that it must therefore not be cited for a sentence about a child.
+    # The caution is right and the claim is not: this pediatric review carries it, and so
+    # does PMC10743079. Checked before citing, per §12.14.) Survival figures are
+    # published there; none carried.
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12803824/
     title: "Pneumocystis jirovecii pneumonia prophylaxis in patients with glioma receiving concurrent chemoradiation: a systematic review and meta-analysis (2026)"
     accessed: 2026-09-04
@@ -232,6 +255,10 @@ your own pathology and gene results.
   radiation.
 - **A tumor that spread to the brain from somewhere else.** The drugs are picked
   for the first cancer, not for the brain. Your doctor for that cancer leads.
+- **[Medulloblastoma](/tumors/medulloblastoma).** Usually a combination, which
+  usually includes cisplatin, vincristine and cyclophosphamide, and some plans add
+  lomustine. For a child under 3 it may be used instead of radiation for a while,
+  rather than alongside it.
 
 If your tumor is not in this list, that does not mean chemotherapy is not for
 you. It means the list is short and yours needs a conversation.

@@ -357,7 +357,8 @@ Low at the back of the brain, most symptoms come from the blocked fluid:
 - Feeling dizzy, or eyes that flick from side to side.
 
 New or worse trouble with walking or balance is a same-day call, or a right-away
-call if there is a shunt.
+call if there is a shunt, or if the tumor is in the spinal cord or has spread to
+the spine.
 
 In a baby, the head can grow bigger than it should, the soft spot on top of the
 head can bulge, and the baby can be more irritable than usual. If you see that in
@@ -498,21 +499,9 @@ therapy](/treatments/proton-therapy).
 
 ### After surgery at the back of the brain {#posterior-fossa-syndrome}
 
-**A day or two after this surgery, some children stop talking.** It can also
-change swallowing, walking, mood and behavior. It always starts within the first
-week.
+Some children get this after surgery for an ependymoma at the back of the brain.
 
-**Suddenly not being able to speak is on the ambulance list above, and that rule
-still stands.** What this section describes usually starts in hospital, in the
-days right after the operation, where your team is watching for it.
-
-It is frightening to see. Doctors know it as a complication of the operation
-itself. **Most children slowly get better.** Speech usually comes back over days
-or weeks, and for some it takes months. Most children walk on their own again.
-Some trouble with speech, movement or mood can last longer, even years. Speech
-therapy can help. If the swallowing, walking, mood or behavior changes start or
-get worse after you are home, call your team the same day, or right away if there
-is a shunt.
+[POSTERIOR-FOSSA-SYNDROME]
 
 **Before surgery, it is fair to ask** how often your surgeon operates in this part
 of the brain. St. Jude says the risk of it is lower with an experienced surgeon.

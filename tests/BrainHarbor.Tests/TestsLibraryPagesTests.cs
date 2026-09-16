@@ -135,6 +135,7 @@ internal static class CuratedPage
         // Run over the corpus per §12.8 before adding: the word appears in no
         // page, block or glossary entry, so nothing legitimate loses by it.
         "aggressive",
+
     ];
 
     /// <summary>
@@ -168,6 +169,25 @@ internal static class CuratedPage
     [
         "good result", "completely gone", "all clear",
         "full recovery", "back to normal", "went well", "bad news",
+
+        // WI-537 added "do well" to the LIVE list and /review round 2 sent it here,
+        // correctly. It was written for one shape, "do well with today's treatment" on
+        // /tumors/medulloblastoma, and as a bare substring it fails the standard this
+        // file applies to everything else: a phrase belongs only if no CORRECT sentence
+        // contains it. These pediatric hubs are written in a school register, where "ask
+        // what support helps your child do well at school" is the natural sentence.
+        // (/review round 3: that example is HYPOTHETICAL, not a quotation. The
+        // medulloblastoma hub's everyday-life section says "ask what help can be put in
+        // place", and "do well" appears nowhere under Content/. Recorded precisely because
+        // WI-536 found a justification can be false of the page it cites, and a reason
+        // deserves the same check as a claim.) WI-538's hub is next. It is the
+        // same reason "went well" and "back to normal" are here, and the negation shape
+        // ("we cannot promise she will do well") is how WI-509 lost good sign/bad sign.
+        //
+        // The sentence that prompted it is gone for a better reason anyway: it was an
+        // ungated group-level outcome claim, and MedulloblastomaPageContentTests pins
+        // the replacement and bans the "responds well/best/to today" family on that page.
+        "do well",
     ];
 
     /// <summary>
@@ -619,6 +639,25 @@ internal static class CuratedPage
     public static string ComposedSection(string page, string heading) =>
         Section(Composed(page), heading);
 
+    /// <summary>
+    /// One <c>###</c> subsection of the COMPOSED page, up to the next heading of any
+    /// level. LF-normalised and NOT flattened, so a caller can still slice paragraphs
+    /// out of it.
+    ///
+    /// WI-537 needed this on two hubs in a single change, which is §12.8's
+    /// factor-at-the-second-use threshold. It is shared rather than copied because that
+    /// item had just promoted another guard for exactly this reason and then duplicated
+    /// this helper anyway (/review round 1).
+    /// </summary>
+    public static string ComposedSubsection(string page, string heading)
+    {
+        var raw = Composed(page).Replace("\r\n", "\n");
+        var start = raw.IndexOf($"\n### {heading}", StringComparison.Ordinal);
+        Assert.True(start >= 0, $"the composed page has no '### {heading}' subsection");
+        var end = raw.IndexOf("\n#", start + 5, StringComparison.Ordinal);
+        return end < 0 ? raw[start..] : raw[start..end];
+    }
+
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];
 
@@ -1009,6 +1048,104 @@ internal static class CuratedPage
         "can", "cannot", "will", "would", "may", "might", "do", "does", "did", "have",
         "has", "had", "one", "than", "then", "out", "up", "about", "into", "over",
     };
+
+    /// <summary>
+    /// No paragraph names a warning sign AND reassures about it without either a tier
+    /// or the other cause, in that paragraph or the next.
+    ///
+    /// PARAGRAPH-scoped, and run on the COMPOSED page. WI-536 wrote this page-locally
+    /// for <c>/tumors/ependymoma</c> after a sentence-window version never looked at
+    /// the paragraph it was written for; WI-537 is its second use, which is §12.8's
+    /// threshold, and the copy is what this replaces. The docs are explicit that
+    /// **when a guard is copied, its holes are copied too** — both holes below were
+    /// invisible while the guard ran on a raw page and became live the moment it ran
+    /// on a composed one.
+    ///
+    /// <paramref name="mustHaveChecked"/> is the positive half, and it is not
+    /// optional: WI-517's lesson is that an iterate-and-check guard is green on a page
+    /// it never looked at, so each caller names the reassuring paragraphs this must
+    /// have actually examined.
+    /// </summary>
+    public static void AssertNoWarningSignIsNormalised(
+        string composedPage, string slug, params string[] mustHaveChecked)
+    {
+        var paragraphs = Paragraphs(composedPage);
+
+        var normaliser = new Regex(
+            // `(?<!than )usual`: the escalation block's own red flag is "a headache much
+            // worse THAN USUAL", where the word is part of the warning rather than a
+            // reassurance about it. Unqualified, this fired on the ambulance list.
+            @"\b(normal|expected|nothing to worry|common|(?<!than )usual|side effects?"
+            + @"|part of (the )?treatment|(can )?comes? from (the )?(treatment|surgery)"
+            + @"|usually (comes?|is) from|go on for a while|get better)\b",
+            RegexOptions.IgnoreCase);
+
+        // WI-536 /review round 3: `behavio\w*` was missing, so the guard could not fire
+        // on a behavior change, which was the one posterior fossa sign its tier stranded.
+        var symptom = new Regex(
+            @"\b(headaches?|vomit\w*|throwing up|sleep\w*|tired\w*|drows\w*|weak\w*|numb\w*"
+            + @"|swallow\w*|talk\w*|speak\w*|speech|walk\w*|balance|mood|behavio\w*"
+            + @"|irritab\w*|dizz\w*)\b",
+            RegexOptions.IgnoreCase);
+
+        var answered = new Regex(
+            @"also come from the tumor|same-day call|call your team the same day"
+            + @"|right away|right-away|ambulance",
+            RegexOptions.IgnoreCase);
+
+        var examined = new List<string>();
+        for (var i = 0; i < paragraphs.Count; i++)
+        {
+            if (!symptom.IsMatch(paragraphs[i]) || !normaliser.IsMatch(paragraphs[i]))
+            {
+                continue;
+            }
+
+            examined.Add(paragraphs[i]);
+
+            // A LIST ITEM's tier is in its lead-in, not in itself. This is the same
+            // structural point AssertNoEscalationList already records from the other
+            // direction ("the lead-in is the preceding PARAGRAPH"): composed, a hub
+            // inherits the escalation block's bullets, and each one reads as an
+            // untiered warning unless the sentence introducing the list is in view.
+            var leadIn = "";
+            if (paragraphs[i].StartsWith("- ", StringComparison.Ordinal))
+            {
+                for (var j = i - 1; j >= 0; j--)
+                {
+                    if (!paragraphs[j].StartsWith("- ", StringComparison.Ordinal))
+                    {
+                        leadIn = paragraphs[j];
+                        break;
+                    }
+                }
+            }
+
+            var next = i + 1 < paragraphs.Count ? paragraphs[i + 1] : "";
+            var context = $"{leadIn} {paragraphs[i]} {next}";
+
+            Assert.True(answered.IsMatch(context),
+                $"{slug}: a paragraph names a warning sign and reassures, with no tier: "
+                + $"\"{paragraphs[i]}\"");
+        }
+
+        foreach (var expected in mustHaveChecked)
+        {
+            Assert.Contains(examined, p => p.Contains(expected, StringComparison.Ordinal));
+        }
+    }
+
+    /// <summary>
+    /// Reader-text paragraphs: blank-line bounded, heading lines removed so a heading
+    /// never merges into a sentence (WI-535), and each list item its own paragraph.
+    /// </summary>
+    public static List<string> Paragraphs(string page) =>
+        [.. Regex.Split(
+                Regex.Replace(ReaderText(page).Replace("\r\n", "\n"),
+                    @"^[ \t]*#{1,6}[ \t].*$", "", RegexOptions.Multiline),
+                @"\n[ \t]*\n|\n(?=[ \t]*- )")
+            .Select(p => Flatten(p).Trim())
+            .Where(p => p.Length > 0)];
 
     /// <summary>
     /// This page states nothing that already lives somewhere else in the corpus,
