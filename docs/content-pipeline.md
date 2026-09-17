@@ -3608,6 +3608,692 @@ is not the patient.**
   defect is found, grep the CORPUS for the claim before fixing the page.** The cost is
   one grep; the alternative is knowingly shipping the defect you just documented.
 
+**WI-539 — `/tumors/pituitary-tumor`, the first hub in the corpus for a tumor that
+is not in the brain, and the item whose blocker was a CONJUNCTION.**
+
+Observed: grade **5.4** against the hard 6.0; ContentCheck **273 checks / 0
+failures**; suite **2,184 / 2,184 UNFILTERED** (2,155 before this item); **111**
+break-mutations failing correctly on LF **and** CRLF across THREE targets
+(`pituitary-tumor.md`, `blocks/escalation.md`, `treatments/steroids.md`) — 222
+runs, zero survivors, zero no-ops, zero ambiguous anchors; **8** render guards
+proved by rebuild; **2** end-to-end rendered reads; **0** corpus-restatement
+collisions across **2,571** shingles with **NO allowlist at all**; **4** `/review`
+rounds, finding 3, 2, 2 and finally 0 blockers. Sources: **9 cited** — 8
+script-checkable plus cancer.org, cited and declared uncheckable — from 41
+script-checked quotes; mayoclinic.org returned 403 and is not cited and not used.
+One SIBLING page edited: `/treatments/steroids`, which gained the
+replacement-steroid conditional and its first endocrine source. New glossary
+entries: **none**, and that is a ruling rather than an oversight.
+
+- **THE RESTATEMENT GUARD IS BIDIRECTIONAL, AND A NEW PAGE CAN TURN SHIPPED PAGES
+  RED.** The first draft of this hub failed four tests and **two of them belonged
+  to other pages** — `/tumors/pediatric-brain-tumor` and
+  `/treatments/watch-and-wait`, both green for days. This page has no tests of its
+  own yet, so nothing of mine failed; what failed was theirs, because
+  `AssertDoesNotRestateTheCorpus` compares each page against the whole corpus and
+  the corpus had just grown. §12.10 describes a block's blast radius; this is the
+  other direction, and nothing recorded it. **It is also the decisive argument for
+  rewording over allowlisting:** an allowlist entry on the NEW page cannot fix the
+  OLD pages' failures, because their tests are not reading the new page's
+  allowlist. Reword.
+
+- **A FETCHER THAT REPORTS "13 FETCHED, 0 FAILED" CAN HAVE SAVED EIGHT EMPTY
+  SHELLS.** `cancer.org` renders its content in JavaScript: a plain HTTP fetch
+  returns a 38 KB navigation shell with an empty `<title>`, and the
+  `amp.cancer.org` variant returns the byte-identical shell. Eight American Cancer
+  Society pages saved that way, reported as successes, and contained **none of
+  their own prose** — so every quote taken from them was unverifiable while
+  looking filed and safe. **This is the third tool in two items caught reporting
+  success over nothing**, after the privacy scan that died having printed a header
+  and the smoke test that would have called a failed deploy a broken probe. The
+  fix is the same shape each time: make the tool assert what it produced. The URL
+  list now carries a third column naming a string that MUST appear in the saved
+  text; if it does not, the entry is reported `SHELL` and nothing is written. It
+  caught a second shell (`pituitarysociety.org`) on its first run after the fix.
+
+- **THE BEST PATIENT-LEVEL SOURCE FOR A TUMOR MAY BE UNSAVABLE, AND THE PAGE HAS
+  TO SAY SO.** `cancer.org` is JavaScript-rendered and `mayoclinic.org` returns
+  HTTP 403 to automated fetching. Both are legitimate, both were read for facts,
+  and neither can be script-checked. SYNTHESIS §7.2 records "the best source is
+  403-blocked" as a risk; this is that risk twice in one item, in two different
+  forms. The resolution is §12.13's: write the limitation into the front matter
+  where its reader will see it, prefer a checkable equivalent where one exists —
+  the Endocrine Society's patient library replaced most of it — and never let a
+  claim-to-source map imply coverage it does not have.
+
+- **A COLLISION REPORT IS NEVER A COMPLETE INVENTORY, BECAUSE THE GUARD TRUNCATES
+  PER FILE.** Both `AssertDoesNotRestateTheCorpus` and the offline replica do
+  `.Take(4)`, so each reports **at most four collisions per page**. The first run
+  named 16 files; the triage table built from it had nine patterns; fixing them
+  dropped it to one file — which then showed a FIFTH collision with the pediatric
+  page that had been hidden beneath the cap the whole time, in a sentence never
+  considered for rewording. **Work it to zero, and read each pass as "the next
+  four" rather than "the remaining four".** What was hiding under the cap is the
+  tell: this page's `:::outlook` section opened with a sentence copied word for
+  word from the sibling hub used as its model — *"Outlook is usually talked about
+  in numbers"* — and only two files in the corpus have ever contained it. **The
+  opening sentence is the likeliest thing to collide, because the opening is the
+  part you carry over without re-deciding it.** The reported window began with a
+  bare `outlook` that belongs to the `:::outlook` DIRECTIVE line: it is not a
+  heading, so the shingler keeps it and `[^A-Za-z]` turns it into a word. Fixed by
+  rewriting the first seven words and leaving the tail the previous run had already
+  proved clean.
+
+- **WHERE THE REPLICA LIVES DECIDES HOW STRICT IT IS, SO GIVE EACH ITEM ITS OWN
+  COPY.** `shingles.py` loads its suppressions from
+  `Path(__file__).with_name("allowlist.txt")` — there is no flag, no argument, and
+  no way to ask it for an unfiltered run. Run from `wi538/`, it silently applied
+  that item's two deliberate entries to THIS page, which ships under a ruling of no
+  allowlist at all. The entries were pediatric-specific so nothing was actually
+  masked, but the instrument was wrong for the page and a zero from it would have
+  meant less than it appeared to. Copying the script into `wi539/`, where no
+  `allowlist.txt` exists, makes `allowed = []` a property of the DIRECTORY rather
+  than something the next person has to remember to pass. Each page is then checked
+  under its own contract: the shipped page keeps its allowlist, the new one gets
+  none.
+
+- **WHEN REWORDING TO CLEAR A SHINGLE, CHANGE THE PART THE CHECKER MATCHED, NOT
+  THE PART YOU REMEMBER WRITING.** The outlook gate's median explanation collided
+  with eight hubs. The rewrite replaced the memorable clause — "line everybody up,
+  and the median is the person standing in the middle" — and kept the opening, "It
+  means the middle of a group", which is the half the checker had actually
+  matched. It still collided. The same instinct that makes a sentence memorable is
+  what makes you rewrite the wrong half of it.
+
+- **A FRONT-MATTER COMMENT IS INSIDE THE STRING EVERY RAW-FILE GUARD READS — AND
+  THE RULE FOUND A NEW GUARD.** §12.8 already records this from WI-538, where a
+  block quoted in a comment tripped `SpinalCordBlockTests` and a suppression
+  marker in a comment made a harness mutation a no-op. Here it was
+  `CaregiverSectionTests`, which locates the block with a raw
+  `IndexOf("[CAREGIVER]")` over the whole file. Five bracketed directive names
+  written into this page's front matter — documenting the block decisions — made
+  the first match a comment, so `directive < heading` and the page was reported as
+  not carrying the block under its standard heading. **Note which guard did NOT
+  fire:** `EveryTumorHubIncludesTheCaregiverBlock` passed, because it uses
+  `DirectBlockNames`, which requires the directive to be the entire line. Same
+  file, same block, two guards, one protected and one not. Fixed by de-bracketing
+  the comments — not by loosening a guard eighteen hubs depend on.
+
+- **§12.10's TEST CUT THE OTHER WAY THIS TIME, AND THAT IS WHY IT IS TRUSTWORTHY.**
+  WI-538 wrongly EXCLUDED `[SPINAL-CORD]` by calling a conditional block
+  unconditional, and `/review` reversed it. Here the same test excluded
+  `[MECHANISM]` and `[CROSSWALK]` correctly. The mechanism block opens *"These are
+  the ways a tumor IN THE BRAIN causes symptoms"* and then asserts brain swelling,
+  seizures and blocked fluid needing a shunt, followed by a lobe-by-lobe map —
+  with **no scoping clause at all**. A pituitary tumor is not in the brain, rarely
+  seizes, and does not obstruct the fluid pathways. The crosswalk block is
+  entirely the 2021 CNS rewrite, and this report has no CNS grade and no NOS/NEC.
+  **The discipline that made the difference was opening the block rather than
+  reasoning about it: two of four starting assumptions were wrong**, and both
+  wrong ones were blocks I had already written into the plan as included.
+
+- **A COUNTER-ARGUMENT RECORDED IN ANOTHER PAGE'S TEST DESERVES ANSWERING, NOT
+  IGNORING.** `AllBrainTumorsPageTests` says in as many words that *"Neither
+  [MECHANISM] nor [CAREGIVER] is FALSE here — the closed-skull material is true of
+  anything that takes up room."* That is a real argument against this item's
+  exclusion, made by an earlier item, and it holds **on that page**, whose reader
+  has no diagnosis yet and for whom anything intracranial is still possible. This
+  reader has a name, and the name's defining fact is that it sits outside the
+  brain. Recording why the counter-argument does not transfer is what stops the
+  next item reversing this one on the strength of half the reasoning.
+
+- **THE SOURCES HANDED ME REASSURANCE THAT WOULD HAVE BEEN §12.12 WITH A CITATION
+  ATTACHED.** The Endocrine Society says pituitary tumors *"are not brain tumors
+  and are almost always benign (non-cancerous)"*. True, and the natural way to
+  open a page. But this tumor can take a person's sight, cause a life-threatening
+  adrenal crisis, and leave them on hormone replacement — none of which "benign"
+  prepares anyone for. `/tumors/meningioma` had already solved it: *"the word
+  'benign' does more harm than good here… The useful questions are where it is and
+  what it is doing, not which side of that word it falls on."* **Take a sibling's
+  STANCE and write your own sentences** — the restatement guard will object to
+  borrowed prose, and rightly.
+
+- **TWO RENAMES ON ONE PAGE, MADE FOR OPPOSITE REASONS, AND SAYING SO IS THE MOST
+  USEFUL THING THE CROSSWALK SLICE CAN DO.** Adenoma became PitNET, and the
+  Pituitary Society argues against it in print: renaming *"does not change
+  histopathology nor the prognosis"*, and the new label risks *"needless
+  frustrations and apprehension among most of the patients diagnosed with benign
+  PAs"*. Diabetes insipidus became arginine vasopressin deficiency, endorsed by
+  eight societies **including the Pituitary Society** — because the shared word
+  "diabetes" was getting people hurt: *"desmopressin treatment was withheld with
+  serious adverse outcomes, including death"*. One rename is argued to harm
+  patients; the other was made to protect them; both land on the same person's
+  paperwork. The renaming group also proposes keeping *"the previous name in
+  parentheses"* for years, which is why a reader sees both at once and is not
+  looking at a disagreement between doctors.
+
+- **THE SHARED ESCALATION BLOCK UNDER-TRIAGES THIS TUMOR'S TWO EMERGENCIES, AND
+  NEITHER IS IN IT.** `[ESCALATION]` files "a headache much worse than usual" and
+  "a sudden change in your vision" as SAME-DAY, and never mentions double vision.
+  **Pituitary apoplexy** is sudden bleeding into the tumor — *"a medical and
+  surgical emergency in many cases"*, where *"delay… may result in permanent
+  hypopituitarism, irreversible visual loss, or death"*. **Adrenal crisis** is what
+  happens when the gland stops making the hormone that drives cortisol, and an
+  ordinary illness becomes dangerous. §12.10's remedy applied literally: include
+  the block, then add the page's own CONDITIONAL tier beneath it, in the shape
+  WI-534 used for shunts. Both halves sourced before being written — the item's
+  central safety claim was never going to rest on clinical memory.
+
+- **I WROTE A GUARD THAT COULD NOT FAIL, INTO THE FILE WHOSE JOB IS GUARDING.**
+  The adrenal-crisis test sliced the section at
+  `IndexOf("If you take steroid replacement")` and then asserted the result
+  `StartsWith` that same string. It is a tautology: it passes on every page, in
+  every state, forever. **Nothing downstream could have caught it.** It compiles.
+  It passes. It passes a BREAK HARNESS too — the harness asks whether a mutated
+  page makes some test fail, and a test that cannot fail simply never reports, so
+  a mutation it should have caught is attributed to whichever guard did fire, or
+  shows as a survivor with no obvious owner. Only reading the file back found it.
+  This is §12.8's iterate-and-check rule in a new place: **a guard that SELECTS on
+  a string and then ASSERTS that string is checking the selector, not the page.**
+  WI-538 met it as a filter that never saw a sentence with no tier; here it is an
+  index that guarantees its own answer. Replaced with the property actually
+  wanted — the conditional clause opens its own BOLD lead-in, so a reader skimming
+  emphasis meets the scope and not the bare warning — plus a canary, because a
+  guard with no canary is the previous sentence waiting to happen. **The harness
+  then proved the replacement by machine:** `adrenal-condition-unscoped` — the
+  mutation that strips the conditional clause off the bold lead-in — turns it red
+  on both line endings. The tautology could not have been caught that way; only
+  reading it could.
+
+- **ASSERTING THE ANCHOR IS UNIQUE FIXED THE CLASS, NOT THE INSTANCE.** WI-538's
+  `rep()` takes the FIRST match and its one survivor came from that. This item
+  replaced it with `uniq()`, which matches across whitespace (the page is hard
+  wrapped, so most anchors cross a line break) and **raises when the anchor
+  matches more than once**. Result: 75 mutations dry-ran with **zero ambiguous
+  anchors and zero no-ops on the first attempt**, then **all 75 broke correctly on
+  LF and on CRLF** — 150 runs, no survivors. On a page whose front matter quotes
+  its sources at length, so that "apoplexy", "transsphenoidal", "adrenal crisis"
+  and "medical alert bracelet" all appear ABOVE the body text they also appear in,
+  that is not luck: it is the difference between a helper that silently picks one
+  and a helper that refuses. **A tool that can only fail loudly is worth more than
+  a tool that usually succeeds.**
+
+- **I CALLED A GUARD WEAK, PUT THE CASE IN THE TOOL INSTEAD OF ACTING ON IT, AND
+  THE TOOL PROVED ME WRONG.** `TheGlossaryFiresOnTheWordThisPageDoesNotDefineItself`
+  asserts only that SOME tooltip renders (`def-` appears in the HTML). Reading it,
+  I judged that close to unfalsifiable: this page glosses seven terms INLINE and
+  adds no glossary entry, so removing any one should leave the others firing. I
+  wrote it into `handproof.py` as an expected SURVIVOR, with a note saying a weak
+  guard found by a tool is worth more than a weak guard found by an opinion.
+  **It failed correctly.** Stripping `**extra-axial**` removed `def-` from the
+  page entirely, because `extra-axial` is this page's ONLY glossary tooltip —
+  every other piece of its vocabulary is a first corpus use that fires nothing. So
+  "some tooltip fires" and "the extra-axial tooltip fires" are the same assertion
+  here, and the guard was load-bearing all along.
+  **Had I trusted the reading, I would have rewritten a working guard on my own
+  authority and called it a fix.** The rule: when you suspect a guard is weak,
+  MAKE THE TOOL ANSWER rather than reasoning to a verdict — it costs one case in a
+  list and it is the only thing that can contradict you.
+  The guard still gets the term's name, but for a NARROWER reason than the one I
+  started with: it is specific only by accident of today's corpus, and the day any
+  glossary entry fires on this page, `def-` keeps appearing even if `extra-axial`
+  has gone. That is §12.8's (WI-512) rule once more — presence was never the
+  property.
+
+- **THE CORPUS REVERSED MY FIX, AND THE REVERSAL WAS THE RIGHT ANSWER.** The
+  rendered read caught the `extra-axial` tooltip echoing the sentence it landed
+  in: the page said *"a word for growing outside the brain itself"* and the
+  popover answered *"Growing outside the brain itself, not inside it"* — WI-535's
+  defect, word for word. The obvious remedy was WI-538's: suppress with
+  `!%extra-axial%`. **Checking first showed that would have been wrong.**
+  `/tumors/meningioma` glosses the same term inline and lets the tooltip fire, and
+  `!%extra-axial%` appears NOWHERE in Content/. Suppressing here would make one
+  glossary term behave two different ways on two pages, which is §12.10's
+  one-claim-one-strength problem in vocabulary rather than in prose. The
+  proportionate fix was smaller and better: **reword the page so it NAMES the term
+  and the glossary DEFINES it.** That removed the echo, kept one behaviour for one
+  term, and made the guard's own name (`...TheWordThisPageDoesNotDefineItself`)
+  true for the first time — it had been asserting the opposite of what it was
+  called. Note also what could NOT be reused: meningioma's own construction,
+  *"Doctors have a word for that: extra-axial"*, is an eight-word run with four
+  content words, so borrowing the sibling's sentence would have tripped the
+  restatement guard. **A precedent tells you what to DO; it rarely tells you what
+  to WRITE.**
+
+- **A SHARED BLOCK CAN BE TRUE, INCLUDED FOR GOOD REASONS, AND STILL ADDRESS
+  SOMEBODY ELSE.** Composed, `[CAUSES]` says "brain tumors" five times — *"For
+  most brain tumors, nobody knows the cause"*, *"does not cause brain tumors"*,
+  *"stress causes brain tumors"*, *"a brain tumor"*, *"Brain tumors are not
+  contagious"* — on the one page in the corpus whose thesis is that this is NOT a
+  brain tumor. Every sentence is accurate and the inclusion ruling was right;
+  §12.10's block test asks whether the block is FALSE here, and it is not. **The
+  test it does not ask is whether the reader will recognise themselves in it**, and
+  a reader who decides the self-blame section is about somebody else has been lost
+  by the one section that exists to reach them. **Only the COMPOSED page shows
+  this** — the raw page contains the single string `[CAUSES]`, so no source-level
+  guard, shingle check or reading-level gate can see it, and the block's own page
+  looks perfect in isolation. Fixed with a bridge sentence above the directive,
+  the remedy `/tumors/all-brain-tumors` already uses for the same class of problem
+  and a different reason. **Add "does this block's framing fit this reader" to the
+  §12.10 checklist, beside "is it true here" — and answer it on the rendered
+  page.**
+
+- **I CHECKED THE NEW SENTENCE THREE WAYS AND MISSED THE FOURTH.** Before writing
+  the scoping bridge I checked the precedent for the pattern (`/tumors/all-brain-
+  tumors`), the restatement risk against that page's wording, and the reading
+  level. `NoEmDashInCopyTests` — a corpus-wide house rule I had not met — failed it
+  on an em dash. The guard was right and the page was wrong, and the fix was one
+  sentence split in two. **The lesson is not "avoid em dashes"; it is that a page
+  joins a corpus with house rules its author has not read, and the suite is the
+  index to them.** Worth noting what did NOT need changing: all three assertions in
+  the new test survived the rewrite, because each anchors on a fragment that does
+  not span the punctuation. A guard written about the PROPERTY rather than the
+  prose costs nothing when the prose moves.
+
+- **VERIFY A MUTATING TOOL'S RESTORE IN BOTH DIRECTIONS, BECAUSE `git status`
+  CANNOT TELL YOU.** The break harness rewrites the page once per mutation per
+  line-ending and restores the original from memory in a `finally`. When it
+  finished, `git status` showed the page MODIFIED — which is correct on a feature
+  branch with uncommitted work, and is also exactly what a leftover mutation looks
+  like. §12.8's WI-515 point is precisely that an abandoned mutation **reads as
+  your own prose**; the crash marker tells you a run DIED, not that a completed
+  run put everything back.
+  So the check has to be positive and two-directional: seventeen mutation payloads
+  confirmed ABSENT, *and* five of the page's own sentences confirmed PRESENT at
+  their expected lines. **Absence alone proves nothing — a truncated or
+  half-restored file satisfies it perfectly.** Both greps are read-only and cost
+  one call.
+  Related, and the same hazard from the other side: while the harness was running,
+  a tool notice reported the page as CHANGED ON DISK and invited me to treat the
+  new state as deliberate. It was deliberate and it was TRANSIENT. Reading the file
+  then would have shown a sabotaged page; editing it would have been silently
+  reverted by the `finally`. **While a mutating tool holds a file, the file has no
+  meaningful state — do not read it, do not edit it, do not "fix" it.** Wait for
+  the marker to clear, then verify.
+
+- **A GUARD THAT SURVIVES MAY BE INDICTING THE MUTATION, NOT THE GUARD — AND THE
+  SAME ONE CORRECTED ME TWICE, IN OPPOSITE DIRECTIONS.** The glossary render guard
+  went into the handproof as an expected SURVIVOR, on my reading that seven
+  inline-glossed terms made "some tooltip fires" unfalsifiable. It FAILED
+  correctly: `extra-axial` is this page's only tooltip. Then, having strengthened
+  it to name the slug, I rewrote its mutation to match the reworded sentence and
+  assumed the new break would bite. It SURVIVED — because I had mutated
+  `**extra-axial**` to `extra-axial`, which removes the EMPHASIS, not the term.
+  `GlossaryMarker` matches the word, so `def-extra-axial` still rendered and the
+  guard was right to pass. §12.8 already carries this shape from WI-537, where
+  changing a front-matter `slug:` proved nothing because routing reads the FILE
+  PATH: **a weak mutation reads exactly like a weak guard, and the failure mode is
+  that you "fix" a working guard.**
+  The test for telling them apart is mechanical: ask what the guard actually reads,
+  then check the mutation changes THAT. This guard reads rendered HTML for a
+  glossary slug, so the break must remove the word the glossary knows — not its
+  formatting, not its front matter, not its emphasis.
+  **Two wrong predictions about one guard, in opposite directions, both caught by
+  the tool.** That is the argument for handproofing render guards rather than
+  reasoning about them: the reasoning was confident and wrong twice, and cost
+  nothing because the tool was asked instead of consulted.
+
+- **THE SECOND RENDERED READ EARNED ITS KEEP: READ 1 FOUND TWO DEFECTS, READ 2
+  FOUND THREE MORE.** They were not subtler than the first two — they were
+  ordinary words sitting in plain sight that a first pass, busy checking structure
+  and safety claims, simply did not hear. **"tablets" (×8), "optician", and
+  "junctions"**: British idiom on a page whose own front matter bars Cancer
+  Research UK as a source FOR IDIOM. Shipping it in my own prose would have been
+  that same defect one step further in. This is the argument for the rule being
+  TWO end-to-end reads rather than one careful one; the second read is not a
+  formality.
+
+- **LET THE CORPUS DECIDE IDIOM, AND IT ANSWERS MORE PRECISELY THAN YOUR EAR
+  DOES.** The green suite proved nothing: `CuratedPage.BritishForms` is documented
+  as deliberately incomplete and determiner-bound, so it could not see any of the
+  three. What decided it was counting.
+    * **"optician"** and **"junction"**: ZERO occurrences elsewhere under
+      `Content/`. Mine alone, so they are outliers, not house style.
+    * **"tablets"**: the corpus says **"pills" 56 times across 14 files**. Every
+      other "tablets" hit is either the DEVICE sense (iPads on
+      /tumors/pediatric-brain-tumor, magnets near a shunt) or a verbatim source
+      quote in a front-matter comment. In body copy meaning medicine, the corpus
+      has two — and this page had eight.
+  **And the rule is sharper than "ban the word".** `TestsLibraryPagesTests`
+  records that `"tablet"` was deliberately LEFT OFF the shared list, because US
+  labeling says "take one tablet" and *only the plural, meaning pills in general,
+  is the idiom*. So the page-local ban is on `tablets` alone. Two pages
+  (`SteroidsPageTests`, `TumorTreatingFieldsPageTests`) had already reached the
+  same conclusion the same way, which is the confirmation that this is the
+  corpus's method and not my improvisation.
+  **Compare "specialist nurse", which I checked the same way and did NOT change**
+  — ten hubs use it, so it is convention. Same procedure, opposite answer. That is
+  what makes it a procedure rather than a preference.
+
+- **RUN `/review` BEFORE THE EXPENSIVE VERIFICATION, NOT AFTER — THE GUARDRAIL
+  LIST ALREADY SAYS SO AND I PAID TWICE TO REDISCOVER IT.** The order given is
+  ContentCheck, `/review` until a round finds no blockers, break harness, handproof,
+  two rendered reads. I treated it as a checklist rather than a sequence and ran
+  the harness twice and the handproof twice first, on the "verify as you go"
+  instinct. Both runs were made obsolete by later page edits — the two rendered-read
+  fixes, then ten more from the idiom sweep. **Review findings change the page, so
+  anything that costs twenty minutes and depends on the page's exact bytes belongs
+  AFTER the page settles.**
+  There is also a hazard beyond waste, and it is the sharper reason: **a
+  content-mutating tool must never run DURING a review.** The harness and the
+  handproof rewrite the very file the reviewer is reading, so the reviewer would
+  report findings against deliberately sabotaged prose — manufacturing false
+  blockers and masking real ones, with nothing in either output to show why. The
+  rendered reads are different and can come early: they are read-only and they find
+  the defects that CAUSE page edits, which is exactly what you want before the
+  expensive checks.
+  Corrected order for the next item: draft → ContentCheck → suite green → rendered
+  reads → `/review` to no blockers → harness → handproof → ship.
+
+- **A GUARD CAN POLICE ONLY THE DEMOTIONS ITS AUTHOR IMAGINED.** The page's
+  apoplexy tier offered a PHONE CALL for signs the shared block files under CALL
+  AN AMBULANCE / 911 — a downgrade sitting four paragraphs below the block, in the
+  paragraph introduced as "the list above does not cover them" and therefore read
+  as the authoritative one for this tumor. The word "911" appeared nowhere on the
+  page. **My own guard passed it**: `demoted` was built from same-day/next-day/
+  in-the-morning vocabulary, so a fall from *ambulance* to *call your team*
+  matched none of its branches. This is the third form of the same defect in two
+  items — WI-538's filter that never saw a sentence with no tier, this item's
+  tautological `IndexOf`/`StartsWith`, and now a ban list enumerating the wrong
+  axis. **When a guard defends a TIER, assert the tier's floor positively (the
+  route must be present) rather than banning the words for lower tiers.**
+
+- **A FINDING CAN BE RIGHT WHILE ITS PROPOSED FIX IS WRONG — VERIFY BOTH.** Review
+  round 1 was excellent and two of its remedies would have made things worse.
+  *"Run the mechanism/crosswalk bans against `Composed`, where they also describe
+  what the reader receives"*: they would have FAILED, because the composed page
+  legitimately carries "shunt" and "seizure" from `[ESCALATION]`'s conditionals —
+  a guard that fails a correct page is worse than no guard (§12.8, WI-508). The
+  finding underneath was still right: the comment claimed those raw-text bans
+  guarded the EXCLUSION, when only the exact closed set does. *"Say surgery is
+  usually first for acromegaly and Cushing's"*: clinically plausible, and absent
+  from every fetched source — publishing it would have been WI-538's
+  citation-written-from-memory defect, nine of which shipped. The concern was real,
+  so it became an ASK ("which route does my hormone point to?") rather than a
+  claim. **Treat a review as evidence about where to LOOK, not as instructions.**
+  **The count, because the number is the persuasive part: of 21 items in round 1,
+  THREE would have made the page worse if applied verbatim** — the unsourceable
+  first-line-surgery claim, the `Composed` fix that would have failed on block
+  text shared on purpose, and a corpus convention that did not exist. Every one of
+  the three findings was still worth having: each pointed at something real (a
+  reader with no signpost, a comment claiming more than its test did, a page
+  missing a forward pointer). **A review's hit rate on PROBLEMS and its hit rate
+  on SOLUTIONS are different numbers, and only the first one is the reason to run
+  it.**
+
+- **CORRECTING THE PROSE IS NOT CORRECTING THE RULING.** The S2 fix removed
+  *"The Pituitary Society … has objected in print"*
+  from the page, because the fetched document turned out to be an editorial of
+  the journal's editors' personal views. **The front matter still records the
+  disproved rationale**: the note on PMC9759163 says the AVP-D rename was
+  "Endorsed by eight societies INCLUDING the Pituitary Society -- **the same body
+  that objects to the PitNET rename**, which is why the page can say the two
+  renames were made for opposite reasons", and the note on PMC9170656 still calls
+  it "A POSITION PIECE ARGUING ONE SIDE".
+  **THREE sites carried the disproved reasoning, and all three are now corrected**
+  — the endorsement half is sourced and stays (now quoting all eight societies in
+  full); the "same body" reason is gone; PMC9170656 is described as what it says
+  it is; and `PituitaryTumorPageTests.cs:437` no longer says the objection is
+  "attributed to the Pituitary Society".
+  **That last one is the sharpest version of the problem: it sits SEVEN LINES
+  ABOVE the comment written during the fix, which says the opposite and correctly.
+  One test now contains two contradictory accounts of the same source**, and
+  whichever a future editor reads first will look authoritative. Grepping the
+  corpus shows the blast radius is otherwise contained — only this page and
+  `taxonomy.yml` mention the Society, PMC9170656 or PitNET at all, so no sibling
+  page repeats the error.
+
+- **A FIX CAN INTRODUCE THE DEFECT IT WAS FIXING — TWICE IN ONE ROUND.** Review
+  round 2 found both, and both were sentences round 1 had asked for:
+    * The post-operative thirst rule, added to close round 1's S4, told the reader
+      the symptom **is** arginine vasopressin deficiency. Its own citation
+      (NBK470458) says *"most cases of polyuria in this setting are **not** due to
+      AVP-D"* — so a fix written to give a post-operative reader an action handed
+      them a diagnosis the source calls the less likely one.
+    * The conditional added to `/treatments/steroids` to close round 1's B2 scoped
+      on a DIAGNOSIS, and so told every reader on long-term dexamethasone that the
+      urgent rule was not theirs — 160 lines after that page teaches *"your body
+      stops making its own while you are taking this one"*. Over-reassurance
+      (§12.12) introduced into a SHIPPED page by a correction.
+  **The pattern: a fix is new prose, and new prose gets the same scrutiny as the
+  draft did — it has not been reviewed merely because it was requested.** Both
+  were caught only because a second review round ran over the fixes themselves.
+
+- **"NOT FOUND" IS ONLY EVIDENCE IF THE SEARCH COULD HAVE FOUND IT.** I removed
+  *"Sight often improves after the pressure comes off"* as unsourced. It is
+  sourced, in this item's own pack: *"After surgery, vision problems improve in
+  most people, or they can go away all together."* My grep had capped at 30 hits
+  and printed the line carrying it as `[Omitted long matching line]`. **Third
+  long-line false negative of this item, and the first that made me DELETE
+  something correct** rather than merely miss it — and the cost was a subsection
+  about losing your sight ending on an administrative sentence, which is the §12.6
+  defect. **Before concluding absence, check the search could have shown presence:
+  raise the limit, drop the pattern's specificity, or Read the region.** The
+  asymmetry matters — a false negative that stops you ADDING something is cheap;
+  one that makes you REMOVE something is not.
+
+- **QUOTE TO THE END OF THE QUALIFICATION, NOT THE END OF THE CONVENIENT
+  SENTENCE.** Both pages' verbatim blocks recorded the Endocrine Society's *"If
+  left untreated, adrenal crisis can cause death"* and stopped there. The very
+  next sentence is *"Adrenal crisis occurs mainly in people with primary AI"* —
+  and this page's readers have SECONDARY AI. Read carefully it qualifies WHO GETS
+  a crisis rather than whether one kills, so the claim survived; but a verbatim
+  block that ends exactly where the source starts complicating things is §12.13's
+  defect in the recording rather than in the prose, and the next editor would
+  never know to look.
+
+- **A REVIEWER'S QUOTATION CAN BE UNVERIFIABLE, EVEN WHEN ITS FINDING IS RIGHT.**
+  Round 2's B2 rested on three verbatims attributed to PMC11451960, which is in no
+  fetched pack — so they could not be checked, and publishing on them would have
+  been a citation written from memory at one remove. The FINDING was correct and
+  provable another way: the target page already teaches the mechanism itself, with
+  its own sources. **Route around an unverifiable quote rather than inheriting
+  it.** Round 1's lesson was that a finding can be right while its remedy is wrong;
+  this is the sharper sibling — a finding can be right while its EVIDENCE is
+  unusable. (Corollary, from N3: a number written into a comment has no guard
+  behind it and goes stale the first time anyone edits the file. State the
+  property; let the checker hold the number.)
+
+- **AN ACCIDENTAL COLLISION CAN LOOK EXACTLY LIKE A DELIBERATE SHARED CLAIM, AND
+  THE ALLOWLIST IS THE WRONG TOOL FOR IT.** Adding the 911 route to this page's
+  two emergency tiers turned a SHIPPED page red: `/treatments/anti-seizure-
+  medicines` was reported as restating `call 911 or your local emergency number
+  for`. Everything about that pointed one way — it is an emergency ROUTE, the kind
+  of safety claim §12.10 says must read identically wherever a reader meets it;
+  `blocks/escalation.md` already establishes the wording corpus-wide;
+  `MeningiomaPageTests` allowlists the cord-compression sentence across three
+  pages for exactly that reason; and **the failing guard's own error message
+  offers `DeliberatelyShared` as the remedy.** I had the entry half-written.
+  It was an accident. Their sentence ends *"…or your local emergency number,
+  **for**:"* and mine read *"…or your local emergency number. **For** the rest of
+  it…"* — the shared run **spans my sentence boundary**, and exists only because
+  the next sentence happened to start with "For". The block's own wording has no
+  "for" in it at all. One word fixed it ("With any of the rest").
+  **The tell is cheap and general: a colliding run that spans a FULL STOP, or that
+  starts or ends mid-clause, is two sentences touching — not one claim.** A real
+  shared claim collides as a whole clause that reads like a sentence on its own.
+  Had I allowlisted it, I would have enshrined a coincidence as a deliberate
+  §12.10 ruling, inside another page's test, and broken this page's no-allowlist
+  ruling to do it — while leaving the actual duplication in place for the next
+  editor to puzzle over.
+  **Check whether the run is a claim before deciding it is shared on purpose.**
+  Why this is worse than an ordinary stale comment: §12.13 makes the front matter
+  the place the NEXT editor looks to find out why a sentence is worded the way it
+  is. A rationale that outlives its correction does not sit inert — **it argues
+  for putting the error back**, with apparent authority, to somebody who has no
+  reason to re-verify it.
+  **When a review corrects a CLAIM, grep the front matter for the REASON.** I
+  found this by accident, in a truncated excerpt a tool happened to print; the
+  front matter on this page is 200 lines and I had not re-read it after the fix.
+
+- **CHECK THE DOCUMENT, NOT THE FILENAME.** The page said *"The Pituitary Society
+  … has objected in print"* to the PitNET rename. The fetched source
+  (`pituitary-society-net-or-not.txt` — the filename I had been reading as
+  confirmation) says *"This editorial expresses the personal views of the
+  authors"*, written by the journal *Pituitary*'s Editor-in-Chief and board. The
+  actual Society position statement is a DIFFERENT paper it cites, from 2019, which
+  was never fetched. The authors overlap; the documents do not. Softened to what
+  the fetched text supports, and the 2019 statement is NOT cited, because citing an
+  unfetched paper to rescue a sentence is the defect it would be covering up. The
+  other half survived verification: the AVP-D position statement names its eight
+  endorsing societies in full, and the Pituitary Society is among them — so "two
+  renames, opposite reasons" holds, while "the same body" did not.
+
+- **THE FIX FOR ONE IDIOM INTRODUCED ANOTHER, AND NO BAN LIST COULD HAVE CAUGHT
+  IT.** The sentence rewritten to correct the Pituitary Society attribution came
+  out as *"the journal that **specialises** in these tumors"* — British spelling,
+  written into the very edit that was cleaning up British idiom, three fixes after
+  I had counted the corpus to justify banning `tablets`, `optician` and
+  `junction`. `CuratedPage.BritishForms` could not see it, and **the stem cannot be
+  banned**: this page correctly says "specialist nurse" and "hormone specialist",
+  so a `specialis` ban would fail a correct page (§12.8, WI-508). Only the verb
+  forms — `specialises`, `specialised`, `specialising` — pass the test that a
+  phrase belongs on a ban list only if no correct sentence contains it.
+  **The general point: a ban list is not a spell-checker.** It can only ever
+  enumerate the forms somebody thought of, and the moment you edit prose you are
+  generating new forms. The defence is the rendered read and the corpus count, not
+  a longer list.
+
+- **RUNNING THE RIGHT TOOL ON THE WRONG PAGE PRODUCES CONFIDENT NONSENSE.** After
+  editing `/treatments/steroids`, I checked it with `wi539/shingles.py` and got
+  two colliding files and eight shared runs. Every one was PRE-EXISTING text I had
+  not touched — its ambulance paragraph, shared with `[ESCALATION]` **on purpose**
+  under §12.10's one-claim-one-strength — and that page has its own allowlist
+  recording exactly that. I had pushed it through this item's deliberately EMPTY
+  one. Same lesson as "where the replica lives decides how strict it is", arriving
+  from the other direction: **the per-item copy is correct only for the item's own
+  page.** For any other page, the suite is the authority, and it passed every
+  steroids test while the replica was raising alarms.
+
+- **A REVIEWER'S READING OF THE CORPUS DESERVES THE SAME COUNT AS ITS READING OF
+  THE PAGE — AND THE TRUTH WAS MORE USEFUL THAN THE CLAIM.** Review round 1 filed
+  a nit saying the corpus now holds TWO conventions for where a hub's scoped tier
+  sits relative to `[ESCALATION]` (this page below it; `/tumors/meningioma` and
+  `/tumors/brain-metastases` above), and that nothing records which is which.
+  Grepping all fifteen hubs instead of the two named shows there is no split:
+    * FOUR pages — `/tumors/pediatric-brain-tumor`, `/tumors/medulloblastoma`,
+      `/tumors/diffuse-midline-glioma`, `/tumors/ependymoma` — put a FORWARD
+      POINTER above the block and the tier itself BELOW it, and say so in as many
+      words: *"those signs have their own rule, at the end of the section on when
+      to call for help, below."*
+    * The two the reviewer named carry the same SHARED spinal-cord red-flag
+      sentence above the block — a §12.10 one-claim-one-strength case shared
+      across three pages, not a page-specific tier at all.
+  **So the convention is "tier below, pointer above", and it is unanimous.** This
+  page follows the first half and omitted the second, which is not a stylistic
+  difference: it is WI-538's own blocker shape, a reader meeting the most
+  specialised rule on the page with no warning that it was coming. The nit was
+  pointing at something real and had the reason and the remedy both wrong.
+  **Counting is cheap; a convention inferred from two examples is a guess.**
+
+- **A CONJUNCTION IS A SCOPE, AND EVERY GUARD WAS WATCHING THE CONTENTS INSTEAD.**
+  The apoplexy tier opened *"A sudden, severe headache **with a change in your
+  sight**"*. Seven signs were enumerated one by one, the route was asserted, the
+  demotion vocabulary was banned, the closer was pinned — and not one of those
+  assertions could see that the ENTRY had been narrowed to readers who had BOTH.
+  NBK559222 calls the headache *"the most common symptom"* and files the rest
+  under *"Other symptoms include"*; `/start` files a lone sudden severe headache
+  under CALL 911. So the page sent the commonest presentation past the rule
+  written for it, and filed one symptom at two strengths on two pages.
+  **A guard over a paragraph cannot see the scope of its lead-in**, because
+  narrowing the entry removes nothing the guard reads. The new assertion is over
+  the BOLD LEAD-IN, which is also the only part a reader skimming emphasis meets.
+  Note the knock-on: once the headache alone is the entry, the split route
+  (911 for sight loss, a phone call for everything else) became a demotion below
+  what `/start` already promises, so **fixing the scope forced the strength up**.
+  A scoping defect is not cosmetic; it changes what the rule is.
+
+- **A SENTENCE CAN BE FALSE ABOUT THE PAGE IT IS PRINTED ON, AND SURVIVE TWO
+  REVIEW ROUNDS.** `/treatments/steroids` said *"If your body has stopped making
+  its own steroid, **one item on the list below** is different for you"*. Its
+  same-day list carries "You are confused", "You are being sick again and again"
+  and "You feel faint, dizzy standing up" — the three signs the Endocrine Society
+  names for adrenal crisis and the three `/tumors/pituitary-tumor` files as a 911
+  call. The sentence named a fatal condition, gave no signs and no destination,
+  and told a reader to wait until the same day for its textbook presentation.
+  **It survived because every guard on both pages read the CONDITIONAL, and none
+  read the LIST it made a claim about.** The remedy is the shape, not the string:
+  the conditional now escalates the whole list (the shunt-conditional shape from
+  `blocks/escalation.md`), and the guard READS THE SIBLING'S LIST and asserts the
+  triad is in it. **When a sentence makes a claim about a list, the guard has to
+  open the list** — otherwise it is checking the author's memory of it.
+
+- **A BAN LIST POLICES THE ONE WORDING ITS AUTHOR IMAGINED — THE FOURTH TIME ON
+  THIS ITEM, AND THE REVIEWER CAUGHT THIS ONE.** The new guard for the entry above
+  banned a SIGHT-CHANGE conjunct (`headache with a change in your sight`) in the
+  short version and the caregiver section, while the tier's own guard banned any
+  conjunction at all. So *"A sudden, severe headache **with double vision**, and
+  being ill…"* narrowed the two places most readers actually reach and left
+  everything green — the round-3 blocker's exact axis, re-guarded on one wording.
+  Fixed by asserting **ADJACENCY**: the entry is immediately followed by the
+  second emergency, so anything inserted between them is a narrowing whatever
+  word introduces it. **State the property; do not enumerate the phrasings.**
+
+- **THE RAW-FILE GUARD TRAP CAUGHT ME THREE TIMES IN ONE ITEM, TWICE WHILE
+  WRITING ABOUT IT.** §12.8 already records that a front-matter comment sits
+  inside the string every raw-file guard reads. It bit the bracketed block names
+  in the first draft; then the round-4 note correcting the frequency claim, which
+  QUOTED the banned sentence while explaining that it was wrong; then, minutes
+  later, the note recording the glossary-echo ruling, which quoted the string a
+  render guard asserts is absent. **The general shape is worth more than the
+  instances: a correction naturally wants to quote the thing it corrects, and
+  that is exactly what a raw-file guard cannot tell apart from the thing itself.**
+  Knowing the rule is not protection — I cited it in the comment that broke it.
+  Describe the old wording; never reproduce it.
+
+- **A REVIEWER'S "VERBATIM" IS A CLAIM LIKE ANY OTHER.** Round 3 asked for
+  fainting and collapse in the apoplexy signs, citing NBK559222's History and
+  Physical as carrying them verbatim. That paragraph says *"altered mental
+  status"* and, for the crisis that follows, *"hypotension, hypothermia,
+  lethargy, and, on occasion, coma"*. `fainting`, `collaps`, `syncope` and `loss
+  of consciousness` return ZERO hits in the chapter. **The FINDING was right —
+  the sign belonged in the list — and the evidence offered for it was not real.**
+  The page carries "passing out", which the actual text supports. This is the
+  third variant of one rule on this item: round 1 found a finding right with a
+  wrong REMEDY, round 2 a finding right with unusable EVIDENCE, and here a
+  finding right with a fabricated QUOTATION. **Check the quote even when you
+  agree with the conclusion** — agreeing is exactly when you stop checking.
+
+- **A DOSSIER IS NOT A SOURCE.** *"Some hormone tests are timed, and some take a
+  morning"* was filed by the reviewer as a nit and promoted on checking: neither
+  the timing nor the morning appears in any of the nine fetched files, which say
+  only *"Additional tests, called stimulation tests might be needed"*. The detail
+  is real and sits in `docs/research/tumor-guides/tests-library.md` — a research
+  dossier, not a fetched source, and therefore the same footing two sentences
+  were deleted for one round earlier. **The rule does not bend for small claims,
+  and the tell is that the support you reach for is a project file rather than a
+  source file.**
+
+- **A FIX ON ONE PAGE FALSIFIED A CLAIM ON ANOTHER — IN THE ONE FIELD NOTHING
+  GUARDS.** The description ended *"the two emergencies this tumor has that other
+  brain tumors do not"*. Rescoping the steroids conditional onto the SUPPRESSED
+  AXIS made the adrenal rule true for a reader on long-term dexamethasone for a
+  glioma, so the uniqueness claim became false — falsified by this item's own
+  fix, two files away. It also filed this tumor among "other brain tumors" on the
+  one page whose thesis is that it is not one. §12.3/WI-524 renders the
+  description as the first paragraph a reader meets. **A uniqueness claim is a
+  claim about every other page, so it ages whenever any of them changes** — and
+  the description is the least-guarded prose on the page.
+
+- **SHARPENING A VAGUE SENTENCE EXPOSED A PRONOUN.** Told that a sentence was
+  vaguer than its source, I replaced *"It is one of the things that most often
+  follows an operation on the pituitary"* with *"It often follows the operation
+  through the nose"* — and the nearest antecedent, one line up, had become **a
+  report**. The page now read that the report follows the operation. The vague
+  version carried its own noun and so could not be misread. **Precision and
+  reference are different axes, and improving one can break the other**; the
+  read-back caught it, no guard could have. Named the subject instead.
+
+- **THE SAME SENTENCE WAS TRUE ON ONE PAGE AND FALSE ON ANOTHER.** Both this
+  page's and `/treatments/steroids`' front matter carried *"the page must not
+  imply frequency, and it does not"*, copied across when the shared source was
+  added. On the sibling it is true. Here it sat four hundred lines above a tier
+  ending *"Both of these are uncommon"* — §12.14's shape, a note reading as
+  though the problem had been handled. The frequency word is correct and sourced
+  (*"Apoplexy in pituitary adenomas is rare"*), so **the NOTE was the defect, not
+  the prose**. Checked per page rather than assumed from the shared wording,
+  which is the only reason the sibling's copy was left alone.
+
+- **ROUND 4 FOUND NO BLOCKERS, AND ALL THREE DECLINES HELD.** The review rounds
+  ran 3 blockers, then 2, then 2, then 0. What made the fourth round useful was
+  telling it what had been DECLINED and why — the non-verbatim quotation, the
+  transport instruction with no source behind it, and the guideline that was not
+  in the pack — and asking it to overturn them. It verified all three
+  independently (including re-deriving the zero-hit result after its own first
+  grep produced four false negatives on long lines) and then spent its effort on
+  four findings I had not seen. **A reviewer told what was declined audits the
+  declines; a reviewer not told re-raises them or assumes they were accepted.**
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

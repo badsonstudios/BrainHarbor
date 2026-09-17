@@ -3669,8 +3669,34 @@ research items. Same shared contract throughout.
   `allowlist.txt` (offline replica of the corpus restatement guard, validated against a
   known-clean run, which it initially FAILED), and `anchor-audit.py` (finds mutations
   that bite front matter instead of the body — a trap this item hit twice).
-- [ ] **WI-539 Pituitary tumor, deepened** — links to WI-553 (transsphenoidal)
-  and WI-551 (vision and hormone tests) as its primary paths. Depends on: WI-513.
+- [x] **WI-539 Pituitary tumor, deepened** — **DONE 2026-09-17.** A 50-line stub
+  replaced by a §12.3 seventeen-section hub for the first tumor in the corpus that
+  is **not in the brain**. Nine sources, 41 script-checked quotes; grade 5.4;
+  ContentCheck 273/0; suite 2,184/2,184 unfiltered; 111 break-mutations green on LF
+  and CRLF across three files; 8 render guards handproofed; 0 restatement
+  collisions with **no allowlist at all**. Four `/review` rounds (3, 2, 2, then 0
+  blockers). **Two emergencies the shared block under-triages are owned here** as a
+  conditional tier beneath it: pituitary apoplexy and adrenal crisis.
+  **For `/pm`, four things the next items inherit.** (1) **`/treatments/steroids`
+  was edited and is now coupled to this page**: its replacement-steroid conditional
+  is scoped on the MECHANISM (a suppressed axis), not on a pituitary diagnosis, so
+  it also addresses long-course dexamethasone readers on every glioma hub — it
+  escalates that page's whole same-day list and carries the adrenal-crisis triad at
+  911. Guards on BOTH pages read the other; changing either needs both.
+  (2) **WI-553 (transsphenoidal) and WI-551 (vision/hormone tests) are still
+  unbuilt**, and this page deliberately owns only a proportionate slice of each,
+  worded to stand alone so a link can be added without rework. WI-551 also inherits
+  a deleted sentence: the timing detail for hormone tests exists only in
+  `tests-library.md`, a dossier, and cannot be published until it is fetched.
+  (3) **[MECHANISM] and [CROSSWALK] are excluded here** — the mechanism block
+  asserts brain swelling, seizures and blocked fluid with no scoping clause, none
+  of which is this tumor's story. Pinned as an exact closed set plus mutations that
+  compose the blocks back in, because an exclusion leaves no trace.
+  (4) **The PitNET/AVP-D renames came from the WHO endocrine volume, not CNS5** —
+  §12.1's naming authority does not cover this tumor, and the Pituitary Society
+  does **not** object to the rename (that was an editorial of a journal's editors,
+  a correction that took three passes to purge from the front matter). Lessons in
+  §12.8.
 - [ ] **WI-540 Craniopharyngioma, deepened.** Depends on: WI-539.
 - [ ] **WI-541 Acoustic neuroma, deepened** — NF2-related schwannomatosis, renamed
   2022; links to WI-551 (hearing) and WI-531 (SRS). Depends on: WI-513.
