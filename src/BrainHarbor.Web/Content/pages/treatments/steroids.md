@@ -132,6 +132,63 @@ sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10864137/
     title: "Brain metastases: a review of the literature and current treatment strategies (2024)"
     accessed: 2026-09-11
+  - url: https://www.endocrine.org/patient-engagement/endocrine-library/adrenal-insufficiency
+    title: "Adrenal Insufficiency | Endocrine Society"
+    accessed: 2026-09-16
+    # ADDED BY WI-539, AND THE ONLY ENDOCRINE SOURCE ON THIS PAGE. Until then the
+    # when-to-call list filed "You cannot keep your pills down" as SAME-DAY, while
+    # /tumors/pituitary-tumor filed the same words as the same HOUR. Neither page
+    # was wrong and neither said why. §12.10's remedy is a conditional rather than
+    # a change of strength, so one sits above the list.
+    #
+    # THE CONDITIONAL ESCALATES THE WHOLE LIST, NOT ONE BULLET, AND THE FIRST
+    # VERSION GOT THAT WRONG. It opened "one item on the list below is different
+    # for you", naming only the vomiting bullet -- and that sentence was FALSE
+    # about its own list. The same-day list also carries "You are confused", "You
+    # are being sick again and again" and "You feel faint, dizzy standing up ...
+    # That is the shortage this page describes, and it is treatable". Those are
+    # the three signs this source names for adrenal crisis, and the three that
+    # /tumors/pituitary-tumor files as a 911 call. So a reader whose body has
+    # stopped making its own steroid was told to wait for the same day on the
+    # textbook presentation of the condition this same paragraph says can kill,
+    # and was told it by the sentence that existed to protect them. /review round
+    # 3's B2. The shape now copied is the SHUNT CONDITIONAL in
+    # Content/blocks/escalation.md, which escalates everything on the same-day
+    # list beside it rather than picking one bullet out.
+    #
+    # IT NAMES THE SAME-DAY LIST EXPLICITLY, because three lists follow it and an
+    # unqualified "the whole list below" also lifted the "Tell your team about
+    # these as well" tier -- which would have made five pounds in a week a
+    # right-away call. Over-triage rather than under-, so it was a nit and not a
+    # blocker, but it is a free fix (/review round 4).
+    #
+    # The crisis triad carries the 911 route at the SAME STRENGTH
+    # /tumors/pituitary-tumor gives it -- deliberately not in identical words.
+    # This page adds "and get to a hospital", the destination the Endocrine
+    # Society names ("Then they need to go to the hospital immediately"). §12.10
+    # requires one STRENGTH for one claim, not one wording, and an earlier draft
+    # of this very note claimed the two were word-for-word identical.
+    #
+    # THE CONDITIONAL IS SCOPED ON THE MECHANISM, NOT ON A DIAGNOSIS, AND AN
+    # EARLIER VERSION OF THIS NOTE GOT THAT WRONG. It said dexamethasone for
+    # swelling and a steroid replacing a hormone were "different emergencies, and
+    # this list was written for the first" -- which would narrow the rule back to
+    # pituitary readers. It is only half true: this page teaches the mechanism
+    # itself at #why-taper ("Because your body stops making its own while you are
+    # taking this one"), so a reader on a long course has the same suppressed axis
+    # and the same risk. Narrowing it would tell most of this page's audience that
+    # the urgent rule is not theirs, which is §12.12's direction. The conditional
+    # therefore reads "if your body has stopped making its own steroid", and names
+    # the long course alongside pituitary surgery.
+    #
+    # Verbatim: "Physical stress caused by illness, infection, surgery, or an
+    # accident can suddenly make symptoms of AI much worse, an emergency illness
+    # called an adrenal crisis. If left untreated, adrenal crisis can cause
+    # death." The next sentence, recorded so it is not quoted past: "Adrenal
+    # crisis occurs mainly in people with primary AI." That qualifies WHO GETS a
+    # crisis, not whether one kills, so the death claim stands -- but this page
+    # must not imply frequency, and it does not. No dose and no figure is carried
+    # (§12.4 R1).
 reviewed: 2026-09-11
 review_due: 2027-03-31
 disclaimers: [medical]
@@ -403,6 +460,20 @@ the last.
 This list is about the steroid. It does not replace the list your own team gives
 you for your tumor, and [get help now](/get-help-now) has the numbers to keep on
 a phone.
+
+**If your body has stopped making its own steroid, the whole same-day list below
+is a right-away list for you.** That is the case after pituitary surgery, and
+when the pituitary is not making enough on its own. It is also true once you have been on
+this medicine long enough for your own supply to go quiet, which is what the
+section above describes. Without that hormone an ordinary illness can turn into
+an adrenal crisis, which the Endocrine Society says can kill if it is not
+treated. So do not wait for the same day on any of it. Phone at whatever hour it
+is, and say you take a steroid your body cannot make on its own.
+
+**Being sick again and again, confusion, and feeling faint are what an adrenal
+crisis looks like.** If those are happening, call 911, or your local emergency
+number, and get to a hospital.
+[Pituitary tumor](/tumors/pituitary-tumor) has the full rule.
 
 **Call your team the same day if:**
 

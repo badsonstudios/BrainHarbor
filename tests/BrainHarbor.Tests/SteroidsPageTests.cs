@@ -690,6 +690,63 @@ public sealed class SteroidsPageContentTests
         // so the check is per SYMPTOM against the pages that already sort it.
         var section = CuratedPage.Flatten(Reader(Section("When to call, and what about")));
 
+        // THE REPLACEMENT-STEROID CONDITIONAL SITS ABOVE THE SAME-DAY LIST, and
+        // its position is the property rather than its presence (§12.8, WI-512).
+        // WI-539 added it because this page filed "You cannot keep your pills
+        // down" as SAME-DAY while /tumors/pituitary-tumor filed the same words as
+        // the same HOUR — different readers, one mechanism, and neither page said
+        // so. Moved below the list, every assertion about it still passes while
+        // the reader meets the list with no conditional in front of it, so the
+        // check has to be ordinal.
+        var conditionalAt = section.IndexOf("If your body has stopped making its own steroid",
+            StringComparison.Ordinal);
+        var listAt = section.IndexOf("Call your team the same day if:", StringComparison.Ordinal);
+        Assert.True(conditionalAt >= 0 && listAt > conditionalAt,
+            "the replacement-steroid conditional is missing or sits below the same-day list, so "
+            + "a reader whose body has stopped making its own steroid meets the slower rule first");
+
+        // And it reaches the long-course reader, not only the pituitary one —
+        // narrowing it back is the over-reassuring direction for most of this
+        // page's audience, which is taught the same mechanism at #why-taper.
+        Assert.Contains("long enough for your own supply to go quiet", section,
+            StringComparison.Ordinal);
+
+        // WHAT THE CONDITIONAL ESCALATES IS THE PROPERTY, NOT THE WORDS IT USES —
+        // /review round 3's S6 and B2 together. The two assertions above pin
+        // phrases, and both passed happily while the lead-in said "one item on the
+        // list below is different for you" — a sentence that was FALSE about the
+        // list six lines beneath it. That list carries confusion, repeated
+        // vomiting and faintness: the adrenal-crisis triad the Endocrine Society
+        // names, which /tumors/pituitary-tumor files as a 911 call. So a reader
+        // whose body has stopped making its own steroid was told to wait for the
+        // same day on the textbook presentation of the condition this same
+        // paragraph says can kill.
+        //
+        // The conditional therefore has to lift ALL of it, the way the shunt rule
+        // in Content/blocks/escalation.md lifts everything beside it.
+        var conditional = section[conditionalAt..listAt];
+
+        var scopedToOneBullet = new Regex(
+            @"\bone (?:item|bullet|line|thing) on the list\b", RegexOptions.IgnoreCase);
+        Assert.Matches(scopedToOneBullet, "one item on the list below is different for you");
+        Assert.False(scopedToOneBullet.IsMatch(conditional),
+            "the replacement-steroid conditional singles out one bullet again, while the "
+            + "same-day list below it still carries the whole adrenal-crisis triad: " + conditional);
+
+        Assert.Contains("the whole same-day list below is a", conditional, StringComparison.Ordinal);
+        Assert.Contains("do not wait for the same day on any of it", conditional,
+            StringComparison.Ordinal);
+
+        // The triad is named with its signs and a destination. B2's sharper half
+        // was that the paragraph named a FATAL condition with neither, so a reader
+        // who recognised nothing and was sent nowhere got only a rule about
+        // vomiting. The 911 wording matches /tumors/pituitary-tumor exactly: one
+        // claim, one strength (§12.10).
+        Assert.Contains("are what an adrenal crisis looks like", conditional,
+            StringComparison.Ordinal);
+        Assert.Contains("call 911, or your local emergency number, and get to a hospital",
+            conditional, StringComparison.Ordinal);
+
         var sameDay = Regex.Match(section, @"Call your team the same day if:(.*?)(?=\*\*Call an ambulance)",
             RegexOptions.Singleline);
         Assert.True(sameDay.Success, "the same-day list has gone");
@@ -726,7 +783,19 @@ public sealed class SteroidsPageContentTests
         Assert.Matches(new Regex(@"new weakness in an arm or a leg", RegexOptions.IgnoreCase), today);
         Assert.DoesNotMatch(new Regex(@"weakness", RegexOptions.IgnoreCase), now);
 
-        // Confusion: same-day everywhere, and never an ambulance.
+        // Confusion: same-day ON THIS PAGE'S OWN LIST, and never on its
+        // unconditional ambulance line.
+        //
+        // THIS COMMENT USED TO READ "same-day everywhere, and never an ambulance",
+        // which stopped being true sixty lines above it when WI-539 added the
+        // adrenal-crisis triad — where confusion DOES route to 911, conditionally,
+        // for a reader whose body has stopped making its own steroid. /review
+        // round 4 caught it as the stale-rationale class: left alone, the next
+        // editor reads this line and deletes the triad's route on its authority.
+        // The conditional is the same shape as this page's chemo-fever rule and
+        // the block's shunt rule, which §12.10 permits; what it must never become
+        // is a second UNCONDITIONAL tier, and that is what the `now` check below
+        // still guards.
         Assert.Matches(new Regex(@"confused", RegexOptions.IgnoreCase), today);
         Assert.DoesNotMatch(new Regex(@"confus", RegexOptions.IgnoreCase), now);
 
@@ -851,7 +920,14 @@ public sealed class SteroidsPageContentTests
         // /tests/follow-up-scans owns RANO and pins the glossary entry as
         // reachable nowhere (WI-521). This page describes the same rules in
         // plain words and deliberately does not name them, so that pin stays
-        // true and this page stays at 4.6.
+        // true and this page's reading level stays well inside the limit.
+        //
+        // NO FIGURE HERE ON PURPOSE. This read "this page stays at 4.6" until
+        // WI-539's replacement-steroid conditional moved it to 4.8. A number
+        // written into a comment has no guard behind it, so it goes stale the
+        // first time anyone edits the page and then quietly misinforms the next
+        // reader. ContentCheck is the thing that enforces the limit; the comment
+        // should state the property, not a snapshot of it.
         Assert.DoesNotContain("RANO", Body, StringComparison.OrdinalIgnoreCase);
 
         var scans = CuratedPage.Flatten(Reader(Section("Why does my team ask about my steroid dose before a scan?")));
