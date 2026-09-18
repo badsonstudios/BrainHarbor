@@ -1500,10 +1500,19 @@ public sealed class StereotacticRadiosurgeryPageContentTests
         // door so the term fell inside a markdown link (which turns the
         // tooltip off, §12.8 WI-519), reachability dropped from four to
         // three, and `>= 3` read that as healthy.
+        //
+        // WI-541 REGISTERED /tumors/acoustic-neuroma HERE DELIBERATELY. That hub
+        // routes the focused-radiation material to this page and says the term
+        // in PROSE while hanging its link on other words, which is the shape
+        // this test exists to reward — so it became a fifth page keeping the
+        // entry reachable, and the exact set failed until it was named. That
+        // failure is the mechanism working, not a defect: an exact list forces
+        // the decision to be made rather than absorbed.
         Assert.Equal(
             [
                 "pages/tests/follow-up-scans",
                 "pages/treatments/craniotomy",
+                "pages/tumors/acoustic-neuroma",
                 "pages/tumors/brain-metastases",
                 "pages/tumors/meningioma",
             ],
