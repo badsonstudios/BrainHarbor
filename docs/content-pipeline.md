@@ -4294,6 +4294,206 @@ entries: **none**, and that is a ruling rather than an oversight.
   four findings I had not seen. **A reviewer told what was declined audits the
   declines; a reviewer not told re-raises them or assumes they were accepted.**
 
+**WI-540 — `/tumors/craniopharyngioma`, and the item whose nearest neighbour was
+its biggest hazard.** A 43-line stub replaced by a §12.3 hub for a tumor sitting
+in the same small space as `/tumors/pituitary-tumor` and threatening the same two
+things. Almost every ruling had to be RE-DERIVED rather than inherited, and the
+ones that looked most transferable were the ones that flipped.
+
+- **A DOSSIER CAN WEAR A SOURCE PACK'S FILENAMES.** The fetch layer refused
+  whole-page dumps, so all 42 `.txt` files were model-produced extracts — and the
+  pack's own notes quoted those extracts, so script-checking one against the other
+  is **circular**: one extractor produced both, and the check can only prove it
+  agreed with itself. §12.8's tell is "the support you reach for is a project file
+  rather than a source file", and here the project file was *shaped like* a source
+  file, down to a SOURCE/URL header. Verifying nine sources against the live
+  publications found **no fabrication and four truncations**, each clipping the
+  start or end of a sentence — one of them stopping at *"it can be life
+  threatening"* where the source continues *"from very low blood pressure and
+  heart problems"*, which is **§12.13's exact defect produced mechanically by a
+  tool rather than by an editor's convenience**. A pack can be sound in substance
+  and unsafe in precision at once, and those need different remedies. **And
+  verification pays twice:** re-reading PMC12109346 returned two sentences BETTER
+  than the ones the extract kept, and they became the page's most important
+  non-obvious claim and its anti-hype counterweight.
+
+- **A SOURCE THAT NAMES YOUR PREDECESSOR'S EMERGENCY FOR YOUR TUMOR IS NOT A
+  SOURCE THAT RANKS IT.** WI-539's hub is built around apoplexy. Bleeding into
+  THIS tumor is genuinely named for this tumor, so nothing had to be stretched —
+  and it is still not the headline, because it is verified *"a very rare
+  syndrome"* in the paper's introduction AND conclusion, rests on one
+  retrospective series, contains **no patient-facing action guidance at all**, and
+  **both general reference chapters are verified SILENT on it**. What the sources
+  converge on instead is acute obstructive hydrocephalus and adrenal crisis. The
+  event is named, kept rare, and given no tier or route of its own. **Decide the
+  central safety claim from the sources every time; the neighbour's answer is a
+  hypothesis, not a starting point.**
+
+- **A PREDECESSOR'S RULING CARRIES ITS REASONS, AND THE REASONS TRANSFER — NOT THE
+  VERDICT.** Both of the neighbour's block exclusions flipped here, and only
+  OPENING the blocks showed it. `[MECHANISM]` was excluded there because a
+  pituitary tumor "is not in the brain, rarely seizes, and does not obstruct the
+  fluid pathways"; all three are different here, and the block's blocked-fluid
+  paragraph is this tumor's central mechanism. Reading it also showed the
+  neighbour's front matter had **under-reported the block** — it records "no
+  scoping clause at all" where the block does scope itself. Re-derive the verdict
+  from the reasons, and read the artefact rather than the note about it.
+
+- **THE RESTATEMENT GUARD IS BIDIRECTIONAL, AND AN ALLOWLIST CANNOT SAVE YOU.**
+  The first green-suite run after drafting was 2,179 passed, 5 failed — and **none
+  of the failures was this page's own test**, because it had none yet. Four were
+  `ThePageDoesNotRestate…` on four SHIPPED pages. A new page turned four live
+  pages red, and an allowlist here could not have fixed any of them, because none
+  of those tests reads this page's allowlist. The cause was specific: I took the
+  neighbour's **sentences**, not just its stance. **"Take the stance, write your
+  own sentences" is easy to agree with and hard to execute, because the borrowed
+  sentence is the one that already sounds finished.**
+
+- **A CAPPED REPORT IS NEVER AN INVENTORY.** Closing those failures took **six
+  editing passes**, and every pass fixed everything its report listed while the
+  next reported a fresh set on the same file. They were not new; they were
+  underneath the cap the whole time — both `AssertDoesNotRestateTheCorpus` and the
+  offline replica `.Take(4)` **per file**, and they order their sets differently,
+  so three reports of the same defect disagreed. Twenty distinct shared runs on
+  one sibling, revealed four at a time. The remedy is ten lines
+  (`wi540/all-collisions.py`): import the replica's own functions so it cannot
+  drift, and print the intersection **uncapped**. **And it was validated before it
+  was believed** — run first against a page that shares text deliberately and made
+  to report a non-zero count. **Prove the instrument can say "yes" before you
+  accept it saying "no".**
+
+- **I REWROTE THE HALF I REMEMBERED WRITING, NOT THE HALF THE CHECKER MATCHED —
+  SEVEN TIMES, AFTER WRITING THE RULE DOWN.** Each time I changed one clause of a
+  colliding sentence and left the clause the guard had actually matched, so it
+  reappeared in the next pass. **The count is the lesson, not the instances:** one
+  is carelessness, seven is a structural property of editing your own prose — you
+  edit toward the phrase you remember choosing, and the guard matched the phrase
+  you never thought about. More care did not fix it. **Rewriting the whole
+  sentence from scratch did**, because any edit that leaves a clause intact leaves
+  the clause that was copied. **The eighth was its parent:** I fixed the two
+  occurrences of a reported phrase I could recall and it returned a third time,
+  from a section I had never associated with it. **A reported phrase is a property
+  of the whole page, and memory enumerates instances — grep your own page and fix
+  every hit in one pass.**
+
+- **A FIX IS NEW PROSE, AND TWO OF THESE MADE THINGS WORSE.** Rewording one
+  collision produced a sentence colliding with **two** pages instead of one,
+  because the construction itself ("ask for your own timetable, in writing") is
+  corpus-saturated across three pages. **Rewording inside a saturated formula
+  moves the collision; it does not remove it — abandon the construction.** What
+  ended the cycle was cheap: flatten every page in the corpus and grep each
+  candidate replacement **before** writing it, excluding the page under test, with
+  BOTH controls. A guard run before you write costs one command; the same guard
+  run after costs a build, a 90-second suite, and another half-rewrite.
+
+- **THE SHINGLER STRIPS DIGITS, SO EVERY PAGE'S 911 ROUTE COLLIDES WITH EVERY
+  OTHER.** `[^A-Za-z]` turns `911` into a space, so the one instruction §12.10
+  most wants at a single strength corpus-wide — and therefore worded near
+  identically everywhere — is the one the guard reliably flags. The workable
+  discipline is to keep the route identical and **make the words immediately after
+  it differ**. **One claim at one strength does not mean one sentence, and the
+  guard can only see the sentence.**
+
+- **A NEW PAGE JOINS A CORPUS WHOSE HOUSE RULES ITS AUTHOR HAS NOT READ.** A guard
+  living in `PathologyReportPageContentTests` scans every curated page and allows
+  a Roman grade only where that same sentence also says it is the older style.
+  Both of this page's Roman sentences put the marker in the NEIGHBOURING sentence,
+  and both failed. The irony is the useful part: **the crosswalk slice exists to
+  explain the Roman-to-Arabic change, and the guard against Roman numerals
+  rejected it** — WI-513's shape again, where a retired-name ban must be
+  negation-aware or it forbids the crosswalk it protects. The suite is the index
+  to the house rules, and both times the guard was right and the page was wrong.
+
+- **A GUARD ASSERTING WHAT A PAGE DOES NOT OFFER MUST READ THE READER'S TEXT,
+  NEVER THE RAW FILE — AND THE SAME TRAP HAS A POSITIVE DIRECTION.** This page
+  deliberately does not route to `/treatments/watch-and-wait`, and explaining that
+  ruling **requires naming the URL**. The absence guard read the raw file and
+  found the URL inside the very comment justifying its absence. Unlike the earlier
+  instances this one cannot be fixed by rewording the note, because the ruling is
+  *about* that address — so the fix has to be in the guard. Then `/review` found
+  the mirror image: `Assert.Contains("/treatments/steroids", Page)` **could not
+  fail for its stated reason**, because the front matter names that URL too. The
+  same file documented the trap in the negative direction while re-committing it
+  in the positive one. **Both directions need the reader's text.**
+
+- **A DEAD ANCHOR FAILS LOUDLY; A STALE COMMENT NEVER FAILS AT ALL.** I reworded a
+  sentence and left the assertion pinning the old wording — the atomic-update rule
+  broken in the same pass that quotes it, and the third consecutive item to do it.
+  Its quieter sibling is worse: I changed a slice terminator and left the comment
+  above it describing the string that no longer exists. A dead anchor is caught by
+  the next run; a stale comment simply sends the next editor looking for something
+  that is not there. The cheap check is mechanical — after editing, grep the test
+  file for the OLD string and decide which of three things each hit is: an
+  assertion (dead anchor), a comment (a lie), or a deliberate history note (fine).
+  **A count of 1 is not a verdict.**
+
+- **EIGHT REFERENCE DEFECTS IN ONE ITEM, FOUR OF THEM CREATED BY FIXES — AND ONE
+  FIX REPRODUCED THE DEFECT IT WAS REPAIRING, IN THE SAME SENTENCE.** §12.8
+  already carries "sharpening a vague sentence exposed a pronoun". This item adds
+  two shapes. **A DELETION strands pronouns too:** removing an unsourced sentence
+  left the next one's "Both" with nothing to point at, because the deleted
+  sentence had been carrying the antecedent. And the fourth: told that an override
+  clause pointed at the wrong paragraph, I rewrote it opening "It also carries…"
+  — where "It" resolved to the same wrong paragraph. **The pattern is structural,
+  not careless: repairing a sentence means holding its MEANING in your head, and
+  the meaning supplies the referent the reader does not have.** The only counter
+  that worked was mechanical — read the edited sentence together with the one
+  before it, resolving every pronoun to the NEAREST noun rather than the intended
+  one. It caught three of four; no guard caught any, because nothing in the
+  toolchain models reference. What made them findable at all was reading the edits
+  **in place and in sequence** rather than each at its own anchor: an edit checked
+  at its own line looks correct, and the defect lives in the join.
+
+- **CLEARING THE RESTATEMENT GUARD IS ITSELF THE MECHANISM THAT HIDES BORROWED
+  REASONING.** The item's only `/review` blocker: the page claimed tissue may
+  never be examined while saying two sections later that surgery is almost always
+  first *to find out what the growth is*. Both cannot be true. The sentence came
+  from the neighbour, where it IS true — that hub routes to watch-and-wait and
+  many of its readers are never operated on. It was one of the six collision
+  passes: I reworded it until the shingle guard went quiet and **carried the
+  reasoning over intact**. Three things make it worth recording. The guard's
+  SUCCESS is what concealed it — rewording far enough to clear an eight-word check
+  is exactly the operation that turns a visible copy into an invisible transplant.
+  **No tool could see it:** ContentCheck reads level, the suite reads assertions,
+  the shingler reads overlap, the rendered read shows composition, and **nothing
+  compares a page's claims against each other** — two sections forty lines apart
+  contradicted one another through six green runs and two end-to-end reads. And I
+  had already written down the fact that refuted it, in my own plan, before the
+  sentence existed. **When a fix borrows a sibling's sentence, re-derive the CLAIM,
+  not just the wording: ask what makes it true on the page it came from, and
+  whether that premise holds here.**
+
+- **A SUMMARY OF A SAFETY RULE IS A RESTATEMENT OF IT, AND NOTHING WAS CHECKING
+  THE SUMMARY AGAINST THE RULE.** `/review` round 2's only finding that could have
+  cost a reader something. The caregiver section quietly narrowed BOTH emergency
+  rules: it kept one branch of the fluid tier's disjunction, and it re-gated the
+  adrenal rule on *taking* a replacement steroid **eleven lines after the page
+  deliberately widened it** to anyone whose gland has been harmed. Neither
+  narrowing was visible to any guard, because every tier assertion reads the
+  SYMPTOMS section and every caregiver assertion read two phrases. This is §12.8's
+  "when a sentence makes a claim about a list, open the list" one level up:
+  **wherever a rule is restated for a second audience, guard the restatement
+  against the rule.**
+
+- **A PIPE HIDES THE EXIT CODE, AND HERE IT DESTROYED EVIDENCE.** `dotnet test |
+  tail -30` makes `$?` the status of `tail`: it reported exit 0 on a run with FIVE
+  failures, and the truncation meant **two of the five failure names were never
+  written down and were unrecoverable** — the suite had to be re-run in full to
+  learn what they were, and one of them was the Roman-numeral house rule, which is
+  not a restatement failure and would otherwise have been missed entirely.
+  **Redirect to a file, capture `$?` on the next line, then grep the file.** This
+  is §12.8's "a tool must assert what it produced" from the other side: the tool
+  was honest and the measurement was not.
+
+- **TOOLS COPIED FORWARD MUST REFUSE TO RUN UNTIL RETARGETED.** Three tools in two
+  items have now reported success over the wrong thing. `handproof.py` was
+  deliberately left **raising** until its cases named this item's page, because an
+  emptied case list would have printed "all 0 render guards proved by hand" —
+  `all()` over nothing is True, so success over zero work looks identical to
+  success. The same reasoning made a duplicate-effect entry worth deleting from
+  this item's own mutation table: two reds for one property **overstate coverage
+  in exactly the direction a break harness exists to measure honestly.**
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
