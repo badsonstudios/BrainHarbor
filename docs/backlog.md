@@ -3697,7 +3697,47 @@ research items. Same shared contract throughout.
   does **not** object to the rename (that was an editorial of a journal's editors,
   a correction that took three passes to purge from the front matter). Lessons in
   §12.8.
-- [ ] **WI-540 Craniopharyngioma, deepened.** Depends on: WI-539.
+- [x] **WI-540 Craniopharyngioma, deepened** — **DONE 2026-09-18.** A 43-line stub
+  (citing one source, and it was barred) replaced by a §12.3 seventeen-section hub
+  for the tumor whose NEAREST NEIGHBOUR was its biggest hazard. Twelve sources;
+  grade 5.6; ContentCheck 273/0; suite 2,214/2,214 unfiltered; **154
+  break-mutations green on LF and CRLF across seven files**; 8 render guards
+  handproofed; 0 restatement collisions with **no allowlist at all**; privacy scan
+  0 findings over 2,329 net-new lines. Two `/review` rounds (1 blocker, then 0).
+  **THE CENTRAL SAFETY CLAIM WAS DECIDED FROM SOURCES AND CAME OUT THE OPPOSITE WAY
+  TO WI-539.** This page's two emergencies are **acute obstructive hydrocephalus**
+  and **adrenal crisis**. Bleeding into the tumor ("CP apoplexy") IS named for this
+  tumor, but is verified "a very rare syndrome" in its paper's introduction AND
+  conclusion, rests on one retrospective series, carries **no patient-facing action
+  guidance at all**, and both general reference chapters are verified SILENT on it
+  — so it is named, kept rare, and given **no tier or route of its own**, pinned by
+  a guard that fails if it grows one.
+  **For `/pm`, six things the next items inherit.** (1) **No edit was owed to
+  `/treatments/steroids`, and that is a finding rather than an omission** — WI-539
+  already scoped its conditional on the MECHANISM (a suppressed axis), so it
+  already reaches this page's readers; upheld by the reviewer after it read all
+  three pages. This hub's guard READS that page's same-day list rather than
+  trusting a claim about it. (2) **Two of WI-539's block rulings are REVERSED
+  here**: `[MECHANISM]` is IN (its blocked-fluid paragraph is this tumor's central
+  mechanism; the precedent is `/tumors/meningioma`, also outside the brain
+  substance), with a scoping note ABOVE the directive because its lobe-by-lobe map
+  is not this anatomy; `[CROSSWALK]` is OUT for a DIFFERENT reason than there.
+  All four exclusions are pinned as an exact closed set with mutations composing
+  each back in. (3) **Watching is NOT routed here, reversing WI-539** —
+  `/treatments/watch-and-wait` does not name this tumor and the sources say an
+  operation is almost always first. If that page ever names it, the ruling must be
+  re-argued, and a mutation exists to catch it. (4) **`/tumors/pediatric-brain-tumor`
+  still owes a reciprocal door** — this page links there for the parent reader;
+  nothing comes back. (5) **"Sight test" is British register** and belongs to the
+  follow-up idiom sweep, not to this item. (6) **WI-566 is still open** —
+  `ReaderText` silently eats three characters on six live guards across four pages.
+  **Two defects the tooling found that reading had not:** the tumor index depends
+  on `taxonomy.yml` carrying the slug and **NOT** on the page having a description
+  (the handproof's one survivor, a weak MUTATION rather than a weak guard); and
+  three test comments cited sources this page does not carry (the Pituitary Network
+  Association, PMC12121368, NIDDK) — the claims themselves are carried, and the
+  adrenal one turned out to be stated verbatim by the CITED Endocrine Society page.
+  Lessons in §12.8.
 - [ ] **WI-541 Acoustic neuroma, deepened** — NF2-related schwannomatosis, renamed
   2022; links to WI-551 (hearing) and WI-531 (SRS). Depends on: WI-513.
 - [ ] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
