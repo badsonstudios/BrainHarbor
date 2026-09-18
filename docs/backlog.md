@@ -3738,8 +3738,22 @@ research items. Same shared contract throughout.
   Association, PMC12121368, NIDDK) — the claims themselves are carried, and the
   adrenal one turned out to be stated verbatim by the CITED Endocrine Society page.
   Lessons in §12.8.
-- [ ] **WI-541 Acoustic neuroma, deepened** — NF2-related schwannomatosis, renamed
+- [x] **WI-541 Acoustic neuroma, deepened** — NF2-related schwannomatosis, renamed
   2022; links to WI-551 (hearing) and WI-531 (SRS). Depends on: WI-513.
+  A 1,372-byte stub citing one BARRED source rewritten as a §12.3 hub: 13 sources,
+  all verified against the live publication. **A third distinct emergency shape** —
+  exactly ONE rule, routed to primary care / urgent care / ENT and explicitly NOT
+  911, unlike the tiers on `/tumors/pituitary-tumor` and `/tumors/craniopharyngioma`.
+  Brainstem compression and hydrocephalus deliberately **not** tiered: EANO carries
+  no patient-facing urgency guidance at all and two patient-facing sources say the
+  opposite. Grade attributed in **two halves** (CNS5 prints no grade for schwannoma);
+  the rename carries a two-step attribution; NF2 scoped by sidedness **and** age.
+  Watching is ROUTED to `/treatments/watch-and-wait`, reversing WI-540's ruling.
+  Proof: 133 break mutations red on LF **and** CRLF, 8 render guards proved by hand,
+  ContentCheck 273/0 at grade 5.6, suite 2,249/2,249. Lessons in §12.8 — including
+  a defect class **no gate in the corpus could see**: an unclosed `**` renders as
+  literal asterisks while every guard strips emphasis before matching. Now guarded
+  site-wide.
 - [ ] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
   caveat that steroids given before biopsy can obscure the diagnosis (verify
   before publishing). Depends on: WI-519.
