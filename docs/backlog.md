@@ -3794,7 +3794,7 @@ research items. Same shared contract throughout.
   cost is the sourcing. (6) The flattened-HTML render-guard defect is still live
   in `CraniopharyngiomaPageTests` and `PituitaryTumorPageTests`; this item's copy
   uses the corrected form. Lessons in §12.8.
-- [ ] **WI-543 Spinal cord tumor, deepened** — **settles the strength split WI-536
+- [x] **WI-543 Spinal cord tumor, deepened** — **settles the strength split WI-536
   handed over**: this hub, `/tumors/meningioma` and `/tumors/brain-metastases` file new
   weakness and bladder trouble as "a reason to be seen quickly", while
   `blocks/spinal-cord.md` files the same signs as right-away, at any hour. Check each
@@ -3808,6 +3808,41 @@ research items. Same shared contract throughout.
   taxonomy is explicit that a spinal cord tumor is not a brain tumor and must
   never surface under a brain filter; WI-412 pinned that with a test and this
   item must not undo it. Depends on: WI-513.
+  **SETTLED, AND THE ANSWER WAS THAT IT WAS NEVER ONE CLAIM.** Two claims wore one
+  sentence: metastatic cord compression keeps an emergency-room rule (ACS "call your
+  doctor right away or go to the emergency room"; OncoLink "Call 911 or your care team
+  right away"), while a PRIMARY tumor in or pressing on the cord gets a same-day call,
+  because **no fetched patient-facing source applies an emergency rule to a named
+  primary cord tumor outside cauda equina** — AANS, ABTA, Columbia and NCI PDQ each
+  list the signs and give no urgency rule, recorded as absences in a 40-source table
+  scored before drafting. ACS grades the two situations differently on its own two
+  pages. A **carve-out applies to BOTH** and is stated as more urgent, not less: new
+  bladder/bowel trouble, saddle numbness, or weakness worsening over hours to days is
+  the emergency room now. `/tumors/meningioma` re-tiered and given the carve-out;
+  `/tumors/brain-metastases` keeps its own tier (its population is metastatic) and
+  gains the route to this page it never named.
+  `SpinalCordBlockTests.TheStrengthSplitWithTheSiblingHubsIsPinnedUntilWi543SettlesIt`
+  was **rewritten, not deleted** — it now asserts the settlement (two populations, two
+  sourced strengths, no page carrying both wordings) and still fails if either side
+  drifts. WI-528's "three pages, one wording" was **retired deliberately**, with its
+  reasoning: it was built when all three pages were treated as one claim.
+  Blocks 5 in / 3 out; `[SPINAL-CORD]` is EXCLUDED even though its name matches the
+  subject — this page states the tier itself rather than composing a block scoped for
+  hubs whose tumor merely *can* reach the cord. The taxonomy rule is untouched and now
+  handproofed: removing the entry turns `ThePageIsReachableFromTheTumorIndex` red.
+  Proof: **53 break mutations red on LF and CRLF** (three survivors — two dead guards,
+  one weak mutation — each fix re-run against the mutation that exposed it),
+  **6 render guards handproofed** including the excluded block composed back in,
+  ContentCheck **273/0** at grade **5.8** (meningioma 5.6, brain-metastases 5.7),
+  suite **2,313/2,313**, six rendered reads, privacy scan **0 findings** over 2,425
+  net-new lines. Five `/review` rounds (blockers until round 5; in rounds 2, 3 and 4
+  the blocker was created by the previous round's fix).
+  **For `/pm`:** the "at any hour" clause in `blocks/spinal-cord.md` has no US source;
+  `AssertNoWarningSignIsNormalised`'s symptom vocabulary has no pain/spasm/stiffness/skin,
+  so three genuine reassurances on this page are outside any guard's reach;
+  `EscalationBlockTests.Hubs` lists four hubs while ~19 include the block; a
+  research-pack source-number collision (two files numbered 40); plus the four carried
+  forward from WI-542. Lessons in §12.8.
 - [ ] **WI-544 ATRT** *(new page)*. Depends on: WI-513.
 - [ ] **WI-545 Chordoma** *(new page)*. Depends on: WI-513.
 - [ ] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar

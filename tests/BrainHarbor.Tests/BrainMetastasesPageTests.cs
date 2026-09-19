@@ -719,16 +719,34 @@ public sealed class BrainMetastasesPageContentTests
             line);
         Assert.Contains("/tumors/spinal-cord-tumor", line, StringComparison.Ordinal);
 
-        // ONE CLAIM, ONE STRENGTH. The corpus's own sentence, word for word,
-        // read rather than assumed (§12.10).
-        foreach (var sibling in new[] { "spinal-cord-tumor", "meningioma" })
-        {
-            var text = CuratedPage.Flatten(CuratedPage.ReaderText(
-                CuratedPage.Read("tumors", sibling + ".md")));
-            Assert.Contains(
-                "New weakness or new bladder trouble is a reason to be seen quickly, not to wait",
-                text, StringComparison.Ordinal);
-        }
+        // ONE CLAIM, ONE STRENGTH — BUT WI-543 FOUND IT WAS NEVER ONE CLAIM.
+        // /tumors/meningioma still carries the corpus's sentence word for word, read
+        // rather than assumed (§12.10). /tumors/spinal-cord-tumor no longer does, because
+        // it owns the subject and now splits by scenario: an emergency-room rule for a
+        // cancer that has SPREAD to the spine (which is this page's reader), a
+        // "seen quickly" rule for a tumor that STARTED there, and a fast carve-out for
+        // both. Evidence log: .claude/work_files/wi543/plan.md.
+        // /tumors/meningioma was RE-TIERED at WI-543 /review round 2 — it is a primary
+        // tumor beside the cord, so it takes the same-day tier that page settled, and its
+        // old wording was weaker than the escalation block composing beneath it. THIS page
+        // keeps the older sentence because its reader's cancer has SPREAD, which is the
+        // population the emergency-room rule is actually sourced for.
+        var meningioma = CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Read("tumors", "meningioma.md")));
+        Assert.Matches(new Regex(
+            @"New weakness or a\s+change in how you walk is a same-day call",
+            RegexOptions.IgnoreCase), meningioma);
+
+        // AND THE HUB THIS PAGE ROUTES INTO CARRIES THE METASTATIC HALF AT LEAST AS
+        // STRONGLY AS THIS PAGE DOES. That is the property that actually protects this
+        // reader: somebody with cancer that has spread, sent from here to there, must not
+        // land on a weaker instruction than the one they just read.
+        var cord = CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Read("tumors", "spinal-cord-tumor.md")));
+        Assert.Matches(new Regex(
+            @"If your cancer has spread to your spine[^.]{0,120}"
+            + @"calling your team\s+right away or going to the emergency room",
+            RegexOptions.IgnoreCase), cord);
 
         // AND THE PAIR IS NOT ALSO FILED SOMEWHERE WEAKER. The leptomeningeal
         // section may mention them, but only to point back up here — it must
@@ -1436,11 +1454,37 @@ public sealed class BrainMetastasesPageContentTests
         // /tumors/meningioma and here must meet the same words, because a
         // rewrite is a rewording of an emergency threshold. Sharing this is the
         // fix `/review` asked for, not a restatement to be excused.
+        // TRIMMED TO THE RUN STILL SHARED. /review round 4 counted it: the longer entry
+        // carried 59 content windows and TWENTY-SIX exempted nothing, clustered on the
+        // clause WI-543 re-tiered on /tumors/meningioma. This page keeps its own wording —
+        // its reader's cancer has SPREAD — so only the red-flag list is still common.
+        // CARRIED THROUGH THE SEAM. WI-543 re-tiered /tumors/meningioma's middle sentence,
+        // so the passage now differs there while both joins stay identical — every version
+        // still opens "New weakness or". Stopping at "bladder or bowel" leaves the windows
+        // straddling that join uncovered.
         "new weakness in the legs, a change in how you walk, numbness around the "
-        + "saddle area, and any new trouble with your bladder or bowel. **New weakness "
-        + "or new bladder trouble is a reason to be seen quickly, not to wait for the "
-        + "next appointment.** Do not wait for it to get bad first, because the early "
-        + "signs are often vague ones. [Spinal cord tumors](/tumors/spinal-cord-tumor)",
+        + "saddle area, and any new trouble with your bladder or bowel. New weakness or",
+
+        // TWO ENTRIES, NOT ONE, because WI-543 re-tiered /tumors/meningioma's sentence
+        // BETWEEN them. The red-flag list above and this counterweight below are still
+        // shared word for word; the tier sentence separating them now differs by page,
+        // because that item found the two populations were never one claim.
+        "the next appointment. Do not wait for it to get bad first, because the early "
+        + "signs are often vague ones",
+
+        // THE METASTATIC ROUTE, added at WI-543 /review round 1 and shared word for word
+        // with /tumors/spinal-cord-tumor. That item settled the cord-urgency split and
+        // found this page named an emergency without ever naming a route; the route now
+        // reads identically on both pages, because §12.10 says a rewrite of an emergency
+        // threshold IS the defect.
+        // THE PHRASE, NOT THE SENTENCE. WI-543 /review round 3: the whole 22-word sentence
+        // exempted windows that were never shared.
+        //
+        // THE MECHANISM NOTE HERE WAS WRONG AND IS CORRECTED (/review round 4). This file
+        // builds `AllowedShingles` from `Shingles(entry, 8)` and tests set membership; it
+        // does not use the corpus helper's `entry.Contains(...)` filter. The concern
+        // transfers, the mechanism did not.
+        "calling your team right away or going to the emergency room",
 
         // The standard support-section door, worded as every hub words it. The
         // heading is included because the window straddles it and the first
@@ -1490,6 +1534,63 @@ public sealed class BrainMetastasesPageContentTests
 
     private static readonly HashSet<string> AllowedShingles =
         DeliberatelyShared.SelectMany(s => Shingles(s, 8)).ToHashSet();
+
+    [Fact]
+    public void EveryDeliberatelySharedEntryExemptsSomethingThisPageActuallyHas()
+    {
+        // WI-543 /review round 4. An entry that no longer matches the page exempts NOTHING
+        // while still reading as a live exemption, and an entry under eight words yields no
+        // windows at all. Both failures are silent — the restatement test simply stays
+        // green, and the allowlist quietly stops guarding what its comment claims.
+        //
+        // Compared through this file's own `Shingles`, which is the normalisation the
+        // allowlist itself uses. Asserting a raw substring instead fails on entries written
+        // in reader-facing form, because the page carries markdown links the windowing
+        // strips.
+        var mine = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var Elsewhere = Directory
+            .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
+            .Where(f => !f.EndsWith("brain-metastases.md", StringComparison.Ordinal))
+            .Concat(Directory.EnumerateFiles(CuratedPage.BlocksRoot, "*.md"))
+            .SelectMany(f => Shingles(CuratedPage.ReaderText(File.ReadAllText(f)), 8))
+            .ToHashSet();
+
+        // The `{#anchor}` tail is optional because §12.8 makes explicit heading ids the
+        // rule — without it this branch breaks the day a §12.3 heading gains one.
+        var headings = Regex.Matches(Page, @"(?m)^#{2,3}\s+(.+?)(?:[ \t]*\{#[^}]+\})?\s*$")
+            .Select(m => m.Groups[1].Value.Trim())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var entry in DeliberatelyShared)
+        {
+            var windows = Shingles(entry, 8).ToList();
+
+            // A BARE §12.3 HEADING IS UNDER EIGHT WORDS AND SO EXEMPTS NOTHING ON ITS OWN.
+            // Its work is done by the LONGER entries whose windows straddle it and the
+            // line beneath. Five such entries are live here, and they are accepted rather
+            // than asserted against: trimming a shipped page's allowlist is not WI-543's
+            // to do, and it is recorded for /pm instead.
+            if (windows.Count == 0)
+            {
+                // COMPARED WHOLE. The first version trimmed a trailing '?' off the entry
+                // and then looked for it in a set that keeps the heading's punctuation —
+                // normalising one side only, which manufactured the very mismatch it was
+                // meant to absorb. These entries are §12.3 headings carried verbatim.
+                Assert.Contains(entry, headings);
+                continue;
+            }
+
+            Assert.True(windows.Exists(mine.Contains),
+                $"a deliberately-shared entry matches nothing on this page any more: {entry}");
+
+            // AND THE RUN MUST BE SHARED, NOT MERELY PRESENT. An entry matching only this
+            // page exempts a collision that does not exist — the OVER-BROAD direction,
+            // which hides real collisions and which three consecutive /review rounds had
+            // to correct by hand on these two files.
+            Assert.True(windows.Exists(w => mine.Contains(w) && Elsewhere.Contains(w)),
+                $"a deliberately-shared entry exempts nothing any other file carries: {entry}");
+        }
+    }
 
     private static IEnumerable<string> Shingles(string text, int size)
     {
