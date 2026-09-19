@@ -432,6 +432,15 @@ sources:
     # have different changes in their genes (DNA)."; that meningiomas "are much less
     # common in children and teens than in adults"; and that embryonal tumors "are
     # more common in younger children than in older ones and are rare in adults",
+    #
+    # AND, ADDED WITH THE ATRT DOOR (WI-544), THE CLASSIFICATION THAT SENTENCE RESTS
+    # ON. Re-fetched and re-read: this page lists "Atypical teratoid/rhabdoid tumor
+    # (ATRT)" by name under "Other, less common types of embryonal tumors". So BOTH
+    # halves of the ATRT line below are carried by this one citation -- that it is an
+    # embryonal tumor, and that the group skews young. WI-544's /review round 2 caught
+    # the premise missing from this comment: the claim was supportable, but this map is
+    # how anyone re-checks it without re-deriving it, which is the lesson recorded
+    # eight lines above.
     # which is what this page's "Medulloblastoma is far more common in children"
     # rests on. That same paragraph publishes "About 20%" and the CSF-spread line;
     # the percentage is NOT carried (§12.4). Its "grade I or II" and "grade III or
@@ -573,6 +582,8 @@ is far more common in children, and so is an
 grow in the spine are more often found in young adults.
 [Glioblastoma](/tumors/glioblastoma) is more common in adults.
 [Meningioma](/tumors/meningioma) is much less common in children than in adults.
+[ATRT](/tumors/atrt) is an embryonal tumor, a group this page explains further
+down, and that group is more common in young children than in older ones.
 Tumors that travel to the brain from a cancer elsewhere in the body are rare in
 children.
 

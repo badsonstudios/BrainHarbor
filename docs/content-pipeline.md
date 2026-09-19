@@ -4828,6 +4828,69 @@ ones that looked most transferable were the ones that flipped.
   prints that it did**, so a flaky response cannot masquerade as a failed deploy
   and a genuinely broken deploy cannot hide behind the retry.
 
+- **A GUARD CAN BE VACUOUS BECAUSE OF MARKDOWN, NOT LOGIC (WI-544).**
+  `SentencesOf` splits on `(?<=[.!?])\s+`, and `ReaderText` strips the `!%…%`
+  markers but NOT `**`. So in a bolded bullet list the character after
+  *"call 911."* is `*` rather than whitespace, no split happens, and one
+  "sentence" runs on through the NEXT bullet. An assertion that the shunt
+  **infection** rule keeps its emergency room therefore passed on the venue
+  belonging to the bullet ABOVE it — for the entire item. Strip the infection
+  venue and 2,345 tests stayed green. **It was invisible to review (the
+  assertion reads correctly), to the suite (it passes), and to the dry run (the
+  anchor resolves). Only mutating the page and demanding red could see it.**
+
+- **A PROPERTY WITH TWO HOMES CANNOT BE BROKEN BY A SINGLE-POINT MUTATION.** Two
+  of that run's three "survivors" were weak *mutations*, not weak guards:
+  `NAMES NO VENUE` is recorded in two source entries, and `median` appears twice
+  inside the outlook gate, so removing one left the property standing and the
+  guard correctly green. `uniq` is still the right default — an ambiguous anchor
+  usually means the mutation is aimed at the wrong text — but a guard that
+  asserts a PROPERTY rather than a TOKEN needs an `every`. **A mutation that
+  leaves the property standing is a harness survivor by construction, and the
+  dry run cannot detect it: it only proves anchors resolve.**
+
+- **A REMOVAL DOES NOT AUTOMATICALLY EARN A MUTATION.** After deleting two
+  pack-grounded staging words, the reflex was to add a mutation restoring them.
+  Nothing asserted their absence, so it would have left its guard green. The
+  repair that suggested itself — write a word-ban so the mutation has something
+  to break — is §12.14 inverted: the defect was the unsourced *definition*, not
+  the vocabulary, and the ban would have blocked a future editor who found a real
+  source. **Mutations prove guards can fail; they do not commemorate edits.**
+
+- **REACH FAILS IN BOTH DIRECTIONS, AND THE TOO-WIDE KIND IS WORSE.** Too narrow
+  guards nothing: a ban keyed to the exact sentence already fixed protects
+  against nothing, and `\bvomit\b` cannot match "vomiting". Too wide fails
+  correct prose — `"ring your"` is a substring of **"bring your"**, `"rings"`
+  matches **"coverings"**, and a widened surveillance-interval ban fired on the
+  sibling hub's own *"Ask again each year."* **The second kind is more dangerous,
+  because the reflex when it fires is to weaken the guard rather than question
+  the widening.** Both directions want canaries: positive ones proving the ban
+  fires, negative ones proving it does not fire on the prose it must allow.
+
+- **SIBLING-PAGE GROUNDING: A CLAIM THAT REALLY IS SOURCED, JUST NOT HERE.** Two
+  rounds found claims whose verbatims lived on `/tumors/pediatric-brain-tumor`'s
+  front matter rather than this page's — harder to notice than a pack-grounded
+  claim precisely *because* it is genuinely sourced somewhere in the repository.
+  A third variant is block-composed grounding, which is legitimate (block sources
+  merge and render) but still has to be written down. **Recording a ROUTE is not
+  recording a SOURCE, and a note asserting that a claim is grounded is itself a
+  claim.**
+
+- **WRITING A LESSON DOWN IS NOT APPLYING IT**, demonstrated twice inside one
+  item. The front matter said *"fixing the flagged instance and not the class is
+  its own recurring failure"* one round before the same class was fixed one
+  bullet and left in the two beside it. And a note saying *"the capture is for
+  reading, the source is for editing"* was written one round before two more
+  edits were composed from the re-wrapped capture — one of them the safety
+  blocker, which therefore silently did not land on the first attempt.
+
+- **A REVIEW'S VERIFICATION DESERVES THE SAME CHECK AS ITS CLAIMS.** A round
+  proposed widening a ban page-wide, stating it had checked and the only false
+  positive was a questions list. Run over the rendered capture, the candidate
+  fired on **three legitimate sourced sentences**. Taken on trust it would have
+  turned the suite red on correct prose — and the natural next move, weakening
+  the ban, would have quietly undone the guard.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

@@ -34,8 +34,17 @@ public sealed class SpinalCordBlockTests
     // and §12.10 says a conditional survives the "hub you have thought about least"
     // test. Excluding it left a pre-diagnosis parent with the shared block's same-day
     // tier for signs this block files as right-away.
+    // WI-544: /tumors/atrt is the fifth includer. It qualifies on the same CONDITIONAL
+    // rule as the pediatric hub -- the block's opening clause names the reader whose
+    // tumor is in the cord or has reached the spine, so it is false on nobody (§12.10).
+    // It is included rather than left out because this tumor SEEDS THROUGH THE SPINAL
+    // FLUID: one US hospital puts spread at diagnosis at roughly one in seven to one in
+    // three, "usually to the CSF or the meninges", and about 4.6% of US cases arise in
+    // the cord or cauda equina outright. Leaving it out would meet a parent whose child
+    // has new cord signs with the shared block's SAME-DAY tier, where the corpus files
+    // those signs as RIGHT AWAY -- the under-triage direction.
     private static readonly string[] IncludingHubs =
-        ["diffuse-midline-glioma", "ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
+        ["atrt", "diffuse-midline-glioma", "ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check (/review round 1).</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];

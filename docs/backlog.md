@@ -3843,7 +3843,34 @@ research items. Same shared contract throughout.
   `EscalationBlockTests.Hubs` lists four hubs while ~19 include the block; a
   research-pack source-number collision (two files numbered 40); plus the four carried
   forward from WI-542. Lessons in §12.8.
-- [ ] **WI-544 ATRT** *(new page)*. Depends on: WI-513.
+- [x] **WI-544 ATRT** *(new page)*. Depends on: WI-513.
+  A NEW §12.3 hub for a tumor that mostly affects children under 3, written to a
+  parent. **The item's central ruling is an urgency one built on a scored absence:**
+  seventeen ATRT-specific pages were fetched and NOT ONE gives an emergency-room or
+  911 rule (four re-tested by direct question). So the page invents no tumor-level
+  emergency rule — every instruction it carries belongs to a SIGN or a DEVICE and is
+  attributed to the source that gives it, and the page says so out loud.
+  `[MECHANISM]` is EXCLUDED because "the skull is a closed box, it cannot stretch" is
+  false for an infant and inverts the page's cardinal sign; 6 blocks in, 2 out.
+  **Proof:** suite **2,345/2,345**; ContentCheck **274/0** at grade **5.5**;
+  **93 break mutations red on LF AND CRLF** (186/186, after three first-run
+  survivors); **8 handproof cases across all 7 render guards**; 30 guards total;
+  fourteen rendered reads; pre-merge smoke run against live production and
+  **required to fail** — controls ok, hub 404, exit 1.
+  **Eleven `/review` rounds**, blockers in rounds 1–10 and none in 11; in rounds 2, 4
+  and several others the blocker was created by the previous round's fix.
+  **The item's real lesson:** a guard can be vacuous because of MARKDOWN rather than
+  logic — `**` prevents sentence splitting, so the shunt-infection venue assertion
+  passed on the previous bullet's "emergency room" for the whole item, invisible to
+  review, to the suite and to the dry run. Only the harness found it.
+  **For `/pm`:** the pediatric hub says "many children are given medicine" where this
+  page and their shared source say "some"; the specialist-nurse comparative is
+  unsourced on twelve hubs; the outlook gate's "treated years ago" provenance claim is
+  unsourced on nine; the flat-vs-modal radiation rationale differs across two pages;
+  "most families find harder than the tests" is unsourced on four; `numb\w*` in
+  `AssertNoWarningSignIsNormalised` matches "number"; the pediatric hub carries a live
+  `[MECHANISM]` contradiction; Nationwide prints the non-existent gene "SMARCB4"; PBTF
+  and Alex's Lemonade return 403. Lessons in §12.8.
 - [ ] **WI-545 Chordoma** *(new page)*. Depends on: WI-513.
 - [ ] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar
   puncture, AFP/beta-hCG markers) as its primary path. Depends on: WI-513.
