@@ -908,30 +908,73 @@ internal static class CuratedPage
 
         var marker = new Regex(@"^\s*(?:[-*]|\d+\.)\s");
 
-        var offenders = new List<string>();
-        for (var i = 0; i < lines.Length; i++)
+        // A WRAPPED BULLET'S CONTINUATION IS NOT A LEAD-IN EITHER, and that asymmetry was
+        // a live hole (WI-543). The counting loop below already allows `^\s{2,}\S`
+        // continuations — WI-522's lesson that a finder needing consecutive marker lines
+        // finds nothing when every bullet wraps — but the SELECTION loop here did not. So a
+        // question list whose wrapped second line happened to contain "emergency" was read
+        // as an urgency lead-in introducing the ten bullets beneath it, and a page was
+        // flagged for a list it had not grown. Never a genuine lead-in; always a false one.
+        var continuation = new Regex(@"^\s{2,}\S");
+
+        // A CONTINUATION IS A LINE GLUED TO A LIST ITEM, NOT MERELY AN INDENTED ONE, and
+        // /review round 4 proved the difference is exploitable rather than academic. The
+        // first version of this skip tested indentation alone, and CommonMark strips 1-3
+        // leading spaces — so "  **Call your team the same day for any of these:**" above
+        // two symptom bullets RENDERS IDENTICALLY to a reader and was silently missed. A
+        // complete tier list could hide behind two spaces, on all six calling pages, in the
+        // under-triage direction. Walking back to a marker line restores the property and
+        // still suppresses the wrapped-question-bullet false positive the skip exists for.
+        static bool GluedToAMarker(Regex markerRe, Regex contRe, string[] all, int index)
         {
-            // A bullet is not a lead-in.
-            if (marker.IsMatch(lines[i]) || !urgency.IsMatch(lines[i]))
+            if (index <= 0 || !contRe.IsMatch(all[index]))
             {
-                continue;
+                return false;
             }
 
-            // Count the list items that follow, allowing the indented
-            // continuation lines a hard-wrapped bullet produces (§12.8, WI-522:
-            // a finder needing two consecutive marker lines finds nothing when
-            // every bullet wraps).
-            var bullets = 0;
-            for (var j = i + 1; j < lines.Length; j++)
+            // A CONTINUATION THAT ENDS IN A COLON IS A LEAD-IN, NOT GLUE. /review round 5
+            // found the residue of round 4's fix: an indented lead-in glued to a BULLET was
+            // still skipped, so this shape went silent —
+            //     - An ordinary question bullet?
+            //       **Call your team the same day for any of these:**
+            //     - A fever.
+            //     - New weakness.
+            // Weaker than round 4's walk-around, because CommonMark renders that line
+            // inside the bullet rather than as a standalone lead-in — but the docstring
+            // above claims this form "cannot be walked around", and until this it could.
+            if (all[index].TrimEnd().TrimEnd('*').EndsWith(":", StringComparison.Ordinal))
             {
-                var line = lines[j];
-                if (marker.IsMatch(line))
+                return false;
+            }
+
+            var previous = all[index - 1];
+            return previous.Trim().Length > 0
+                && (markerRe.IsMatch(previous) || GluedToAMarker(markerRe, contRe, all, index - 1));
+        }
+
+        // COUNTED IN ONE PLACE, so the canary cannot drift from the guard. /review round 5:
+        // the canary shared the SELECTION rule but still re-implemented the COUNTING one as
+        // `Skip(i + 1).Count(...)`, which counts every marker to the end of the input while
+        // this counts only the contiguous run and stops at the first non-blank,
+        // non-indented line. Harmless while every planted shape is contiguous — and exactly
+        // the divergence round 4 found one layer up.
+        //
+        // Continuations are allowed inside the run (§12.8, WI-522: a finder needing two
+        // consecutive marker lines finds nothing when every bullet wraps).
+        static bool IntroducesAList(string[] all, int index)
+        {
+            var markerRe = new Regex(@"^\s*(?:[-*]|\d+\.)\s");
+            var bullets = 0;
+
+            for (var j = index + 1; j < all.Length; j++)
+            {
+                if (markerRe.IsMatch(all[j]))
                 {
                     bullets++;
                     continue;
                 }
 
-                if (string.IsNullOrWhiteSpace(line) || Regex.IsMatch(line, @"^\s{2,}\S"))
+                if (string.IsNullOrWhiteSpace(all[j]) || Regex.IsMatch(all[j], @"^\s{2,}\S"))
                 {
                     continue;
                 }
@@ -939,7 +982,20 @@ internal static class CuratedPage
                 break;
             }
 
-            if (bullets >= 2)
+            return bullets >= 2;
+        }
+
+        var offenders = new List<string>();
+        for (var i = 0; i < lines.Length; i++)
+        {
+            // A bullet is not a lead-in, and neither is the rest of a wrapped one.
+            if (marker.IsMatch(lines[i]) || GluedToAMarker(marker, continuation, lines, i)
+                || !urgency.IsMatch(lines[i]))
+            {
+                continue;
+            }
+
+            if (IntroducesAList(lines, i))
             {
                 offenders.Add(lines[i].Trim());
             }
@@ -971,21 +1027,69 @@ internal static class CuratedPage
                      + "\n\n- A fever.\n- New weakness.",
                      "Your team needs to hear about any of these before your next visit:"
                      + "\n\n- A fever.\n- New weakness.",
+
+                     // INDENTED LEAD-INS, added at /review round 4 because the skip that
+                     // fixed the wrapped-bullet false positive had made exactly these
+                     // invisible. Both render as ordinary lead-ins (CommonMark strips 1-3
+                     // leading spaces), so a page could have hidden a complete tier behind
+                     // two of them. Either one goes red against the indentation-only skip.
+                     "  **Call your team the same day for any of these:**"
+                     + "\n\n- A fever.\n- New weakness.",
+                     "  Go to the emergency room if any of these happen:"
+                     + "\n\n- New weakness.\n- New numbness.",
+
+                     // THE ROUND-5 WALK-AROUND: an indented lead-in glued to a bullet,
+                     // which the round-4 narrowing still skipped.
+                     "- An ordinary question bullet?"
+                     + "\n  **Call your team the same day for any of these:**"
+                     + "\n\n- A fever.\n- New weakness.",
                  })
         {
             var plantedLines = Regex.Split(planted, @"\r?\n");
             var fired = false;
             for (var i = 0; i < plantedLines.Length && !fired; i++)
             {
-                if (marker.IsMatch(plantedLines[i]) || !urgency.IsMatch(plantedLines[i]))
+                // THE SAME SELECTION RULE AS THE REAL LOOP, including the glue check.
+                // /review round 4: this canary re-implemented selection and had already
+                // drifted — it omitted the continuation skip entirely, so it could not
+                // have caught the hole that skip opened.
+                if (marker.IsMatch(plantedLines[i])
+                    || GluedToAMarker(marker, continuation, plantedLines, i)
+                    || !urgency.IsMatch(plantedLines[i]))
                 {
                     continue;
                 }
 
-                fired = plantedLines.Skip(i + 1).Count(l => marker.IsMatch(l)) >= 2;
+                fired = IntroducesAList(plantedLines, i);
             }
 
             Assert.True(fired, $"the escalation-shape guard cannot see this list:\n{planted}");
+        }
+
+        // AND THE NEGATIVE CANARY, because every shape above proves the guard can FIRE and
+        // none proved it can stay quiet. A question list whose wrapped continuation carries
+        // an urgency word is the false positive this helper produced on
+        // /tumors/spinal-cord-tumor, and it is the shape the `continuation` skip exists for.
+        foreach (var innocent in new[]
+                 {
+                     "- Which symptoms mean calling you today, which mean calling right away, and\n"
+                     + "  which mean the emergency room?\n- Who do I call after hours?\n"
+                     + "- How long will the scans go on?",
+                 })
+        {
+            var innocentLines = Regex.Split(innocent, @"\r?\n");
+            for (var i = 0; i < innocentLines.Length; i++)
+            {
+                if (marker.IsMatch(innocentLines[i])
+                    || GluedToAMarker(marker, continuation, innocentLines, i)
+                    || !urgency.IsMatch(innocentLines[i]))
+                {
+                    continue;
+                }
+
+                Assert.Fail("the escalation-shape guard reads a wrapped question bullet as a "
+                    + $"tier lead-in:\n{innocentLines[i]}");
+            }
         }
     }
 
@@ -1088,10 +1192,39 @@ internal static class CuratedPage
             + @"|irritab\w*|dizz\w*)\b",
             RegexOptions.IgnoreCase);
 
+        // WI-543 ADDED THE EMERGENCY-ROOM TIER, AND IT WAS A REAL HOLE. This set knew
+        // ambulance, right-away and same-day but NOT the strongest instruction the corpus
+        // gives — so a paragraph telling the reader to go to the emergency room counted as
+        // having no tier at all, and the guard demanded a WEAKER phrase before it was
+        // satisfied. Counted rather than assumed before widening it (§12.8): that wording
+        // is used as a tier in at least eight files, including `blocks/escalation.md`
+        // itself ("go to the emergency department"), /tumors/pituitary-tumor,
+        // /tumors/craniopharyngioma, /treatments/craniotomy, /treatments/shunts,
+        // /tumors/meningioma, /tumors/brain-metastases and /start.
+        //
+        // This widens what counts as ANSWERED, which is the permissive direction — so it
+        // is justified only because every added phrase is a stronger instruction than the
+        // ones already here, never a weaker one. WI-543 declined to add "seen quickly" for
+        // exactly that reason.
+        // NEGATED TIERS DO NOT COUNT AS ANSWERS. The match was mention-based, so
+        // "this is not an ambulance call" or "rather than going to the emergency room"
+        // satisfied a SAFETY guard by DENYING the tier. That hole predates WI-543 --
+        // blocks/escalation.md ships "is not an ambulance call" on all 19 hubs -- but
+        // adding the emergency-room tier made it live on a page that calls this helper,
+        // so it is closed here rather than left for the next item to meet.
         var answered = new Regex(
-            @"also come from the tumor|same-day call|call your team the same day"
-            + @"|right away|right-away|ambulance",
+            @"(?<!\b(?:not|rather than|instead of|no need)\b[^.]{0,40})"
+            + @"(?:also come from the tumor|same-day call|call your team the same day"
+            + @"|right away|right-away|ambulance|emergency room|emergency department)",
             RegexOptions.IgnoreCase);
+
+        // PROVED ABLE TO TELL THEM APART, because a tier guard that cannot see a negation
+        // is the failure this whole helper exists to prevent (§12.8, WI-523's canary rule).
+        Assert.Matches(answered, "Weakness that keeps getting worse means the emergency room now.");
+        Assert.Matches(answered, "That is a same-day call.");
+        Assert.DoesNotMatch(answered,
+            "The organizations ask you to be seen rather than to go to the emergency room.");
+        Assert.DoesNotMatch(answered, "A seizure that stops on its own is not an ambulance call.");
 
         var examined = new List<string>();
         for (var i = 0; i < paragraphs.Count; i++)
