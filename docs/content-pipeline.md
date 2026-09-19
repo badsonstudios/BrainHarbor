@@ -4494,6 +4494,95 @@ ones that looked most transferable were the ones that flipped.
   this item's own mutation table: two reds for one property **overstate coverage
   in exactly the direction a break harness exists to measure honestly.**
 
+#### WI-541 — acoustic neuroma, and the defect no gate in the corpus could see
+
+- **THERE ARE TWO DIFFERENT RESTATEMENT GUARDS IN THIS CORPUS, AND A CLEAN REPORT
+  FROM ONE SAYS NOTHING ABOUT THE OTHER.** `CuratedPage.AssertDoesNotRestateTheCorpus`
+  drops **whole** markdown links and the ask-list before comparing. The page-local
+  `Shingles` copied into many test files strips only the link *target*, so **link
+  TEXT survives**, and it keeps digits. This item scored **zero** on the shared
+  guard and still turned `/treatments/watch-and-wait` and `/tumors/meningioma` red
+  — through a door's link text and an ask-list question. The offline replica
+  modelled one guard and reported "0 collisions", which was **true and
+  incomplete**. Model every guard that will read the page, or say which one you
+  modelled.
+
+- **AN UNCLOSED EMPHASIS MARKER IS INVISIBLE TO EVERY EXISTING GATE.** ContentCheck
+  measures reading grade; both restatement guards drop `[*_]`; every page suite's
+  `Plain` helper strips them *deliberately* (WI-526); the render tests read
+  flattened HTML. So `**` that opens and never closes ships two literal asterisks
+  to a patient while **2,249 tests stay green** — which is exactly what this page
+  did, in prose added by a `/review` fix. Now guarded site-wide
+  (`NoCuratedPageOrBlockLeavesAnEmphasisMarkerUnclosed`), and made site-wide **on
+  evidence**: the property was first run offline over a strict superset of the
+  guarded files, with a planted positive control, and found zero elsewhere.
+
+- **A PRE-CHECK ANSWERS THE ONE QUESTION IT IMPLEMENTS, AND ITS SILENCE IS NOT
+  GENERAL CLEARANCE.** Both of this item's late defects — a British spelling and
+  that unclosed marker — rode in on the *same* round-2 prose, which had been
+  pre-checked for restatement collisions and come back clean. A collision probe
+  has nothing to say about spelling, register or well-formed markdown. New prose
+  must clear **every** gate it will eventually meet, not the one that was
+  convenient to run.
+
+- **OVER-ESCALATION IS A DEFECT, NOT A SAFE DEFAULT.** This page's sources produced
+  a **third distinct emergency shape**: exactly ONE rule, routed to primary care,
+  urgent care or an ENT and explicitly **not** 911 — unlike the tiers on
+  `/tumors/pituitary-tumor` and `/tumors/craniopharyngioma`. Brainstem compression
+  and hydrocephalus are deliberately **not** tiered, because EANO contains no
+  patient-facing urgency guidance at all and two patient-facing sources say the
+  opposite. Modelling the neighbour's tier would have invented an emergency.
+
+- **CITE THE DOCUMENT FOR WHAT IT SAYS, NOT FOR WHAT IT IS AUTHORITATIVE ABOUT.**
+  WHO CNS5 is the naming authority and **prints no grade for schwannoma**. So the
+  grade is attributed in two halves: the Arabic numeral to CNS5's convention
+  change, the grade itself to the clinical references. Citing the naming document
+  for the grade would be a citation that does not support the claim in the form it
+  is made (§12.14) — the same defect class as the barred citation this item removed.
+
+- **NEVER APPLY A GLOBAL WHITESPACE TRANSFORM TO A WHOLE CONTENT FILE.** A
+  `[ \t]{2,}` collapse intended for prose flattened **all** YAML indentation and
+  four list continuations; ContentCheck failed and the chained script correctly
+  refused to run the suite. `git checkout` was unavailable — the file was
+  uncommitted, so restoring it would have destroyed the whole item — so the repair
+  was surgical, by YAML's own rules. The damage-measuring tool then produced its
+  own false positive, flagging the page title as wrongly indented.
+
+- **EMPHASIS MARKERS INSIDE TOKENS DEFEAT LITERAL ANCHORS.** ``Call **911**``,
+  ``and **trouble with balance**.`` and ``grow again**, from a piece`` each
+  defeated an exact-match edit, aborting two runs. Fixed as a **class**, with a
+  matcher permitting `[*_]*` between every character, rather than three times by
+  hand. Related: **validate every anchor before writing any of them** — a partial
+  edit run leaves the file in a state no tool was written to expect.
+
+- **WRITE BREAK MUTATIONS FROM THE TEST BODY, NEVER THE TEST NAME.** WI-540's only
+  survivor came from the one mutation written off a test's *comment*, which
+  described the guard incorrectly. All 27 guard bodies here were read before an
+  anchor was chosen. A name is a summary, and a summary is not a specification.
+
+- **THE EXIT-CODE TRAP, FROM THE OTHER SIDE.** A trailing `grep -c` turned a fully
+  green run — ContentCheck 273/0, suite 2,249/2,249 — into a `failed`
+  notification, because grep found no matches and returned 1. The grep was also
+  **meaningless**: `dotnet test` does not print passing test names at default
+  verbosity, so it could never have matched. The honest evidence that the two new
+  guards ran was the total moving 2,247 → 2,249. Read the verdict from the log,
+  and check that a check *could* have succeeded.
+
+- **PROOF: 133 break mutations, every one red on LF AND on CRLF, first run** — no
+  survivors, no ambiguous anchors, no no-ops, across the page, two shared blocks
+  and the sibling this hub routes to. The CRLF half is not ceremony: a test whose
+  regex cannot match a CRLF checkout fails *for free*, so the harness would report
+  `ok` for every mutation aimed at it (§12.8, WI-528). Both halves passed, so the
+  reds are real reds.
+
+- **AND 8 RENDER GUARDS PROVED BY HAND, because the harness structurally cannot.**
+  It runs `--no-build`, and the host serves Content copied to the test output at
+  BUILD time, so a source mutation is invisible to a render test. Each was proved
+  the long way — mutate, rebuild, confirm red, restore, rebuild. Two of the eight
+  exist only at that layer: an INCLUDED block that stops composing, and an
+  EXCLUDED block composed back in. The content-side guard reads directive *names*
+  out of the source file, so it would stay green if composition itself broke.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

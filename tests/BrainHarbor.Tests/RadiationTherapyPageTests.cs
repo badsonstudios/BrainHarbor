@@ -805,6 +805,67 @@ public sealed class CuratedProseHousekeepingTests
             .GroupBy(f => f.Slug)
             .Select(g => g.First());
 
+    /// <summary>
+    /// NOTHING ELSE IN THIS CORPUS CAN SEE AN UNCLOSED EMPHASIS MARKER.
+    /// ContentCheck measures reading grade; both restatement guards drop
+    /// <c>[*_]</c> before comparing; every page suite's <c>Plain</c> strips
+    /// them deliberately (WI-526); and the render tests read flattened HTML.
+    /// So a <c>**</c> that opens and never closes renders as two literal
+    /// asterisks in a patient's face while the whole suite stays green.
+    /// </summary>
+    /// <remarks>
+    /// Added by WI-541, which shipped exactly that defect past 2,247 passing
+    /// tests: a /review fix rewrote a sentence and swallowed its closing
+    /// marker. The prose HAD been pre-checked — for restatement collisions,
+    /// and separately for British spelling. Neither has anything to say about
+    /// well-formed markdown. A pre-check answers the one question it
+    /// implements; a clean result from it is not general clearance (§12.8).
+    ///
+    /// Made site-wide rather than page-local ON EVIDENCE, not on optimism: the
+    /// same property was first run offline over <c>Content/**/*.md</c> — a
+    /// strict superset of <c>ReaderFacingFiles()</c> — with a planted positive
+    /// control to prove the scan could fire, and found zero elsewhere. Blocks
+    /// matter most here: an unclosed marker in <c>Content/blocks/</c> is an
+    /// unclosed marker on eighteen tumor hubs at once.
+    /// </remarks>
+    [Fact]
+    public void NoCuratedPageOrBlockLeavesAnEmphasisMarkerUnclosed()
+    {
+        // ASSERTS THE PROPERTY, NOT A PHRASING (§12.8: assert position,
+        // adjacency or coverage, never the one wording an author imagined).
+        // Emphasis cannot span a blank line in markdown, so an odd count of a
+        // marker inside a single paragraph means it never closed — which holds
+        // for any wording any later item writes.
+        var offenders = new List<string>();
+        var scanned = 0;
+
+        foreach (var (slug, text) in ReaderFacingFiles())
+        {
+            foreach (var paragraph in Regex.Split(CuratedPage.Body(text), @"\r?\n\s*\r?\n"))
+            {
+                // An inline code span may legitimately carry a lone asterisk.
+                var stripped = Regex.Replace(paragraph, "`[^`]*`", " ");
+                scanned++;
+
+                foreach (var marker in new[] { "**", "%%" })
+                {
+                    if (Regex.Matches(stripped, Regex.Escape(marker)).Count % 2 != 0)
+                    {
+                        offenders.Add($"{slug}: {marker} unclosed — {CuratedPage.Flatten(paragraph)}");
+                    }
+                }
+            }
+        }
+
+        Assert.Empty(offenders);
+
+        // THE GUARD MUST BE ABLE TO FAIL, on both counts: that an odd number of
+        // markers is actually detected, and that it is not scanning nothing at
+        // all. A balance check over an empty corpus passes forever.
+        Assert.Single(Regex.Matches("**this one never closes.", @"\*\*"));
+        Assert.True(scanned > 100, $"only {scanned} paragraphs reached the guard");
+    }
+
     [Fact]
     public void NoCuratedPageBlockOrGlossaryEntryUsesABritishForm()
     {
