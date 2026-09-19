@@ -265,9 +265,16 @@ public sealed class PediatricBrainTumorPageContentTests
     [Fact]
     public void TheSiblingPageThatGlossesTheNewGlossaryTermInlineAlsoSuppressesIt()
     {
-        // WI-538 added glossary/embryonal-tumor.md at its SECOND use, so both pages that
-        // gloss the term inline must suppress it or the tooltip prints the definition
+        // WI-538 added glossary/embryonal-tumor.md at its SECOND use, so every page that
+        // glosses the term inline must suppress it or the tooltip prints the definition
         // directly above the definition (§12.8, WI-535).
+        //
+        // IT SAID "BOTH PAGES" UNTIL WI-544 (/review round 11). THREE pages gloss it now:
+        // this hub, /tumors/medulloblastoma, and /tumors/atrt, which WI-544 added with
+        // its own suppression pinned in its render test. The ASSERTION below is
+        // unaffected -- it checks this page and the one sibling it names -- so only the
+        // reason drifted. That is still worth correcting: a stale reason ships as easily
+        // as a stale claim (WI-536), and a count in prose is the kind nobody re-checks.
         //
         // The marker on the sibling is deliberately NOT beside the term: a marker inside
         // that page's "What is a medulloblastoma?" section breaks its own
