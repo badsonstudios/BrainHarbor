@@ -4789,6 +4789,45 @@ ones that looked most transferable were the ones that flipped.
   editor would "correct" believing they were fixing an omission, and an exclusion
   leaves no trace on the page, so it can only be pinned from the other side.
 
+- **RUN THE SMOKE PROBE *BEFORE* THE DEPLOY, AND REQUIRE IT TO FAIL.** New here, and
+  it should be standard. Against live production, with the stub still served, the
+  retargeted probe printed **controls ok** and then **exit 1 with 23 failures** —
+  the hub under its floor, no growth, 13 fragments missing, both re-tiered siblings
+  static. Two hours later the identical command against the identical host printed
+  `smoke clean`. **A probe that has never been seen to fail has not been shown to
+  be capable of failing**, and "it passed" is otherwise indistinguishable from "it
+  cannot tell". This is the falsification half of the CONTROLS idea, which only
+  ever proved the probe could match text that was *there*.
+
+- **AND THAT PRE-DEPLOY RUN IMMEDIATELY FOUND THREE DEAD FRAGMENTS.** Of 16 positive
+  probes on the hub, **three did not fail** when the page was still a stub:
+  `This is not a brain tumor`, `Call an ambulance` and `You are allowed to ask
+  questions`. The stub already said the first and already composed the blocks
+  carrying the other two. They still prove composition happened, but they **cannot
+  distinguish a landed deploy from an unchanged one**, and had the whole probe been
+  built from strings of that kind it would have reported a clean pass over a deploy
+  that never arrived. A positive fragment is only evidence of a deploy if the page
+  did not already contain it.
+
+- **A THIRD VERDICT-TOOL DEFECT, AND THE WORST-BEHAVED ONE YET.** §12.8 records two
+  exit-code traps; this is the third in the family. Choosing smoke fragments, bash
+  `grep -F` **crashed** — SIGABRT, exit 134 — printed nothing at all, and the
+  `| wc -l` it fed reported a clean `0` for **every** string, including
+  "emergency room", which occurs eight times in the file, and "911", which the
+  composed escalation block says out loud. Reading those zeros as absences would
+  have banned text that is legitimately present and failed a healthy deploy. **A
+  dying tool piped into a counter is indistinguishable from a real negative.**
+  The same session also showed `gy` matching five times inside "surgery" and
+  "oncology". Count fragments with the matcher the probe itself will use, and never
+  pipe a verdict-bearing tool (§12.8, WI-541 and WI-542).
+
+- **A TRANSIENT 5xx WILL BE READ AS A FAILED DEPLOY.** The pre-deploy run reported
+  HTTP 500 on `/` and `/research`; three re-checks fifteen seconds apart returned
+  200 with byte counts **identical to the baseline**, so the fault was the probe's
+  own burst of requests, not the site. The probe now retries once on 5xx **and
+  prints that it did**, so a flaky response cannot masquerade as a failed deploy
+  and a genuinely broken deploy cannot hide behind the retry.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
