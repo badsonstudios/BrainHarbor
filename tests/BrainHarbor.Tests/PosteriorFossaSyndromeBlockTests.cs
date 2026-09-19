@@ -41,8 +41,15 @@ public sealed class PosteriorFossaSyndromeBlockTests
     // on nobody. It is included there rather than left to the two tumor hubs because that
     // page's reader often arrives BEFORE the tumor has a name, and the carve-out (a sudden
     // loss of speech stays an ambulance call) is the half that cannot wait for a diagnosis.
+    // WI-544: /tumors/atrt is the fourth includer, and it is included WITH A HEDGE that
+    // the others do not need. About half of these tumors sit low at the back of the
+    // brain, so the block's conditional opening applies to a large share of its readers.
+    // BUT the block's own St. Jude source names medulloblastoma, astrocytoma and
+    // ependymoma and DOES NOT MENTION ATRT -- verified by direct question against the
+    // live page. So the ATRT hub carries the block for the syndrome and states no
+    // ATRT-specific rate, because the block's source cannot support one (§12.4 R2).
     private static readonly string[] IncludingHubs =
-        ["ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
+        ["atrt", "ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check.</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];
