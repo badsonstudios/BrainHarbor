@@ -162,11 +162,49 @@ public sealed class MeningiomaPageContentTests
         // /tumors/brain-metastases now carries the same sentence, because
         // cancer pressing on the cord is the same emergency whichever tumor is
         // doing the pressing. Three pages, one wording.
+        // WI-543 RE-TIERED THE SECOND SENTENCE. It said "a reason to be seen quickly,
+        // not to wait for the next appointment" — and [ESCALATION] composes immediately
+        // below this passage with "New weakness in the face, an arm or a leg" in its
+        // SAME-DAY list. Page weaker than the block it sits above, for the same sign, on
+        // the same screen. That is the defect WI-536 deferred, and it was live here.
+        // TRIMMED TO THE RUN STILL SHARED. /review round 4 counted it: the longer entry
+        // carried 53 content windows and TWENTY of them exempted nothing at all, clustered
+        // precisely on the clause this item re-tiered — re-wording the same-day sentence
+        // made it unique to this page while the entry above still excused it. An allowlist
+        // is only allowed to cover prose two pages genuinely share.
+        // CARRIED THROUGH THE SEAM. Re-tiering made the MIDDLE of this passage differ
+        // between the two pages while both of its joins stayed identical: every tier
+        // sentence still opens "New weakness or". An entry that stops at "bladder or bowel"
+        // leaves the eight-word windows straddling that join uncovered, which is the
+        // straddling-window case this array already documents elsewhere.
         "new weakness in the legs, a change in how you walk, numbness around the "
-        + "saddle area, and any new trouble with your bladder or bowel. **New weakness "
-        + "or new bladder trouble is a reason to be seen quickly, not to wait for the "
-        + "next appointment.** Do not wait for it to get bad first, because the early "
-        + "signs are often vague ones. [Spinal cord tumors](/tumors/spinal-cord-tumor)",
+        + "saddle area, and any new trouble with your bladder or bowel. New weakness or",
+
+        // TWO ENTRIES, NOT ONE, because WI-543 re-tiered the sentence BETWEEN them. The
+        // red-flag list above and this counterweight below are both still word-for-word
+        // shared with /tumors/brain-metastases; the tier sentence separating them is now
+        // this page's own. No contiguous string can skip a middle, so the run is split.
+        // A single trimmed entry dropped this half and reddened both pages' suites.
+        "the next appointment. Do not wait for it to get bad first, because the early "
+        + "signs are often vague ones",
+
+        // THE CAUDA-EQUINA CARVE-OUT, added at WI-543 /review round 1 and shared word for
+        // word with /tumors/spinal-cord-tumor. §12.10 again: these two signs mean the
+        // emergency room for a spinal meningioma reader as much as for a cord-tumor
+        // reader, so they must not be two wordings of one threshold.
+        // THE PHRASE, NOT THE SENTENCE. WI-543 /review round 3: the first version
+        // registered the whole 27-word sentence, which exempted windows this page shares
+        // with nothing.
+        //
+        // THE MECHANISM NOTE HERE WAS WRONG AND IS CORRECTED (/review round 4). This file
+        // does NOT use `CuratedPage.AssertDoesNotRestateTheCorpus`'s `entry.Contains(...)`
+        // filter — it builds `AllowedShingles` from `Shingles(entry, 8)` and tests set
+        // membership. The concern transfers exactly; the mechanism did not, and a comment
+        // describing machinery the code does not use is its own defect.
+        //
+        // THIS ENTRY IS EXACTLY EIGHT TOKENS, so it yields exactly ONE shingle: drop a
+        // word and it silently exempts nothing. That is what the loop below is for.
+        "numbness around the area you would sit on",
 
         // The gate's closing move, likewise prescribed rather than invented:
         // what shapes a reader's own situation is what their team can see and a
@@ -177,6 +215,53 @@ public sealed class MeningiomaPageContentTests
 
     private static readonly HashSet<string> AllowedShingles =
         [.. DeliberatelyShared.SelectMany(s => Shingles(s, 8))];
+
+    [Fact]
+    public void EveryDeliberatelySharedEntryExemptsSomethingThisPageActuallyHas()
+    {
+        // WI-543 /review round 4. An entry that no longer matches the page exempts NOTHING
+        // while still reading as a live exemption, and an entry shorter than eight tokens
+        // yields no windows at all. Both failures are invisible: the restatement test just
+        // stays green.
+        //
+        // COMPARED THROUGH `Shingles`, NOT THROUGH A RAW SUBSTRING, and the first version
+        // of this test got that wrong. Entries are written in READER-FACING form — "Get
+        // help now if you want to talk to a person today." — while the page carries
+        // "[Get help now](/get-help-now) if you want...". `ReaderText` does not strip link
+        // syntax; THIS FILE'S `Shingles` strips whole markdown links before windowing,
+        // which is why the allowlist works at all. Asserting a raw `Contains` therefore
+        // failed on a perfectly good entry.
+        //
+        // THAT IS TRUE OF THIS FILE AND NOT OF EVERY PAGE: BrainMetastasesPageTests' own
+        // `Shingles` strips nothing and tokenises a link target into words, so the same
+        // test there tolerates entries whose windows differ. A comment describing
+        // machinery a file does not use is the defect class this item spent five rounds on.
+        //
+        // AND THE ASSERTION IS THAT THE RUN IS SHARED, NOT MERELY PRESENT. An entry that
+        // matches only this page exempts a collision that does not exist, which is the
+        // OVER-BROAD direction — the one that hides real collisions, and the one rounds 2,
+        // 3 and 4 each had to correct by hand. Checking it here makes the suite do that
+        // arithmetic every run instead.
+        var mine = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+
+        var elsewhere = Directory
+            .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
+            .Where(f => !f.EndsWith("meningioma.md", StringComparison.Ordinal))
+            .Concat(Directory.EnumerateFiles(CuratedPage.BlocksRoot, "*.md"))
+            .SelectMany(f => Shingles(CuratedPage.ReaderText(File.ReadAllText(f)), 8))
+            .ToHashSet();
+
+        foreach (var entry in DeliberatelyShared)
+        {
+            var windows = Shingles(entry, 8).ToList();
+            Assert.True(windows.Count > 0,
+                $"a deliberately-shared entry is under eight words, so it exempts nothing: {entry}");
+            Assert.True(windows.Exists(mine.Contains),
+                $"a deliberately-shared entry matches nothing on this page any more: {entry}");
+            Assert.True(windows.Exists(w => mine.Contains(w) && elsewhere.Contains(w)),
+                $"a deliberately-shared entry exempts nothing any other file carries: {entry}");
+        }
+    }
 
     [Fact]
     public void TheThreeSlowerGrowthReportFeaturesAppearNowhere()
@@ -1059,7 +1144,7 @@ public sealed class MeningiomaPageContentTests
                  {
                      "new weakness in the legs", "a change in how you walk",
                      "numbness around the\nsaddle area", "bladder or bowel",
-                     "not to wait for the next\nappointment",
+                     "not something to leave until the next\nappointment",
                  })
         {
             Assert.Contains(CuratedPage.Flatten(owed), line, StringComparison.OrdinalIgnoreCase);
@@ -1068,14 +1153,50 @@ public sealed class MeningiomaPageContentTests
             line);
         Assert.Contains("/tumors/spinal-cord-tumor", line, StringComparison.Ordinal);
 
-        // ONE CLAIM, ONE STRENGTH. The sibling now carries the identical
-        // sentence, read rather than assumed (§12.10).
+        // THE SIBLING NO LONGER CARRIES THE IDENTICAL SENTENCE, AND THAT IS WI-543's
+        // RULING RATHER THAN DRIFT. It settled the deferred split and found that it was
+        // never one claim: metastatic cord compression carries an emergency-room rule
+        // (ACS, OncoLink), a PRIMARY tumor in or beside the cord does not, and a fast
+        // carve-out applies to both. /tumors/spinal-cord-tumor serves both populations and
+        // so splits by scenario.
+        //
+        // THIS PAGE WAS RE-TIERED TO SAME-DAY, AND THE EARLIER COMMENT HERE WAS WRONG.
+        // It read "THIS PAGE'S WORDING IS UNCHANGED, DELIBERATELY... 'seen quickly' is
+        // what the sources support" — which recorded an omission as a ruling, the second
+        // time in one item that a comment did that, and in the file where it had just been
+        // catalogued.
+        //
+        // The argument that broke it: a spinal meningioma IS a primary tumor beside the
+        // cord, which is exactly the population /tumors/spinal-cord-tumor tiers as
+        // same-day. And [ESCALATION] composes directly beneath this passage carrying
+        // "New weakness in the face, an arm or a leg" in its same-day list. So "seen
+        // quickly" was weaker than the block on its own page AND weaker than the sibling
+        // for one population and one sign. It cannot be true here and false there.
+        //
+        // WI-528's "three pages, one wording" is therefore RETIRED ON PURPOSE rather than
+        // broken quietly: it was built when all three pages were treated as one claim, and
+        // WI-543's whole finding is that they are not. /tumors/brain-metastases keeps the
+        // older sentence because its population is metastatic and its own passage opens on
+        // "its own emergency" and closes on the emergency-room route.
         var sibling = CuratedPage.Flatten(CuratedPage.ReaderText(
             CuratedPage.Read("tumors", "spinal-cord-tumor.md")));
-        Assert.Contains(
-            "New weakness or new bladder trouble is a reason to be seen quickly, not to wait",
-            sibling, StringComparison.Ordinal);
-        Assert.Contains("Do not wait for it to get bad first", sibling, StringComparison.Ordinal);
+        Assert.Matches(new Regex(
+            @"If your tumor started here[^.]{0,120}same-day call",
+            RegexOptions.IgnoreCase), sibling);
+        Assert.Matches(new Regex(
+            @"one picture is emergency care now, whichever kind of tumor you have",
+            RegexOptions.IgnoreCase), sibling);
+
+        // AND THIS PAGE CARRIES THE CARVE-OUT ITSELF, which is the half WI-543's first
+        // draft dropped. /review round 1 blocker: the plan said this page "needs the
+        // cauda-equina carve-out", the page was never touched, and the comment above was
+        // written as though leaving it out had been a decision. A spinal meningioma can
+        // cause that picture — StatPearls names primary CNS cancer among its causes — so
+        // the two signs that mean the emergency room belong HERE, not only on the hub this
+        // page routes into. A reader who never follows the link must still get them.
+        Assert.Matches(new Regex(
+            @"New trouble controlling your bladder or bowel, or numbness\s+around the area "
+            + @"you would sit on, is the emergency room now", RegexOptions.IgnoreCase), line);
 
         // THE BLOCK ITSELF IS UNTOUCHED. Editing Content/blocks/escalation.md
         // to carry a spinal line would put it on every glioma hub, where it is

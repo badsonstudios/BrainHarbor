@@ -206,45 +206,88 @@ public sealed class SpinalCordBlockTests
     }
 
     [Fact]
-    public void TheStrengthSplitWithTheSiblingHubsIsPinnedUntilWi543SettlesIt()
+    public void TheStrengthSplitIsSettledAsTwoClaimsAndBothStrengthsArePinned()
     {
-        // /review round 3 BLOCKER, taken as an enforced deferral rather than a silent one.
+        // WI-536 DEFERRED THIS AS "ONE CLAIM, TWO STRENGTHS". WI-543 SETTLED IT, AND THE
+        // ANSWER IS THAT IT WAS NEVER ONE CLAIM. Two claims wore one sentence, so levelling
+        // the three hubs would have been as wrong as leaving them split:
         //
-        // This block files new leg weakness, numbness, back or neck pain and bladder or
-        // bowel trouble as RIGHT AWAY. Three live hubs carry a weaker sentence the corpus
-        // deliberately shares (MeningiomaPageTests' "ONE CLAIM, ONE STRENGTH" and
-        // BrainMetastasesPageTests' cord-compression test both pin it, each citing its own
-        // source). The gap is not uniform, and /review round 4 corrected the map:
-        // /tumors/meningioma and /tumors/spinal-cord-tumor are a full tier lower, while
-        // /tumors/brain-metastases already OPENS with "that is its own emergency" and only
-        // its second sentence is weaker. WI-543 should not re-tier a page that is already
-        // close to right. One claim at two strengths is §12.10's defect, and
-        // WI-536 is not the item that owns the subject: /tumors/spinal-cord-tumor is a
-        // stub, and WI-543 rewrites it (it will also need "in or pressing on the cord",
-        // because a meningioma sits BESIDE the cord rather than in it).
+        //   * METASTATIC cord compression carries the strong rule. ACS tells patients to
+        //     "call your doctor right away or go to the emergency room" and calls it "an
+        //     oncology emergency"; OncoLink says "Call 911 or your care team right away".
+        //   * A PRIMARY tumor in or beside the cord does not. NO patient-facing source
+        //     found applies an emergency rule to a named primary cord tumor outside the
+        //     cauda equina picture, and four that list the signs (AANS, ABTA, Columbia,
+        //     NCI PDQ) give no urgency instruction at all. Those are recorded absences.
+        //   * THE FAST CARVE-OUT APPLIES TO BOTH: new bladder or bowel trouble, saddle
+        //     numbness, or weakness worsening over hours to days is emergency care now.
         //
-        // So the split is asserted, not assumed. If either strength drifts, this fails and
-        // the next session has to decide rather than rediscover.
+        // The clincher sits inside ONE publisher: ACS says "right away or go to the
+        // emergency room" for cord COMPRESSION and only "see a doctor" on its own spinal
+        // cord TUMOR page. Evidence log: .claude/work_files/wi543/plan.md.
+        //
+        // SO THE HUBS ARE NOT LEVELLED. /tumors/meningioma keeps its wording, and that is a
+        // RULING rather than an omission: a meningioma sits beside the cord, is
+        // slow-growing, and its tier is what the sources support for that reader.
+        // /tumors/spinal-cord-tumor now splits by scenario because it owns the subject and
+        // serves both populations.
         const string SiblingTier =
             "New weakness or new bladder trouble is a reason to be seen quickly, not to wait";
 
+        // THE TWO SIBLINGS NO LONGER CARRY ONE WORDING, AND THAT IS THE SETTLEMENT RATHER
+        // THAN DRIFT. /review round 2: /tumors/meningioma is a PRIMARY tumor beside the
+        // cord — the same population /tumors/spinal-cord-tumor tiers as same-day — and its
+        // "seen quickly" sentence was also weaker than the [ESCALATION] block composing
+        // directly beneath it. It is re-tiered. /tumors/brain-metastases is METASTATIC, its
+        // passage opens on "that is its own emergency" and now closes on the emergency-room
+        // route, so its wording stands.
+        var meningioma = CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Read("tumors", "meningioma.md")));
+        Assert.Matches(new Regex(
+            @"New weakness or a\s+change in how you walk is a same-day call",
+            RegexOptions.IgnoreCase), meningioma);
+        Assert.DoesNotContain(SiblingTier, meningioma, StringComparison.Ordinal);
+
+        var metastases = CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Read("tumors", "brain-metastases.md")));
+        Assert.Contains(SiblingTier, metastases, StringComparison.Ordinal);
+
+        // AND THE HUB THAT OWNS THE SUBJECT CARRIES THE SPLIT, BOTH HALVES AND THE
+        // CARVE-OUT. Asserted as three separate properties, because a page that kept only
+        // the reassuring half would be §12.12's dangerous direction and would still pass a
+        // check for any one of them.
+        var cord = CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Read("tumors", "spinal-cord-tumor.md")));
+
+        Assert.Matches(new Regex(
+            @"If your cancer has spread to your spine[^.]{0,120}"
+            + @"calling your team\s+right away or going to the emergency room",
+            RegexOptions.IgnoreCase), cord);
+        // SAME-DAY, not "seen quickly": /review round 1 found the weaker wording was
+        // strictly below the composed escalation block's own same-day tier for the same
+        // sign, which recreated the very defect this test exists to close.
+        Assert.Matches(new Regex(
+            @"If your tumor started here[^.]{0,120}same-day call",
+            RegexOptions.IgnoreCase), cord);
+        Assert.Matches(new Regex(
+            @"one picture is emergency care now, whichever kind of tumor you have",
+            RegexOptions.IgnoreCase), cord);
+
+        // NONE OF THE THREE REACHES THIS BLOCK, which is what keeps a reader from meeting
+        // two strengths on one page. Asserted on the COMPOSED page rather than on direct
+        // include names (/review round 4): blocks nest up to five levels, so a sibling
+        // including a block that includes this one would leave a direct-name check green
+        // while the reader met both tiers. This states the property, not the mechanism.
         foreach (var slug in new[] { "spinal-cord-tumor", "meningioma", "brain-metastases" })
         {
-            var sibling = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read("tumors", $"{slug}.md")));
-            Assert.Contains(SiblingTier, sibling, StringComparison.Ordinal);
-
-            // And none of the three REACHES this block, which is what keeps a reader from
-            // meeting both strengths on one page. Asserted on the COMPOSED page rather
-            // than on direct include names (/review round 4): blocks nest up to five
-            // levels, so a sibling including a block that includes this one would leave a
-            // direct-name check green while the reader met both tiers. This states the
-            // property instead of the mechanism.
             var composed = CuratedPage.Flatten(
                 CuratedPage.Composed(CuratedPage.Read("tumors", $"{slug}.md"), $"tumors/{slug}"));
             Assert.DoesNotContain("right-away call, not a same-day one", composed, StringComparison.Ordinal);
         }
 
-        // The block's own tier, unchanged, so a change on either side fails here.
+        // The block's own tier, unchanged, so a change on either side fails here. WI-543
+        // did NOT re-tier this block: it ships on four hubs, three of which reach the spine
+        // by spread, and its own front matter records the over-triage there as knowing.
         Assert.Contains("right-away call, not a same-day one", CuratedPage.Flatten(Block), StringComparison.Ordinal);
     }
 

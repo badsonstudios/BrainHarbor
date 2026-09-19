@@ -323,11 +323,13 @@ Many meningiomas cause no symptoms at all.
 **If your meningioma is on your spinal cord, the list below is not yours.** The
 signs that matter there are different, and they are the ones doctors call red
 flags: new weakness in the legs, a change in how you walk, numbness around the
-saddle area, and any new trouble with your bladder or bowel. **New weakness or
-new bladder trouble is a reason to be seen quickly, not to wait for the next
+saddle area, and any new trouble with your bladder or bowel. **New weakness or a
+change in how you walk is a same-day call, not something to leave until the next
 appointment.** Do not wait for it to get bad first, because the early signs are
-often vague ones. [Spinal cord tumors](/tumors/spinal-cord-tumor) is the page
-for that half.
+often vague ones. **New trouble controlling your bladder or bowel, or numbness
+around the area you would sit on, is the emergency room now rather than an
+appointment.** [Spinal cord tumors](/tumors/spinal-cord-tumor) is the page for
+that half.
 
 [ESCALATION]
 

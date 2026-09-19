@@ -220,7 +220,9 @@ well as on the brain, and the signs are new weakness in the legs, a change in
 how you walk, numbness around the saddle area, and any new trouble with your
 bladder or bowel. **New weakness or new bladder trouble is a reason to be seen
 quickly, not to wait for the next appointment.** Do not wait for it to get bad
-first, because the early signs are often vague ones.
+first, because the early signs are often vague ones. **For you, that means
+calling your team right away or going to the emergency room, not waiting to see
+whether it settles.**
 [Spinal cord tumors](/tumors/spinal-cord-tumor) has the rest of it.
 
 [ESCALATION]

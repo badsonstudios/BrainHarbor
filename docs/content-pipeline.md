@@ -4696,6 +4696,99 @@ ones that looked most transferable were the ones that flipped.
   whole-brain-radiation deep link was used instead. Picking the obvious anchor
   would have looked like a broken script rather than a shared link.
 
+#### WI-543 — spinal cord tumor, and the split that was never one claim
+
+- **THE CONTRADICTION WAS TWO CLAIMS WEARING ONE SENTENCE.** WI-536 handed over a
+  "strength split": three hubs filed new weakness and bladder trouble as *a reason
+  to be seen quickly* while `blocks/spinal-cord.md` filed the same signs as *right
+  away, at any hour*, and the obvious reading is that one of them is wrong. Neither
+  was. **Metastatic cord compression and a primary tumor in the cord are different
+  populations with different sourced urgency**, and ACS grades them differently on
+  its own two pages — "call your doctor right away or go to the emergency room" for
+  cord compression, plain "see a doctor" on its spinal-cord-tumor page. Picking one
+  tier would have over-triaged one reader or under-triaged the other. **Before
+  reconciling two rules, check they are answering the same question.**
+
+- **A RECORDED ABSENCE IS EVIDENCE, AND IT HAS TO BE SCORED BEFORE YOU DRAFT.** No
+  fetched patient-facing source applies an emergency rule to a *named primary* cord
+  tumor outside cauda equina: AANS, ABTA, Columbia and NCI PDQ each list the signs
+  and give no urgency rule at all. That absence is what licensed the weaker half,
+  and it is only trustworthy because the 40-source table in `NOTES-urgency.md` was
+  filled in independently of the sentence it later justified. **An absence noticed
+  while defending a draft is a rationalisation; an absence recorded before drafting
+  is a finding.**
+
+- **RETIRE A SHIPPED RULE OUT LOUD, OR IT BREAKS QUIETLY.** WI-528's "three pages,
+  one wording" was built when all three pages were treated as one claim, so settling
+  the split necessarily retired it. It was rewritten with its reasoning, never
+  deleted — the backlog said *rewritten, not deleted*, and that instruction is the
+  only thing standing between "we changed our minds with evidence" and "a guard went
+  red and someone removed it".
+
+- **A SAFETY GUARD COUNTED A *NEGATED* TIER AS AN ANSWER.**
+  `AssertNoWarningSignIsNormalised` matched tier phrases by MENTION, so
+  *"this is not an ambulance call"* and *"rather than going to the emergency room"*
+  satisfied the very check that exists to prove a warning sign was tiered. The hole
+  predates this item — `blocks/escalation.md` ships "is not an ambulance call" on all
+  19 hubs — but adding the emergency-room tier made it live on a page calling the
+  helper. **A guard that cannot see a negation reads a denial as a promise.**
+
+- **WIDENING WHAT COUNTS AS *ANSWERED* IS THE PERMISSIVE DIRECTION.** The same set
+  knew ambulance, right-away and same-day but not the corpus's STRONGEST
+  instruction, so a paragraph sending the reader to the emergency room scored as
+  untiered and the guard demanded a *weaker* phrase before it was satisfied. Every
+  added phrase was checked to be stronger than the ones already there, counted
+  across eight files rather than assumed — and "seen quickly" was deliberately NOT
+  added, because that one is weaker.
+
+- **CommonMark STRIPS ONE TO THREE LEADING SPACES, SO AN INDENTED LEAD-IN RENDERS
+  IDENTICALLY.** A `continuation` skip in the escalation-list guard therefore made
+  it walk-around-able on six pages: indent the sentence and the guard stops looking
+  while the reader sees no difference. **Any guard keyed on source indentation is
+  keyed on something the reader never receives.**
+
+- **THE TESTS WERE WRONG ROUGHLY TWICE AS OFTEN AS THE PROSE THEY PROTECT** — about
+  24 defects in the guards against 12 in the page. And in `/review` rounds 2, 3 and
+  4 the blocker was *created by the previous round's fix*, which is WI-536's "a fix
+  is where the next defect comes from" arriving three times in one item.
+
+- **TWO MORE DEAD BANS, BOTH UNPROVABLE BY INSPECTION.** A recovery-figure ban read
+  `\b\d{1,3}\s*(?:%|percent)\b` — **`%` and the following space are both non-word
+  characters, so that `\b` could never match**, and the ban had been incapable of
+  firing since it was written. A citation ban read `^\s*-\s*url:.*cimpact` when
+  **neither of that paper's URLs contains "cimpact"** (`europepmc.org/article/MED/32502305`,
+  `pubmed.ncbi.nlm.nih.gov/32502305`), so it policed a form the real source cannot
+  take. Both were found by planted mutations, not by reading. Note the related trap:
+  the FIRST version of that ban forbade the bare word and fired on the §12.14
+  sentence naming cIMPACT-NOW as unreachable — **the prose the rule requires.**
+
+- **AND THE MIRROR CASE: A SURVIVOR THAT WAS A WEAK *MUTATION*.** The standing rule
+  presumes the guard is at fault, and twice here it was — which is exactly why the
+  third case needed evidence rather than assertion, because "weak mutation" is the
+  verdict that lets an item move on. `dip-paragraph-loses-its-tier` deleted a
+  *cross-reference* ("the emergency rule above still applies") while the sentence
+  after it still named three signs and said "means the emergency room now". Green
+  was correct. **The test to apply: does a reader of the mutated page still get the
+  instruction?** Rewritten to §12.12's dangerous direction instead — keep the signs,
+  downgrade the tier — and deliberately leaving the reassurance in place, because
+  stripping it would make the guard skip the paragraph and pass for the wrong reason.
+
+- **FOUR DEFECTS EXISTED ONLY IN THE COMPOSED PAGE**, again invisible to source
+  review: `[ESCALATION]` composing ABOVE the cord rule, `[CAUSES]` scoping below the
+  block, a tumor-board tooltip echo, and a duplicate `###` heading created by the
+  first of those fixes.
+
+- **PROOF: 53 break mutations, every one red on LF AND on CRLF**, every anchor
+  written from a test's BODY. Not first-run — three survivors, diagnosed
+  individually rather than in a batch, each fix RE-RUN against the mutation that
+  exposed it, because a fix that has not been re-run is not a fix.
+
+- **AND 6 RENDER GUARDS PROVED BY HAND**, including the block ruling from BOTH
+  directions — an INCLUDED block (`[TUMOR-BOARD]`) that stops composing, and the
+  EXCLUDED `[SPINAL-CORD]` composed back in. That exclusion is the one a later
+  editor would "correct" believing they were fixing an omission, and an exclusion
+  leaves no trace on the page, so it can only be pinned from the other side.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
