@@ -4583,6 +4583,119 @@ ones that looked most transferable were the ones that flipped.
   EXCLUDED block composed back in. The content-side guard reads directive *names*
   out of the source file, so it would stay green if composition itself broke.
 
+#### WI-542 — CNS lymphoma, and the guard that was green on the defect it forbade
+
+- **A TEST WAS GREEN ON A PAGE CARRYING EXACTLY THE DEFECT ITS NAME FORBADE, AND
+  THAT IS THE ITEM IN ONE LINE.** This page's front matter declares a contract:
+  every sentence saying a steroid shrinks this tumor must carry the fact that it
+  comes back, because this is the one page in the corpus where "the steroid
+  shrank it" can be misread as treatment. **Not one of the four shrink sentences
+  did it** — all four paired the shrinking with the DIAGNOSTIC harm and none with
+  the clinical one. The guard written to prevent precisely that collected the
+  matching sentences, asserted the list was non-empty, and **then never used the
+  list**, checking the pairing words against the whole page — where `comes back`
+  matches the `## If it comes back` heading. Name asserted a per-sentence
+  property; body asserted a page-wide OR.
+
+- **AND THAT SHAPE REPEATED FOUR TIMES IN ONE ITEM: A GUARD ASSERTING A *TOKEN*
+  WHERE THE CLAIM WAS A *STRUCTURE*.** The break harness found three more, each
+  red on neither line ending: `Contains("Primary")` survived deleting the bullet
+  that EXPLAINS what "primary" means, because the word persists inside the full
+  report name; a fever-rule guard searched the WHOLE sibling page for a phrase
+  that also lives in its caregiver section, so the section the deep link actually
+  lands on could be gutted while the guard stayed green; and an outlook-gate
+  guard asserted the bare word `spread`, which two later clauses keep alive after
+  the sentence that TEACHES it is deleted. **This is the dominant failure mode of
+  a phrase-matching suite.** Assert the sentence that carries the property, not a
+  word that co-occurs with it.
+
+- **THE EXIT-CODE TRAP, IN THE DANGEROUS DIRECTION.** §12.8 records WI-541 having
+  a trailing `grep` turn a green harness run into a `failed` notification. The
+  inverse is worse and happened here: `break-tests.py` printed
+  `BREAKS THAT DID NOT FAIL: …` for three survivors and **reported exit 0**,
+  because it had been piped through `tail` and **a pipeline's status is the last
+  command's**. "Exit 0" is exactly the evidence a close-out cites. **Never pipe a
+  verdict-bearing tool**; if you must, read `PIPESTATUS[0]`.
+
+- **THERE ARE THREE RESTATEMENT GUARDS IN THIS CORPUS, NOT TWO.** WI-541's
+  headline lesson was an undercount. `BrainMetastasesPageTests.Shingles` strips
+  **neither headings nor link targets**, so the §12.3-MANDATED caregiver heading,
+  plus the literal `caregiver` directive token, plus a page's opening two words
+  form one window. Both other probes reported **zero** and the full suite then
+  went red. Six hubs already open that section with "Three things" and three with
+  "Two things", invisible to one another because their own tests use a different
+  variant — so variant 3 is a tripwire that fires on whichever new page picks its
+  neighbour's opening words, not a guard. Modelled offline now; handed to `/pm` to
+  decide which variant is correct, because it cannot be all three.
+
+- **A GLOSSARY TOOLTIP CAN CONTRADICT THE SENTENCE IT FIRES IN, AND THAT IS A NEW
+  SHAPE.** WI-541 met the ECHO form, where a popover repeats the page's own
+  clause. Here a draft called leucovorin "a rescue medicine" — a glossary term
+  meaning *a seizure medicine kept at home, given up the nose or under the
+  tongue* — so a chemotherapy paragraph rendered with a definition that was
+  simply wrong for it. An echo wastes attention; **a contradiction tells the
+  reader something untrue**. A second instance: the shared `whole-brain-radiation`
+  entry gives the brain-metastases rationale, which is wrong where the treatment
+  is consolidation. **A definition written from the first page that needed it
+  becomes an assertion on every later page that uses the word.**
+
+- **EIGHT DEFECTS EXISTED ONLY IN THE COMPOSED PAGE.** Beyond the tooltips: a
+  block composed ~110 lines ABOVE the steroid section told the reader that
+  swelling medicines change how you feel "without the tumor being any different",
+  which is true on the other 23 hubs and false on the one page whose central
+  section exists to say so; a refusal paragraph falsified itself by claiming
+  "nothing tumor-specific is added beneath it" immediately above a tumor-specific
+  paragraph; and a caregiver lead reworded to escape a shingle left "Three of
+  them" with no antecedent once the block's seven items sat above it. **None was
+  visible to ContentCheck, any collision probe, or a green suite.**
+
+- **A FIX AIMED AT A MECHANICAL GATE IS THE MOST LIKELY KIND TO DAMAGE MEANING**,
+  and an APPEND-style edit cannot be verified by asserting the new text is
+  present. One remedy here appended where it should have replaced: the page
+  briefly said the same thing twice and **still carried the wording the review had
+  objected to**, while the suite, ContentCheck and all three probes stayed green
+  and the new assertions passed happily beside the sentence they were meant to
+  displace. **A guard for a replacement must assert the OLD wording is ABSENT** —
+  §12.14's banned-source rule, arriving through the editing tool.
+
+- **WHEN YOU WIDEN A BAN, RE-ASK WHETHER A CORRECT SENTENCE CONTAINS IT.** Three
+  times in this item a ban fired on correct prose: a grade ban forbade the page's
+  own *"there is no grade 1 to 4 for this one"*; an interval ban widened on review
+  advice immediately caught *"Blood is taken every day"*, which is ward routine
+  and §12.4 R1 orienting duration. The figures ban failed in the opposite
+  direction — its canary *"three times more likely"* matched no branch, so the ban
+  could not fire at all. **Only a canary distinguishes too-wide from too-narrow**,
+  and each exemption now asserts it still matches something, or it has quietly
+  become a hole.
+
+- **AN ABSENCE CLAIM IS A CLAIM, AND A DOSSIER'S IS NO BETTER THAN A REVIEWER'S.**
+  The research pack instructed *"do not attribute the steroid caveat to EANO — the
+  words corticosteroid and steroid do not appear in that guideline"*. **They do**,
+  as chemotherapy regimen components. The conclusion survived; the reason given
+  for it did not. A word-presence test is not an absence-of-guidance test.
+  Relatedly: the "4–5 day hospital stay" was lifted from a paper whose PURPOSE is
+  to move the treatment OUT of hospital, so the page says "usually" and names the
+  alternative rather than publishing a rule its only source argues against.
+
+- **PROOF: 119 break mutations, every one red on LF AND on CRLF** — no survivors,
+  no ambiguous anchors, no no-ops, across the page, two shared blocks, and BOTH
+  siblings this hub is coupled to. Not first-run: the first pass produced three
+  survivors, and all three were **weak guards rather than weak mutations**
+  (§12.8's WI-537 distinction), so the guards were rewritten rather than the
+  mutations weakened. The CRLF half is not ceremony — a test whose regex cannot
+  match a CRLF checkout fails *for free*, so the harness would report `ok` for
+  every mutation aimed at it (§12.8, WI-528).
+
+- **AND 7 RENDER GUARDS PROVED BY HAND, because the harness structurally cannot.**
+  It runs `--no-build`, and the host serves Content copied to the test output at
+  BUILD time, so a source mutation is invisible to a render test. Each was proved
+  the long way — mutate, rebuild, confirm red, restore, rebuild. Two exist only at
+  that layer: an INCLUDED block that stops composing, and an EXCLUDED block
+  composed back in. Note the anchor choice: `#fever-rule` appears TWICE on this
+  page, so the `count == 1` assertion would have aborted the run — the
+  whole-brain-radiation deep link was used instead. Picking the obvious anchor
+  would have looked like a broken script rather than a shared link.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

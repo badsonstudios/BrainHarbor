@@ -3754,9 +3754,46 @@ research items. Same shared contract throughout.
   a defect class **no gate in the corpus could see**: an unclosed `**` renders as
   literal asterisks while every guard strips emphasis before matching. Now guarded
   site-wide.
-- [ ] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
+- [x] **WI-542 CNS lymphoma, deepened** — biopsy, **not** resection, and the
   caveat that steroids given before biopsy can obscure the diagnosis (verify
-  before publishing). Depends on: WI-519.
+  before publishing). Depends on: WI-519. *(done 2026-09-18)*
+  A 47-line stub citing one BARRED source rewritten as a §12.3 hub: 14 sources,
+  **every load-bearing claim re-fetched and re-read against the live
+  publication**, which changed three things — the research pack's claim that
+  "corticosteroid" and "steroid" never appear in EANO is **false** (they appear as
+  regimen components; the conclusion survives, its stated reason does not); the
+  "4-5 day stay" comes from a paper arguing to move the treatment OUTPATIENT, so
+  the page says "usually"; and "presents faster than most brain tumors" is **not
+  carried at all**, because no source makes that comparison.
+  **THE FIRST HUB WHOSE TUMOR IS A BLOOD CANCER IN A BRAIN**, and nearly
+  everything unusual follows: **WHO CNS5 names the entity and prints NO grade
+  beside it**, so §12.3's section 2 answers that there is no brain-tumor grade
+  here rather than borrowing one; surgery is ruled out with its reason;
+  **a FOURTH distinct emergency shape** — the tumor supports no patient-facing
+  urgency rule at all (EANO asked directly: every recommendation is
+  clinician-addressed; the US patient organization gives none), so the only
+  urgent rule is the TREATMENT's chemotherapy fever rule, routed rather than
+  republished, publishing no temperature.
+  Blocks 4 in / 4 out. `[SPINAL-CORD]` was the arguable exclusion — this disease
+  IS defined over the cord — and is **handed to WI-543** with its reasoning.
+  Proof: **119 break mutations red on LF and CRLF**, **7 render guards
+  handproofed**, ContentCheck **273/0** at grade 5.7, suite **2,287/2,287**,
+  **all THREE restatement probes clean** with no allowlist, privacy scan 0
+  findings. Two `/review` rounds (1 blocker, then none).
+  **For `/pm`, six things the next items inherit.** (1) **There are THREE
+  restatement guards, not two** — `BrainMetastasesPageTests` strips neither
+  headings nor link targets, so a §12.3-MANDATED heading counts as restatement;
+  six hubs already share a window invisibly and it fires only on whichever new
+  page picks its opening words. Modelled in `wi542/heading-collisions.py`.
+  (2) Two shared glossary entries state a reason that is wrong on some including
+  pages (`whole-brain-radiation`, `stereotactic-biopsy`). (3) `enrolment` and
+  `carers` are missing from `CuratedPage.BritishForms`. (4) The causes block has
+  no seam for page-specific material. (5) Two reciprocal doors are owed to this
+  hub — `/treatments/chemotherapy`'s tumor list and `/tests/biopsy`, which carries
+  this tumor's rule generically without naming it; neither is test-blocked, the
+  cost is the sourcing. (6) The flattened-HTML render-guard defect is still live
+  in `CraniopharyngiomaPageTests` and `PituitaryTumorPageTests`; this item's copy
+  uses the corrected form. Lessons in §12.8.
 - [ ] **WI-543 Spinal cord tumor, deepened** — **settles the strength split WI-536
   handed over**: this hub, `/tumors/meningioma` and `/tumors/brain-metastases` file new
   weakness and bladder trouble as "a reason to be seen quickly", while
