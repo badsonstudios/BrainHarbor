@@ -3871,7 +3871,43 @@ research items. Same shared contract throughout.
   `AssertNoWarningSignIsNormalised` matches "number"; the pediatric hub carries a live
   `[MECHANISM]` contradiction; Nationwide prints the non-existent gene "SMARCB4"; PBTF
   and Alex's Lemonade return 403. Lessons in §12.8.
-- [ ] **WI-545 Chordoma** *(new page)*. Depends on: WI-513.
+- [x] **WI-545 Chordoma** *(new page)*. Depends on: WI-513.
+  A NEW §12.3 hub for a tumor that is **mostly not in the brain**: it grows in bone at
+  the skull base, the mobile spine and the sacrum, and about a third of readers have it
+  at the tailbone end. That one fact drove the block rulings: `[MECHANISM]`,
+  `[SPINAL-CORD]` and `[POSTERIOR-FOSSA-SYNDROME]` are all EXCLUDED (5 in / 3 out), each
+  asserted against the excluded block's own words, and the page answers §12.3's section
+  3 itself.
+  **Two central rulings.** (1) **The emergency rules are the signs', not the tumor's** —
+  22 chordoma pages were swept and not one gives a 911 or emergency-room rule,
+  re-confirmed first-hand on the Chordoma Foundation's own diagnosis page; every
+  instruction is attached to a SIGN and credited to whoever wrote it, and the absence is
+  SCOPED BY SUBJECT because NCCN returned HTTP 403 and is therefore neither presence nor
+  absence. (2) **"It must come out in one piece" is FALSE at the skull base** — en bloc
+  is the goal in the spine and sacrum, while the Chordoma Global Consensus Group says
+  clival resection "may be necessarily piecemeal", so the treatment section is split by
+  location and a guard pins the split by position.
+  **Proof:** suite **2,378/2,378**; ContentCheck **275/0** at grade **5.9**;
+  **71 break mutations red on LF AND CRLF (142/142)** after one first-run survivor that
+  was a weak guard, rewritten rather than the mutation weakened; **8 handproof cases
+  across all 7 render guards**; 33 guards total; all three restatement guards at **0
+  collisions**; four rendered reads; privacy scan **0 findings over 2,457 net-new
+  lines**. **12 sources re-fetched and recorded with verbatims**; six claims reworded
+  because the sources did not support the wording. One sibling page edited:
+  `/treatments/proton-therapy` gains the reciprocal door it never had, now guarded.
+  **Three `/review` rounds** (2 blockers, then 1, then none); **two findings REJECTED on
+  evidence** and recorded with their verbatims.
+  **The item's real lesson:** a pipeline's exit status is the last command's, so
+  `break-tests.py | tail` reported exit 0 over a genuine survivor — a lesson §12.8
+  already carried from WI-542 and which this item repeated anyway.
+  **For `/pm`:** `blocks/crosswalk.md` says "Three changes affect almost every report"
+  above only TWO bullets, and glues the NOS paragraph onto bullet 2 with no blank line,
+  so it renders as a run-on on all 19 including hubs; `EscalationBlockTests.Hubs` still
+  lists four hubs against ~19 includers, so `AHubIncludesTheBlockRatherThanRetypingIt`
+  never runs for this page; this is the third hub to inherit the escalation block's
+  Cancer Research UK and PCV citations into its visible source list; Pathology Outlines
+  returned HTTP 429 with a 24-hour lockout, so the retired-name slice is partial by
+  record; NCCN patient guidelines 403. Lessons in §12.8.
 - [ ] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar
   puncture, AFP/beta-hCG markers) as its primary path. Depends on: WI-513.
 - [ ] **WI-547 Hemangioblastoma** *(new page)*. Depends on: WI-513.

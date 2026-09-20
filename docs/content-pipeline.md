@@ -4891,6 +4891,89 @@ ones that looked most transferable were the ones that flipped.
   turned the suite red on correct prose — and the natural next move, weakening
   the ban, would have quietly undone the guard.
 
+#### WI-545 — chordoma, and the exit code that hid a real survivor
+
+- **A PIPELINE'S EXIT STATUS IS THE LAST COMMAND'S, AND THIS SECTION ALREADY SAID
+  SO.** §12.8 records WI-542 losing a run to `break-tests.py | tail`. This item
+  piped the same tool through `tail` anyway, and the harness reported **exit 0**
+  while its own output carried `BREAKS THAT DID NOT FAIL`. The survivor was real.
+  **Writing a lesson down is not applying it** — the second time that has been
+  recorded here, which is itself the finding. The fix is mechanical, so use it:
+  redirect to a file, `echo $?` on the next line, and read the file. Never let a
+  verdict reach you through a pipe.
+
+- **A SURVIVOR CAN BE A GUARD THAT A NEIGHBOURING ENTRY QUIETLY SATISFIES.** The
+  one survivor of 142 runs was `TheChondrosarcomaContrastKeepsAllThreeDiscriminators`,
+  which asserted `does not carry brachyury` against the WHOLE report section. The
+  **parachordoma** paragraph three bullets up says the same words for a different
+  look-alike, so the chondrosarcoma entry could lose its discriminator entirely
+  and the guard stayed green, on both line endings. A guard asserting a TOKEN
+  where the claim is a STRUCTURE, green on the defect its own name forbids. The
+  guard was rewritten to the bullet's scope, with a second assertion so the
+  parachordoma copy cannot stand in for it; the mutation was not weakened.
+
+- **SCOPE AN ABSENCE BY SUBJECT, NEVER BY PUBLISHER.** This page's central ruling
+  is a scored absence: no chordoma source gives a 911 or emergency-room rule. The
+  first draft wrote that as "we looked through the chordoma organizations and *the
+  hospital pages*, and not one of them says…" — and then quoted **three Cleveland
+  Clinic rules four paragraphs later**. The claim was not merely loose, it was
+  falsified by the page's own next screen. The true claim is about subject: no page
+  *about this tumor* gives the rule. Both the publisher-scoped form and its
+  anaphoric variant ("not one of them") are now banned with canaries.
+
+- **A COUNT AGAINST A STALE ARTEFACT IS NOT EVIDENCE, AND IT FAKES AN ABSENCE.**
+  `cauda equina` counted **0** in the rendered capture after the sentence naming it
+  had been added — because the capture predated the edit. An absence measured
+  against a stale file is indistinguishable from a real one. Re-capture before
+  counting, and treat any surprising zero as a question about the artefact first.
+
+- **A CORRECT FIX CAN CREATE A BIDIRECTIONAL RESTATEMENT COLLISION.** Review
+  correctly required "nearly always comes back in the same place" to be weakened to
+  the source's "usually" — and the corrected sentence landed on wording
+  `/tumors/craniopharyngioma` already carried, turning a SHIPPED page red. Twice in
+  this item a new page broke an old one (the first draft shared 61 windows across
+  eight files). The guard runs in both directions and an allowlist cannot fix it,
+  because the other page's test never reads this page's.
+
+- **SMOKE NEGATIVES ARE PER PAGE AND MUST BE COUNTED, NEVER CARRIED FORWARD.**
+  Four bans inherited from the previous item would each have failed a healthy
+  deploy here. The sharpest: `"advice, not an order"` was a NEGATIVE there because
+  that page EXCLUDED `[TUMOR-BOARD]`, and is a required POSITIVE here because this
+  page includes it. `"percent"`, `"tumour"` and `"Cancer Research UK"` are all
+  legitimately present, the last two inherited into the composed source list from
+  `blocks/escalation.md`. Count every candidate through the capture before banning it.
+
+- **THE FRONT MATTER IS A DECOY FOR MUTATION ANCHORS.** Two anchors matched twice
+  and the dry run refused them: the page records its sources' verbatims, so a body
+  phrase ("should be done from the back") and even the support phone number appear
+  above the body as well. `uniq` folds whitespace across the WHOLE file. Lengthen
+  the anchor to text that exists only in reader prose.
+
+- **A CLAIM SOURCED ON ANOTHER PAGE IS STILL UNSOURCED HERE, AND IT TOOK TWO ROUNDS
+  TO CLEAR.** Round 1 found load-bearing claims whose verbatims lived only in the
+  research pack; round 2 found three more of the same class, one of them inside a
+  sentence round 1 had just edited without re-checking its source. **12 sources were
+  re-fetched and recorded with verbatims**, and six claims were reworded because the
+  source did not support the wording that had been written.
+
+- **A REVIEW'S FINDINGS DESERVE THE SAME VERIFICATION AS ITS CLAIMS, AND TWO WERE
+  REJECTED ON EVIDENCE.** Review read ">half recur" as widened from the consensus
+  paper's treated cohort; the Chordoma Foundation states it of **all** chordoma
+  tumors, patient-facing, and the citation was what was missing. Review also read
+  the caregiver comparative as a cross-measure comparison wrongly credited to the
+  Foundation; the Foundation makes that comparison **in its own survey**. Both
+  rejections are recorded in the front matter with their verbatims so the next
+  reader does not re-open them.
+
+- **PROOF: 71 break mutations, every one red on LF AND on CRLF (142/142) on the
+  clean run**, after one first-run survivor that was a weak guard and was rewritten;
+  **8 handproof cases across all 7 render guards**, including both directions of the
+  block ruling (an included block that stops composing, and an excluded one composed
+  back in); suite **2,378 / 2,378**; ContentCheck **275 / 0** at grade **5.9**; all
+  three restatement guards at **0 collisions**; four rendered reads; three `/review`
+  rounds (2 blockers, then 1, then none); privacy scan **0 findings over 2,457
+  net-new lines**.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

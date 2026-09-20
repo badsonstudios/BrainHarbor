@@ -275,9 +275,9 @@ nobody knows yet.
 
 **Where the case is strongest.** Protons suit a tumor with a clear edge, sitting
 next to something you cannot afford to damage. The American Cancer Society names
-chordoma as that kind of tumor, and says protons may help more when a tumor is
-near vital structures. The American Cancer Society also lists certain childhood cancers among the ones
-it is used for.
+[chordoma](/tumors/chordoma) as that kind of tumor, and says protons may help
+more when a tumor is near vital structures. The American Cancer Society also
+lists certain childhood cancers among the ones it is used for.
 
 **Where it is not settled.** The same page says it is not clear whether protons
 are as useful for tumors that grow into the brain around them. It names the
