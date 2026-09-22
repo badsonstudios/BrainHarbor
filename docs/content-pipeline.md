@@ -5052,6 +5052,87 @@ ones that looked most transferable were the ones that flipped.
   blocker, then none, then none); **37 sources** recorded with verbatims, re-fetched
   live except where an entry says otherwise.
 
+#### WI-547 — Hemangioblastoma, and the fix that overshot in the other direction
+
+- **A SAFETY TIER CAN BE WRONG IN BOTH DIRECTIONS, AND FIXING ONE INVITES THE
+  OTHER.** The brainstem paragraph went through three versions in three review
+  rounds. Round 1: it named the danger ("symptoms can be more serious") and gave
+  the reader NO tier, while dropping its source's own urgency half — The Brain
+  Tumour Charity says such a tumor has "more chance of symptoms being severe and
+  needing emergency attention". Round 2's fix added "use the ambulance list below
+  if it comes on suddenly" — a suddenness gate no source gives, over a list whose
+  five other bullets are unconditional, including *trouble breathing or choking*,
+  which is this location's signature danger: **under-triage**. Round 3's fix then
+  said "anything on the ambulance list is an ambulance call however it started" —
+  false of the one bullet the block deliberately gates ("**Suddenly** not being
+  able to speak, move one side, or see"), whose gradual forms the same block files
+  as same-day: **over-triage**, and invisible to `AssertEscalationTiers`, which
+  polices that boundary between pages but cannot see it restated in free prose.
+  The fourth version attaches the onset rule to the bullet that is genuinely
+  unconditional and to nothing else. **When a tier is corrected, re-read the
+  shared block bullet by bullet and ask which way the correction now points.**
+
+- **A GUARD THAT READS A WHOLE SUBSECTION CANNOT SEE A CREDIT GO MISSING FROM ONE
+  CLAIM.** The only break-harness survivor, on LF and CRLF: the watching guard
+  asserted `Contains("VHL Alliance")` over its subsection, and that subsection
+  credits the VHL Alliance TWICE — once for "usually not treated until symptoms"
+  and again for the three treatment choices. A mutation stripping the credit from
+  the CLAIM left the other standing and the guard stayed green. The mutation was
+  kept and the GUARD rewritten to pin each credit to the sentence it belongs to.
+  Same shape as WI-544's two-homes lesson, arriving this time through a guard
+  rather than through a mutation.
+
+- **THE LF+CRLF HARNESS PROVES MUTATIONS ARE CAUGHT; IT CANNOT PROVE THE
+  UNMUTATED PAGE IS GREEN ON CRLF.** The baseline suite, run before a word was
+  drafted, found a SHIPPED WI-546 guard red on this checkout:
+  `NoGradeIsPrinted...` cuts the grade section out of the composed page with
+  `Composed.Replace(RawSection(...), "")`. Composition emits LF; `RawSection`
+  keeps the checkout's CRLF; the cut matched nothing, so the grade section's own
+  "grade 4" stayed in and the test failed on correct text. CI is LF, so it shipped
+  green, and the harness's CRLF half could not see it — **a test that always fails
+  reports every mutation as caught.** Fixed here, with an assertion that the cut
+  actually shrank the page. Run the plain suite on a CRLF checkout of the new page
+  BEFORE the harness, not only after.
+
+- **RUN THE FULL SUITE AS THE LAST ACTION BEFORE A REVIEW HANDOFF, NOT THE
+  SECOND-LAST.** Round 3 opened by finding the suite red: a reading-grade reword
+  of the sibling page's new bullet, made after the last `dotnet test`, had broken
+  the guard that pins it. The review was therefore reading a diff whose state I
+  had described wrongly. ContentCheck is a separate CI step from `dotnet test`,
+  so the final gate is BOTH, after the last edit.
+
+- **CITE EVERY PAGE YOU COUNT IN A SCORED ABSENCE.** The absence sentence claimed
+  sixteen pages were "read and used"; two of the sixteen appeared nowhere in
+  `sources`, so a reader chasing the claim would have found fourteen. A page that
+  carries an absence is evidence, and evidence gets a citation — including the one
+  read only so its survival figure could be *rejected*. Where the count is
+  filtered, say so in the reader text: readable pages here DO give a sign-level
+  rule (Mayo's syndicated text), excluded by provenance rather than by silence.
+
+- **A LANDMINE RECORD WITH NOTHING BEHIND IT IS THE SAME DEFECT AS A CLAIM WITH
+  NO SOURCE.** Ruling 7 listed a five-year survival figure on a site whose page
+  carrying it was never fetched. It was demoted to UNVERIFIED in that source's own
+  entry. Meanwhile two real landmines inside cited captures went unrecorded until
+  round 3 (StatPearls' ">90% at five years", Brain Tumour Research's "curative"
+  and its recurrence range), and one cited source flatly contradicts the page's
+  "it stays where it started" — recorded in ruling 3a, with the reasons the
+  absolute stands, rather than left for the next editor to rediscover (WI-518).
+
+- **SCOPE A DRUG CLAIM TO THE TUMOR THE PAGE IS ABOUT.** "It is only for people
+  with that inherited condition" was true of the CNS hemangioblastoma indication
+  and false of the drug: the same label carries two further indications that
+  require no such condition. The fix is one clause — *"For a brain or spinal cord
+  tumor, it is only for…"* — and the front-matter record names the other
+  indications so the next editor does not re-broaden it.
+
+- **PROOF: 94 break mutations, red on LF AND on CRLF (188/188) after one
+  first-run survivor that was a WEAK GUARD, rewritten rather than the mutation
+  weakened**; suite **2,457 / 2,457**; ContentCheck **277 / 0** at grade **4.8**;
+  both restatement variants at **0 collisions** with no allowlist; two rendered
+  reads; **FIVE `/review` rounds** (3 blockers, then 1, then 2, then none, then
+  none) — rounds 2 and 3 each found their blocker *inside the previous round's
+  fix*, which is why the rule is re-review after fixing, not review once.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

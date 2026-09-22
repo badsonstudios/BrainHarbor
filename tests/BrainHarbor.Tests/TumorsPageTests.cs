@@ -46,17 +46,76 @@ public class TumorsPageTests : IClassFixture<WebApplicationFactory<Program>>
     /// A type with no description written must say so, not render blank. A
     /// blank row reads as "this site has nothing for you", which is false —
     /// the feed still filters by that type.
+    ///
+    /// WI-547 wrote the last unwritten type, so the shipped taxonomy can no
+    /// longer supply one. This used to assert the sentence appeared somewhere on
+    /// the real /tumors, and said to delete it deliberately the day that stopped
+    /// being true. It was not deleted, because the branch it proves is still
+    /// live code: the next entry added to taxonomy.yml before its page exists
+    /// takes it, on the public index. So the unwritten type is now SUPPLIED —
+    /// the shipped taxonomy plus one invented entry — and the assertions are
+    /// scoped to that entry's own row, which the page-wide version never was.
     /// </summary>
     [Fact]
     public async Task ATypeWithNoDescriptionSaysSoAndStillOffersTheResearch()
     {
+        const string slug = "wi547-unwritten-test-type";
+        const string label = "Unwritten Test Type";
+
+        var shipped = await File.ReadAllTextAsync(Path.Combine(
+            RepoRoot(), "src", "BrainHarbor.Web", "Content", "taxonomy.yml"));
+        var path = Path.Combine(Path.GetTempPath(), $"taxonomy-{Guid.NewGuid():N}.yml");
+        await File.WriteAllTextAsync(path,
+            shipped.TrimEnd() + $"\n\n  - slug: {slug}\n    label: \"{label}\"\n");
+
+        try
+        {
+            var html = await _factory
+                .WithWebHostBuilder(b => b.UseSetting("Content:TaxonomyFile", path))
+                .CreateClient()
+                .GetStringAsync("/tumors");
+
+            var start = html.IndexOf($"id=\"{slug}\"", StringComparison.Ordinal);
+            Assert.True(start > 0, "the supplied unwritten type did not render a row at all");
+            var end = html.IndexOf("</li>", start, StringComparison.Ordinal);
+            var row = html[start..end];
+
+            Assert.Contains(label, row, StringComparison.Ordinal);
+            Assert.Contains("We are still writing this one", row, StringComparison.Ordinal);
+            Assert.Contains($"href=\"/research?tumor={slug}\"", row, StringComparison.Ordinal);
+
+            // And it does not pretend: no link to a page that does not exist.
+            Assert.DoesNotContain($"/tumors/{slug}", row, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    /// <summary>
+    /// The other half of WI-547's ruling. Every type in the SHIPPED taxonomy now
+    /// has a page, so the real index says "still writing" nowhere. A new
+    /// taxonomy entry added without its page turns this red rather than
+    /// quietly reopening the gap. WI-548 strengthens it from "a page exists" to
+    /// "the page carries the full template".
+    /// </summary>
+    [Fact]
+    public async Task EveryShippedTypeHasAPageSoTheIndexSaysStillWritingNowhere()
+    {
         var html = await GetTumorsAsync();
 
-        // At least one type is unwritten today (the taxonomy has 24 entries and
-        // fewer descriptions). If that ever stops being true this assertion
-        // should be deleted deliberately, not weakened.
-        Assert.Contains("We are still writing this one", html);
-        Assert.Contains("/research?tumor=", html);
+        Assert.DoesNotContain("We are still writing this one", html, StringComparison.Ordinal);
+
+        // Not vacuous: the rows are really there, and every one links to its page.
+        var taxonomy = new BrainHarbor.Web.Content.TaxonomyStore(
+            await File.ReadAllTextAsync(Path.Combine(
+                RepoRoot(), "src", "BrainHarbor.Web", "Content", "taxonomy.yml")));
+        Assert.NotEmpty(taxonomy.TumorTypes);
+        foreach (var type in taxonomy.TumorTypes)
+        {
+            Assert.Contains($"href=\"/tumors/{type.Slug}\"", html, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
