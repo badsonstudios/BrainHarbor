@@ -413,8 +413,16 @@ public sealed class CnsGermCellTumorPageContentTests
         Assert.Matches(gradeNumber, "this is a grade 4 tumor");       // canary
         Assert.Matches(gradeNumber, "an older report says grade IV"); // canary
         Assert.Matches(gradeNumber, "a grade-four germinoma");        // canary (round 1)
-        var elsewhere = CuratedPage.Flatten(CuratedPage.ReaderText(
-            Composed.Replace(RawSection(GradeHeading), "")));
+        // BOTH SIDES LF-NORMALISED (WI-547). Composition emits LF while the raw section
+        // keeps the checkout's endings, so on a CRLF checkout the cut matched nothing,
+        // the grade section stayed in, and this went red on correct text. CI is LF, so
+        // it shipped green; the break harness's CRLF half could not see it, because a
+        // test that always fails reports every mutation as caught.
+        var composedLf = Composed.Replace("\r\n", "\n", StringComparison.Ordinal);
+        var gradeLf = RawSection(GradeHeading).Replace("\r\n", "\n", StringComparison.Ordinal);
+        var cut = composedLf.Replace(gradeLf, "", StringComparison.Ordinal);
+        Assert.True(cut.Length < composedLf.Length, "the grade section was not cut out of the composed page");
+        var elsewhere = CuratedPage.Flatten(CuratedPage.ReaderText(cut));
         Assert.DoesNotMatch(gradeNumber, elsewhere);
     }
 

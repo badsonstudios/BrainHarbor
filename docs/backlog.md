@@ -3945,7 +3945,50 @@ research items. Same shared contract throughout.
   `EscalationBlockTests.Hubs` still lists four hubs; Pathology Outlines returned 429
   for the second item running; the Childhood Brain Tumor Foundation 403s scripted
   fetches after the first.
-- [ ] **WI-547 Hemangioblastoma** *(new page)*. Depends on: WI-513.
+- [x] **WI-547 Hemangioblastoma** *(new page)*. Depends on: WI-513.
+  **THE LAST UNWRITTEN TAXONOMY TYPE**, so writing it broke an assumption the
+  corpus had shipped with: `TumorsPageTests` asserted that "We are still writing
+  this one" appears on `/tumors`, and this page made that false.
+  **Gate 1 ruling (A): rewritten, not deleted and not weakened.** The property
+  (an unwritten type says so and still offers the research) is still worth
+  proving, because the Razor branch that implements it still ships and the next
+  taxonomy entry added without a page will take it. So the test now SUPPLIES the
+  unwritten type through the existing `Content:TaxonomyFile` setting (no
+  production change) and scopes its assertions to that row, which the old
+  page-wide `Contains` never did; a new companion asserts the complement on the
+  real index. **(B) Blocks 5 in / 3 out**: `[SPINAL-CORD]` OUT even though this
+  tumor grows in the cord, because its credited sentence is about CANCER pressing
+  on the cord and its right-away tier for new weakness contradicts
+  `/tumors/spinal-cord-tumor`, which owns the primary cord tumor and names this
+  tumor in its own scored absence; `[CROSSWALK]` and
+  `[POSTERIOR-FOSSA-SYNDROME]` OUT. **(C) One reciprocal door**, guarded:
+  `/treatments/targeted-therapy` listed every approved brain-tumor targeted drug
+  except belzutifan, so a VHL reader routed there found their own drug missing.
+  **Central rulings:** grade 1 credited to two reviews, NOT read out of the WHO
+  summary's silence (WI-546's lesson, applied before drafting); a scored absence
+  over sixteen readable pages with three unreadable counted as unknown and the
+  barred page family disclosed; "not cancer" always paired with its
+  counterweight; the two readers (one-off tumor vs VHL) kept apart in every
+  section that differs; nothing claimed about biopsy; no "draining the pocket is
+  not enough"; the drug kept inside its label; no figures anywhere.
+  **Proof:** suite **2,457/2,457**; ContentCheck **277/0** at grade **4.8**;
+  **94 break mutations red on LF AND CRLF (188/188)** after one first-run
+  survivor that was a WEAK GUARD, rewritten rather than the mutation weakened;
+  both restatement variants **0 collisions** with no allowlist; two rendered
+  reads; **five `/review` rounds** (3 blockers, 1, 2, none, none).
+  **The item's real lesson:** a safety tier can be wrong in both directions, and
+  fixing one invites the other — the brainstem tier was under-triaged at round 1,
+  over-triaged by round 2's fix, and only right at the fourth version. Rounds 2
+  and 3 each found their blocker inside the previous round's fix. Lessons in
+  `docs/content-pipeline.md` §12.8.
+  **For `/pm`:** `/tumors/ependymoma` includes `[SPINAL-CORD]` while this page
+  excludes it for a primary cord tumor — a live corpus split, recorded not
+  resolved; `/treatments/targeted-therapy` moved 5.4 → 5.5 on the reading-grade
+  WARN threshold when it gained the belzutifan bullet; `CuratedPage`'s British
+  form exemptions gained a second UK charity name; the WI-546 CRLF defect fixed
+  here means other pages' `Composed.Replace(RawSection(...))` shapes are worth a
+  sweep; Johns Hopkins (two pages) and ABTA stayed blocked for the third item
+  running.
 - [ ] **WI-548 Sweep: every taxonomy type has a full guide**
   Goal: close the phase honestly rather than approximately.
   Acceptance: a test asserts that **every** slug in `taxonomy.yml` resolves to a
@@ -3954,6 +3997,15 @@ research items. Same shared contract throughout.
   the item that makes that count zero, and the test is what stops a new taxonomy
   entry silently reintroducing a stub. Any type discovered without a guide gets
   written here. Depends on: WI-535…WI-547.
+  **WI-547 CLOSED THE COUNT AND LEFT THIS ITEM THE STRONGER HALF.** Every slug in
+  `taxonomy.yml` now resolves to a page, and
+  `TumorsPageTests.EveryShippedTypeHasAPageSoTheIndexSaysStillWritingNowhere`
+  asserts the file-exists level of that: "We are still writing this one" appears
+  nowhere on the real index, and every slug carries an `href` to its own page.
+  What is left for this item is what that test deliberately does NOT check —
+  that each page carries the FULL section template rather than merely existing.
+  Note also that the Razor fallback branch still ships and is still proved, by a
+  test that supplies its own unwritten type; WI-557 owns removing it.
 
 ### Wave 5 — the long tail
 
