@@ -251,6 +251,23 @@ sources:
     # and read it before. Cited here for the liver monitoring being the ongoing
     # practical burden, and for the interaction warning, both published as
     # shapes rather than figures.
+  - url: https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=13e15ee0-d679-4fa9-9430-e2e2170474da
+    title: "WELIREG (belzutifan) prescribing information | DailyMed"
+    accessed: 2026-09-22
+    # WI-547. THE BELZUTIFAN BULLET'S OWN SOURCE, on this page rather than only on
+    # the tumor page: a sibling's front matter is not this page's source (WI-544).
+    # This is the drug LABEL on DailyMed, not a drug monograph library and not the
+    # manufacturer's consumer site, both of which are barred. Verbatim: for adults
+    # with von Hippel-Lindau disease who need therapy for "central nervous system
+    # (CNS) hemangioblastomas", "not requiring immediate surgery"; "administered
+    # orally"; the boxed warning "EMBRYO-FETAL TOXICITY". The label's CNS
+    # hemangioblastoma indication exists ONLY inside that VHL bullet, which is why
+    # the page's bullet scopes its "only" TO A BRAIN OR SPINAL CORD TUMOR. The label
+    # carries two further indications that do NOT require the condition (clear cell
+    # kidney cancer, both advanced after other drugs and as an added treatment after
+    # kidney surgery, and pheochromocytoma or paraganglioma), so an unscoped "only
+    # for people with VHL" would be false of the drug (/review rounds 4 and 5).
+    # No dose figure is published here (§12.4).
 reviewed: 2026-09-14
 review_due: 2027-03-14
 disclaimers: [medical]
@@ -334,6 +351,12 @@ Here is the shape of it. Where you sit in it is a question for your team.
   removed.** Everolimus, a pill.
 - **An NTRK gene change.** These are rare in brain tumors. There are three pills
   used when a tumor is still growing after other treatment.
+- **A brain or spinal cord tumor caused by von Hippel-Lindau disease, in an
+  adult.** The drug is belzutifan, a pill. For a brain or spinal cord tumor, it
+  is only for people with that inherited condition. It is used when a tumor
+  needs treating and surgery is not the next step. [Hemangioblastoma](/tumors/hemangioblastoma) is the tumor page. It
+  carries the warnings for this drug, including that it must not be taken in
+  pregnancy.
 
 **If your cancer started somewhere else and spread to the brain, the drug is
 usually chosen from that first cancer's own test results**, not from the brain

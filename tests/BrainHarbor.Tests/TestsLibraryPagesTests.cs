@@ -424,6 +424,10 @@ internal static class CuratedPage
     public static readonly string[] BritishFormExemptions =
     [
         "Brain Tumour Charity", "brain tumour charity",
+        // WI-547: a second UK organization, cited by name for the same reason.
+        // Brain Tumour Research is a different charity from the one above, and
+        // crediting a source means spelling its name the way it is spelled.
+        "Brain Tumour Research", "brain tumour research",
     ];
 
     /// <summary>
