@@ -3908,8 +3908,43 @@ research items. Same shared contract throughout.
   Cancer Research UK and PCV citations into its visible source list; Pathology Outlines
   returned HTTP 429 with a 24-hour lockout, so the retired-name slice is partial by
   record; NCCN patient guidelines 403. Lessons in §12.8.
-- [ ] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar
+- [x] **WI-546 CNS germ cell tumor** *(new page)* — links to WI-552 (lumbar
   puncture, AFP/beta-hCG markers) as its primary path. Depends on: WI-513.
+  A NEW §12.3 hub for a tumor the corpus had never mentioned, written for a teenager
+  or young adult and their parent. **Gate 1 rulings:** (A) WI-552 is unbuilt, so the
+  spinal tap and marker material is carried on the page and nothing links to a page
+  that does not exist (the `/tumors/atrt` precedent); WI-552 now owes both doors, and
+  a test goes red the day its page appears. (B) Blocks 6 in / 2 out: `[CROSSWALK]`
+  out because its gene bullet is false here, `[POSTERIOR-FOSSA-SYNDROME]` out;
+  `[SPINAL-CORD]` in because the tumor reaches the spine through the fluid. (C) One
+  guarded door sentence on `/tumors/pediatric-brain-tumor`, with its own source.
+  **Central rulings:** a scored absence (ten pages about this tumor, none gives a 911
+  or emergency room rule, two blocked and counted as unknown), so every urgent line
+  is tied to a sign and credited; the two water dangers carried in BOTH directions;
+  no claim either way about grading (see below); no marker cut-offs, because the US
+  and European groups draw the line differently; growing teratoma carried with BOTH
+  halves (not always failure, and falling markers never cancel new symptoms); no
+  proton superiority; no cure word outside the outlook gate.
+  **Proof:** suite **2,416/2,416** (+37 guards, +1 entry in the spinal-cord includer
+  register); ContentCheck **276/0** at grade **5.6**; **120 break mutations red on LF
+  AND CRLF (240/240), first run**; **10 handproof cases across all 7 render guards**;
+  both restatement variants at **0 collisions**; **37 sources** recorded with
+  verbatims. **Three `/review` rounds** (1 blocker, then none, then none).
+  **The item's real lesson:** an absence from a table of "selected types" is not
+  evidence. The first draft said these tumors are "not usually given a grade"
+  because the WHO grade table leaves them out; that table also leaves out graded
+  tumors, and the same paper says a germinoma "can be assigned" grade 4. A test was
+  pinning the unsupported claim as true. Lessons in §12.8.
+  **For `/pm`:** `/tumors/chordoma`'s front matter leans on the same Table 3 absence
+  (its reader sentence is literally true, so not reopened here);
+  `BrainTumorPreFilter.cs` matches `germinoma` but not `intracranial germ cell` or
+  `CNS germ cell` (bare `germ cell` would admit testicular papers); no US patient
+  source covers a child with the thirst condition who cannot reach water, or sodium
+  swings after surgery (only the UK Pituitary Foundation, British idiom); this is the
+  fourth hub to inherit the escalation block's Cancer Research UK and PCV citations;
+  `EscalationBlockTests.Hubs` still lists four hubs; Pathology Outlines returned 429
+  for the second item running; the Childhood Brain Tumor Foundation 403s scripted
+  fetches after the first.
 - [ ] **WI-547 Hemangioblastoma** *(new page)*. Depends on: WI-513.
 - [ ] **WI-548 Sweep: every taxonomy type has a full guide**
   Goal: close the phase honestly rather than approximately.
@@ -3937,6 +3972,12 @@ research items. Same shared contract throughout.
 - [ ] **WI-552 T12 Lumbar puncture and spinal fluid tests** — including that
   atraumatic needles roughly halve post-puncture headache, which gives readers a
   concrete thing to ask for. Depends on: WI-502.
+  **Owes two doors when it ships** (WI-546 Gate 1): `/tumors/cns-germ-cell-tumor`
+  and `/tumors/atrt` both carry the spinal fluid material themselves because this
+  page did not exist, and link to nothing. Add a door from each, and rewrite
+  `CnsGermCellTumorPageContentTests.TheSpinalTapIsExplainedHereAndNothingLinksToAPageThatDoesNotExist`,
+  which is built to go red the day any `pages/tests/*` file matching
+  lumbar/spinal/tap/csf appears.
 - [ ] **WI-553 X4 Transsphenoidal (pituitary) surgery** — **nothing like a
   craniotomy**: no head incision, no shaved head, nasal recovery, hormone
   follow-up. Inside WI-510 it would mislead a large group of readers, which is

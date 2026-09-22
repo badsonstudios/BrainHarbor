@@ -43,8 +43,15 @@ public sealed class SpinalCordBlockTests
     // the cord or cauda equina outright. Leaving it out would meet a parent whose child
     // has new cord signs with the shared block's SAME-DAY tier, where the corpus files
     // those signs as RIGHT AWAY -- the under-triage direction.
+    // WI-546: /tumors/cns-germ-cell-tumor is the sixth, on the same CONDITIONAL rule and
+    // the same reason as ATRT: this tumor reaches the spine through the fluid. St. Jude's
+    // current trial page says that when radiation covered only part of the brain, "the
+    // cancer often returned in the spine", which is why the spine is scanned at diagnosis
+    // and irradiated for the non-germinomatous kinds. The page says so above the block,
+    // so its "or has spread to the spine" clause names a reader who exists.
     private static readonly string[] IncludingHubs =
-        ["atrt", "diffuse-midline-glioma", "ependymoma", "medulloblastoma", "pediatric-brain-tumor"];
+        ["atrt", "cns-germ-cell-tumor", "diffuse-midline-glioma", "ependymoma", "medulloblastoma",
+         "pediatric-brain-tumor"];
 
     /// <summary>The same list for the theory, so a hub added above cannot miss the position check (/review round 1).</summary>
     public static TheoryData<string> IncludingHubData => [.. IncludingHubs];
