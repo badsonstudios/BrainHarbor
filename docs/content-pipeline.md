@@ -4974,6 +4974,84 @@ ones that looked most transferable were the ones that flipped.
   rounds (2 blockers, then 1, then none); privacy scan **0 findings over 2,457
   net-new lines**.
 
+#### WI-546 — CNS germ cell tumor, and the table that proved nothing by leaving a tumor out
+
+- **AN ABSENCE FROM A TABLE OF "SELECTED TYPES" IS NOT EVIDENCE OF ANYTHING.** The
+  first draft told readers these tumors "are not usually given a grade", because the
+  WHO CNS5 summary's grade table leaves them out. `/review` round 1 read the table's
+  own title: *"CNS WHO grades of selected types, covering entities for which there is
+  a new approach to grading, an updated grade, or a newly recognized tumor"*.
+  Medulloblastoma and craniopharyngioma, both graded, are missing from it too. The
+  same paper says a germinoma "can be assigned a CNS WHO grade 4 designation". The
+  claim had no source at all, and a test was pinning it as TRUE. **Before reading a
+  table's silence, read what the table says it covers.** WI-545's chordoma front
+  matter leans on the same table; its reader-facing sentence ("lists chordoma and
+  prints no grade") is literally true, so it is recorded for `/pm`, not reopened.
+
+- **A RETARGET THAT FAILS LEAVES THE PREVIOUS ITEM'S TABLE LOADED, AND IT REPORTS
+  CLEAN.** A `sed` retarget of `dryrun.py` failed on an escaping error. The dry run
+  then imported WI-545's table from WI-545's directory and printed **"71 mutations, 0
+  problems"** — a clean result over chordoma. The only tell was its last line,
+  `targets: chordoma.md, proton-therapy.md`. The runner's import check asserted
+  `'chordoma' in CHORDOMA`, which the stale table satisfies by construction: §12.8
+  already records (WI-542, `render-read.py`) that **a guard keyed to the thing being
+  carried forward cannot detect that it was carried forward.** The runners now
+  assert this item's page, and the retarget itself asserts the previous item's name
+  is gone. Read the targets line of every clean result.
+
+- **A FETCH CAN RETURN HTTP 200 AND STILL BE AN ABSENCE-SHAPED LIE.** The live
+  verifier met two: cancer.org sends **gzip nobody asked for**, which urllib does not
+  inflate, so 13 real quotes read as missing; and PubMed Central answers bursts of
+  requests with a **"checking your browser" page and a success code**, so present
+  quotes read as missing on a second run. Both now read as BLOCKED, never absent.
+  **And the evidence log repeated the trap in prose**: it claimed every load-bearing
+  claim was re-fetched live when the proton paper's fetches had all hit the block.
+  Review caught it; the paper was re-verified through Europe PMC's full-text service,
+  and the route is recorded where the claim is.
+
+- **A POSITIVE-HALF FAILURE ON AN EMPTY SET IS THE GUARD WORKING.** Two rewrites to
+  answer `AssertNoWarningSignIsNormalised` ("the usual sign is weakness", "tiredness
+  is common") left no paragraph pairing a sign with a reassurance at all. The guard
+  then examined nothing, and its `mustHaveChecked` half failed with an empty
+  collection. **That is the WI-517 lesson firing on schedule**: a normalising guard
+  that examines nothing is green on anything. The fix was not a third rewrite. The
+  true reassurance (tiredness *is* common) came back WITH its tier beside it, which
+  is what the guard asks of a reassurance.
+
+- **A FIX CAN OVERSHOOT ITS SOURCE IN THE OTHER DIRECTION.** Round 1 found the
+  markers-alone rule stripped of its scope (the consensus states it under "Strategy
+  for NGGCT"). The fix said high markers point to the other kinds, "not to a
+  germinoma" — which round 2 found the same source contradicts: a germinoma "can
+  also secrete small amounts of hcg", and there is "no consensus regarding the cutoff".
+  A family told their germinoma raised hCG would have read it as a wrong diagnosis.
+  **Each round's fixes are the next round's findings**, which is why this item ran
+  three rounds (1 blocker, then none, then none) and not one.
+
+- **A GLOSSARY POPOVER CAN FIRE INSIDE A PROPER NAME, AND ONLY A RENDERED READ SEES
+  IT.** The first rendered read found the hydrocephalus definition injected into the
+  middle of "the Hydrocephalus Association", on the ETV rule. Every content guard was
+  green, because the source text was correct. It was the page's only popover, so the
+  suppression's paired positive (§12.10: suppression is page-wide, so an absence-only
+  test passes if the glossary stops firing) had to be moved to **another page**
+  (`/tests/ct-scan`, the one page that uses the word unsuppressed).
+
+- **A LONG MUTATING RUN MUST BE DETACHED, AND ITS UNMUTATED COPY MUST EXIST BEFORE
+  IT STARTS.** The harness restores pages in a `finally`, and a tool timeout kills the
+  process without running it, leaving an uncommitted page carrying a mutation that
+  `git checkout` cannot undo. The clean copy was the **build output**: the harness
+  builds once, then every run is `--no-build`, so `bin/.../Content` holds the pages as
+  they were before the first mutation. Both runs went detached, with the exit code
+  written to a file by the process itself.
+
+- **PROOF: 120 break mutations, every one red on LF AND on CRLF (240/240), first
+  run**; **10 handproof cases across all 7 render guards**, three of them from both
+  directions (the block ruling, both tooltip suppressions, both doors); suite
+  **2,416 / 2,416**; ContentCheck **276 / 0** at grade **5.6**; both restatement
+  variants at **0 collisions**; two full rendered reads, re-captured after each
+  review round; three `/review` rounds (1
+  blocker, then none, then none); **37 sources** recorded with verbatims, re-fetched
+  live except where an entry says otherwise.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one

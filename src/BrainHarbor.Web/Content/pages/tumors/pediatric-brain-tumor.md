@@ -542,6 +542,13 @@ sources:
     # blood-test list, which acs-children-after-treatment carries verbatim.
     # /tumors/medulloblastoma made the same claim from this same file and lost it in
     # the same pass.
+  - url: https://together.stjude.org/en-us/conditions/cancers/germ-cell-tumors-brain.html
+    title: "Germ Cell Brain Tumors - Together by St. Jude"
+    accessed: 2026-09-21
+    # WI-546 added the door to /tumors/cns-germ-cell-tumor in "Why children are not
+    # small adults", and this is the source for the one claim it makes. Verbatim,
+    # re-fetched live: "Most germ cell brain tumors develop in early adolescence."
+    # Nothing else on this page rests on it.
 reviewed: 2026-09-16
 review_due: 2027-03-16
 disclaimers: [medical]
@@ -584,6 +591,8 @@ grow in the spine are more often found in young adults.
 [Meningioma](/tumors/meningioma) is much less common in children than in adults.
 [ATRT](/tumors/atrt) is an embryonal tumor, a group this page explains further
 down, and that group is more common in young children than in older ones.
+A [germ cell tumor in the brain](/tumors/cns-germ-cell-tumor) runs the other
+way: it is found most often around the early teenage years.
 Tumors that travel to the brain from a cancer elsewhere in the body are rare in
 children.
 
