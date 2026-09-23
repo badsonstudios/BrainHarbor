@@ -5133,6 +5133,67 @@ ones that looked most transferable were the ones that flipped.
   none) — rounds 2 and 3 each found their blocker *inside the previous round's
   fix*, which is why the rule is re-review after fixing, not review once.
 
+**WI-548 — the sweep, and the item whose three defects were all in its own
+machinery.** The first item in this phase that writes almost no prose and almost
+all instrument. Its full ruling is §12.15; these are the lessons that generalise.
+
+- **"DERIVE, NEVER TYPE" IS NOT ENOUGH — DERIVE FROM AN INDEPENDENT SOURCE.** The
+  item's own doctrine, applied literally, made a guard WEAKER than the hand-typed
+  floor it replaced: the render sweep's expected count was computed by calling the
+  same heading extractor the loop had just walked, so if that extractor ever
+  stopped finding headings both sides went to zero and the assertion passed while
+  the test's whole subject evaporated. A canary derived from the walk it is
+  checking proves nothing. The floor now comes from the obligation table, which
+  knows nothing about how headings are read off a file — and the fix was proved by
+  stubbing the extractor and watching it go red, not by re-reading it.
+
+- **A COUNT THAT DISAGREES WITH ITS OWN PROSE IS A DEFECT REPORT NOBODY HAS READ
+  YET.** The umbrella page silently dropped one of §12.3's seventeen questions
+  INSIDE the sweep built to make that impossible — six covered plus ten routed is
+  sixteen. It had been visible for a whole round as a stale number: the comments
+  said eleven routed questions and the array held ten. Nobody, including me,
+  treated the mismatch as evidence.
+
+- **AN EXEMPTION TABLE NEEDS A DISTINCTNESS CHECK, NOT JUST A MEMBERSHIP CHECK.**
+  Asserting that a mapped heading EXISTS is satisfied by any heading that exists,
+  so a question can be discharged by pointing at a heading already spent on a
+  different question. Making the arithmetic work by pointing at something real is
+  the same move as an exception whose only reason is that the page fails.
+
+- **A THROW INSIDE AN ACCUMULATION LOOP DISCARDS THE REPORT THE LOOP EXISTS FOR.**
+  Found in three different tests across three rounds, each time in the fix for the
+  previous one. A sweep collects findings from 23 pages; one `Assert` inside the
+  loop means page 3's ambiguity hides pages 4 to 23. Collect, then assert — and
+  when reordering so the readable report fires first, check whether the numeric
+  canary underneath is still reachable, because in one of the two tests it was
+  not.
+
+- **AN INTEGRITY CHECK CAN CHECK THE WRONG THING AND LOOK CLEAN.** A killed break
+  harness left a mutation on a shipped page, reading as ordinary prose. The marker
+  file flagged the interrupted run — and the first integrity check compared the
+  BACKUPS against their own checksums rather than against the live files, so it
+  reported all-clear. Diff the live file against the backup; a checksum file
+  proves only that the checksum file is intact.
+
+- **A GUARD CAN OVERRULE THE ITEM THAT WROTE IT, AND THAT IS THE SYSTEM WORKING.**
+  The new section's best source was Cancer Research UK, which that page is BARRED
+  from by a WI-537 ruling re-checked twice. The shipped guard went red on the new
+  citation. The ruling was honoured rather than overturned for one convenient
+  quote, the section was rebuilt on St. Jude, ACS and Dana-Farber — all re-fetched
+  and read live — and the rebuild IMPROVED the content, because it forced the
+  vocabulary split (relapse / recurrence / progression) the research pass had
+  named as the corpus's actual gap. The same page's British-forms guard then
+  caught "fits" in "ask which word fits your child": reworded, guard untouched.
+
+- **PROOF: 36 break mutations, red on LF AND on CRLF (72/72), no survivors and no
+  ambiguous anchors on the first run**; the plain suite **2,469 / 2,469 on a fully
+  LF corpus AND on a fully CRLF corpus** (the WI-547 lesson discharged directly:
+  the harness proves mutations are caught, not that the unmutated corpus is
+  green); **3 handproof cases** against the one render guard, one per claim it
+  makes; ContentCheck **277 / 0**; **FIVE `/review` rounds** (5 blockers, then 2,
+  then 2, then none, then none) — rounds 2, 3 and 5 each found their finding
+  *inside the previous round's fix*.
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
@@ -5634,3 +5695,158 @@ independently says it "has **similar activity** to irradiation with 60 Gy in 30
 fractions". The dossier had quoted a weaker sentence from the same paper. The
 page was right; the finding was rejected with the verbatim recorded in the front
 matter so the next reader does not re-open it.
+
+### 12.15 What "the full section template" means, per page class (WI-548)
+
+WI-412 shipped the tumor library with the index saying out loud how many types
+were still unwritten. WI-547 took that count to zero, and left this item the
+half that is harder to state: **every slug in `taxonomy.yml` resolves to a page
+carrying the full section template — not merely to a file that exists.**
+
+**The unit of obligation is a QUESTION, not a heading string.** §12.3's
+seventeen are the questions a reader arrives with. A page discharges one of them
+in exactly one of three ways:
+
+1. **Answers it under the standard heading** — the default, and what twenty of
+   the twenty-three pages do.
+2. **Answers it under its OWN heading**, because the standard wording would be
+   false for this reader.
+3. **ROUTES it** to the page that owns the answer (§12.10: route, don't
+   restate).
+
+**It may never simply be dropped.** That is the whole strengthening, and it is
+what stops the exception list from being "the pages that currently fail". An
+exception here is not a skip — it is a *different, equally complete* obligation
+that the test still checks. Every class is defined by a property of the **slug**,
+so its reason would still hold for a page nobody has written yet.
+
+| Class | The slug names… | Default | Owes |
+|---|---|---|---|
+| **Hub** | one diagnosis a person can be told they have | **yes** | all seventeen, standard headings, §12.3 order |
+| **Secondary hub** | a tumor that did not start in the CNS | no | seventeen, with §2 and the self-blame heading substituted |
+| **Axis hub** | a cross-cutting axis (age), not a histology | no | seventeen, re-voiced to the reader; grade routed |
+| **Umbrella** | no diagnosis at all — §12.11's pre-diagnosis catch-all | no | its own ladder, plus every section that is about the READER |
+
+- **Secondary hub** (`brain-metastases`). WHO CNS5 grades tumors that START in
+  the CNS, so a deposit from a lung or breast cancer has no CNS grade — the page
+  says as much in its own front matter — and "is it cancer?" is already answered
+  by the word *metastasis*. §2 therefore moves to "Why it is still called by the
+  other cancer's name", and self-blame is re-voiced to "Did I let this happen?"
+  because this reader had a previous cancer: the guilt is about a missed symptom,
+  not about having caused a tumor.
+- **Axis hub** (`pediatric-brain-tumor`). The reader's child has a specific
+  diagnosis, which has its own page, so grade is routed. Every other question is
+  owed, but re-voiced: the reader is a parent, so "my report" becomes "the
+  report" and "it" becomes "your child".
+- **Umbrella** (`all-brain-tumors`). The reader has not been given a name — that
+  is what the class *means* — so every "what is *it*" question is unanswerable
+  and the page owes the pre-diagnosis ladder plus routes.
+
+**A new taxonomy entry is a Hub.** The three non-default classes are a closed set
+pinned in `TumorHubTemplateSweepTests`. A new slug cannot acquire an exemption by
+omission, and deliberately cannot declare one in its own front matter: acquiring
+one means editing a test, which is the most-reviewed place to put it and where a
+reason has to be written down. **A declaration that lives in content is a
+declaration nobody reviews.**
+
+**`spinal-cord-tumor` is not an exception, and the reason is worth keeping.**
+`taxonomy.yml` is emphatic that it is not a brain tumor, which reads like the
+strongest exemption case in the corpus — and it carries all seventeen sections
+in order. **A ruling about FRAMING is not a ruling about TEMPLATE**, and
+assuming otherwise would have bought an exemption for a page that never needed
+one. Every candidate exception was measured before it was granted.
+
+**The failure mode this item was built to avoid, and it surfaced anyway.**
+An exception list whose only justification is "these pages go red" is a
+restatement of the bug. The test of a class is whether its reason would bind a
+page nobody has written. Applied honestly, that test **refused** one of the
+three candidate exemptions: `/tumors/pediatric-brain-tumor` said *nothing
+whatsoever* about the tumor coming back — no section, no sentence, not even a
+route; `grep -i` over `comes back|come back|came back|grows back|relaps|recurr`
+across all 1,012 lines returned a single hit, inside a front-matter comment
+about an education plan. Recurrence is diagnosis-specific, so routing it would
+have been defensible; silence was not. **The class was not widened to fit the
+page — the page was written to fit the class.**
+
+**Two floors, both derived by measurement rather than taste.**
+
+- **A required section must carry a body, not just a heading** (120 composed
+  characters). Across the 403 `##` sections the tumor corpus carried in source
+  before this item, the smallest composed body is 203 characters and the next is
+  207, so the floor has roughly 40% headroom and still catches a bare heading or
+  a one-line stub.
+- **Measure the COMPOSED page, not the source.** Five pages discharge "Did I
+  cause this?" with the bare `[CAUSES]` directive: eight characters on disk, a
+  full section to a reader. A raw-text floor would have failed correct pages —
+  the §12.11 trap in a new costume.
+
+**And the rule caught the test that enforces it — twice, in the same item.**
+Two of the three defects this item's own review found were in the machinery, not
+the corpus, and both were the exact failure the section above describes:
+
+- **The umbrella silently dropped a question, inside the sweep built to make that
+  impossible.** Six of §12.3's seventeen were covered by the umbrella's own
+  template and ten were routed. Six plus ten is sixteen. The missing one was §2,
+  "is it cancer / what grade", and it was in neither list — the state this section
+  says may never exist, living in the test that asserts it. It had been visible
+  for a whole round as a stale number: the comments said eleven routed questions
+  and the array held ten. **A count that disagrees with its own prose is a defect
+  report nobody has read yet.** The fix is a recorded MAPPING — the umbrella
+  answers §2 in two halves, "why 'benign' is the wrong comfort word here" and
+  "why nobody has given you a stage" — plus the arithmetic check that would have
+  caught it: routed and answered must be disjoint and together equal all
+  seventeen.
+- **A canary that "derived" its floor from the walk it was checking.** Replacing a
+  typed `> 300` with a derived count made the render sweep strictly WEAKER: both
+  sides came from the same heading extractor, so if that extractor ever stopped
+  finding headings, both went to zero and the assertion passed while the test's
+  whole subject evaporated. **"Derive, never type" is not enough — derive from an
+  INDEPENDENT source.** The floor now comes from the obligation table, which knows
+  nothing about how headings are read off a file, and the fix was proved by
+  stubbing the extractor and watching it go red.
+
+**An exemption table needs a distinctness check, not just a membership check.**
+Asserting that a mapped heading EXISTS is satisfied by any heading that exists,
+so a question could be discharged by pointing at a heading already spent on a
+different question — making the arithmetic work by pointing at something real,
+which is the same move as an exception whose only reason is that the page fails.
+
+**Hard-code the wording; assert the shape against the doc.** §12.3's table cells
+are prose ("What is a [tumor]?"), not the literal headings, so parsing them into
+matchers needs a mapping layer that becomes the thing to keep in step, with
+failures nobody can read. The matchers are explicit, and a separate guard reads
+§12.3 out of this file and goes red if its shape changes — its seventeen numbered
+rows — **and if any of the twelve rows whose doc wording IS the heading is
+reworded**. Five rows are deliberately unpoliced and the guard says which and
+why: row 1 is parameterised ("What is a [tumor]?"), row 9 lists topics rather
+than naming the heading, rows 12 and 14 word the question differently on purpose,
+and row 16 is rendered from front matter and has no heading at all. Asserting a
+match that was never intended is how a guard starts failing on a correct
+document.
+
+**And that guard walked straight into standing trap #1 on its first run.** It
+searched this file for "The self-blame block still appears", which is certainly
+present — and `docs/` is hard-wrapped, so the phrase spans a line break and a
+substring search cannot see it. Same mechanism as WI-541's location pass, which
+reported zero for eight fragments that were all there. **Prose read out of a
+wrapped document must be flattened first**, and the positive control proving it
+is now BUILT FROM THE FILE — a phrase this document's own wrapping splits — so
+it cannot go red the day somebody reflows a paragraph.
+
+**A sweep is also the cheapest moment to check whether the last item's defect
+propagated, and to cite the pages counted in the absence.** WI-547 fixed one
+shipped `Composed.Replace(RawSection(...), "")` — composition emits LF while the
+raw section keeps the checkout's endings, so the test was red on every CRLF
+checkout and green in CI. It does **not** recur: `Composed.Replace(` has exactly
+two call sites in the suite, `CnsGermCellTumorPageTests.cs` and
+`GliomaPageTests.cs`, and both are the correct `"\r\n"` → `"\n"` normalisation;
+no line anywhere combines `Composed` with `RawSection` across 150 `RawSection`
+uses in 14 files.
+
+**A hand-typed floor in a sweep is a slack guard.** `CaregiverSectionTests`
+asserted `>= 18` tumor hubs from the day it was written; the corpus reached 23
+five items later and the guard never noticed, so the check against "the
+enumeration quietly stopped finding pages" had five pages of slack in it. It now
+reads the count out of `taxonomy.yml`, which is the list the sweep is really
+about and cannot go stale the next time a type is added. **A sweep's own
+not-vacuous canary must be derived, never typed.**

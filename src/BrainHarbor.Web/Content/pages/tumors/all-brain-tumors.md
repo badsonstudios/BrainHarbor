@@ -390,6 +390,11 @@ like being told two different things by the same team.
 has the real durations, why some of it is counted in weeks, and what to do with
 yourself in the meantime.
 
+**The name is what unlocks the rest.** Once you have the name,
+[the library](/tumors) has a page on that exact type: what it is, how it is
+usually treated, what to expect. None of that can be written for your type
+here, because none of those questions has an answer until the name arrives.
+
 ## Why "benign" is the wrong comfort word here {#benign}
 
 You may be told a thing looks benign. It is worth knowing what that word does

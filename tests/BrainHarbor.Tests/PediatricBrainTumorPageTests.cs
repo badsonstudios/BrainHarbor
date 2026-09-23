@@ -63,6 +63,7 @@ public sealed class PediatricBrainTumorPageContentTests
     private const string AfterHeading = "What is treatment actually like, and what is normal afterwards?";
     private const string SchoolHeading = "Everyday life: school, and the years after";
     private const string ScansHeading = "Follow-up scans, and the check-ups that come with them";
+    private const string RecurrenceHeading = "If it comes back";
     private const string ThinkingHeading = "Thinking, learning and memory";
     private const string TalkingHeading = "Talking to your child";
     private const string SiblingsHeading = "Brothers and sisters";
@@ -97,6 +98,20 @@ public sealed class PediatricBrainTumorPageContentTests
         return CuratedPage.Flatten(end < 0 ? raw[at..] : raw[at..end]);
     }
 
+    /// <summary>
+    /// The recurrence section as a READER meets it: COMPOSED, so a shared block
+    /// dropped into it is inside the scope of every rule below.
+    ///
+    /// /review round 1, and the hole was real rather than theoretical: the
+    /// absence guards read the raw source, so adding <c>[TUMOR-BOARD]</c> to this
+    /// section would have left the literal directive in the text the guards saw —
+    /// hyphen, not space — and the ban on "tumor board" would have stayed green
+    /// while the reader got the whole tumor-board block. That is WI-514's rule
+    /// exactly: a rule about a block's prose has to run on the composed page.
+    /// </summary>
+    private static string RecurrenceSection() =>
+        CuratedPage.ComposedSection(Page, RecurrenceHeading);
+
     private static string Sibling(params string[] path) =>
         CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Read(path)));
 
@@ -107,7 +122,7 @@ public sealed class PediatricBrainTumorPageContentTests
         {
             ShortHeading, MeansHeading, NotAdultsHeading, LocationHeading, SymptomHeading,
             FindHeading, ReportHeading, TreatmentHeading, AfterHeading, SchoolHeading,
-            ScansHeading, ThinkingHeading, TalkingHeading, SiblingsHeading, TeamHeading,
+            ScansHeading, RecurrenceHeading, ThinkingHeading, TalkingHeading, SiblingsHeading, TeamHeading,
             PalliativeHeading, CauseHeading, OutlookHeading, CaregiverHeading,
             "What to ask your team", "Where to get support",
         };
@@ -720,6 +735,202 @@ public sealed class PediatricBrainTumorPageContentTests
         {
             Assert.Contains(check, section, StringComparison.Ordinal);
         }
+    }
+
+    /// <summary>
+    /// WI-548. Before this item the page said NOTHING about the tumor coming back —
+    /// no section, no sentence, not even a route — and the sweep that proved every
+    /// taxonomy slug carries §12.3's template is what found it.
+    ///
+    /// The section's shape is a ruling, not a style choice. ACS tells a parent to
+    /// "ask your cancer care team about the specific type of tumor, how long
+    /// imaging tests to check the brain may be needed, and the risk of the tumor
+    /// coming back", and this page is written across every childhood tumor. A
+    /// page cannot answer a question whose source makes the answer turn on which
+    /// tumor it is, so it names the words and routes (§12.10).
+    ///
+    /// (The first version of this comment paraphrased Cancer Research UK, which
+    /// this page is BARRED from — /review round 1. The barred-source guard reads
+    /// URL values only, so a comment can quote a barred page freely; the fix is
+    /// to quote the source the page actually cites.)
+    /// </summary>
+    [Fact]
+    public void TheRecurrenceSectionRoutesBecauseItsOwnSourceSaysTheAnswerIsPerTumor()
+    {
+        var section = RecurrenceSection();
+
+        // The routing REASON, not just the link. A bare link would leave the page
+        // looking like it had simply run out of things to say.
+        Assert.Contains("Which tumor your child has decides what happens next",
+            section, StringComparison.Ordinal);
+        Assert.Contains("(/tumors)", section, StringComparison.Ordinal);
+
+        // The three things the source tells a parent to check are carried, not
+        // summarised into "it depends" — which is the dodge §12.11 names.
+        foreach (var factor in new[]
+                 {
+                     "the specific type of tumor", "how long scans go on for",
+                     "the risk of it coming back",
+                 })
+        {
+            Assert.Contains(factor, section, StringComparison.Ordinal);
+        }
+
+        // AND IT DOES NOT OUTRUN THE SOURCE. The draft said the three answers are
+        // never "the same for any two children", which no source says and which is
+        // not even true — two children with the same diagnosis on the same
+        // protocol have the same answers (/review round 1, unsourced universal
+        // comparative, this phase's most persistent defect class per §12.11).
+        Assert.DoesNotContain("any two children", section, StringComparison.OrdinalIgnoreCase);
+
+        // The publisher is named as what it is. "The US guidance for families"
+        // implied a single national guideline for childhood recurrence, which does
+        // not exist (/review round 2) — and the next paragraph already attributed
+        // correctly, so the page contradicted itself about its own sourcing.
+        Assert.Contains("The American Cancer Society suggests", section, StringComparison.Ordinal);
+        Assert.DoesNotContain("US guidance", section, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The page's own slice (§12.11: a slice needs an ANGLE). No sibling hub
+    /// defines this vocabulary, and the axis page is where a parent meets all
+    /// three words before knowing which one is theirs.
+    /// </summary>
+    [Fact]
+    public void TheRecurrenceSectionDefinesTheThreeWordsAndScopesTheGeneralOnes()
+    {
+        var section = RecurrenceSection();
+
+        Assert.Contains("**Relapse** is when cancer comes back after treatment",
+            section, StringComparison.Ordinal);
+        Assert.Contains("**Progression** means it is growing or spreading without ever having gone away completely",
+            section, StringComparison.Ordinal);
+
+        // THE SCOPING IS THE LOAD-BEARING PART, not the definitions. Recurrence
+        // and progression come from a source about cancer IN GENERAL, while every
+        // other source on this page is about children or about brain tumors, so
+        // the page says which is which. Without this sentence a general definition
+        // reads as a brain-tumor one — the §12.10 defect in miniature.
+        Assert.Contains("how doctors talk about cancer in general, not only about", section,
+            StringComparison.Ordinal);
+
+        // And the honesty that makes the vocabulary usable rather than decorative:
+        // the reader cannot sort themselves into a box that has no edge.
+        Assert.Contains("There is no agreed length of time that separates them",
+            section, StringComparison.Ordinal);
+        Assert.Contains("ask which word your team is using", section, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The four absences this section was verified against, each checked on the
+    /// live source rather than assumed, and each a sentence the draft would
+    /// otherwise have been tempted to write. Pinned so a later edit cannot quietly
+    /// add one back on no source at all.
+    /// </summary>
+    [Fact]
+    public void TheRecurrenceSectionClaimsNoneOfTheFourThingsNoParentFacingSourceSupports()
+    {
+        var section = RecurrenceSection();
+
+        // (1) No repeat biopsy. /tumors/medulloblastoma carries "your team may test
+        // a new sample" on ITS own sources for ITS own tumor; nothing supports it
+        // across every childhood tumor at once.
+        foreach (var banned in new[] { "biopsy", "new sample", "test the tumor again" })
+        {
+            Assert.DoesNotContain(banned, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // (2) No confirmatory second scan. The "we will rescan before we call it"
+        // step is real and lives only in clinical literature, so it is not here.
+        foreach (var banned in new[] { "another scan to be sure", "scan again to confirm", "repeat the scan" })
+        {
+            Assert.DoesNotContain(banned, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // (3) No tumor board. No family-facing source says a suspicious scan goes
+        // to one, so the corpus's [TUMOR-BOARD] block is NOT included here and the
+        // section names no meeting.
+        Assert.DoesNotContain("tumor board", section, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("tumour board", section, StringComparison.OrdinalIgnoreCase);
+
+        // The page says only what St. Jude says. The draft said "a team decides
+        // together, not one doctor", which is a claim about HOW the decision is
+        // made — the tumor-board claim with the name filed off, on no source
+        // (/review round 1). `blocks/tumor-board.md` IS sourced, and is not
+        // composed in here because it describes the meeting in general, not a
+        // recurrence decision (§12.10: scoped to the wrong moment).
+        Assert.Contains("Your child's care team will talk the options through with you",
+            section, StringComparison.Ordinal);
+        Assert.DoesNotContain("decides together", section, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("[TUMOR-BOARD]", section, StringComparison.Ordinal);
+
+        // (4) No claim about how this feels. The best sentence on it belongs to a
+        // publisher this page is barred from, and the ruling was honoured rather
+        // than bent for one quote; the caregiver block carries that material.
+        foreach (var banned in new[] { "devastating", "shock", "hardest", "worse than" })
+        {
+            Assert.DoesNotContain(banned, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // (5) THE HEDGE HELD. The source says "may be eligible"; nothing supports a
+        // frequency. Scoped to the PARAGRAPH that names the trial, because "often"
+        // is a perfectly good word elsewhere on a page this long — a page-wide ban
+        // would be a guard that fires on correct prose (§12.8).
+        //
+        // Paragraph, not sentence, and the comment used to say sentence (/review
+        // round 2): SentencesOf splits on `(?<=[.!?])\s+`, and the sentence before
+        // this one ends `you.**` — a period followed by an asterisk, not
+        // whitespace — so the "sentence" is really two. The ban is wider than
+        // advertised rather than narrower, which is safe, but the description has
+        // to match what the code does.
+        var trialSentence = Array.Find(
+            CuratedPage.SentencesOf(section),
+            s => s.Contains("clinical trial", StringComparison.Ordinal));
+        Assert.NotNull(trialSentence);
+        Assert.Contains("may be able to join", trialSentence, StringComparison.Ordinal);
+        foreach (var frequency in new[] { "often", "usually", "commonly", "most children", "many children" })
+        {
+            Assert.DoesNotContain(frequency, trialSentence, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void TheRecurrenceSectionTurnsTheWatchingIntoSomethingToAskBeforeItHappens()
+    {
+        var section = RecurrenceSection();
+
+        // §12.3's rule that action belongs at the end of every frightening block,
+        // and the one thing a parent can do TODAY about a thing that has not
+        // happened: settle the call threshold in advance.
+        // "Ask now when you should call rather than wait" promised a call
+        // THRESHOLD, and the two ACS questions that follow are a watch-for list
+        // that settles no threshold — the round-1 blocker one size smaller, a
+        // framing claiming more than its verbatim delivers (/review round 2). It
+        // was also a garden path: "call rather than wait" reads as the object of
+        // "when".
+        Assert.Contains("Two questions are worth asking before you need the answers",
+            section, StringComparison.Ordinal);
+        Assert.DoesNotContain("when you should call rather than wait", section, StringComparison.Ordinal);
+        // "Settle this before it comes up" reused "it" for the topic on a page
+        // where "it" is the tumor in every other sentence (/review round 3).
+        Assert.DoesNotContain("before it comes up", section, StringComparison.Ordinal);
+
+        // The two questions come from ACS's own suggested-questions list, so they
+        // are quoted as questions. The draft ALSO carried "what to watch for and
+        // when to contact the doctor", which on that page is a bullet about
+        // late- and long-term SIDE EFFECTS — read under this heading it becomes
+        // recurrence warning signs, which the source does not say (/review round
+        // 1: a verbatim used outside its scope).
+        Assert.Contains("how will we know if it has come back", section, StringComparison.Ordinal);
+        Assert.DoesNotContain("when to contact the doctor", section, StringComparison.Ordinal);
+
+        // The per-tumor caveat again, on the one number a parent will otherwise
+        // assume is universal.
+        Assert.Contains("How long the risk lasts is not the same for every tumor",
+            section, StringComparison.Ordinal);
+
+        // No prognosis figure smuggled in behind "how long" (§12.5).
+        Assert.DoesNotMatch(new Regex(@"\b\d+\s*(year|month|%|percent)"), section);
     }
 
     [Fact]

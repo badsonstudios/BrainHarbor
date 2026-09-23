@@ -3989,7 +3989,7 @@ research items. Same shared contract throughout.
   here means other pages' `Composed.Replace(RawSection(...))` shapes are worth a
   sweep; Johns Hopkins (two pages) and ABTA stayed blocked for the third item
   running.
-- [ ] **WI-548 Sweep: every taxonomy type has a full guide**
+- [x] **WI-548 Sweep: every taxonomy type has a full guide**
   Goal: close the phase honestly rather than approximately.
   Acceptance: a test asserts that **every** slug in `taxonomy.yml` resolves to a
   page carrying the full section template — not merely that a file exists.
@@ -4006,6 +4006,32 @@ research items. Same shared contract throughout.
   that each page carries the FULL section template rather than merely existing.
   Note also that the Razor fallback branch still ships and is still proved, by a
   test that supplies its own unwritten type; WI-557 owns removing it.
+  **DONE 2026-09-23.** `TumorHubTemplateSweepTests` asserts it, over TAXONOMY
+  SLUGS rather than directory files. **Gate 1 ruling (now content-pipeline
+  §12.15): the unit of obligation is a QUESTION, not a heading string** — a page
+  answers it under the standard heading, answers it under its OWN heading, or
+  ROUTES it (§12.10), and may never simply drop it. Four classes, each keyed to a
+  property of the SLUG so the reason binds a page nobody has written: **Hub
+  (DEFAULT, all 17)**, Secondary (`brain-metastases`), Axis
+  (`pediatric-brain-tumor`), Umbrella (`all-brain-tumors`, §12.11). A new
+  taxonomy entry is a Hub; the three exceptions are pinned IN THE TEST, so an
+  exemption can only be acquired by editing a test in review, never declared in
+  content. `spinal-cord-tumor` looked like the strongest exemption case and
+  needed none — a FRAMING ruling is not a TEMPLATE ruling.
+  **The ruling refused one of its own candidate exemptions:**
+  `/tumors/pediatric-brain-tumor` said nothing whatsoever about the tumor coming
+  back — no section, no sentence, no route — so the class was not widened to fit
+  the page; **the page was written to fit the class**, route-first per §12.10.
+  Also fixed: `CaregiverSectionTests` asserted `>= 18` hubs against a corpus of
+  23, five items stale.
+  **For `/pm`:** the new section's best source (Cancer Research UK) is BARRED on
+  that page and the ban was honoured, so `/tumors/pediatric-brain-tumor` now
+  carries no sourced sentence about how relapse FEELS — the corpus's best writing
+  on it is unusable there, and that gap is real. `HeadingsOfSource` in the sweep
+  does not strip YAML front matter, so a `##`-looking line in a comment would
+  count as a heading a page owes (no page has one today, checked across all 23;
+  the handproof case is what would fail). Johns Hopkins and ABTA stayed blocked
+  for the fourth item running.
 
 ### Wave 5 — the long tail
 
