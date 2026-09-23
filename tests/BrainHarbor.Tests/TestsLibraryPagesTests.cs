@@ -12,7 +12,12 @@ namespace BrainHarbor.Tests;
 /// </summary>
 internal static class CuratedPage
 {
-    private static string RepoRoot()
+    /// <summary>
+    /// The repo root, walked up from the test output directory. Public since
+    /// WI-548: a fourth and fifth hand-rolled copy appeared in one new file, and
+    /// §12.8's factor-at-the-second-use rule is two helpers down this same class.
+    /// </summary>
+    public static string RepoRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "BrainHarbor.slnx")))

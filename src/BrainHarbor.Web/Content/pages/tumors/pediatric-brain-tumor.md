@@ -277,6 +277,87 @@ sources:
     # is what carries the RADIATION half of "Some chemotherapy medicines ... and
     # radiation to the head can affect hearing" -- the chemotherapy sources name the
     # drugs but not the radiation.
+    #
+    # WI-548 ALSO USES THIS PAGE FOR THE RECURRENCE SECTION, re-fetched and
+    # re-read live on 2026-09-23 rather than taken from the research pack (§12.8:
+    # a dossier cannot support a published claim). Verbatim: "However, for some
+    # types of brain tumors the risk of the tumor coming back can last for many
+    # years."; "Ask your cancer care team about the specific type of tumor, how
+    # long imaging tests to check the brain may be needed, and the risk of the
+    # tumor coming back."; the care-plan bullet "A list of possible late- or
+    # long-term side effects from treatment, including what to watch for and when
+    # to contact the doctor"; and the suggested question "How will we know if the
+    # tumor has come back? What should we watch for?"
+  - url: https://together.stjude.org/en-us/conditions/cancers/relapse.html
+    title: "Relapse - Together by St. Jude™"
+    accessed: 2026-09-23
+    # WI-548, the recurrence section. Fetched and read live. It is THIN -- three
+    # sentences of body text and then a link hub -- and it is quoted for exactly
+    # what it says: "Relapse happens when cancer returns after treatment.";
+    # "Cancer may come months or years later."; "Your child's care team will
+    # discuss treatment options with you."
+    #
+    # THE WORDS "refractory", "recurrent" AND "progression" DO NOT APPEAR ON IT,
+    # verified by direct question, which is why the section's vocabulary list ends
+    # where it does. See the absence note on the ACS survivorship entry below.
+  - url: https://www.cancer.org/cancer/survivorship/recurrence.html
+    title: "Cancer Recurrence | American Cancer Society"
+    accessed: 2026-09-23
+    # WI-548. The plain-language split the corpus had nowhere else: "Recurrence
+    # means the cancer has come back. Progression means the cancer is growing or
+    # spreading without ever having gone away completely." Also the honesty the
+    # section keeps rather than smoothing over: "There's no standard length of
+    # time to decide if it's recurrence or progression."
+    #
+    # SCOPED ON THE PAGE, BECAUSE THIS SOURCE IS ABOUT CANCER IN GENERAL and every
+    # other source on this page is about children or about brain tumors. The page
+    # says so out loud -- "how doctors talk about cancer in general, not only
+    # about brain tumors" -- rather than letting a general definition read as a
+    # brain-tumor one. "relapse" and "refractory" do not appear on it.
+  - url: https://www.dana-farber.org/cancer-care/treatment/childhood-brain-tumors/research
+    title: "Childhood Brain Tumor Clinical Trials and Research - Dana-Farber/Boston Children's"
+    accessed: 2026-09-23
+    # WI-548. The trial sentence, from a US children's center, read live: "If your
+    # child has a progressive or recurrent tumor, she may be eligible for a number
+    # of clinical trials available through these groups or from one of our
+    # independent clinical investigators."
+    #
+    # "MAY BE ELIGIBLE" IS WHY THE PAGE SAYS "may be able to". Nothing found in
+    # any source supports a frequency -- not "often", not "usually", not "most
+    # children" -- so the section makes no claim about how common this is.
+    #
+    # FOUR ABSENCES RECORDED ACROSS THIS SECTION'S SOURCES, each verified rather
+    # than assumed, because each is a sentence the draft would otherwise have been
+    # tempted to write:
+    #  (1) NO REPEAT BIOPSY. No parent-facing source says tissue is taken again
+    #      when a childhood brain tumor comes back. /tumors/medulloblastoma does
+    #      carry "your team may test a new sample" -- on ITS sources, for ONE
+    #      tumor. A page written across every childhood tumor may not generalise
+    #      it, and that split is the section's whole argument for routing.
+    #  (2) NO CONFIRMATORY SECOND SCAN. The "we will scan again before we call it"
+    #      step is real and lives only in clinician-facing literature; no source
+    #      written for families describes it.
+    #  (3) NO TUMOR BOARD, AND THE FIRST VERSION OF THIS NOTE OVERCLAIMED.
+    #      `blocks/tumor-board.md` IS family-facing and IS sourced (NBTS, "Brain
+    #      Tumor Board 101"), so "no family-facing source describes a tumor
+    #      board" would have been false -- /review round 1 caught it. What is
+    #      true is narrower: that block describes the MEETING in general ("it
+    #      tends to happen when a case is complicated"), and nothing found ties
+    #      one to a recurrence decision. So the block is not composed in here
+    #      (§12.10: it would be scoped to the wrong moment) and the page claims
+    #      nothing about HOW the decision is made. It says only what St. Jude
+    #      says: "Your child's care team will discuss treatment options with
+    #      you." The draft's "a team decides together, not one doctor" was the
+    #      tumor-board claim with the name filed off, and was removed.
+    #  (4) NO SOURCED SENTENCE ABOUT HOW THIS FEELS. The best writing on it is on
+    #      Cancer Research UK's children's relapse page ("is devastating"), and
+    #      THIS PAGE IS BARRED FROM CANCER RESEARCH UK -- a ruling made at WI-537
+    #      and re-checked twice, on the grounds that its children's pages are
+    #      British in the sentences this page wants and eight of nine carry their
+    #      own overdue-review notice. The ruling was HONOURED rather than
+    #      overturned for one convenient quote: the section carries no claim about
+    #      the reader's feelings, and the caregiver block below it is where the
+    #      corpus puts that material on every page.
   - url: https://together.stjude.org/en-us/treatment-tests-procedures/long-term-effects/cognitive-late-effects.html
     title: "Cognitive Effects of Childhood Cancer and Stem Cell Transplant - Together by St. Jude™"
     accessed: 2026-09-16
@@ -830,6 +911,34 @@ who know none of this.
 **There is good material written for families** rather than for doctors. The
 Children's Oncology Group publishes short guides called Health Links on
 individual late effects.
+
+## If it comes back
+
+**Which tumor your child has decides what happens next**, so the page for that
+tumor is the better place to read. [The tumor list](/tumors) has one for each
+type. The American Cancer Society suggests checking three things with your team:
+the specific type of tumor, how long scans go on for, and the risk of it coming
+back.
+
+**Three words get used, and they do not all mean the same thing.**
+
+- **Relapse** is when cancer comes back after treatment. It may come back months
+  or years later.
+- **Recurrence** also means it has come back.
+- **Progression** means it is growing or spreading without ever having gone away
+  completely.
+
+Those last two are how doctors talk about cancer in general, not only about
+brain tumors. **There is no agreed length of time that separates them**, so ask
+which word your team is using and what they mean by it.
+
+**Your child's care team will talk the options through with you.** A US
+children's cancer center says a child whose tumor has grown or come back may be
+able to join a [clinical trial](/treatments/clinical-trials).
+
+**Two questions are worth asking before you need the answers:** how will we know if
+it has come back, and what should we watch for? How long the risk lasts is not
+the same for every tumor, so ask about your child's.
 
 ## Thinking, learning and memory
 

@@ -21,16 +21,9 @@ public sealed class CaregiverSectionTests
     private const string Heading = "## For the person caring for someone with this";
     private const string Directive = "[CAREGIVER]";
 
-    private static string RepoRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "BrainHarbor.slnx")))
-        {
-            directory = directory.Parent;
-        }
-        return directory?.FullName
-            ?? throw new InvalidOperationException("could not find the repo root from the test output directory");
-    }
+    // WI-548: the shared one, rather than a fourth private copy (§12.8's
+    // factor-at-the-second-use rule).
+    private static string RepoRoot() => CuratedPage.RepoRoot();
 
     private static string ContentRoot => Path.Combine(RepoRoot(), "src", "BrainHarbor.Web", "Content");
     private static string TumorsRoot => Path.Combine(ContentRoot, "pages", "tumors");
@@ -52,7 +45,16 @@ public sealed class CaregiverSectionTests
         Assert.True(missing.Count == 0,
             "every tumor hub carries a caregiver section (content-pipeline §12.2 item 11); missing from: "
             + string.Join(", ", missing));
-        Assert.True(TumorHubs().Count() >= 18, "expected the 18 shipped tumor hubs");
+
+        // WI-548. This floor was a hand-typed `>= 18` from the day the sweep was
+        // written, and the corpus reached 23 five items ago without it noticing —
+        // so the guard against "the enumeration quietly stopped finding pages"
+        // had five pages of slack in it. Read the count out of taxonomy.yml
+        // instead: that is the list this sweep is really about, and it cannot go
+        // stale the next time a type is added.
+        var slugCount = new TaxonomyStore(File.ReadAllText(Path.Combine(ContentRoot, "taxonomy.yml")))
+            .TumorTypes.Count();
+        Assert.Equal(slugCount, TumorHubs().Count());
     }
 
     [Fact]
