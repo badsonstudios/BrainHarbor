@@ -200,7 +200,7 @@ different hours.
 The rules are written so that people can drive again once they meet them. Ask
 your team what that would take for you.
 
-## Work
+## Work {#work}
 
 You do not have to tell an employer everything. In the US, the Americans with
 Disabilities Act protects you, and it also means adjustments are a normal thing

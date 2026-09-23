@@ -492,7 +492,9 @@ Before treatment starts, expect:
   future, ask about that **before** treatment starts. It is on the list of
   questions patient groups tell you to bring to this appointment.
 - Some centers test how your memory and concentration are doing beforehand, so
-  there is something to compare against later.
+  there is something to compare against later. [The thinking and memory
+  tests](/tests/neuro-exam-and-memory-testing) goes through what that day is
+  like.
 
 There are a few things to sort out before your mask is made, because they
 change the fit:
