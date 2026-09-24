@@ -334,6 +334,8 @@ on your symptoms and your job rather than on your diagnosis.
 **Tiredness and thinking.** Both are common. Both are easy to blame on the wrong
 thing. Raise them rather than putting up with them. If your thinking feels
 different, say so. Your team can test it. You do not have to prove it first.
+[What that testing involves](/tests/neuro-exam-and-memory-testing) sets out both
+the quick exam and the longer one.
 
 ## Follow-up scans, and what to do while you wait
 
