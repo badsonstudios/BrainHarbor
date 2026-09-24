@@ -746,14 +746,36 @@ public sealed class AcousticNeuromaPageContentTests
         Assert.Matches(new Regex(
             @"fluid being blocked on its way out", RegexOptions.IgnoreCase), section);
 
-        // AND THE MAP'S TWO ENTRIES ARE SCOPED RATHER THAN ENDORSED WHOLESALE.
+        // AND THE MAP'S THREE ENTRIES ARE SCOPED RATHER THAN ENDORSED WHOLESALE.
         // /review ruled against my defence here: telling the reader "the brainstem
         // entry applies" hands them "facial weakness", which this page calls
         // unusual. The distinction I was relying on — a tumor IN the brainstem
         // versus one pressing on it, and only when large — was correct medicine
         // and entirely invisible to the reader.
+        //
+        // WI-568 MADE IT THREE ENTRIES, NOT TWO, AND CHANGED WHICH ONE IS CLOSEST.
+        // The block's map gained a SKULL BASE entry — hearing, balance, the nerves
+        // to the face — and a vestibular schwannoma is a skull-base growth, so that
+        // entry describes it more exactly than the cerebellum one this note used to
+        // put first. Leaving the note alone would have sent the reader to the
+        // second-best entry while the best one went unmentioned. The note points at
+        // the entries rather than restating their words, because the corpus
+        // restatement guard fires on a page that echoes a block's prose — which is
+        // how the first draft of this edit was caught.
         Assert.Matches(new Regex(
-            @"cerebellum entry is this growth's own territory", RegexOptions.IgnoreCase),
+            @"entry about the skull base, below and behind the ear, is the closest fit",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(
+            @"cerebellum entry is this growth's territory too", RegexOptions.IgnoreCase),
+            section);
+
+        // AND THE NEW ENTRY IS SCOPED, NOT ENDORSED. /review round 2: this page says
+        // above that facial weakness is unusual here and is "what people fear", and
+        // the skull base entry lists weakness down one side of the face. Promoting
+        // that entry to "closest fit" without scoping it reintroduced, one bullet
+        // over, the exact defect the brainstem sentence was scoped for.
+        Assert.Matches(new Regex(
+            @"facial weakness, which this growth usually causes only once it is large", RegexOptions.IgnoreCase),
             section);
         Assert.Matches(new Regex(
             @"brainstem entry describes what can happen only once a growth\s*is big enough",

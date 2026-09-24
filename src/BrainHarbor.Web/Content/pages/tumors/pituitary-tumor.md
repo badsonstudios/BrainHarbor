@@ -291,12 +291,24 @@ sources:
   #   MECHANISM -- OUT. It opens "These are the ways a tumor IN THE BRAIN causes
   #     symptoms" and then asserts brain swelling, seizures, and blocked fluid
   #     needing a shunt, followed by a lobe-by-lobe map. A pituitary tumor is not
-  #     in the brain, rarely seizes, and does not block the fluid pathways, and
-  #     the anatomy that matters here -- the sight nerves directly above, the
-  #     nerves to the eye beside it -- is absent from the block entirely. It has
+  #     in the brain, rarely seizes, and does not block the fluid pathways. It has
   #     NO scoping clause: it asserts flatly. That is the test §12.10 sets, and it
   #     is the mirror of WI-538's error, which wrongly excluded the spinal-cord
   #     block by calling a conditional block unconditional.
+  #     WI-568 RE-EXAMINED THIS AND THE EXCLUSION STANDS, BUT ONE OF ITS STATED
+  #     REASONS NO LONGER DOES. This note used to carry a fourth reason: that the
+  #     anatomy which matters here -- the sight nerves directly above, the nerves
+  #     to the eye beside it -- was nowhere in the block. WI-568 added a
+  #     pituitary/sellar entry to the block's map ("Behind the eyes, at the base
+  #     of the brain"), so that reason became false and was DELETED rather than
+  #     left to rot -- WI-549's lesson that a comment disagreeing with its own
+  #     page is a defect report nobody has read. It is not quoted here, because a
+  #     verbatim copy of a retired claim is the next reader's live one; the
+  #     deletion is pinned by MechanismBlockTests instead. The three reasons above
+  #     are untouched and are on their own sufficient: they are about what the
+  #     block ASSERTS of this tumor, not about what it omits. Adding a missing
+  #     entry does not repair a block that opens by calling this a tumor in the
+  #     brain.
   #   CROSSWALK -- OUT. It is entirely the 2021 CNS rewrite: Roman-to-Arabic CNS
   #     grades, gene results entering the name, NOS and NEC. This report carries
   #     none of those, and this tumor's renames came from the endocrine volume and

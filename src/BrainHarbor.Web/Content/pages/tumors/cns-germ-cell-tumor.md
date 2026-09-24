@@ -576,9 +576,12 @@ as the head.
 
 **Before the general part below.** It was written for every kind of brain tumor,
 not for this one. Two things to take into it. The piece about fluid backing up
-is the one most likely to be about you. And its list of brain areas does not
-include the deep middle, where these tumors grow. For pressure signs, the rules in the symptoms section are
-stronger than the advice here, and those are the ones to follow.
+is the one most likely to be about you. And in its list of brain areas, two
+entries are about where these grow: the deep middle one, and the one about
+behind the eyes. The deep middle entry talks about pressure rather than the
+one-sided weakness above, which comes from the spot off to one side instead.
+For pressure signs, the rules in the symptoms section are stronger than the
+advice here, and those are the ones to follow.
 
 [MECHANISM]
 
