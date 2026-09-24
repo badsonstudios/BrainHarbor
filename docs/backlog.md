@@ -2878,7 +2878,13 @@ Start only after Dan has signed off WI-513's template.
   smaller is the WI-512 stale-assembly lesson in a new coat. **Always read the
   count, not just the colour.**
 - [ ] **WI-564 Corpus-wide British idiom sweep** *(not a Wave 2 blocker — do it
-  before the corpus doubles)* — WI-563 found that the spelling gate
+  before the corpus doubles)*
+  **WI-549 added `fortnight` to `CuratedPage.BritishForms` (2026-09-23), and how
+  it was found matters for this item:** not by review, but by a BREAK MUTATION.
+  A planted "Ask again in a fortnight" survived every gate on both line endings,
+  because the word was unmistakably British and on no list. Five review rounds
+  had read that page. **This sweep should plant idioms rather than only grep for
+  them** — a grep finds the forms somebody already thought of. — WI-563 found that the spelling gate
   (`CuratedPage.BritishForms`) does not catch **idiom**, and idiom is what
   actually misleads. *"Being sick"* means vomiting in Britain and *being unwell*
   in the US, and it was sitting in a same-day escalation trigger. Corpus counts
@@ -4102,6 +4108,192 @@ research items. Same shared contract throughout.
   `/tumors` shipped with nothing linking to it, and the link check was
   structurally blind to it — the sitemap-reachability test added then must cover
   these). Depends on: WI-548.
+
+### Wave 6 — the location axis
+
+Raised 2026-09-24 from a reader report: somebody on Reddit with a **tectal
+glioma** would find nothing on this site. Research (deep-research pass, same
+date) turned that into a bigger finding than one missing page.
+
+**THE FINDING: location is a third axis and the site only has two.** Pages are
+organised by TYPE and by TREATMENT/TEST. The `[MECHANISM]` block answers "why
+your symptoms are the ones you have" by location on ~20 hubs, and stops there —
+which is exactly where every comparator stops too (Brain Tumour Charity, NBTS,
+ABTA, Cancer Research UK, Cleveland Clinic, Mayo all verified: symptoms only).
+Nobody patient-facing answers **"my tumor is here, so what happens to me?"**
+
+**THE CONSTRAINT THAT SHAPES EVERY ITEM BELOW.** An international survey of
+neurosurgeons found only **23% apply any eloquence grading scale**, and the
+authors state the lack of consensus *"limits the reliability of eloquence as a
+descriptor of tumor location"* (PMC12367934). **If the field cannot standardise
+which locations are risky, this site must not publish a location-to-risk lookup
+table.** Every item below is an expectation-setter and question-generator:
+"here is what your team is weighing, here is what to ask". Nothing here tables
+a location against an outcome.
+
+**NO PROGNOSIS, AND NO LOCATION PERCENTAGES.** The tectal literature reports
+resection rates from **2.3% to 100%** across centres for the same tumour. That
+spread is the argument for publishing none of them.
+
+- [ ] **WI-567 `/where-your-tumor-is` — the location page**
+  Goal: give the reader who knows WHERE their tumor is, but not what it is
+  called, a page that says what that changes.
+  **Why a standalone page and not an expansion of `[MECHANISM]`:** the block
+  answers a DIAGNOSIS-phase question ("why do I feel like this"). This is a
+  DECISION-phase question asked by a different reader at a different moment,
+  who arrives typing a location rather than a type. Grafting it on would break
+  a block that currently works.
+  **Why it cannot wait for more tumor-type pages:** some readers have no type
+  page to go to *in principle*. Under WHO CNS5 a tectal glioma resolves to
+  pilocytic astrocytoma, diffuse midline glioma H3 K27-altered, or others —
+  *"diverse molecular profiles rather than a single entity"* (PMC11922996).
+  Same for pineal-region, sellar-region and brainstem readers. **NCI's
+  clinician PDQ already gives those three locations their own treatment
+  sections**; this is the patient-facing version of a pattern NCI validated.
+  Acceptance:
+  - Nine regions, each named in plain language FIRST and the report's word
+    taught second ("the back of your brain — your scan may call this the
+    *occipital lobe*"). The six in `[MECHANISM]` plus **pituitary/sellar**,
+    **ventricles and midline**, and **skull base** (see WI-568).
+  - A section on **when location makes it urgent** — the fluid. This is the
+    highest-value content on the page and no comparator has it patient-facing:
+    a tumor can be small, slow and low-grade and still be an emergency because
+    of the plumbing rather than the tumor.
+  - Surgery framed as a range a team chooses from — removable, partly
+    removable, biopsy-only, not operated on, watched — **never as a table
+    keyed on location**. Sourced to the ACS surgery page, NCI PDQ HP, the EANO
+    meningioma guideline (PMC8563316), and Columbia's brainstem glioma page.
+  - A "what to ask your surgeon" section. Unsourced by design and the safest
+    section on the page.
+  - **No percentages, no survival, no prognosis, no location-keyed risk.**
+  - §12.8 library template; reading grade 6.0 or lower; links only to pages
+    that exist.
+  - **Verify `moffitt.org/cancers/brain-tumor/location/` by hand before
+    writing** — it 403'd during research and is the one unverified hole in the
+    "no comparator does this" conclusion. If Moffitt does do it, read it first.
+  Refs: `docs/content-pipeline.md` §12.8, §12.10, §12.4, §12.5.
+  Depends on: WI-568 (the region list must be settled first).
+
+- [ ] **WI-568 `[MECHANISM]`'s location list: three missing regions, and a rule
+  that is wrong for the readers who need it most**
+  Goal: fix a defect in a block that is live on ~20 hubs today.
+  **THE DEFECT.** The block's rule is *"the symptom tells you where, the scan
+  tells you what."* For an obstructive-hydrocephalus presentation it is
+  **false**: a tectal or fourth-ventricle tumor presents with morning headache,
+  vomiting, double vision and unsteadiness — **pressure** symptoms that point at
+  the fluid, not at the tumor's location. The reader follows the rule and looks
+  in the wrong place. The block cannot express this because its list maps
+  locations to the functions they disturb, and pressure disturbs none of them.
+  **THE OMISSIONS.** The six-region list has no **pituitary/sellar** (vision and
+  hormones; an entirely different surgical route — see WI-553), no **ventricles
+  or midline** (where tectal sits; the fluid), and no **skull base** (hearing,
+  balance, facial nerve). ABTA's own list names the meninges, skull base, spinal
+  cord, pituitary and cranial nerves — ours names none of the last three.
+  Acceptance:
+  - The three regions added, in the block's existing voice and at its reading
+    grade.
+  - The rule qualified so a pressure presentation is not sent to the wrong
+    place. It must stay a short, usable rule — **do not turn it into a
+    paragraph of caveats**; §12.6 keeps the qualifier and shortens it.
+  - A route to WI-567 for the reader who wants what location means next.
+  - **Every one of the ~20 including hubs re-read after the edit.** §12.10: a
+    block is prose asserted on every page that includes it, and the failure is
+    silent. Diff the composed output, not just the block.
+  - A test that the new regions reach the reader on a composed page, not just
+    in the block file.
+  Refs: `docs/content-pipeline.md` §12.10, §12.6.
+
+- [ ] **WI-569 "Where this one usually sits, and what that changes" — the
+  pattern, on `/tumors/meningioma`**
+  Goal: establish how a tumor-TYPE page carries location, on the one type where
+  the evidence is strongest, and write the ruling down before it is repeated.
+  **THE DESIGN DECISION, RECORDED RATHER THAN ASSUMED.** Dan proposed a
+  **dropdown on each tumor page that swaps the text by location** (2026-09-24).
+  It is not being built, and the reason belongs here rather than in a chat
+  message: (1) **it does not scale honestly** — roughly 10 location-variable
+  types by 9 regions is ~90 cells, and the literature supports a small fraction
+  of them, so most cells would be invented content on a sources-only site;
+  (2) **it inverts §12.10** — the site's core rule is route, don't restate, and
+  a dropdown duplicates location material onto ten pages instead of owning it
+  once; (3) **it needs JavaScript or a new URL surface**, and WI-557 already
+  requires the picker to work with JS off. **Revisit if** WI-567 ships and
+  readers still cannot find their location from a type page.
+  What replaces it: **one section per location-variable type**, naming where
+  this type usually sits and what that changes, routing to WI-567 for the rest.
+  Roughly 11 types are location-FIXED (acoustic neuroma, craniopharyngioma,
+  pituitary, DIPG, medulloblastoma, chordoma, DMG, hemangioblastoma, ATRT, CNS
+  germ cell, spinal cord) and need a route, not a section — they already say
+  where they sit.
+  Acceptance:
+  - The section on `/tumors/meningioma`, sourced to EANO (PMC8563316), which
+    states *"extent of resection is determined by tumor location, consistency,
+    size, and proximity or involvement of critical neurovascular structures"*
+    and describes subtotal surgery plus radiotherapy for perioptic lesions.
+  - The pattern written into `docs/content-pipeline.md` §12 so WI-570 copies a
+    ruling rather than a page.
+  - No location-keyed risk table (Wave 6 preamble).
+  Depends on: WI-567.
+
+- [ ] **WI-570 Sweep: the location section on the remaining location-variable
+  hubs**
+  Goal: apply WI-569's pattern to the rest.
+  Scope: the glioma family (glioma, astrocytoma, glioblastoma, oligodendroglioma,
+  low-grade, high-grade), ependymoma, CNS lymphoma, brain metastases. The
+  location-FIXED types get a one-line route instead.
+  Acceptance: every hub either carries the section or routes, and **a test
+  asserts which** — §12.15's rule that an obligation may be answered, re-headed
+  or routed, but never dropped. Depends on: WI-569.
+
+- [ ] **WI-571 Tectal glioma, and the tumors whose only name is a location**
+  Goal: give the reader who was told "tectal glioma" somewhere to land.
+  **IT CANNOT BE TUMOR TYPE #24.** "Tectal glioma" is a location descriptor, not
+  a WHO CNS5 name, and §12.2 item 3 requires CNS5 naming throughout. Adding it
+  to `taxonomy.yml` would put a location into a list of diagnoses.
+  Where it goes: a section on WI-567 plus a search alias, so the word a reader
+  was actually given finds something.
+  Sourced facts available: it arises in the dorsal midbrain and obstructs the
+  aqueduct (PMC11922996; Childs Nerv Syst 2013); **most are watched, and CSF
+  diversion is the usual intervention rather than resection** (Neurosurg Rev
+  2022, PMID 34609665 — *"Most tectal gliomas in the pediatric population can be
+  observed through radiographic surveillance and CSF diversion"*); the first
+  operation often treats the fluid, not the tumor.
+  **Publish no figures from that review** — its own resection range across
+  studies is 2.3% to 100%. **Do not reproduce the Dana-Farber or Boston
+  Children's cure-rate and "excellent prognosis" language** (§12.5).
+  **Unverified, do not publish:** the claim that CNS5 folds most tectal gliomas
+  into "diffuse low-grade glioma, MAPK pathway-altered". AJNR 403'd and a
+  Europe PMC full-text search returned zero hits. Chase Acta Neuropathologica
+  2026 `10.1007/s00401-026-03066-7` (not read) before writing classification.
+  Depends on: WI-567.
+
+- [ ] **WI-572 The brain diagram: one picture of where the regions are**
+  Goal: let a reader see where their location is, instead of parsing "upper back
+  part of the brain".
+  **This is a CONSUMER of WI-561, not a second image mechanism.** WI-561 builds
+  `<figure>`, required alt text, captions graded by ContentCheck and print
+  rules; this item supplies one diagram and the text that must work without it.
+  Acceptance:
+  - **The page works with no image at all.** WCAG AA, and the corpus has zero
+    images today — the diagram is an enhancement over the text list in WI-567,
+    never the only way in.
+  - Alt text and a text equivalent that names every region the diagram labels.
+  - **Drawn for us or genuinely public domain. NCI embedded images are BANNED**
+    (licensed stock — PLAN.md §5), and that ban is the most likely thing to be
+    forgotten when somebody reaches for an existing brain diagram.
+  - A slot added to WI-562's inventory for it.
+  Depends on: WI-561, WI-567.
+
+- [ ] **WI-573 Visual field loss, and the driving consequence**
+  Goal: say the most concrete "what does this mean for me" answer in the whole
+  location topic.
+  Today `visual field` appears in the corpus **only inside front-matter
+  comments** — nowhere a reader can see it — while `/tumors/craniopharyngioma`
+  carries the one sentence tying vision to driving.
+  Acceptance: the general version said once, where a location reader meets it;
+  **driving ROUTED to `/seizures/living-with#driving` and never restated**, and
+  **no waiting time anywhere** (jurisdictional — WI-560 owns it). CRUK's driving
+  page (reviewed 2026-05-08) is the source for the vision-and-driving link.
+  Depends on: WI-567.
 
 - [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
   Goal: give a curated page a way to carry an image, with everything the site's
