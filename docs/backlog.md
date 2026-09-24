@@ -4035,11 +4035,30 @@ research items. Same shared contract throughout.
 
 ### Wave 5 — the long tail
 
-- [ ] **WI-549 T8 Neurological and thinking/memory testing** — the bedside exam
+- [x] **WI-549 T8 Neurological and thinking/memory testing** — the bedside exam
   and formal neuropsych, together because they are the same conversation and the
   same "am I being judged?" anxiety. **There is no pass or fail**, the day is
   long and tiring, and the results are used for rehab, work and driving.
   Depends on: WI-502.
+  **Shipped** as `/tests/neuro-exam-and-memory-testing`, the tenth tests page.
+  **GATE 1 RULING (content-pipeline §12.8, WI-549 block): SPLIT BY SLOT** — a
+  §12.8 slot is carried once where the two subjects give one honest answer and
+  twice where they give two, and **never averaged**. The bedside exam runs
+  minutes, formal testing runs hours; a page that splits the difference lies to
+  both readers. **"There is no pass or fail" had to be rebuilt rather than
+  borrowed:** the corpus already says the reader cannot fail three times and
+  every one is about a SCAN, where the reader does nothing and a machine takes a
+  picture. Here the reader IS scored, against age- and education-matched norms,
+  so this page concedes the measuring in the same breath as the answer and owns
+  the hard version. **The research dossier's "10 to 20 minutes" for the bedside
+  exam is supported by NOTHING** and is banned by name; the live sources say
+  four or five minutes for the short structured version and half an hour to an
+  hour for a full one. **For `/pm`:** WI-554 (Rehabilitation) **owes a door back
+  to this page** — the rehab half of "what the results are used for" is stated
+  here in prose with no link, because no rehabilitation page exists, and
+  `TheRehabHalfIsSaidWithoutALinkBecauseNoRehabPageExistsYet` goes red the day
+  one ships. "fortnight" was added to `CuratedPage.BritishForms` after the break
+  harness proved a planted use survived every gate.
 - [ ] **WI-550 T9 EEG and seizure tests** — often the first test the reader ever
   had. **A normal EEG does not mean you did not have a seizure.**
   Depends on: WI-502.

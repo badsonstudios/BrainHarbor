@@ -272,6 +272,8 @@ about changes in between.
    [follow-up scans](/tests/follow-up-scans) covers how each one is compared with
    the last.
 3. **You see your team.** They ask how you have been and examine you.
+   [The exam in the room](/tests/neuro-exam-and-memory-testing#step-by-step)
+   goes through what they check.
 4. **Some people have other tests as well.** Hearing tests are part of watching an
    acoustic neuroma. Eye tests, which check how far out to the sides you can see,
    and hormone blood tests are part of watching some pituitary tumors.

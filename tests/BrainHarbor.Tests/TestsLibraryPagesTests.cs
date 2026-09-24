@@ -417,6 +417,14 @@ internal static class CuratedPage
         // list when a new one turns up rather than reaching for a bare stem.
         "a lift", "a drip", "the drip", "no drip", "on a drip", "by drip",
         "casualty",
+
+        // WI-549. Found by the break harness, not by review: a planted
+        // "Ask again in a fortnight" SURVIVED on both line endings, because
+        // the word was British, unmistakably so, and on no list. A US reader
+        // does not measure anything in fortnights. Checked over the whole
+        // corpus before adding, per the rule above: zero occurrences, so no
+        // correct sentence contains it.
+        "fortnight",
     ];
 
     /// <summary>

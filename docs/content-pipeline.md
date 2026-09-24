@@ -5194,6 +5194,134 @@ all instrument. Its full ruling is §12.15; these are the lessons that generalis
   then 2, then none, then none) — rounds 2, 3 and 5 each found their finding
   *inside the previous round's fix*.
 
+**WI-549 — `/tests/neuro-exam-and-memory-testing`, the first page whose subject
+is TWO CO-EQUAL THINGS THAT ARE NOT THE SAME TEST.** (Not the first page with
+two subjects at all: `/tests/planning-scans` carries six scan types and
+`/tests/getting-ready-for-surgery` several appointments. What is new is that
+neither subject is the dominant case — planning-scans has MRI add-ons plus one
+outlier to route, and this page has two peers.) The
+bedside neurological exam runs minutes; formal neuropsychological testing runs
+hours.
+The backlog put them on one page because they are the same conversation and the
+same "am I being judged?" anxiety — which is a ruling about the READER'S
+FEELING, not a claim that the procedures are alike.
+
+- **SPLIT BY SLOT, and state the rule before drafting.** §12.8's slots are
+  carried **once where the two subjects give one honest answer and twice where
+  they give two** — never averaged. Two shipped pages already had the shape:
+  `/tests/planning-scans` slot 4 gives the common answer then names the outlier
+  and routes; `/tests/getting-ready-for-surgery` slots 4 and 5 carry a bullet
+  per sub-test. **Read those before inventing one.** The failure this exists to
+  prevent is a single blended answer standing in for two that differ by two
+  orders of magnitude, which lies to both readers.
+- **THE OPERATIONAL PROPERTY IS ATTRIBUTION, NOT COUNTING.** "Once or twice" is
+  not testable — the drafted page names both subjects in the summary too. What
+  a guard can hold is: **every duration must sit in a span naming exactly one
+  subject.** It took three review rounds to get there, and each intermediate
+  version shipped a hole:
+  1. **Token presence** (both labels appear, "minutes" appears, "hours"
+     appears) — defeated by a paragraph that named both and said "an average of
+     the two is close enough".
+  2. **Label pairing** (a span naming the exam has minutes; a span naming the
+     testing has hours) — defeated three ways: a duration attached to NEITHER
+     label, one label carrying the other's number, and a blend written in the
+     page's own short forms ("the testing") which the full-label matcher could
+     not see.
+  3. **Per-duration attribution**, driven off every duration match, with spans
+     re-split into sentences when they name both. **Keep every defeated shape as
+     a literal canary case**; a guard is only as good as the shapes it has been
+     proved to reject, and the ones that escaped are the only proof available.
+- **A CEILING RULE HAS TO BE NARROWED, NOT DROPPED.** Banning any hours figure
+  from the exam's span failed the page's own sourced sentence, because a full
+  exam really does run up to an hour and the two ranges legitimately overlap
+  there. The reflex was to delete the rule — and deleting it reopened the hole
+  exactly, letting "the exam in the room, in full: most of the day" pass clean.
+  The honest ceiling is **an hour, singular**, so the rule keys on plural
+  "hours", "several hours" and "most of the day". §12.8's too-wide warning cuts
+  both ways: **the correction for a too-wide guard is a narrower guard, not no
+  guard.**
+- **A DOSSIER IS NOT A SOURCE, AND THE UNCITED LINE IS THE ONE THE ITEM TURNS
+  ON.** `docs/research/tumor-guides/tests-library.md` §7 carries a URL on every
+  claim except three — the bedside exam's "10 to 20 minutes", the testing's
+  "several hours", and "there is no pass or fail". Those were the page's
+  spine. **"10 to 20 minutes" is supported by nothing**: the live sources say a
+  structured brain-tumor exam runs about four or five minutes and a fuller one
+  half an hour to an hour. It is banned by name, with a canary proving the ban
+  can fire.
+- **FEASIBILITY IS NOT ADOPTION.** "Readily performed within the time frame of
+  routine office visits" says a scale CAN fit a visit. It does not say clinics
+  DO use it. The page said clinics use it and score you — attached to a duration
+  a reader plans an appointment around. Checked live: no adoption claim exists
+  in the paper. Attribute to the INSTRUMENT and hedge the use
+  ("where your team uses that one"). The over-read survived one review round in
+  a second section after being fixed in the first, **with a front-matter comment
+  still swearing the page did not make the claim** — a comment that disagrees
+  with its own page is a defect report nobody has read.
+- **"A CLINIC SAYS EXACTLY THAT" IS A CITATION, AND IT HAS TO BE EXACT.** The
+  page claimed the battery is *built* so nobody gets everything right, then
+  attributed it to a clinic that only observes that people find some items easy
+  and some hard. A claim about test CONSTRUCTION is not a claim about people.
+- **WHERE THE CORPUS ALREADY HAS THE EASY VERSION, THIS PAGE OWES THE HARD
+  ONE.** "You cannot fail this" appears three times in the corpus and every one
+  is about a SCAN, where the reader does nothing and a machine takes a picture.
+  On a scored test that sentence is false. This page concedes the measuring in
+  the same breath as the answer — the opening both answers "no" and admits the
+  scoring — then says there is no line you fall below. **Order is the property,
+  and a guard for it must anchor to the subject being conceded**: a bare
+  `\bscored\b` matched the page's FIRST use of the word, which belonged to the
+  other test, so deleting the real concession left the guard green.
+- **A CLAIM WHOSE SOURCE COULD NOT BE READ BECOMES A QUESTION.** hhs.gov 403'd
+  twice, so the only candidate source for "an employer cannot get your report
+  without your authorization" was unreadable. The claim is asserted nowhere and
+  appears only in "What to ask your team", which asserts nothing. The blocked
+  URLs are recorded in the front matter and cited nowhere — **and the test
+  asserts the RECORD as well as the absence**, because a first version went
+  greener when the record was deleted.
+- **A RULING IN `work_files/` SHIPS NOWHERE.** `.claude/work_files/` is
+  git-ignored, so the Gate 1 ruling, its corrections and its pre-committed
+  fallbacks live only in this section. Write the durable half here before the
+  PR. (The fallback that mattered: *if no citable source carries a duration,
+  publish the SHAPE and not the number.* It was pre-committed at Gate 1 and
+  still had to be enforced by review three rounds later, on a repeat interval
+  no source carried.)
+
+- **A CEILING RULE NEEDS ITS MIRROR.** The rule keeping the testing day's
+  figures off the exam was written, defeated, deleted, reinstated and narrowed
+  across three rounds — and for all of that it still only ran in ONE direction.
+  A span naming the testing and carrying a minutes-only figure passed clean,
+  telling a reader booked for a half-day to expect five minutes, and the
+  allow-list could not backstop it because the offending phrase is licensed
+  **for the other subject**. Whenever a guard encodes "this figure belongs to
+  A, not B", write B's half at the same time.
+
+- **PROOF: FIVE `/review` rounds** (4 blockers, then 3, then 4, then none, then
+  none), and **rounds 2, 3, 4 and 5 each found their findings inside the
+  previous round's fix** — the anti-averaging guard alone was defeated four
+  times before it held, one round's fix (deleting a too-wide rule) reopened the
+  exact hole the next round found, and the *replacement* rule then rejected the
+  page's own sourced ceiling written numerically. Every defeated shape is kept
+  as a literal canary case, reject and accept, which is the only durable record
+  of what the guard has actually been proved to catch. **32 break mutations red
+  on LF AND on CRLF (64 / 64), no survivors and no ambiguous anchors** on the
+  second run; the plain suite **2,503 / 2,503 on a fully LF corpus AND on a
+  fully CRLF corpus**; **4 handproof cases**, one per claim only a rendered read
+  can check; ContentCheck **280 / 0**; the page grades **5.2**; all three
+  restatement variants clean; **twelve sources, every quote re-fetched and read
+  live**, with **seven** blocked publishers recorded in the front matter and
+  cited nowhere.
+
+- **THE HARNESS FOUND TWO THINGS FIVE REVIEW ROUNDS DID NOT**, and both were
+  about what a guard cannot see rather than what it says. A planted
+  *"Ask again in a fortnight"* SURVIVED: the word is unmistakably British and
+  was on no list, so the gate that exists to catch exactly that could not. And
+  a disagreement guard written as an OR over two phrasings could not be broken
+  at all, because the flattened page carries BOTH — §12.8's "a property with two
+  homes cannot be broken by a single-point mutation", walked into by the item
+  that was citing it. The fix for the second is not a longer OR: it is to forbid
+  the OPPOSITE claim, since a page saying two comparisons agree is what would
+  actually mislead a reader. **Review reads what the page says; only a mutation
+  shows what the guard can see.**
+
 ### 12.9 The tumor-hub template, proved (WI-513)
 
 §12.8 is the LIBRARY-page template. This is what WI-513 learned taking one
