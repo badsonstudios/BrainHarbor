@@ -497,6 +497,12 @@ says that medicines which bring swelling down do not change the tumor itself.
 Here a steroid changes both, and that is why the timing of one has a section of
 its own further down this page.
 
+**And one thing in the map of brain areas below.** Its deep middle entry starts
+with pressure, because that is what a growth blocking the fluid does first. This
+one does not usually start that way. Here the first changes are the ones
+described above, in thinking and behavior. **Pressure can still come later, and
+the symptoms section below says what to do about it.**
+
 [MECHANISM]
 
 ## What symptoms does it cause? {#symptoms}

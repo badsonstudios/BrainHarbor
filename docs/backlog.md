@@ -4117,7 +4117,7 @@ date) turned that into a bigger finding than one missing page.
 
 **THE FINDING: location is a third axis and the site only has two.** Pages are
 organised by TYPE and by TREATMENT/TEST. The `[MECHANISM]` block answers "why
-your symptoms are the ones you have" by location on ~20 hubs, and stops there —
+your symptoms are the ones you have" by location on 18 hubs, and stops there —
 which is exactly where every comparator stops too (Brain Tumour Charity, NBTS,
 ABTA, Cancer Research UK, Cleveland Clinic, Mayo all verified: symptoms only).
 Nobody patient-facing answers **"my tumor is here, so what happens to me?"**
@@ -4153,8 +4153,9 @@ spread is the argument for publishing none of them.
   Acceptance:
   - Nine regions, each named in plain language FIRST and the report's word
     taught second ("the back of your brain — your scan may call this the
-    *occipital lobe*"). The six in `[MECHANISM]` plus **pituitary/sellar**,
-    **ventricles and midline**, and **skull base** (see WI-568).
+    *occipital lobe*"). **The nine now in `[MECHANISM]`** — WI-568 shipped
+    2026-09-24 and added pituitary/sellar, ventricles/midline and skull base to
+    the original six, so this line no longer describes a gap to fill.
   - A section on **when location makes it urgent** — the fluid. This is the
     highest-value content on the page and no comparator has it patient-facing:
     a tumor can be small, slow and low-grade and still be an emergency because
@@ -4174,9 +4175,9 @@ spread is the argument for publishing none of them.
   Refs: `docs/content-pipeline.md` §12.8, §12.10, §12.4, §12.5.
   Depends on: WI-568 (the region list must be settled first).
 
-- [ ] **WI-568 `[MECHANISM]`'s location list: three missing regions, and a rule
+- [x] **WI-568 `[MECHANISM]`'s location list: three missing regions, and a rule
   that is wrong for the readers who need it most**
-  Goal: fix a defect in a block that is live on ~20 hubs today.
+  Goal: fix a defect in a block that is live on 18 hubs today.
   **THE DEFECT.** The block's rule is *"the symptom tells you where, the scan
   tells you what."* For an obstructive-hydrocephalus presentation it is
   **false**: a tectal or fourth-ventricle tumor presents with morning headache,
@@ -4196,12 +4197,20 @@ spread is the argument for publishing none of them.
     place. It must stay a short, usable rule — **do not turn it into a
     paragraph of caveats**; §12.6 keeps the qualifier and shortens it.
   - A route to WI-567 for the reader who wants what location means next.
-  - **Every one of the ~20 including hubs re-read after the edit.** §12.10: a
+  - **Every one of the 18 including hubs re-read after the edit.** §12.10: a
     block is prose asserted on every page that includes it, and the failure is
     silent. Diff the composed output, not just the block.
   - A test that the new regions reach the reader on a composed page, not just
     in the block file.
   Refs: `docs/content-pipeline.md` §12.10, §12.6.
+  **Shipped 2026-09-24.** The route to WI-567 was **refused and deferred**:
+  WI-567 depends on this item, so `/where-your-tumor-is` does not exist yet and
+  §12.8 bars linking to a page that does not — the link would have been 18 dead
+  links at once. `MechanismBlockTests.TheRouteToTheLocationPageIsOwedAndNotYet
+  Written` goes RED the day that page ships, which is WI-554's rehab-door shape.
+  **WI-567 owes the door back.** Five including pages needed their prose
+  corrected, not three: `/tumors/all-brain-tumors` restated the RULE rather than
+  naming an entry and was missed by a search that only looked for entry names.
 
 - [ ] **WI-569 "Where this one usually sits, and what that changes" — the
   pattern, on `/tumors/meningioma`**
@@ -4294,6 +4303,25 @@ spread is the argument for publishing none of them.
   **no waiting time anywhere** (jurisdictional — WI-560 owns it). CRUK's driving
   page (reviewed 2026-05-08) is the source for the vision-and-driving link.
   Depends on: WI-567.
+
+- [ ] **WI-574 Block sources render on every including page, and nobody owns the
+  cost** *(raised by WI-568, 2026-09-24)*
+  Goal: decide what to do about a defect three files have now recorded and none
+  has fixed.
+  §12.10 says block `sources` merge into every including page and **render in
+  the reader's source list**. `/tumors/atrt` recorded it first and called it
+  *"a corpus issue rather than one page's accident"*; `/tumors/pediatric-brain-
+  tumor` recorded it second; WI-568 made it third, adding *"NIDCD: Vestibular
+  Schwannoma (Acoustic Neuroma) and Neurofibromatosis"* to the source list of
+  eighteen hubs including `/tumors/dipg`, where a parent reading
+  "Neurofibromatosis" has a question nobody asked for.
+  **The citation is not the problem and must not be dropped** — NIDCD really is
+  the source of that block's hearing, balance and facial-nerve wording, and
+  removing a real citation to tidy a title trades honesty for presentation.
+  Options to weigh: attribute a block's sources to the block in the rendered
+  list rather than folding them into the page's; or let a block scope a source
+  to the claim it supports. **Recording it a fourth time is not one of them.**
+  Refs: `docs/content-pipeline.md` §12.10.
 
 - [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
   Goal: give a curated page a way to carry an image, with everything the site's

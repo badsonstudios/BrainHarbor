@@ -303,8 +303,9 @@ for, and it is a conversation rather than something that happens quietly.
 ## Where is this coming from?
 
 Whatever it turns out to be, one rule explains most of what you have noticed.
-Where a thing sits in the brain decides what you feel. **The next section is a
-map** that lines the parts of the brain up against what people notice.
+Where a thing sits in the brain usually decides what you feel. **The next
+section is a map** that lines the parts of the brain up against what people
+notice, and it names the one exception.
 
 **Two things before you read on, because the rest of this page was written for
 somebody further along than you are.** It opens by saying that most people are
