@@ -5978,3 +5978,92 @@ enumeration quietly stopped finding pages" had five pages of slack in it. It now
 reads the count out of `taxonomy.yml`, which is the list the sweep is really
 about and cannot go stale the next time a type is added. **A sweep's own
 not-vacuous canary must be derived, never typed.**
+
+### 12.16 Editing a block that is already live (WI-568)
+
+§12.10 is about **writing** a shared block. This is about **changing one that
+eighteen pages already compose**, which is a different job: the words are not
+arriving on a blank page, they are landing in eighteen contexts that were each
+written against the block as it read yesterday.
+
+**COUNT THE INCLUDERS BY GREP, AND COUNT THE RIGHT THING.** The backlog said
+`[MECHANISM]` was live on "~20 hubs" in three places. It is **18**. A bare grep
+for the word `MECHANISM` returns **22** files, and the four extras mention it
+only in front-matter comments — none of them includes the block, and one is a
+page that *refused* it in writing. An approximate blast radius is not a blast
+radius: it is four pages you might edit that are not in scope, or two you might
+skip that are. The number is now asserted (`MechanismBlockTests`), not written
+down.
+
+**THE PAGES THAT BREAK ARE NOT THE PAGES THAT NAME THE BLOCK, AND THAT IS THE
+WHOLE LESSON.** This item searched the prose above all eighteen `[MECHANISM]`
+directives and found **four** files whose text the edit falsified. `/review`
+found two more, and they were missed because the search was shaped like the
+first thing it found. There are **three shapes**, and a grep can only see the
+first:
+
+1. **The page NAMES AN ENTRY in the block.** *"the cerebellum entry is this
+   growth's own territory"* — `/tumors/acoustic-neuroma`. Findable: the note
+   quotes the block, so it greps.
+2. **The page RESTATES THE BLOCK'S RULE in its own words.**
+   `/tumors/all-brain-tumors` said *"Where a thing sits in the brain decides
+   what you feel"* — the very claim the item exists because it is false — two
+   lines above the directive, on the hub written for the **pre-diagnosis**
+   reader, who is the reader most likely to have the presentation it is false
+   for. It quotes nothing, so it greps as nothing.
+3. **The page's own prose COLLIDES with the new words while referring to
+   neither.** `/tumors/cns-lymphoma` says the tumor grows *"deep, near the fluid
+   spaces in the middle of the brain"* and that the first changes are in
+   thinking — fourteen lines above a new bullet that leads on pressure, because
+   PCNSL is not an obstructive presentation. It looks like an ordinary
+   paragraph. Only §12.10's own question finds it: **would this sentence be true
+   on the hub you have thought about least?**, asked page by page rather than
+   grep by grep.
+
+**SEARCHING FOR ONE SHAPE OF COLLISION IS HOW THE WORST ONE GETS MISSED.**
+
+**A CONTRADICTION ABOUT A TERM IS NOT DUPLICATION, AND ONLY ONE OF THEM CAN
+WAIT.** The first draft taught *"Your team may call this the **skull base**"* on
+the bullet about the spot below and behind the ear. `/tumors/meningioma` — a
+page the block composes onto — already teaches the term thirteen lines above as
+*"an umbrella word for the ones growing on the floor of the skull and the ridge
+behind the eyes"*, and the block puts behind-the-eyes in a **different** bullet.
+Two definitions of a word **the reader carries to their appointment**, on one
+composed page. It was also unsourced. MSKCC settles it (*"the base or floor of
+the cranium, the part of the skull on which the brain rests"*), the block now
+teaches the term as the whole floor and scopes its bullet as one part of it, and
+the remaining *duplication* — meningioma listing the same regions in its own
+words — is handed to the item that owns that page. **Defer overlap; never defer
+a contradiction.**
+
+**A CHANGED BLOCK CHANGES THE SOURCE LIST ON EVERY INCLUDING PAGE.** §12.10
+already says block `sources` merge and render. What this item adds is the cost:
+*"NIDCD: Vestibular Schwannoma (Acoustic Neuroma) and Neurofibromatosis"* now
+appears under Sources on `/tumors/dipg`, where a parent reading
+"Neurofibromatosis" has a question nobody asked for. **The citation is not the
+defect and must not be dropped** — NIDCD really is the source of that bullet's
+wording, and removing a real citation to tidy a title trades honesty for
+presentation. `/tumors/atrt` and `/tumors/pediatric-brain-tumor` had each already
+recorded this; this block made it three files and **zero fixes**, so it is now
+`WI-574` rather than a fourth comment. **Recording a defect for the third time is
+not a mitigation.**
+
+**A BLOCK'S PROSE HAS EIGHTEEN HOMES, SO THE OBVIOUS COMPOSED-PAGE TEST IS
+WORTHLESS.** `Assert.Contains("skull base", composedMeningioma)` **passes with an
+empty block**, because that page says the words itself; same for "pituitary" on
+four of the eighteen. WI-549's rule — *a property with two homes cannot be broken
+by a single-point mutation* — is the governing one, and the needles must be
+phrases **only the block says**, verified by grep against every including page
+before use, asserted in both directions (`Contains` on the block,
+`DoesNotContain` on the page, exactly one occurrence composed). The region NAMES
+are exactly the wrong needles.
+
+**AND THE HARNESS FOUND WHAT FIVE REVIEW ROUNDS COULD NOT.** The Gate 1 ruling
+was that the rule stays verbatim, and the guard for it sliced *the sentence
+containing the rule*. The rule is **two sentences**. A mutation appending
+*", unless the fluid is blocked."* to the second one — which is option (B) the
+ruling refused in writing, the rule qualified in place — **survived on LF and on
+CRLF**, through five rounds that all read the guard. **The correction for a
+too-NARROW guard is a WIDER guard**: the paragraph, not the sentence, because the
+paragraph is what the reader reads as "the rule". Review reads what the page
+says; only a mutation shows what the guard can see.

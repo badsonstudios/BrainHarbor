@@ -378,11 +378,13 @@ that will not settle.
 why the symptoms section carries a rule for it.
 
 **A note on what follows.** The part below is written about brain tumors in
-general. The piece that matters most here is the fluid. The brain map that
-follows is about growths elsewhere, so it will not describe this one. That
-general part also carries advice to make a phone call rather than wait when
-pressure signs are new. Here that is overridden for these signs: the rule in
-the symptoms section is stronger, and it is the one to follow.
+general. The piece that matters most here is the fluid. In the brain map that
+follows, the entry to read is the one about behind the eyes, where the pituitary
+sits. The deep middle entry can apply too, because of the fluid. The rest of the
+map is about growths elsewhere. That general part also carries advice to make a
+phone call rather
+than wait when pressure signs are new. Here that is overridden for these signs:
+the rule in the symptoms section is stronger, and it is the one to follow.
 
 [MECHANISM]
 

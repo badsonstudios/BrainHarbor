@@ -282,7 +282,16 @@ sources:
   # MECHANISM -- IN. Its map carries "Cerebellum, low at the back. Balance,
   # coordination and walking" and "Brainstem. Double vision, facial weakness,
   # and trouble swallowing", which is this tumor's own anatomy, and it opens
-  # with a scoping clause of its own. A SHORT NOTE SITS ABOVE THE DIRECTIVE,
+  # with a scoping clause of its own.
+  # WI-568 ADDED A THIRD ENTRY THAT IS CLOSER THAN EITHER: "The floor of the
+  # skull, below and behind the ear" -- hearing, balance, and the nerves to the
+  # face. This growth IS a skull-base growth, so the note below now names that
+  # entry first. It also SCOPES it, for the same reason /review scoped the
+  # brainstem sentence: the entry lists weakness down one side of the face, and
+  # this page says a few lines earlier that facial weakness is unusual here and
+  # is "what people fear". An unscoped "closest fit" would have handed the
+  # reader the one symptom the page had just talked them down from.
+  # A SHORT NOTE SITS ABOVE THE DIRECTIVE,
   # and it is NOT the note /tumors/craniopharyngioma uses: that one says the
   # brain map is about growths elsewhere, which would be FALSE here. The
   # problem here is the opposite -- the block opens "a tumor in the brain",
@@ -451,9 +460,12 @@ and it does not make the brain around it swell. If you ever did have a seizure,
 the ambulance rule below applies to you as much as to anyone. Two others do
 apply, but only if a growth gets large: pressure building up inside the head,
 and fluid being blocked on its way out. In the map of brain areas after that,
-the cerebellum entry is this growth's own territory, balance and walking. The
-brainstem entry describes what can happen only once a growth is big enough to
-press on it.
+the entry about the skull base, below and behind the ear, is the closest fit of
+the three that are about this growth. One thing in it is uncommon here: facial
+weakness, which this growth usually causes only once it is large. If it is new,
+the same-day list further down is the one to go by. The cerebellum entry is this growth's
+territory too, balance and walking. The brainstem entry describes what can
+happen only once a growth is big enough to press on it.
 
 [MECHANISM]
 
