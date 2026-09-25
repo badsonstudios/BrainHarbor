@@ -1123,9 +1123,20 @@ public sealed class WhereYourTumorIsPageContentTests
         Assert.Contains("Your team may call the whole floor of the skull the **skull base**",
             block, StringComparison.Ordinal);
 
+        // AND THE THIRD FILE NOW ROUTES INSTEAD OF DEFINING, WHICH IS STRONGER THAN
+        // AGREEING (WI-569). /tumors/meningioma used to teach the term itself — "an
+        // umbrella word for the ones growing on the floor of the skull and the ridge
+        // behind the eyes" — thirteen lines above the block that also teaches it.
+        // Those two agreed, but they were two definitions of one word on one composed
+        // page, and agreement between two copies has to be maintained forever. The
+        // page keeps the half only it can say (which of ITS OWN addresses sit under
+        // the umbrella) and sends the reader here for the meaning, so there is now
+        // one definition rather than two that happen to match.
         var meningioma = CuratedPage.Flatten(CuratedPage.ReaderText(
             CuratedPage.Read("tumors", "meningioma.md")));
-        Assert.Contains("for the ones growing on the floor of the skull",
+        Assert.Contains("umbrella word you are likely to meet", meningioma, StringComparison.Ordinal);
+        Assert.Contains("(/where-your-tumor-is#skull-base)", meningioma, StringComparison.Ordinal);
+        Assert.DoesNotContain("for the ones growing on the floor of the skull",
             meningioma, StringComparison.Ordinal);
     }
 
