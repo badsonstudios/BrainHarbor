@@ -4256,7 +4256,7 @@ spread is the argument for publishing none of them.
   corrected, not three: `/tumors/all-brain-tumors` restated the RULE rather than
   naming an entry and was missed by a search that only looked for entry names.
 
-- [ ] **WI-569 "Where this one usually sits, and what that changes" — the
+- [x] **WI-569 "Where this one usually sits, and what that changes" — the
   pattern, on `/tumors/meningioma`**
   Goal: establish how a tumor-TYPE page carries location, on the one type where
   the evidence is strongest, and write the ruling down before it is repeated.
@@ -4286,6 +4286,54 @@ spread is the argument for publishing none of them.
     ruling rather than a page.
   - No location-keyed risk table (Wave 6 preamble).
   Depends on: WI-567.
+  **Shipped 2026-09-25.** The ruling is `docs/content-pipeline.md` **§12.18**:
+  location material on a TYPE page splits three ways and each way has one home
+  — the symptom to `[MECHANISM]`, the report's address word to the type page,
+  and what the address changes about the PLAN to one factor-keyed passage that
+  is never keyed on the addresses. **The line that makes the forbidden table
+  impossible is one notch over from §12.17's: an address entry may carry a
+  SYMPTOM and must never carry a DIFFICULTY.**
+  **THE SECTION WAS THE SMALLER HALF OF THE WORK.** The sweep came first and
+  found **four sentences already live** that keyed an outcome or a difficulty
+  to a place — *"harder to take out completely, and they have more
+  complications when they are"*, *"A small meningioma against the nerve to your
+  eye **will** take your sight"*, *"a grade 1 meningioma **in a bad place**"*,
+  and the short version's copy of the eye sentence. **Three of the four were
+  outside the section this item was commissioned to write**, and the shape did
+  not have to be invented: Mayfield's meningioma page — cited here — closes by
+  ranking convexity and sphenoid wing as *"usually completely removable"*
+  against skull base as *"a higher rate of complication"*. That paragraph is
+  refused in writing; Mayfield is still cited, for the address vocabulary.
+  **§12.10 RAN THE OTHER WAY.** `/where-your-tumor-is` shipped the day before
+  and already carried the EANO four-factor sentence, anonymised. So this page
+  **routes** for the factors and owns only the places EANO itself names — and
+  the route is worth more than the restatement was, because it tells the reader
+  the anonymous guideline is theirs.
+  **PROOF: 43 break mutations red on LF AND CRLF (86 of 86, no known
+  survivors); the plain suite 2,577/2,577 on a fully LF corpus AND a fully CRLF
+  corpus; ContentCheck 283/0 with the page at grade 5.6 — unchanged from before
+  the item; five rendered pages captured WITH A CONTROL** (`/tumors/astrocytoma`
+  composes the same block and was not touched, so every needle of this item's
+  must be absent there — the difference between "the page changed" and
+  "somebody edited the block"); **privacy scan 0 findings over 1,635 net-new
+  lines across 9 files; TEN `/review` rounds**, the last three finding no
+  blockers.
+  **WHAT TEN ROUNDS COST, AND WHAT THEY BOUGHT.** The anti-ranking guard was
+  rewritten **once per round** and every version was green on the page while
+  being green on the defect: one hundred planted sentences across seven rounds,
+  and no round found none. **The thing that ended it was a POSITIVE CONTROL** —
+  the scan now runs over `Plain` AND over `Plain + planted` and asserts the
+  second finds something. §12.18: *a property guard that has never been seen to
+  fail has not been shown to work.*
+  **AND THE FAILURE §12.17 NAMES, ONE LAYER DEEPER.** Round 6's edit script
+  printed `anchor 1: 1 hit ok` and then aborted on anchor 2, so **nothing was
+  written** — and the follow-up script dropped that first anchor. Two review
+  rounds then read a page that still carried the sentence round 6 had deleted.
+  A dry run that reports `ok` is a report about the ANCHOR, not about the file.
+  **Side effects, both recorded:** `/treatments/craniotomy` had one clause
+  corrected (it said flat that stopping short is *"a decision made for you, in
+  the moment"*, which is false for the reader this item routes there), and
+  **WI-577** was opened for the sellar seam and §12.17's carried-forward.
 
 - [ ] **WI-570 Sweep: the location section on the remaining location-variable
   hubs**
@@ -4415,6 +4463,54 @@ spread is the argument for publishing none of them.
   - The known case is checked first: a page that defines a term inline and
     suppresses its tooltip is the legitimate shape, and the rule must not fail it.
   Refs: `docs/content-pipeline.md` §12.17, §12.10.
+
+- [ ] **WI-577 The sellar seam: two pages that do not point back at each
+  other, and one that contradicted its own link** *(raised by WI-569,
+  2026-09-25)*
+  Goal: close the two halves of a seam WI-569 found and could not own.
+  **(1) THE RETURN JOURNEY HAS NO MENINGIOMA ON IT.** `/tumors/meningioma` now
+  claims the sellar address (*near the pituitary and the crossing of the optic
+  nerves*), while `/where-your-tumor-is#pituitary` names only pituitary tumor
+  and craniopharyngioma as the types it has written up. **That list is
+  correctly hedged and is NOT the defect** — it says *"More than one kind of
+  growth turns up there… [the tumor types] has the rest"*, which is the open
+  form §12.18 asks for. What is missing is the ROUTE: a reader arriving there
+  with a sellar report has no DIRECT route from that paragraph to the page that
+  now claims their address. (`#skull-base`, ten lines above it, already links
+  meningioma by name, so the journey is not broken as a whole.)
+  **WI-570's scope is
+  the glioma family, ependymoma, CNS lymphoma and brain metastases, so it
+  touches neither page for an EDIT** — its acceptance does sweep meningioma with
+  a test — which is why this is an item rather than a fourth
+  recording in a front-matter comment (`blocks/mechanism.md` set that
+  precedent at WI-574).
+  **(2) THE CRANIOTOMY CLAUSE WAS FIXED IN WI-569 AND THE SEAM WAS NOT.**
+  `/treatments/craniotomy#how-much-came-out` said flat that stopping short is
+  *"a decision made for you, in the moment"* — false for the reader WI-569
+  routes there, because EANO's planned subtotal is decided beforehand. The
+  one clause was corrected there, with its reason in that page's own front
+  matter. What is NOT done is the sweep: §12.18
+  records that the planned-subtotal principle now has **three wordings on
+  three pages that link each other** (`/treatments/craniotomy`,
+  `/where-your-tumor-is`, `/tumors/meningioma`), and no shingle check can see
+  a paraphrase.
+  Acceptance:
+  - `/where-your-tumor-is`'s sellar section names meningioma among its examples,
+    the way `#skull-base` ten lines above it already does. **The generic
+    `/tumors` route in that paragraph is NOT sufficient** — it is already there,
+    and it is what makes the rest of this bullet worth writing.
+  - The three planned-subtotal wordings are read together and one page owns
+    it while the others route — or the split is recorded with its reason.
+  - A test asserts the return journey, not just the outward one.
+  - **§12.17's carried-forward lands here.** That section says its two craniotomy
+    findings *"belong to whichever item next touches those pages"* —
+    `/treatments/craniotomy` states the tissue rule flat (*"Only a piece of the
+    tumor itself, looked at in a lab, can give it a name"*) where the corpus now
+    hedges it, and `/tests/biopsy` says there is *"one exception worth knowing"*
+    where the corpus asserts two. **WI-569 touched craniotomy for one clause and
+    did NOT take them**, which is a tripwire firing into nobody's hands. This
+    item takes them, or records in writing why not.
+  Refs: `docs/content-pipeline.md` §12.18, §12.17, §12.10.
 
 - [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
   Goal: give a curated page a way to carry an image, with everything the site's

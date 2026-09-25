@@ -6,7 +6,9 @@ tags: [tumor-type, meningioma, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued
   # (content-pipeline §12.13). Everything below was fetched and read on
-  # 2026-09-12; the verbatims are in the item's work notes.
+  # 2026-09-12, EXCEPT where a later `accessed:` says otherwise -- WI-569
+  # re-fetched Mayfield and added EANO on 2026-09-25. The verbatims are in each
+  # item's work notes.
   #
   # (1) THE ITEM'S BEST-LOOKING REASSURANCE IS DEAD AT SOURCE. The dossier
   # (meningioma-mets-general.md §A.6) lists three "features that predict
@@ -153,6 +155,173 @@ sources:
   # "hemangiopericytoma". NCI is cited for the plain definition of the
   # meninges and for active surveillance as a treatment category, which
   # §12.1 permits.
+  #
+  # ---- WI-569: the location section, and the shape it refuses ------------
+  #
+  # (15) FOUR SENTENCES ON THIS PAGE KEYED AN OUTCOME OR A DIFFICULTY TO A
+  # PLACE, AND THE SHAPE ARRIVED WITH A SOURCE RATHER THAN BEING INVENTED.
+  # The page carried "Skull base ... are harder to take out completely, and
+  # they have more complications when they are"; "A small meningioma against
+  # the nerve to your eye will take your sight"; "A grade 1 meningioma in a
+  # bad place"; and the short version's softer copy of the eye sentence.
+  # Mayfield's own closing paragraph is where that comes from: "Convexity,
+  # parasagittal, and sphenoid wing meningiomas usually are completely
+  # removable ... Optic, cavernous sinus, and skull base meningiomas have a
+  # higher rate of complication and are more difficult to completely
+  # remove." THAT PARAGRAPH IS REFUSED IN FULL. It ranks locations against
+  # outcomes, and the Wave 6 preamble forbids exactly that on the strength
+  # of PMC12367934: surgeons do not agree on which locations are risky, so
+  # this site must not publish the ranking. MAYFIELD IS STILL CITED, for the
+  # ADDRESS VOCABULARY ONLY -- convexity, falx and parasagittal, olfactory
+  # groove, tuberculum sella, sphenoid, posterior fossa and petroclival,
+  # intraventricular. Per-claim, not per-domain (§12.1).
+  #
+  # (16) THE RULING, so it is not re-argued: AN ADDRESS ENTRY MAY CARRY A
+  # SYMPTOM AND MUST NEVER CARRY A DIFFICULTY. A symptom is a fact about
+  # what the reader notices and it belongs to them. A difficulty is a fact
+  # about an operation, and the moment one address carries one, every other
+  # address needs one for the list to look finished -- which is how
+  # Mayfield's list ends where it ends. What the place CHANGES is therefore
+  # stated once, keyed on the factors the guideline names rather than on the
+  # addresses, so there is no row for a reader to look themselves up in.
+  # Written up as content-pipeline §12.18 for WI-570 to copy.
+  #
+  # (17) THE THREE REGIONS THIS PAGE USED TO STATE TWICE ON ONE COMPOSED
+  # PAGE. Since WI-568 the [MECHANISM] block carries the pituitary/sellar,
+  # the ventricles and the skull base, and it composes forty lines below
+  # this page's own list. The fluid entry was the worst of the three: it
+  # stated the blocked-drainage case as an ordinary location-to-symptom row,
+  # which is the rule WI-568 shipped an EXCEPTION for, so the list
+  # contradicted the block it composes. Those entries now DROP the symptom the
+  # block states below and keep the report's word, plus whatever give-away the
+  # block cannot say for that address -- which for the sellar entry is that a
+  # pituitary tumor is a different thing, and for the posterior fossa entry is
+  # facial pain and a hoarse voice. /review round 4 caught this note still
+  # describing the entries as round 1 left them.
+  # MechanismBlockTests.TheMeningiomaCollisionIs
+  # RecordedBecauseWI569OwnsIt was the handover and went red here, as
+  # designed. The test that replaced it is MechanismBlockTests.TheMeningioma
+  # CollisionIsResolvedAndEachRegionIsStatedOnce. The skull-base umbrella
+  # sentence routes to /where-your-tumor-is#skull-base, which owns the term
+  # with MSKCC behind it, instead of defining it a third time -- and /review
+  # round 1 found the first draft still defining it in FRESH words one line
+  # above that link, which is §12.17's deleted-wording ban in a new costume.
+  #
+  # (18) EANO IS THE SOURCE FOR WHAT THE ADDRESS CHANGES, AND EVERY NUMBER
+  # IN IT IS REFUSED. PMC8563316, re-fetched live 2026-09-25. Used for:
+  # "While the aim is gross total resection (all involved dura and bone),
+  # EOR is determined by tumor location, consistency, size, and proximity or
+  # involvement of critical neurovascular structures"; the planned subtotal
+  # ("striving to achieve a gross total resection should not be at the
+  # expense of neurological or cognitive function ... Residual meningioma
+  # can then be monitored or treated with postoperative conformal
+  # fractionated RT or stereotactic radiosurgery"); the skull base
+  # ("Cranial nerve function is a major concern in the therapy of skull base
+  # meningiomas. Therefore the concept of combined treatment using subtotal
+  # surgery and SRS is increasingly used"); perioptic fractionation ("this
+  # principle has been used for skull base meningiomas, particularly
+  # perioptic tumors"); and the spinal decision ("The decision to offer
+  # surgery for spinal meningioma, rather than observation, should balance
+  # the benefit of tumor removal vs surgical risk") -- AND, added at /review
+  # round 1, the sentence that licenses the page's "usually what is offered":
+  # "Surgical resection is the therapy of choice for patients with spinal
+  # meningiomas." The claim was on the page before the verbatim was in this
+  # note, which is a claim resting on a source record that did not carry it.
+  # EVERY NUMBER IN THOSE PASSAGES IS DROPPED under §12.4 R1
+  # and the Wave 6 preamble: 4-10 Gy per fraction, 18-25 Gy in total, two to
+  # five fractions, the cranial-nerve outcome percentages, and the spinal
+  # recurrence range. The page says "a few smaller sittings" and stops.
+  #
+  # (19) STATPEARLS NBK560538 WAS NOT REACHABLE ON 2026-09-25. Fetching it
+  # returned a reCAPTCHA interstitial from ncbi.nlm.nih.gov/books/ on the
+  # same run that fetched PMC and mayfieldclinic.com without trouble. It
+  # STAYS in the list because it supports claims elsewhere on this page that
+  # WI-569 did not touch, and THIS ITEM CITES IT FOR NOTHING NEW. Recorded
+  # because an absence nobody writes down gets re-investigated by the next
+  # item (§12.17).
+  #
+  # (20) TWO PLACES WERE BOTH CALLED "BEHIND THE EYES" ON ONE COMPOSED PAGE,
+  # and this item's own routing sentence is what sent a reader between them.
+  # [MECHANISM]'s PITUITARY bullet opens "Behind the eyes, at the base of the
+  # brain" and talks about hormones, periods and puberty; this page's SPHENOID
+  # WING entry opened "Behind the eyes, on the wing of bone there". Stripping
+  # that entry's symptoms and telling the reader to find their place in the
+  # list below therefore sent a sphenoid-wing reader to the wrong bullet. The
+  # entry is renamed to lead on the bone rather than the eyes, AND its
+  # give-aways come back. The rule this corrects, recorded because it is the
+  # one WI-570 will meet: a give-away the block carries for a DIFFERENT
+  # address is one the block cannot say for THIS one. Double vision is in the
+  # block's brainstem bullet and facial numbness in its skull base bullet, and
+  # neither is where this reader would look.
+  #
+  # (21) ONE CLAIM AT TWO STRENGTHS ACROSS THE CORPUS, recorded rather than
+  # resolved here. /tumors/acoustic-neuroma refuses to put a frequency on
+  # planned subtotal surgery plus radiosurgery ("Neither carries a frequency,
+  # because no source here supports one"). This page says "is used more and
+  # more", because for MENINGIOMA the EANO verbatim carries it ("increasingly
+  # used"). That is a per-claim difference and not drift, but it is the shape
+  # §12.10 warns about and the next item to touch either page should know.
+  #
+  # (22) AN INHERITED CLAIM THIS ITEM COULD NOT SOURCE AND DID NOT INVENT.
+  # The falx/parasagittal entry says weakness in a LEG is the give-away. That
+  # predates WI-569 (WI-527 wrote it) and no reachable source read for this
+  # item carries the limb: Mayfield's falx entry names "weakness" with no
+  # limb, EANO says nothing, StatPearls was unreachable -- see (19). /review
+  # round 1 of THIS item added an explanatory clause for it ("because the
+  # strip of brain that moves your legs runs right beside that fold"), round 2
+  # caught that the clause was unsourced, and the clause was removed because
+  # this item wrote it. The bare claim is LEFT AS FOUND rather than deleted on
+  # a hunch or dressed up with an unsourced explanation, and it is written
+  # down here so the next item re-asks instead of inheriting it. Raised for
+  # /pm.
+  #
+  # (23) "SUPRASELLAR" WAS ON THE PAGE FOR ONE ROUND AND CAME OFF. /review
+  # round 5: it is a REPORT-WORD claim, (15) enumerates what Mayfield is cited
+  # for without it, and no other note carried it -- so it was the shape (22)
+  # exists for, written by the same item one bullet away. It is also the
+  # commonest descriptor for a pituitary adenoma with upward extension, one
+  # clause after this entry says a pituitary tumor is a different thing.
+  # /where-your-tumor-is already owns the near word ("Anything called sellar is
+  # about the same area"); if a later item wants it here, it needs a source.
+  #
+  # (24) FOR /pm, THREE THINGS THIS ITEM FOUND ON PAGES IT DOES NOT OWN -- one
+  # fixed here as a single clause with its seam filed as WI-577, one filed as
+  # WI-577, and one recorded here that needs nothing done.
+  #
+  # (a) /treatments/craniotomy CONTRADICTED THE PARAGRAPH THAT LINKS TO IT, AND
+  # THIS ITEM FIXED IT RATHER THAN FILING IT. That page said flat that stopping
+  # short is "a decision made for you, IN THE MOMENT" -- false for exactly the
+  # reader this paragraph sends there, since EANO's planned subtotal is decided
+  # beforehand. One clause, on the page this item had just made reachable from a
+  # new route, and telling a skull-base reader not to ask beforehand on a page
+  # whose whole posture is ask beforehand was not deferrable. Same shape as
+  # §12.17's craniotomy/tissue-rule finding: a corpus property stated as a page
+  # property. WI-577 owns the rest of that seam.
+  #
+  # (b) THE SELLAR READER'S JOURNEY IS NOTE (20)'s SHAPE AT HALF STRENGTH. The
+  # entry says a pituitary tumor is a different thing and then routes into a
+  # block bullet whose second half is hormones, periods and puberty. The bullet
+  # LEADS with vision, which is this reader's give-away, so the journey works --
+  # but any sharper statement would be an unsourced negative, which is why this
+  # is a note and not an edit.
+  #
+  # (c) /where-your-tumor-is names, as the two it has WRITTEN UP for the sellar
+  # region, pituitary tumor and craniopharyngioma -- correctly hedged ("More
+  # than one kind of growth turns up there... the tumor types has the rest"), so
+  # its list is open and is NOT the defect. Nor is the return journey broken as
+  # a whole: /where-your-tumor-is#skull-base, ten lines above the sellar
+  # paragraph, already links meningioma by name. What is missing is a DIRECT
+  # route from the sellar paragraph itself. Not a contradiction,
+  # but the return journey is broken. WI-570's scope is the glioma family,
+  # ependymoma, CNS lymphoma and brain metastases, so it touches NEITHER page:
+  # this is WI-577 in docs/backlog.md, which is a claim you can check rather
+  # than a promise in a comment (blocks/mechanism.md set that precedent).
+  #
+  # (25) "TUBERCULUM SELLAE", NOT MAYFIELD'S "TUBERCULUM SELLA". Both forms
+  # are in use; the page teaches the one a reader is likelier to meet on a
+  # report, and the difference is recorded because the whole content of that
+  # claim is WHAT WORD YOUR REPORT USES, so a silent spelling choice is a
+  # silent edit to the claim itself.
   - url: https://www.ncbi.nlm.nih.gov/books/NBK560538/
     title: "Meningioma (StatPearls, updated 2026)"
     accessed: 2026-09-12
@@ -173,7 +342,10 @@ sources:
     accessed: 2026-09-12
   - url: https://mayfieldclinic.com/pe-meni.htm
     title: "Meningioma (Mayfield Brain and Spine, patient education)"
-    accessed: 2026-09-12
+    accessed: 2026-09-25
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8563316/
+    title: "EANO guideline on the diagnosis and management of meningiomas (Neuro-Oncology, 2021)"
+    accessed: 2026-09-25
   - url: https://www.ncbi.nlm.nih.gov/books/NBK1201/
     title: "NF2-Related Schwannomatosis (GeneReviews)"
     accessed: 2026-09-12
@@ -199,8 +371,8 @@ strip of fluid between the tumor and the brain. That strip is what tells a
 radiologist it sits outside. Most meningiomas are grade 1 and grow
 slowly, and a lot of them turn up by chance on a scan taken for another reason.
 **What matters most is not how big it is. It is where it sits and what it is
-pressing on.** A small one against the nerve to your eye is a bigger problem
-than a larger one on the top of your head. And if you take any hormone
+pressing on.** A small one with a nerve right beside it can matter more than
+a larger one with room around it. And if you take any hormone
 medicine, that is worth raising early, because a few of them matter here.
 
 ## What is a meningioma?
@@ -261,50 +433,112 @@ whatever the cells look like.
 [What the markers mean](/tests/molecular-markers) explains those words.
 
 **Why "benign" is a poor word for this.** It means "not cancer", and people
-hear "harmless". A grade 1 meningioma in a bad place can take your sight. A
+hear "harmless". A grade 1 meningioma can still take your sight. A
 grade 1 meningioma can come back years later. Both of those are true of
 something that is not cancer. The useful questions are where it is and what it
 is doing, not which side of that word it falls on.
 
 ## Where does it grow, and why does it cause these symptoms?
 
-**This is the idea the whole page is built on: location decides almost
-everything, and size decides less than you think.**
+**This is the idea the whole page is built on.** Where it sits decides what
+you notice, and much of what your team plans. Size decides less than you
+think.
 
-A meningioma can grow anywhere the coverings go. What it presses on is what you
+A meningioma can grow anywhere the coverings go, and the coverings go
+everywhere your brain and spinal cord do. What it presses on is what you
 notice. So two people with the same size tumor can have completely different
 lives.
 
+**Your report probably names the address, not just the tumor.** Meningiomas
+are usually called after the spot they grew from, so a letter may say
+"convexity meningioma" rather than just "meningioma". The list below holds the
+addresses themselves, in plain words first, with the word your report is likely
+to use.
+
+**[What a tumor in different parts of the brain tends to
+do](#why-your-symptoms-are-the-ones-you-have)** comes later on. That list
+reads the same whatever kind of tumor is sitting there. So each entry here adds
+only what that list cannot say about a meningioma at that address.
+
 - **On the surface, under the top of the skull.** Often nothing at all for a
-  long time. When it does show, seizures, headache, weakness in an arm or a
-  leg, or trouble with speech.
+  long time. Which part of the brain it sits over decides the rest. Your report
+  may call this a **convexity** meningioma.
 - **In the covering that runs between the two halves of the brain.** Weakness
-  in a leg,
-  changes in personality, flatness, headache, unsteadiness, trouble with
-  memory.
-- **Behind the eyes, on the wing of bone there.** Loss of vision, double
-  vision, numbness in the face, or an eye that starts to bulge.
+  in a leg is the give-away here. Your report may call this **parasagittal**,
+  or name the covering itself, the **falx**.
+- **On the wing of bone behind the eye socket.** Loss of vision, double vision,
+  numbness in the face, or an eye that slowly starts to bulge. Your report may
+  call this a **sphenoid wing** meningioma.
 - **On the floor at the front of the skull, by the smelling nerves.** **Loss of
-  smell** that often goes unnoticed for years, with subtle changes in
-  personality, concentration or memory.
-- **Near the pituitary and the crossing of the optic nerves.** Losing parts of
-  your field of vision.
+  smell** that often goes unnoticed for years. Your report may call this an
+  **olfactory groove** meningioma.
+- **Near the pituitary and the crossing of the optic nerves.** It grows beside
+  the pituitary gland rather than out of it, so a
+  [pituitary tumor](/tumors/pituitary-tumor) is a different thing. Your report
+  may call this **tuberculum sellae**.
 - **At the back, near the brainstem and the nerves to the face and ear.**
-  Facial pain or numbness, facial weakness, hearing loss, a hoarse voice,
-  trouble swallowing.
-- **Inside the fluid spaces of the brain.** A build-up of fluid and pressure,
-  with headache, trouble walking, and trouble with memory.
+  Facial pain, or a hoarse voice. Your report may call this the **posterior
+  fossa**, or **petroclival**.
+- **Inside the fluid spaces of the brain.** Your report may call this
+  **intraventricular**. [When where it sits makes it
+  urgent](/where-your-tumor-is#the-fluid) is the part to read if this is
+  yours.
 - **On the spinal cord.** Back pain that is typically worse at night, numbness,
-  and weakness in the legs.
+  and weakness in the legs. The general list further down is about the brain, so
+  this address is not on it.
 
-**The point, said plainly.** A small meningioma against the nerve to your eye
-will take your sight. A larger one on the top of your head may cause nothing
-for years. The measurement on your report is not the headline. The address is.
+**"Skull base" is an umbrella word you are likely to meet.** It covers more
+places than this page names. Some of the addresses above sit under it, such as
+the one on the floor at the front and the one near the brainstem. Yours may sit
+under it even if it is not named here. Ask your team whether yours counts.
+[The floor of the skull](/where-your-tumor-is#skull-base) is where the word
+itself is explained.
 
-**"Skull base" is an umbrella word** for the ones growing on the floor of the
-skull and the ridge behind the eyes. They are harder to take out completely,
-and they have more complications when they are. That is a fact about the
-operation, not about the grade.
+**The point, said plainly.** The measurement on your report is not the
+headline. What the tumor is up against is the headline.
+
+### What the address changes about the plan {#what-the-address-changes}
+
+Nobody can read your outcome off the address. There is no list here of good
+spots and bad ones. What the address changes is what your team is aiming at,
+and that is a thing you can ask about.
+
+**[Why your team keeps coming back to where it
+sits](/where-your-tumor-is#why-it-matters) sets out the things that decide how
+much of a tumor can come out.** The guideline quoted there is the European one
+for meningioma, so that list is yours rather than a general one. Your address
+is one of the things on it.
+
+**What is next to a tumor changes what the team protects.** On the floor of the
+skull, the
+nerves that serve the face, eyes and ears run through. Keeping those working
+is a major concern there. So a planned smaller operation, followed by focused
+radiation, is used more and more. Around the optic nerves, that radiation has
+been used in a few smaller sittings rather than one, for the same reason.
+**That trade is about what is touching your tumor, not about the address.**
+It comes up wherever the tumor is right up against something a surgeon will
+not risk. The floor of the skull and the optic nerves are named here because
+the guideline names them, and neither is a place being ranked. Both of those
+plans are your team saying out loud what they are protecting.
+
+**Taking out less, on purpose, can be the plan rather than a disappointment.**
+Where the whole tumor cannot safely come out, the guideline's advice is to
+plan the smaller operation rather than push on. That is sometimes decided
+beforehand and sometimes in the room. [What happens in an operation on the
+brain](/treatments/craniotomy#how-much-came-out) goes through the words
+your report will use afterwards.
+
+**On the spinal cord the question is a different one.** There an operation is
+usually what is offered. What your team weighs is whether to operate or to watch
+instead. They weigh the good that taking it out would do against the risk of the
+operation itself.
+[Spinal cord tumors](/tumors/spinal-cord-tumor) covers that decision and the
+operation behind it.
+
+**And "where is it, and what does that change?" is a question you can ask in
+those words.** [Where your tumor is, and what that
+changes](/where-your-tumor-is) is the page for the address on its own,
+whatever the word on your report turns out to be.
 
 ### And why does that cause symptoms at all?
 
@@ -312,8 +546,9 @@ operation, not about the grade.
 
 ## What symptoms does it cause?
 
-It depends entirely on where it sits, so the list above is the real answer.
-The ones that turn up across many locations are headache and seizures,
+It depends on where it sits, so the addresses and the general list above are
+where to look. The ones that turn up across many locations are headache and
+seizures,
 something going wrong with your eyesight, and a limb that feels weak or numb.
 Then there are the changes in thinking, mood or personality, which the people
 around you often spot before you do.
@@ -432,7 +667,9 @@ living with that plan is like, and it has a section on meningioma specifically.
 The aim is to take out the tumor. Where it is safe, the surgeon also takes the
 piece of covering it grew from, and any abnormal bone. That is what makes it
 much less likely to grow back.
-How completely that can be done depends almost entirely on where it is.
+How completely that can be done depends on more than the address, and
+[what the address changes](#what-the-address-changes) sets out what your team
+is weighing.
 [Brain surgery](/treatments/craniotomy) covers the operation and the weeks
 after.
 

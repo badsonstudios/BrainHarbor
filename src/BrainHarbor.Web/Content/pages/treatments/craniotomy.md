@@ -4,6 +4,15 @@ slug: treatments/craniotomy
 description: "The operation to take out a brain tumor, from the day you arrive to being back at home. What is done, what it feels like, what the words about how much came out really mean, and what the person looking after you is being asked to do."
 tags: [treatments, surgery, craniotomy, newly-diagnosed]
 sources:
+  # WI-569 (2026-09-25) CHANGED ONE CLAUSE IN "How much did you get out?", and
+  # the reason is recorded here because the corpus convention is a note on the
+  # page that changed. That section said FLAT that stopping short is "a decision
+  # made for you, in the moment". /tumors/meningioma now routes a skull-base
+  # reader here from a paragraph about EANO's PLANNED subtotal resection, which
+  # is decided beforehand -- so the flat version was false for exactly the reader
+  # arriving. It now says both, and names what decides which. The wider seam
+  # (three wordings of the planned-subtotal principle on three pages that link
+  # each other, and §12.17's carried-forward tissue-rule finding) is WI-577.
   - url: https://braintumor.org/news/what-to-expect-before-and-after-brain-surgery/
     title: "National Brain Tumor Society: What to Expect Before and After Brain Surgery"
     accessed: 2026-09-04
@@ -249,8 +258,11 @@ That answer comes from the lab, not from the operating room.
 
 And a subtotal resection is not a failed operation. When a surgeon stops short,
 it is almost always because going further would have cost you something you
-would not want to lose. That is a decision made for you, in the moment, with
-your life afterwards in mind. It is the right call far more often than not.
+would not want to lose. That is sometimes settled before the day, and
+sometimes a decision made for you in the moment, with your life afterwards in
+mind. It is the right call far more often than not. When it is settled
+beforehand, it is usually because of what the tumor is sitting next to, and you
+can ask which it is for yours.
 
 ## What can go wrong {#what-can-go-wrong}
 
