@@ -612,41 +612,113 @@ public sealed class MechanismBlockTests
         Assert.Contains("the usual treatment is a **shunt**", flatBlock, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// THE HANDOVER, SPENT AND REPLACED RATHER THAN DELETED.
+    ///
+    /// WI-568 left this as <c>TheMeningiomaCollisionIsRecordedBecauseWI569OwnsIt</c>,
+    /// asserting that the duplication STILL EXISTED so that it would go red the day
+    /// WI-569 resolved it. It did, which is the handover working. What replaces it is
+    /// the opposite assertion, for the same reason WI-567 replaced WI-568's deferred
+    /// door rather than deleting it: the tripwire proved the duplication was OWED a
+    /// fix, and this proves the fix is THERE.
+    ///
+    /// WHAT THE DUPLICATION WAS. The block gained the pituitary/sellar, the ventricles
+    /// and the skull base at WI-568. <c>/tumors/meningioma</c> already covered all
+    /// three in its own eight-address list, forty lines above where the block composes
+    /// — so one composed page said three things twice, in different words. The fluid
+    /// entry was the worst of the three: it stated the blocked-drainage case as an
+    /// ordinary location-to-symptom row, which is the rule WI-568 shipped an
+    /// EXCEPTION for, so the page's own list contradicted the block it composes.
+    ///
+    /// READ OFF THE COMPOSED PAGE, because that is where the duplication was visible
+    /// and the raw page cannot show it (§12.10, WI-514).
+    /// </summary>
     [Fact]
-    public void TheMeningiomaCollisionIsRecordedBecauseWI569OwnsIt()
+    public void TheMeningiomaCollisionIsResolvedAndEachRegionIsStatedOnce()
     {
-        // NOT A BUG IN THIS ITEM, AND NOT SILENTLY IGNORED EITHER.
-        //
-        // /tumors/meningioma carries its OWN eight-address location list that already
-        // covers all three of this item's additions in meningioma-specific words, and
-        // it already teaches the term "skull base" ~13 lines before [MECHANISM]
-        // composes. So that one page of the eighteen now states three regions twice.
-        //
-        // WI-568 does NOT fix it: WI-569 is literally "the location section on
-        // /tumors/meningioma" and owns this page's location material. Restructuring it
-        // here would pre-empt the item designed to do it. This test is the handover —
-        // it asserts the collision STILL EXISTS, so when WI-569 resolves it this goes
-        // red and the two items meet, instead of the finding being lost between them.
-        // Same shape as WI-554's rehab door.
-        //
-        // WHAT IS HANDED OVER IS DUPLICATION, AND ONLY DUPLICATION. /review round 1
-        // found the first draft handing over something worse — a CONTRADICTION, because
-        // the block taught "skull base" as one spot while this page teaches it as the
-        // whole floor. A contradiction about a word the reader carries to an
-        // appointment is not deferrable, and it was fixed in the block rather than
-        // deferred. The two definitions are asserted together HERE so that stays true:
-        // if a later edit makes them disagree again, this is where it shows.
-        var meningioma = CuratedPage.Flatten(CuratedPage.ReaderText(Hub("meningioma")));
+        var composed = CuratedPage.Flatten(
+            CuratedPage.ReaderText(CuratedPage.Composed(Hub("meningioma"))));
         var flatBlock = CuratedPage.Flatten(CuratedPage.ReaderText(Block));
 
-        Assert.Contains("**\"Skull base\" is an umbrella word** for the ones growing on the floor of the skull",
-            meningioma, StringComparison.Ordinal);
+        // 1. THE THREE ADDRESSES ARE STILL THERE — the fix was not to delete the
+        //    reader's word for where their tumor is. Each now carries the report's
+        //    word instead of a symptom the block states forty lines below.
+        var addresses = new[]
+        {
+            ("- **Near the pituitary and the crossing of the optic nerves.**", "tuberculum sellae"),
+            ("- **Inside the fluid spaces of the brain.**", "intraventricular"),
+            ("- **At the back, near the brainstem and the nerves to the face and ear.**", "posterior"),
+        };
+        foreach (var (entry, word) in addresses)
+        {
+            Assert.Contains(entry, composed, StringComparison.Ordinal);
+            var from = composed.IndexOf(entry, StringComparison.Ordinal) + entry.Length;
+            var to = composed.IndexOf("- **", from, StringComparison.Ordinal);
+            Assert.True(to > from, $"the entry '{entry}' is no longer followed by another");
+            Assert.Contains(word, composed[from..to], StringComparison.OrdinalIgnoreCase);
+        }
+
+        // THE FLOOR, AND THE FIRST VERSION OF IT WAS A TAUTOLOGY. It asserted
+        // `addresses.Length == 3` — the length of an array literal three lines above,
+        // which is a comment wearing an assertion's clothes. §12.17's floors are
+        // about how much of the PAGE was read. This one is.
+        Assert.True(composed.Length > 40_000,
+            $"the composed page is {composed.Length} characters, so this proves little");
+
+        // 2. AND THE SYMPTOM EACH ONE USED TO CARRY IS GONE FROM THE PAGE, while the
+        //    block's version of it is still there. Scoped to the whole composed page
+        //    rather than to the entry, because a guard scoped to the paragraph the
+        //    defect was in is green where the next one arrives (§12.17).
+        var movedToTheBlock = new[]
+        {
+            ("Losing parts of your field of vision", "Side vision is what usually goes first"),
+            ("A build-up of fluid and pressure", "what you notice is often the pressure rising"),
+            ("Facial pain or numbness, facial weakness, hearing loss",
+             "hearing loss or ringing in one ear"),
+        };
+        foreach (var (gone, itsHomeInTheBlock) in movedToTheBlock)
+        {
+            Assert.DoesNotContain(gone, composed, StringComparison.Ordinal);
+            Assert.Contains(itsHomeInTheBlock, flatBlock, StringComparison.Ordinal);
+        }
+
+        // 2b. AND THE SPHENOID WING IS THE COUNTER-EXAMPLE, PINNED, because /review
+        //     round 1 found this item stripping that entry's symptoms on the reasoning
+        //     that the block covered them — while the block covers double vision under
+        //     BRAINSTEM and facial numbness under THE FLOOR OF THE SKULL, neither of
+        //     which is where a sphenoid-wing reader would look. Worse, the entry used
+        //     to open "Behind the eyes", which is the opening of the block's PITUITARY
+        //     bullet, so the routing sentence this item added sent that reader to a
+        //     paragraph about hormones, periods and puberty.
+        //
+        //     THE RULE, because WI-570 will meet it on every hub: a give-away the
+        //     block carries for a DIFFERENT address is one the block cannot say for
+        //     THIS one.
+        //     FLATTENED, because the first version of this pin ended mid-sentence at
+        //     the markdown's hard wrap — so reflowing the bullet would have turned it
+        //     red with the prose unchanged. §12.8/WI-526: a line wrap between two
+        //     words defeats a phrase guard structurally, and no vocabulary fixes it.
+        Assert.Contains(
+            "**On the wing of bone behind the eye socket.** Loss of vision, double vision, "
+            + "numbness in the face, or an eye that slowly starts to bulge.",
+            CuratedPage.Flatten(CuratedPage.Read("tumors", "meningioma.md")),
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("**Behind the eyes, on the wing of bone", composed,
+            StringComparison.Ordinal);
+        Assert.Contains("**Behind the eyes, at the base of the brain.**", flatBlock,
+            StringComparison.Ordinal);
+
+        // 3. THE TERM THE READER CARRIES TO AN APPOINTMENT NOW HAS ONE DEFINITION.
+        //    The page said "an umbrella word for the ones growing on the floor of the
+        //    skull and the ridge behind the eyes"; the block says the whole floor.
+        //    Those agreed, but they were two definitions of one word on one composed
+        //    page. The page keeps the half only it can say — which of ITS addresses
+        //    sit under the umbrella — and routes for the meaning.
         Assert.Contains("Your team may call the whole floor of the skull the **skull base**",
             flatBlock, StringComparison.Ordinal);
-
-        Assert.Contains("- **Near the pituitary and the crossing of the optic nerves.**",
-            meningioma, StringComparison.Ordinal);
-        Assert.Contains("- **Inside the fluid spaces of the brain.**", meningioma, StringComparison.Ordinal);
+        Assert.DoesNotContain("for the ones growing on the floor of the skull",
+            composed, StringComparison.Ordinal);
+        Assert.Contains("(/where-your-tumor-is#skull-base)", composed, StringComparison.Ordinal);
     }
 
     /// <summary>

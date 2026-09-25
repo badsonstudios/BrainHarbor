@@ -211,6 +211,42 @@ public sealed class MeningiomaPageContentTests
         // page written for everybody cannot. Shared with every hub that has a
         // gate.
         "and how it behaves over the first few years. Those are things your own team can see",
+
+        // WI-569: A LINK LABEL SHARED BY TWO PAGES POINTING AT THE SAME DESTINATION
+        // IS A CORPUS CONVENTION, NOT A RESTATEMENT.
+        //
+        // The first version of this reason said "a label that is the destination's
+        // own title", and /review round 5 checked all three and found it true of one.
+        // /treatments/craniotomy is titled "Brain surgery (craniotomy)..." and the
+        // anchor's heading is "How much did you get out?" — the shared label is
+        // neither. What is actually true, and what generalises, is that two pages
+        // routing to one place say it the same way on purpose. This file's `Shingles` strips the URL and keeps the label,
+        // which is §12.17's rule and the right one — a claim can be written INTO a
+        // label. But the label here is the title of `/where-your-tumor-is`, and
+        // `/start` links to the same page with the same words. Exempting it is
+        // therefore exempting the corpus's habit of naming a destination the same
+        // way twice, which is what makes a link recognisable. EXACTLY EIGHT TOKENS,
+        // so it yields exactly one shingle and cannot quietly exempt a neighbour.
+        "where your tumor is, and what that changes",
+
+        // WI-569, same class, second instance — which is §12.8's promote-at-the-
+        // second-use threshold, and why the reason above is written once rather than
+        // twice. `/where-your-tumor-is` links to the same craniotomy section with the
+        // same label. The words AFTER the label were reworded ("goes through" here,
+        // "explains" there), because that overlap was a real one; the label itself is
+        // NOT the destination's title — checked at round 5 and corrected in §12.18 —
+        // but the wording /where-your-tumor-is uses for the same anchor, which is the
+        // convention the exemption is for. Making it deliberately different would
+        // cost the reader a recognisable link for nothing.
+        "what happens in an operation on the brain",
+
+        // WI-569, third instance of the same class, and the third is what turns it
+        // into a rule rather than two exceptions: `/where-your-tumor-is` itself links
+        // to its own fluid section with this label, and the token after the label is
+        // "is" on both pages because that is how a route sentence is built. The
+        // entry carries the trailing "is" for that reason — the label alone stops one
+        // token short of the window the probe actually found.
+        "when where it sits makes it urgent is",
     ];
 
     private static readonly HashSet<string> AllowedShingles =
@@ -1014,14 +1050,22 @@ public sealed class MeningiomaPageContentTests
     {
         // The dossier's §C.5 makes the point and this is the page where it
         // matters most: "benign" means "not cancer" and readers hear
-        // "harmless". A grade 1 meningioma in the wrong place takes somebody's
-        // sight, and can come back a decade later.
+        // "harmless". A grade 1 meningioma takes somebody's sight, and can come
+        // back a decade later.
+        //
+        // "CAN STILL TAKE", NOT "CAN TAKE" — WI-569. The sentence used to read "A
+        // grade 1 meningioma IN A BAD PLACE can take your sight", and the three
+        // words in the middle ranked a location, which is what the Wave 6 preamble
+        // forbids. What this test is here for is the HARM, not the place: a grade
+        // that sounds reassuring can still cost a reader their sight. The harm is
+        // pinned and the ranking is gone.
         var grade = PlainOf("Is it cancer? What does its grade mean?");
 
         Assert.Matches(new Regex(@"the word .benign. does more harm than good here",
             RegexOptions.IgnoreCase), grade);
         Assert.Matches(new Regex(@"people\s*hear .harmless.", RegexOptions.IgnoreCase), grade);
-        Assert.Matches(new Regex(@"can take your sight", RegexOptions.IgnoreCase), grade);
+        Assert.Matches(new Regex(@"can still take your sight", RegexOptions.IgnoreCase), grade);
+        Assert.DoesNotMatch(new Regex(@"in a bad place", RegexOptions.IgnoreCase), Plain);
 
         // It is never offered as the reassurance.
         var comfort = new Regex(
@@ -1085,28 +1129,760 @@ public sealed class MeningiomaPageContentTests
         // told not to.
         var section = PlainOf("Where does it grow, and why does it cause these symptoms?");
 
-        Assert.Matches(new Regex(@"location decides almost\s*everything, and size decides less than you think",
+        // THE THESIS WAS REWORDED AT /review ROUND 1 AND THE REASON IS A
+        // CONTRADICTION, NOT A STYLE NOTE. It read "location decides almost
+        // everything", fifty-three lines above this item's own new sentence "where
+        // it sits does not tell you how this turns out" — under ONE heading. Both
+        // are true of different things and the page never drew the line, which for
+        // this audience is a lost reader rather than a quibble. The thesis now says
+        // what location decides: what you notice, and much of what the team plans.
+        Assert.Matches(new Regex(
+            @"Where it sits decides what\s*you notice, and much of what your team plans",
             RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"Size decides less than you\s*think", RegexOptions.IgnoreCase),
+            section);
         Assert.Matches(new Regex(@"The measurement on your report is not the headline",
             RegexOptions.IgnoreCase), section);
 
-        // With the concrete version, which is what makes it land.
-        Assert.Matches(new Regex(@"A small meningioma against the nerve to your eye",
+        // And the disclaimer it has to coexist with, pinned in the same test so a
+        // later edit cannot quietly restore the contradiction by touching one end.
+        //
+        // ROUND 1'S FIX FOR THE CONTRADICTION WAS ITSELF A CONTRADICTION, 360 LINES
+        // WIDE, AND ROUND 2 FOUND IT. It wrote "Where it sits does not tell you how
+        // this turns out", while the outlook block says the published figures "cannot
+        // tell you which group you are in. That depends on where your tumor was, what
+        // could safely be removed..." — and the outlook version is the TRUER one.
+        // EANO makes extent of resection location-dependent, and
+        // /where-your-tumor-is refuses the RANKING without ever claiming location is
+        // outcome-neutral. What this page may say is that nobody can read an outcome
+        // off an address, which is the honest version and the one that agrees with
+        // both neighbours.
+        Assert.Matches(new Regex(@"Nobody can read your outcome off the address",
             RegexOptions.IgnoreCase), section);
+        Assert.DoesNotMatch(new Regex(@"does not tell you how this turns out",
+            RegexOptions.IgnoreCase), Plain);
+        Assert.Matches(new Regex(
+            @"That depends on where your tumor was, what could safely be",
+            RegexOptions.IgnoreCase), Plain);
 
-        // And it is in the short version too, because §12.3 says most readers
-        // get 20 to 28% of a page.
+        // THE CONCRETE VERSION, AND IT IS NOT THE ONE THIS TEST USED TO PIN.
+        // WI-569 removed "A small meningioma against the nerve to your eye WILL
+        // take your sight. A larger one on the top of your head may cause nothing
+        // for years." It was the most memorable sentence on the page and it was
+        // also the Wave 6 shape in miniature: an absolute outcome ("will") keyed to
+        // an address. The contrast survives, in the short version, where it is a
+        // statement about what is NEXT TO the tumor rather than about a place.
         var shortVersion = PlainOf("The short version");
+        Assert.Matches(new Regex(@"A small one with a nerve right beside it can matter more",
+            RegexOptions.IgnoreCase), shortVersion);
+
+        // And the thesis is in the short version too, because §12.3 says most
+        // readers get 20 to 28% of a page.
         Assert.Matches(new Regex(@"not how big it is", RegexOptions.IgnoreCase), shortVersion);
         Assert.Matches(new Regex(@"where it sits and what it is\s*pressing on", RegexOptions.IgnoreCase),
             shortVersion);
 
         // The location list names the ones with a distinctive give-away, since
         // those are the ones a reader recognises themselves in.
-        foreach (var owed in new[] { "Loss of\nsmell", "bulge", "worse at night", "field of vision" })
+        //
+        // THE LIST CHANGED AT WI-569 AND THE REASON IS THE POINT. It used to
+        // include "field of vision", which was the sellar entry's symptom — and
+        // [MECHANISM] states that forty lines below, in better words ("Side vision
+        // is what usually goes first"). The give-aways this page keeps are the ones
+        // the block CANNOT say, because no block that covers nine general regions
+        // can carry what a meningioma in particular does.
+        foreach (var owed in new[]
+                 {
+                     "Loss of\nsmell",       // the olfactory groove entry
+                     "bulge",                // the sphenoid wing entry
+                     "hoarse voice",         // the posterior fossa entry
+                     "Weakness\n  in a leg", // the parasagittal entry
+                     "worse at night",       // the spinal entry
+                 })
         {
             Assert.Contains(CuratedPage.Flatten(owed), section, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    /// <summary>
+    /// WI-569's RULING, AS A GUARD: an address entry may carry a SYMPTOM and must
+    /// never carry a DIFFICULTY.
+    ///
+    /// A symptom is a fact about what the reader notices, and it belongs to them. A
+    /// difficulty is a fact about an operation — and the moment one address carries
+    /// one, every other address needs one for the list to look finished. That is the
+    /// location-to-risk column the Wave 6 preamble forbids, growing one review round
+    /// at a time.
+    ///
+    /// THE SHAPE DID NOT HAVE TO BE INVENTED HERE; IT ARRIVED WITH A SOURCE. This
+    /// page cited Mayfield, whose own closing paragraph reads "Convexity,
+    /// parasagittal, and sphenoid wing meningiomas usually are completely
+    /// removable... Optic, cavernous sinus, and skull base meningiomas have a higher
+    /// rate of complication and are more difficult to completely remove." The page
+    /// carried a compressed version of it for three items before Wave 6 gave anyone
+    /// the words for what was wrong with it.
+    ///
+    /// SCOPED TO THE WHOLE PAGE, TITLE AND DESCRIPTION INCLUDED, and not to the
+    /// location section — §12.17's single most repeated failure was a guard scoped to
+    /// the paragraph the last defect was found in, which is green where the next one
+    /// arrives. The description renders as the first paragraph a reader meets and
+    /// ContentCheck does not grade it (WI-575).
+    /// </summary>
+    [Fact]
+    public void NoPlaceOnThisPageIsRankedAgainstAnother()
+    {
+        // THIS GUARD HAS BEEN REWRITTEN ONCE PER REVIEW ROUND, AND EVERY VERSION WAS
+        // GREEN ON THE PAGE WHILE BEING GREEN ON THE DEFECT.
+        //
+        // THE ROUNDS ARE THE LABELS, NOT VERSION NUMBERS. An earlier draft numbered
+        // them here and in §12.18, the two drifted, and "version five" came to mean
+        // two different things in one commit.
+        //
+        // Round 1 found version one was a list of the wordings this item had just
+        // deleted — §12.17's "a ban list of the wordings you just deleted is not a
+        // refusal", committed by the test that quotes the rule.
+        //
+        // Round 2: the fix allowed any hit whose preceding 250 characters mentioned a
+        // nerve or a vein. The reasoning — a difficulty attached to a STRUCTURE is
+        // EANO's factor, a difficulty attached to an ADDRESS is the forbidden row —
+        // was right, and the implementation was PROXIMITY. The new subsection is
+        // dense with "nerves", so appending "Tumors on that floor are harder to
+        // remove completely" would have passed with the whole suite green.
+        //
+        // Round 3: the vocabulary was called "difficulty-or-outcome" and contained no
+        // outcome word at all. Eight planted sentences passed.
+        //
+        // Round 4: the outcome words went in but kept only the REPORT addresses
+        // while the page leads with plain ones. Five more passed.
+        //
+        // Round 5: still no compartment or lobe names and no harm verbs: sixteen
+        // of seventeen planted sentences passed.
+        //
+        // Round 6: the back-reference gate had with no DEICTICS, so six of ten
+        // attacks walked through on the page's own bullet format.
+        //
+        // Round 7: the guard excluded bare "risk", "damage" and "harm" and WROTE THE
+        // EXCLUSION DOWN, which is better than leaving it silent — and sixteen
+        // attacks walked through on "carries a higher risk", "the risk is greater
+        // for", "does more damage", and a comparative family nobody had listed.
+        //
+        // Rounds 8, 9 and 10 each wrote more attacks and each found more passing;
+        // round 10 wrote twenty-five and twenty-four passed.
+        //
+        // AND THE REASON IT TOOK A ROUND EACH TIME IS THAT EVERY ONE WAS CHECKED BY A
+        // HUMAN WRITING ATTACK SENTENCES BY HAND. The positive controls at the end of
+        // this method are what replaces that: a property guard that has never been
+        // seen to FAIL has not been shown to work, and only a planted defect shows it.
+        foreach (var comparative in new[]
+                 {
+                     "more complications", "higher rate of", "completely removable",
+                     "in a bad place", "the worst", "the most dangerous", "riskiest",
+                     "a good spot", "a bad spot",
+                 })
+        {
+            Assert.DoesNotContain(comparative, Plain, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // "good spots and bad ones" is allowed ONLY as the page's own refusal, which
+        // is the one correct sentence in that vocabulary. A page that may not write
+        // its own refusal cannot refuse in writing.
+        foreach (Match hit in Regex.Matches(Plain, @"good spots and bad", RegexOptions.IgnoreCase))
+        {
+            Assert.Contains("no list here of good spots and bad",
+                Plain[Math.Max(0, hit.Index - 30)..(hit.Index + 20)], StringComparison.OrdinalIgnoreCase);
+        }
+
+        // THE FOUR SENTENCES THIS ITEM DELETED, PINNED — AND THE ORDER MATTERS.
+        // §12.17's objection is to a ban list being THE WHOLE GUARD, not to one
+        // sitting behind a working property. Two of the four are beyond any property
+        // guard: "A small meningioma against the nerve to your eye will take your
+        // sight" keys an outcome to a STRUCTURE the ban must allow, and "A larger one
+        // on the top of your head may cause nothing for years" carries no loaded word
+        // at all — it is the harmless half of a contrast whose other half did the
+        // damage. Nothing short of a reader catches that pair, so the pair is named.
+        foreach (var deleted in new[]
+                 {
+                     "against the nerve to your eye",
+                     "on the top of your head may cause nothing",
+                     "harder to take out completely",
+                     "in a bad place",
+                     // The fifth, added at round 8. Not a Wave 6 row — an unsourced
+                     // frequency stronger than [MECHANISM]'s own "For some people a
+                     // seizure is the first sign". Pinned because it is the deletion
+                     // that was approved at round 6, asserted by a script that then
+                     // aborted, and still on the page two review rounds later.
+                     "A seizure is the usual first sign",
+                 })
+        {
+            Assert.DoesNotContain(deleted, Plain, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // AND THE PROPERTY, WHICH IS WHAT ACTUALLY GENERALISES: no window of four
+        // sentences may carry an ADDRESS word and difficulty-or-outcome vocabulary
+        // together. That window is the row itself.
+        const string address =
+            @"skull base|convexity|parasagittal|falx|sphenoid|olfactory groove|tuberculum"
+            + @"|suprasellar|posterior fossa|petroclival|intraventricular|\bfloor\b"
+            + @"|on the surface|top of the skull|spinal cord|fluid spaces"
+            + @"|deep in the middle|midline|behind the eye|wing of bone"
+            + @"|base of the (?:brain|skull)"
+            // THE PLAIN WORDS (round 4). The list above is the REPORT vocabulary, and
+            // this page's editorial rule is plain words first — so the guard was
+            // blind to the half of each entry a reader meets.
+            // `\bsellar\b` matched neither "sella" nor "sellae" — the page teaches
+            // "tuberculum sellae" and the guard could not see it (round 7).
+            + @"|pituitary|brain ?stem|\bsell(?:a|ae|ar)\b|optic nerve|perioptic|\bspine\b"
+            + @"|ventricle|cavernous sinus|foramen magnum|between the two halves"
+            + @"|smelling nerves|front of the skull"
+            // THE COMPARTMENTS AND LOBES (round 5). Six more planted sentences got
+            // through on names this page does not itself use — "over the temporal
+            // lobe", "on the tentorium", "at the cerebellopontine angle". A guard
+            // that only knows the vocabulary the page already has cannot catch the
+            // sentence somebody adds next.
+            + @"|temporal|frontal|parietal|occipital|\blobe|cerebell|tentori|\bcliv"
+            + @"|\borbit|cerebellopontine|crown of the head|back of your head"
+            // Four more addresses nobody had listed (round 9), including the page's
+            // own OLD wording for the sphenoid ridge.
+            + @"|optic chiasm|sagittal sinus|internal auditory canal|pineal"
+            + @"|back of the skull|ridge behind the eyes"
+            + @"|top of your head"
+            // THE SKULL-BASE SUB-SITES (round 6). "jugular foramen", "petrous apex"
+            // and "anterior clinoid" all walked through, while "foramen magnum" was
+            // pinned as a two-word literal. Mayfield's refused paragraph names optic,
+            // cavernous sinus and skull base; the finer names a report uses for that
+            // floor are the ones a future edit reaches for.
+            + @"|\bforamen\b|petrous|clinoid|\bplanum\b|falcine|parasellar"
+            + @"|jugular|torcul";
+        const string loaded =
+            @"harder to|more difficult|difficult to (?:remove|take out|reach|get at)"
+            + @"|costs? you|comes? out whole|completely remov|complication|recurr"
+            + @"|comes? back|grows? back|second operation|second look|straightforward"
+            + @"|higher rate|easier to|riskier|risky|more risk|dangerous|safer|safest"
+            // "worse" is QUALIFIED, not banned outright: the spinal entry says back
+            // pain is "typically worse at night", which is a symptom and not a rank.
+            // A bare \bworse\b fired on it — TRUE OF v4, BEFORE THE BACK-REFERENCE
+            // GATE. Re-measured at round 8, bare \bworse\b now costs zero false
+            // positives here, because that sentence carries no in-sentence address
+            // and no anaphor. The qualification is kept and the DATE is on it,
+            // because the rationale is what WI-570 copies and it is true of that
+            // item's pages only if they re-measure. §12.17 — a ban list that forbids
+            // the correct shape is worse than no ban list, and a rationale that
+            // stopped being true is how one gets copied.
+            + @"|worse (?:outlook|outcome|place|spot|odds|chance|prospect)"
+            + @"|worse than|worse for|worse off|\bworst\b|do better|does better"
+            + @"|better than|outlook|\boutcome|survival|prognosis|bigger operation"
+            + @"|takes longer|trick|all comes out|all come out|more serious"
+            + @"|less serious|rarely all"
+            // Near-neighbours of entries already here (round 4): "hard to reach"
+            // beside "harder to", "the easy ones" beside "easier to".
+            + @"|cur(?:e|es|ed|able)|hard to (?:remove|take out|reach|get at)"
+            + @"|cannot\s+(?:\w+\s+){0,2}(?:be removed|come out|be taken out)"
+            + @"|how well .{0,20}\bdo\b|\beasy\b|\bfatal\b|deadly|life-threatening"
+            + @"|higher chance"
+            // The HARM and OUTCOME verbs (round 5). Eight more planted sentences got
+            // through because every earlier version described an operation and none
+            // described what happens to the reader.
+            + @"|impossible|live longer|live shorter|leaves? (?:more |anything )?behind"
+            + @"|permanent damage|disabl|\bdie\b|\bdeath|mortality"
+            + @"|take your (?:sight|hearing|speech)|needs more surgery|greater chance"
+            // QUALIFIED "risk" AND "damage" (round 7). The exclusion note below
+            // used to cover both words whole, and sixteen fresh attacks walked
+            // through on "carries a higher risk", "the risk is greater for", "does
+            // more damage" -- plus a family of comparatives nothing banned at all.
+            // §12.18's own rule about "worse" applies here and had not been applied.
+            + @"|(?:higher|greater|added|extra|more) risk|risk (?:is|was) (?:higher|greater)"
+            + @"|more damage|lasting damage|\bkinder\b|\bgentler\b"
+            + @"|smaller operation than|less of a (?:job|operation)|simpler"
+            + @"|longer recovery"
+            // NOMINALISATIONS, LITOTES, ADVICE AND IDIOM (round 8). Seventeen of
+            // twenty-four fresh attacks walked through on shapes no earlier version
+            // had reached for: "the removal rate", "no picnic", "if yours is on the
+            // skull base, expect a longer stay", "asks more of a surgeon", "a
+            // brighter future", "sets the ceiling on what surgery can achieve".
+            // BARE `harder` AND `easier` SUBSUME the four qualified entries above and
+            // cost nothing — the in-sentence address requirement was doing the
+            // protecting all along, not the qualification.
+            + @"|\bharder\b|\bhardest\b|\beasier\b|\btough|removal rate|resection rate"
+            + @"|\bthe odds\b"
+            + @"|what to expect|how things go|longer stay|asks? more of|forgiving"
+            + @"|brighter|no picnic|nothing to sneeze at|drag on|\bdemands?\b"
+            + @"|\bceiling\b|not an easy"
+            // ONE-WORD NEIGHBOURS AGAIN (round 9). Twenty more fresh sentences,
+            // eighteen passed, and almost all of them sat one word from an entry
+            // already here: "bigger chance" beside "higher chance", "bigger job"
+            // beside "bigger operation", "more than one operation" beside "second
+            // operation", "sets a limit" beside "ceiling". Two carried NO loaded word
+            // at all — "the surgeon can usually only get part of it" and "a partial
+            // removal is the rule on the floor of the skull" — which is Mayfield's
+            // ranking in plain English. Measured at zero false positives on
+            // /tumors/meningioma AND /treatments/craniotomy.
+            + @"|(?:bigger|lower|better|smaller) chance|\bdeficit|\bstroke\b|bigger job"
+            + @"|more than one operation|only (?:get|take|remove) part|rougher"
+            + @"|sets? a limit|in one piece|full clearance|partial removal";
+
+        // AND THREE WORDS DELIBERATELY LEFT OUT, recorded because an undocumented
+        // hole reads like an oversight to the next person. BARE "risk", "damage" and
+        // "harm" are too noisy on THIS page to ban — "risk" appears seven times
+        // page-wide, five of them in the hormone section, about medicines. The
+        // QUALIFIED forms are banned above, which is the round-7 correction: the
+        // first version of this note excluded the words whole and sixteen attacks
+        // walked through. The cost is two sentences the guard
+        // cannot see: "wherever the tumor is right up against something a surgeon
+        // will not risk", and "against the risk of the operation itself". Both
+        // sit within four sentences of an address, both are correct prose, and both
+        // would have to be re-checked by hand if the exclusion is ever lifted.
+
+        // The scan, as a local function, so the SAME code runs over the page and over
+        // the page with a defect planted in it.
+        static List<string> RowsIn(string text)
+        {
+            var sentences = CuratedPage.SentencesOf(text);
+            var rows = new List<string>();
+
+            for (var i = 0; i < sentences.Length; i++)
+            {
+                if (!Regex.IsMatch(sentences[i], loaded, RegexOptions.IgnoreCase))
+                {
+                    continue;
+                }
+
+                // THE WHOLE ROW IN ONE SENTENCE — the ordinary case.
+                if (Regex.IsMatch(sentences[i], address, RegexOptions.IgnoreCase))
+                {
+                    rows.Add(sentences[i]);
+                    continue;
+                }
+
+                // A ROW SPLIT ACROSS SENTENCES HAS TO CARRY A BACK-REFERENCE, and
+                // requiring one is what makes the multi-sentence window safe.
+                //
+                // Round 3 closed the two-sentence split; round 4 walked through the
+                // FOUR-sentence one using this page's own convexity bullet. Round 5
+                // widened the window to four AND widened the lexicon, and the two
+                // together produced a FALSE POSITIVE on the page's own "Where the
+                // whole tumor cannot safely come out, the guideline's advice is to
+                // plan the smaller operation" — a general principle standing three
+                // sentences after a paragraph that mentions the floor of the skull.
+                // Proximity alone cannot tell those apart. An anaphor can: "Those are
+                // harder to take out completely" is a row, and a sentence with no
+                // back-reference is not talking about the address three sentences up.
+                //
+                // FOUR SENTENCES, and a fixed window rather than "back to the start of
+                // the bullet" — that was tried first and was worse, because the text
+                // is flattened so nothing marks where a bullet ENDS, and a pointer
+                // that never resets gave every later sentence a window reaching back
+                // to the last address entry. It fired nineteen times.
+                // THE DEICTICS AND THE BARE PRONOUNS ARE IN THE LIST, and leaving
+                // them out was /review round 6's blocker. `SentencesOf` splits on
+                // sentence ends, so every bolded bullet LEAD on this page is its own
+                // sentence — and the sentence after it refers back with "here",
+                // "there", "it" or "one", never with "those". Six of ten fresh
+                // attacks walked through on the page's own native format, which is
+                // also the format WI-570 copies onto nine more hubs.
+                if (!Regex.IsMatch(sentences[i],
+                        @"\b(?:those|these|that kind|that sort|the ones|ones there"
+                        + @"|they|them|here|there|it|one|such)\b",
+                        RegexOptions.IgnoreCase))
+                {
+                    continue;
+                }
+
+                var window = string.Join(" ", sentences[Math.Max(0, i - 3)..(i + 1)]);
+                if (Regex.IsMatch(window, address, RegexOptions.IgnoreCase))
+                {
+                    rows.Add(window);
+                }
+            }
+
+            return rows;
+        }
+
+        Assert.Empty(RowsIn(Plain));
+
+        // THE POSITIVE CONTROLS. Each of these is a sentence of the banned property
+        // that an EARLIER version of this guard let through, and each is here because
+        // a guard that has only ever been green proves nothing. If a later edit
+        // narrows the lexicon, these go red before a real defect has to.
+        foreach (var planted in new[]
+                 {
+                     "A meningioma on the skull base is harder to take out completely.",
+                     "A meningioma on the skull base has a poor outcome.",
+                     "People with a convexity meningioma live longer than people with a petroclival one.",
+                     "A meningioma over the temporal lobe usually comes out whole.",
+                     "Meningiomas at the cerebellopontine angle rarely all come out.",
+                     "A skull base meningioma cannot safely come out.",
+                     "An intraventricular meningioma carries a much greater chance of permanent damage.",
+                     "A meningioma near the brainstem is harder to take out.",
+                     "Surgery on the floor of the skull leaves more behind.",
+                     "A clival meningioma is more dangerous than one at the back of your head.",
+                 })
+        {
+            Assert.NotEmpty(RowsIn(Plain + " " + planted));
+        }
+
+        // AND THE BULLET-LEAD AND DEICTIC CONTROLS, the shapes round 6 found and
+        // which the ten above have no member of. The page's own format puts the
+        // address in a bolded lead that is its own sentence, and what follows refers
+        // back with "there" or "here".
+        Assert.NotEmpty(RowsIn(
+            Plain + " - On the floor at the front of the skull. Surgery there leaves more behind."));
+        Assert.NotEmpty(RowsIn(
+            Plain + " The umbrella word is skull base. Tumors here are harder to take out completely."));
+
+        // AND THE SPLIT-ACROSS-SENTENCES CONTROL, because that is the hole rounds 3
+        // and 4 each left open in a different width.
+        Assert.NotEmpty(RowsIn(
+            Plain
+            + " On the floor of the skull, the nerves run through."
+            + " Keeping those working is a major concern."
+            + " Those are harder to take out completely."));
+
+        // AND THE FLOORS, because a property guard is green over a page it never read
+        // (§12.17). The vocabulary was actually looked for, the page is still the
+        // page, and the sentences the bans exist to stand over are present.
+        Assert.True(Regex.Matches(Plain, loaded, RegexOptions.IgnoreCase).Count >= 8,
+            "the loaded vocabulary appears nowhere on the page, so this guard had "
+            + "nothing to judge");
+        Assert.True(Regex.Matches(Plain, address, RegexOptions.IgnoreCase).Count >= 15,
+            "the address vocabulary has gone, so the co-occurrence ban has nothing to fire on");
+        Assert.Contains("no list here of good spots and bad ones", Plain, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("neither is a place being ranked", Plain, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("genuinely difficult to remove", Plain, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("wrapped around a nerve or a large vein", Plain, StringComparison.OrdinalIgnoreCase);
+
+        Assert.True(Plain.Length > 20_000,
+            $"the page has shrunk to {Plain.Length} characters and these bans now prove nothing");
+    }
+
+    /// <summary>
+    /// The address list teaches the word the READER'S REPORT uses, which is the half
+    /// of the location axis a type page owns. <c>/where-your-tumor-is</c> carries the
+    /// nine general regions; it cannot carry "tuberculum sellae", because that word
+    /// only turns up for this tumor.
+    ///
+    /// Sourced to Mayfield for the vocabulary ONLY — see
+    /// <see cref="NoPlaceOnThisPageIsRankedAgainstAnother"/> for the part of the same
+    /// page that is refused.
+    /// </summary>
+    [Fact]
+    public void EveryAddressTeachesTheWordTheReportIsLikelyToUse()
+    {
+        var section = PlainOf("Where does it grow, and why does it cause these symptoms?");
+
+        // COUNTED OUT OF THE FLATTENED SECTION, NOT WITH A LINE ANCHOR. The first
+        // version of this used `(?m)^- \*\*`, which found ZERO entries and asserted
+        // nothing about a list of eight — because `CuratedPage.Section` flattens its
+        // return value, so there are no line starts left to anchor to. §12.17's
+        // "read the code that produces it" in a fresh costume: the guard was green on
+        // nothing for exactly as long as it took to run the suite once.
+        var entries = Regex.Matches(
+            CuratedPage.Flatten(Reader(Section("Where does it grow, and why does it cause these symptoms?"))),
+            @"- \*\*");
+
+        // THE FLOOR FIRST. An iterate-and-check guard has to say out loud how much it
+        // looked at, or it is green over nothing (§12.17). A FLOOR, not an equality:
+        // an equality makes adding a ninth address a test failure, and the address
+        // vocabulary asserted below is what pins the eight that are here.
+        Assert.True(entries.Count >= 8,
+            $"the address list is down to {entries.Count} entries");
+
+        foreach (var word in new[]
+                 {
+                     "convexity", "parasagittal", "falx", "sphenoid wing",
+                     "olfactory groove", "tuberculum sellae", "posterior fossa",
+                     "petroclival", "intraventricular",
+                     // "suprasellar" was here and came OFF at /review round 5: it was
+                     // a new report-word claim, and note (15) enumerates what Mayfield
+                     // is cited for without it. Note (25)'s rule is that the whole
+                     // content of a claim like this IS the word, so an unsourced one
+                     // cannot be kept for completeness.
+                 })
+        {
+            Assert.Contains(word, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // AND THE DIVISION OF LABOUR IS STATED, not left for the reader to infer from
+        // the fact that some entries are shorter than others.
+        //
+        // "DIFFERENT PARTS", NOT "EACH PART" — /review round 1. "Each part of the
+        // brain" closes a set of nine that has no sphenoid wing, no falx, no
+        // convexity as such and nothing spinal, which is WI-567's closed-set failure
+        // without a number in it. And the first version of this guard PINNED the
+        // closed wording, so the test cemented the defect instead of catching it.
+        Assert.Matches(new Regex(
+            @"What a tumor in different parts of the brain tends to do",
+            RegexOptions.IgnoreCase), section);
+
+        // IT IS A ROUTE, NOT A DIRECTION. "Further down this page" named nothing and
+        // linked nowhere; the corpus links for exactly this handoff.
+        //
+        // AND IT POINTS AT THE LIST RATHER THAN SIX PARAGRAPHS ABOVE IT (/review
+        // round 3). The first version anchored on this page's own `### And why does
+        // that cause symptoms at all?`, which lands the reader at the TOP of
+        // [MECHANISM] — the closed box, the swelling, the pressure and the fluid,
+        // about four hundred words before the region list the label promises. The
+        // block's own heading carries a Markdig auto-id (`UseAdvancedExtensions`).
+        //
+        // THIS COMMENT USED TO CLAIM `AssertFragmentLinksResolve` COVERED IT, AND
+        // THAT WAS FALSE (/review round 4). Its pattern is
+        // `href="(/[^"?#]*)#([^"]+)"` — it requires a leading slash, so a bare
+        // `href="#why-your-symptoms-are-the-ones-you-have"` is invisible to it.
+        // WhereYourTumorIsPageTests' own docstring said so the day before this was
+        // written. The real guard is the render test
+        // `EverySamePageLinkLandsOnAnIdThatExists` below, which reads the served
+        // HTML. A comment naming a guard that cannot see the thing is §12.14's
+        // defect wearing a citation.
+        Assert.Contains("(#why-your-symptoms-are-the-ones-you-have)", Page,
+            StringComparison.Ordinal);
+        Assert.Contains("## Why your symptoms are the ones you have",
+            CuratedPage.Composed(Page, Slug), StringComparison.Ordinal);
+
+        // The spinal address is the exception and the page says so, because the
+        // block's nine regions are all inside the head. A sentence that is true of
+        // eight entries and false of the ninth is the closed-count failure in another
+        // costume (§12.17).
+        Assert.Matches(new Regex(
+            @"general list further down is about the brain, so\s*this address is not on it",
+            RegexOptions.IgnoreCase), section);
+    }
+
+    /// <summary>
+    /// What the address CHANGES is routed to and owned in the right proportions.
+    ///
+    /// THE COLLISION THE SUITE FOUND AND READING DID NOT: <c>/where-your-tumor-is</c>
+    /// shipped a day before this item and already carries the EANO four-factor
+    /// sentence, anonymised ("A guideline for one common tumor type..."), and already
+    /// carries "must not cost you how you think or how your body works". Writing them
+    /// here again would have been §12.10's exact defect, on the item whose own ruling
+    /// is about §12.10. So this page routes for the factors — and the route is worth
+    /// more than the restatement was, because it tells the reader that the anonymous
+    /// guideline is theirs.
+    ///
+    /// What it OWNS is what only a meningioma page can say: the places EANO itself
+    /// singles out.
+    /// </summary>
+    [Fact]
+    public void WhatTheAddressChangesRoutesForTheFactorsAndOwnsThePlaces()
+    {
+        var section = PlainOf("Where does it grow, and why does it cause these symptoms?");
+
+        // Routed, with the fact that makes the route worth following.
+        //
+        // NOT "THE GUIDELINE YOUR SURGEON WORKS FROM" — /review round 1. EANO is the
+        // EUROPEAN guideline, and this page tells readers elsewhere that local
+        // practice differs, so that sentence was false for a large share of them.
+        Assert.Contains("/where-your-tumor-is#why-it-matters", Page, StringComparison.Ordinal);
+        // THE LINK LEADS THE PARAGRAPH NOW. "There is a guideline for this tumor, and
+        // it is the one quoted on that page" carried the section's authority and put
+        // "that page" in front of the link it referred to, so the reader met the
+        // pronoun before its antecedent (/review round 2).
+        Assert.Matches(new Regex(
+            @"sets out the things that decide how\s*much of a tumor can come out",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"Your address\s*is one of the things on it",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(
+            @"guideline quoted there is the European one for meningioma", RegexOptions.IgnoreCase),
+            section);
+        Assert.DoesNotMatch(new Regex(@"guideline your surgeon works from", RegexOptions.IgnoreCase),
+            Plain);
+
+        // Owned: the places the guideline itself names, and the spinal question, each
+        // as a change in what the TEAM aims at rather than in what happens to the
+        // reader.
+        //
+        // "A MAJOR CONCERN THERE", NOT "THE FIRST CONCERN" — /review round 1. EANO
+        // says "Cranial nerve function is A MAJOR concern in the therapy of skull
+        // base meningiomas"; promoting that to the top priority also put it against
+        // the same guideline's "the aim is gross total resection".
+        Assert.Matches(new Regex(@"Keeping those working\s*is a major concern there",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"has\s*been used in a few smaller sittings rather than one",
+            RegexOptions.IgnoreCase), section);
+        // "WHETHER TO DO IT NOW OR WATCH INSTEAD" — /review round 7. The pair read as
+        // a small self-contradiction ("an operation is usually the answer. What your
+        // team weighs is whether to operate at all"); both halves are EANO's, and the
+        // second is about timing as much as about whether.
+        Assert.Matches(new Regex(@"whether to operate or to watch\s*instead", RegexOptions.IgnoreCase),
+            section);
+
+        // AND THE SENTENCE THAT STOPS THE REFUSED RANKING BEING RECONSTRUCTIBLE. The
+        // only two places this subsection names are the skull base and the perioptic
+        // region — which are exactly the two Mayfield's refused closing paragraph
+        // ranks worst. Saying "neither is a place being ranked" while naming only
+        // those two is an assertion the reader can disprove from the paragraph above
+        // it. What actually makes it true is that the trade is about what is TOUCHING
+        // the tumor, and those two are named because the guideline names them.
+        Assert.Matches(new Regex(
+            @"That trade is about what is touching your tumor, not about the address",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(
+            @"The floor of the skull and the optic nerves are named here because\s*the guideline names them",
+            RegexOptions.IgnoreCase), section);
+
+        // AND THE CONTRADICTION WITH THE PAGE IT LINKS TO, BANNED BY NAME. The
+        // paragraph used to lead "Taking out less, on purpose, is settled before the
+        // day rather than on it" — and linked, in the same paragraph, to
+        // /treatments/craniotomy, which says the call is "a decision made for you, in
+        // the moment". No verbatim supports either exclusive version, and a reader
+        // who woke with residual tumor and had had no conversation beforehand would
+        // read the old heading as something having gone wrong.
+        Assert.Matches(new Regex(
+            @"sometimes decided\s*beforehand and sometimes in the room", RegexOptions.IgnoreCase),
+            section);
+        Assert.DoesNotMatch(new Regex(@"settled before the day", RegexOptions.IgnoreCase), Plain);
+
+        // AND NOT A NUMBER AMONG THEM. EANO prints doses, fraction counts, cranial
+        // nerve outcome percentages and a spinal recurrence range; §12.4 R1 and the
+        // Wave 6 preamble refuse all of them.
+        var changes = section[section.IndexOf("What the address changes", StringComparison.Ordinal)..];
+        Assert.DoesNotMatch(new Regex(@"\d"), changes);
+        Assert.DoesNotContain("Gy", changes, StringComparison.Ordinal);
+        Assert.True(changes.Length > 900,
+            $"the subsection is {changes.Length} characters and the no-number guard proves little");
+
+        // The door to the page that owns the axis, from this page in its own right
+        // and not only through the block it composes.
+        //
+        // AND IT NO LONGER ENUMERATES WHAT IS THROUGH IT. The RENDERED READ found
+        // this paragraph listing the destination's contents ("what the word on your
+        // report means, and WHEN A PLACE MAKES SOMETHING URGENT") thirty lines above
+        // [MECHANISM]'s own closing door, which lists them as "when the place makes
+        // something urgent on its own". One article apart, on one composed page, and
+        // differing by a single word — so the 8-gram probe cannot see it and neither
+        // can any guard here. Only reading the page as it is served does.
+        Assert.Contains("](/where-your-tumor-is)", Page, StringComparison.Ordinal);
+        Assert.Matches(new Regex(
+            @"is the page for the address on its own,\s*whatever the word on your report",
+            RegexOptions.IgnoreCase), section);
+        Assert.DoesNotContain("when a place makes something urgent", Plain,
+            StringComparison.OrdinalIgnoreCase);
+
+        // AND THE ANCHOR THE TREATMENT SECTION ROUTES TO EXISTS. Its sibling
+        // `#why-symptoms` was guarded and this one was not, which is a route that can
+        // go dead in a rename with nothing to say so (/review round 2).
+        Assert.Contains("### What the address changes about the plan {#what-the-address-changes}",
+            Page, StringComparison.Ordinal);
+        Assert.Contains("(#what-the-address-changes)", Page, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// WI-567 made a closed count FIVE TIMES, in five different sentences, and the
+    /// last two were inside the fixes for the first three. A number is not the only
+    /// way to close a set: "the places whose warnings..." and "as it stands" do it
+    /// without one. Both shapes are banned, over the material WI-569 added.
+    /// </summary>
+    [Fact]
+    public void TheLocationMaterialCountsNothingAndClosesNothing()
+    {
+        // SCOPED TO THE PAGE, NOT TO THE SECTION — /review round 1, and it is the
+        // failure §12.17 names as the item's most repeated one, committed here by the
+        // test that cites it. WI-569 put location material in FOUR places: the short
+        // version, this section, the symptoms section ("the addresses and the general
+        // list above") and the treatment section's route. A section-scoped guard is
+        // green in three of them. `Plain` is the whole page including the title and
+        // the front-matter description.
+        var section = Plain;
+
+        // No count attached to addresses or places.
+        //
+        // AND THE NEGATED FORM IS ALLOWED, BECAUSE IT IS THE CORRECT SENTENCE. The
+        // first version of this fired on "why it does not rank ONE PLACE against
+        // another" — the page's own refusal, written in the ordinary English idiom
+        // for it. §12.17: a ban list that forbids the correct shape is worse than no
+        // ban list. The fix is the window, not a reworded page: a future writer will
+        // reach for that idiom again and should be allowed to.
+        // `\b` ON BOTH SIDES OF `CountWord`, and the missing one was a live false
+        // positive: the shared constant has no word boundaries, so "often spot" matched
+        // as "ten" + " spot" and the guard fired on a sentence about caregivers
+        // noticing changes. §12.17 again — a ban list that forbids the correct shape
+        // is worse than no ban list, and this one forbade an ordinary English word.
+        foreach (Match hit in Regex.Matches(
+                     section,
+                     @"\b" + CountWord + @"\b\s+(?:places?|addresses|spots?|locations?|regions?)",
+                     RegexOptions.IgnoreCase))
+        {
+            var window = section[Math.Max(0, hit.Index - 50)..hit.Index];
+            // "Neither IS A PLACE BEING ranked" — the first version of this marker read
+            // "is NOT a place being", which matches nothing on the page. It was copied
+            // from the sentence's meaning rather than from the sentence (/review round
+            // 2's rerun). A marker that matches nothing turns an allowance into a ban.
+            Assert.Matches(new Regex(
+                @"does not rank|Neither is a place being ranked|no list here of",
+                RegexOptions.IgnoreCase), window);
+        }
+
+        // And no completeness assertion about them either.
+        foreach (var closing in new[]
+                 {
+                     "the addresses above are", "as it stands", "those are the places",
+                     "the only place", "the only address", "these are the places",
+                 })
+        {
+            Assert.DoesNotContain(closing, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // AND THE SHAPE WITH NO COUNT NOUN AFTER IT, which /review round 2 found the
+        // scan above cannot see: "those two are named here" and "Neither is a place
+        // being ranked" both close a set and neither is followed by a place noun.
+        //
+        // SCOPED TO THE LOCATION SUBSECTION, AND THAT IS A DELIBERATE EXCEPTION TO
+        // THIS FILE'S PAGE-WIDE RULE, WITH ITS REASON. Run page-wide, this fires on
+        // six sentences, four of which predate WI-569 and are correct English about
+        // things that are not places: "the two halves of the brain", "which of those
+        // two you are being given", "If those two words are on your report", "Those
+        // two things get mixed up constantly", plus "Both of those are true" and
+        // "Both things are true". §12.17 is explicit that a ban list which forbids
+        // the correct shape is worse than no ban list, and a guard that has to be
+        // silenced six times is that. The property being tested is that the LOCATION
+        // material closes no set, and the location material is locatable.
+        //
+        // AND IT IS THE FOUR PLACES, NOT THE ONE SECTION (/review round 3, which
+        // pointed out that this test's own comment fourteen lines up says why a
+        // section is the wrong unit). The six false positives all live in OTHER
+        // sections, so concatenating the four places WI-569 wrote location material
+        // costs none of them and covers everything the item added.
+        var located = string.Join(
+            " ",
+            PlainOf("The short version"),
+            PlainOf("Where does it grow, and why does it cause these symptoms?"),
+            PlainOf("What symptoms does it cause?"),
+            PlainOf("How is it usually treated?"));
+
+        foreach (Match hit in Regex.Matches(
+                     located, @"\b(?:both|neither|those two|these two|the two)\b",
+                     RegexOptions.IgnoreCase))
+        {
+            // A WINDOW EITHER SIDE, not just before: "those two are named here
+            // because the guideline names them" is made honest by the sentence that
+            // FOLLOWS it, and a look-behind-only window cannot see that.
+            var from = Math.Max(0, hit.Index - 250);
+            var to = Math.Min(located.Length, hit.Index + 250);
+            Assert.Matches(new Regex(
+                @"does not rank|Neither is a place being ranked|no list here of|halves of the brain",
+                RegexOptions.IgnoreCase), located[from..to]);
+        }
+
+        // THE OPEN FORM IS PRESENT, which is the positive half: the umbrella
+        // paragraph could have said "covers four of the addresses above" and was
+        // written "including" instead.
+        // "SOME … SUCH AS", AND THE HEDGE MOVED (/review round 5). The sentence used
+        // to read "Several of the addresses above sit under it, including …" and name
+        // all FOUR of the skull-base addresses — so within its own stated domain
+        // ("the addresses above") the list was closed, and the hedge implied a fifth
+        // a reader could hunt for and not find. WI-567's fifth failure in its newest
+        // costume. The open form now attaches to the thing that is genuinely open:
+        // the word covers more places than this page names.
+        Assert.Matches(new Regex(@"It covers more\s*places than this page names",
+            RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"some of the addresses above sit under it, such",
+            RegexOptions.IgnoreCase), section);
+
+        // And the sentence the exception above exists to allow, pinned: if the
+        // paragraph loses its corrective, the allowance stops standing over anything.
+        Assert.Matches(new Regex(
+            @"The floor of the skull and the optic nerves are named here because",
+            RegexOptions.IgnoreCase), located);
     }
 
     [Fact]
@@ -1738,6 +2514,52 @@ public sealed class MeningiomaPageRenderTests : IClassFixture<WebApplicationFact
         // healthy 200 and drops the reader at the top of a long page. This page
         // deep-links /seizures/living-with#driving.
         await CuratedPage.AssertFragmentLinksResolve(_factory.CreateClient(), Url);
+
+    /// <summary>
+    /// EVERY SAME-PAGE LINK LANDS SOMEWHERE — and <c>AssertFragmentLinksResolve</c>
+    /// above cannot see these. Its pattern is <c>href="(/[^"?#]*)#([^"]+)"</c>,
+    /// which requires a leading slash, so a bare <c>href="#..."</c> is invisible to
+    /// it. WI-567 wrote that down on <c>/where-your-tumor-is</c>; WI-569 then added
+    /// this page's first same-page links and asserted, in a comment, that the helper
+    /// covered them. It did not.
+    ///
+    /// AND THIS PAGE'S CASE IS THE WORSE ONE. Its route targets a heading in
+    /// <c>blocks/mechanism.md</c>, whose id is GENERATED by Markdig from the heading
+    /// text rather than written as <c>{#id}</c>. So rewording that H2 — which WI-570
+    /// may well do — kills the route on this page and on any other hub that copies
+    /// it, silently.
+    /// </summary>
+    [Fact]
+    public async Task EverySamePageLinkLandsOnAnIdThatExists()
+    {
+        var html = await _factory.CreateClient().GetStringAsync(Url);
+
+        var targets = Regex.Matches(html, "href=\"#([^\"]+)\"")
+            .Select(m => m.Groups[1].Value)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        // The positive half, because a page whose in-page links were all deleted
+        // would otherwise satisfy this in silence (§12.17's floor rule).
+        // THE SKIP LINK DOES NOT COUNT. `_Layout.cshtml` emits `href="#main-content"`
+        // on every page, so a floor of two was met by the skip link plus one real
+        // link (/review round 5).
+        var pageLinks = targets
+            .Where(t => !t.Equals("main-content", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.True(pageLinks.Count >= 2,
+            $"only {pageLinks.Count} same-page link(s) found on {Url}, so this guard is "
+            + "reading almost nothing");
+
+        foreach (var target in pageLinks)
+        {
+            // THE CLOSING QUOTE MATTERS: `Assert.Contains("id=\"what-the-address")`
+            // passes against `id="what-the-address-changes"`, so a link to a truncated
+            // anchor would resolve here and not in a browser.
+            Assert.Contains($"id=\"{target}\"", html, StringComparison.Ordinal);
+        }
+    }
 
     [Fact]
     public async Task TheOutlookGateRendersClosedWithItsHeadingOutsideIt()

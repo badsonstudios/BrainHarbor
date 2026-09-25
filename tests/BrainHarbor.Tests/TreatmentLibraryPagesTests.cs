@@ -81,6 +81,14 @@ public sealed class CraniotomyPageContentTests
         // reassuring phrase somewhere inside it, so the reassurance could sit
         // third-from-last and the section could still close on two fresh
         // frightening sentences.
+        //
+        // AND THE HEADROOM IS NOW SPENT. WI-569 appended one sentence to this
+        // section ("For some tumors a smaller operation is planned from the start
+        // …"), so "It is the right call far more often than not" is second-from-last
+        // and `sentences[^2..]` reaches it with nothing to spare. The next sentence
+        // appended here turns this red, which is the guard working — but whoever
+        // appends it should know that is what happened, rather than widening the
+        // window to make it green.
         var sentences = SentencesOf(Section(ResectionHeading));
 
         Assert.DoesNotMatch(

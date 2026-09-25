@@ -6278,3 +6278,349 @@ apart unseen. **WI-575**: the front-matter `description` is reader-facing prose 
 ContentCheck does not grade and most pages' guards cannot see — WI-524 and WI-528
 each hit it before this item, and here it cost a `/review` blocker three rounds of
 survival inside one line nothing was reading.
+
+### 12.18 Where a tumor TYPE page carries location (WI-569)
+
+§12.17 settled what a page *about* location owns. This is the other half: what a
+page about a **type** may say when the reader asks where theirs sits — and it is
+the ruling WI-570 copies onto nine more hubs, so it is written as a rule and not as
+a description of one page.
+
+**THE SPLIT: LOCATION MATERIAL ON A TYPE PAGE GOES THREE WAYS AND EACH WAY HAS
+EXACTLY ONE HOME.**
+
+1. **What the place EXPLAINS (the symptom)** belongs to `[MECHANISM]`, which
+   already composes on eighteen hubs. The type page's address entry adds **only
+   the give-away this type has that the block cannot say**. Where the block
+   already says it, the entry says nothing and the page keeps one copy.
+2. **What the REPORT'S WORD means (the vocabulary)** belongs to the type page,
+   because meningioma reports name the address — *convexity*, *sphenoid wing*,
+   *tuberculum sellae* — and `/where-your-tumor-is` carries only nine general
+   regions. Plain words first, the report's word second, which is §12.17's shape.
+3. **What the place CHANGES (the plan)** goes in one sub-heading, keyed on **the
+   factors the type's own guideline names** and never on the addresses. A place
+   appears only where the source names it, and only as a change in **what the team
+   aims at** — never as a change in what happens to the reader.
+
+**AND THE LINE THAT MAKES THE FORBIDDEN TABLE STRUCTURALLY IMPOSSIBLE, ONE NOTCH
+OVER FROM §12.17's.** That section could say a region entry has nowhere for a risk
+to go because it teaches only a word. A type page cannot borrow that, because its
+entries legitimately carry symptoms — the block it composes does, on the same page.
+So:
+
+> **An address entry may carry a SYMPTOM. It must never carry a DIFFICULTY.**
+
+A symptom is a fact about what the reader notices and it belongs to them. A
+difficulty is a fact about an operation, and **the moment one address carries one,
+every other address needs one for the list to look finished.** That is the risk
+column growing, one review round at a time.
+
+**THE SHAPE DOES NOT HAVE TO BE INVENTED. IT ARRIVES WITH THE SOURCE.** Mayfield's
+meningioma page — already cited on `/tumors/meningioma` — closes with *"Convexity,
+parasagittal, and sphenoid wing meningiomas usually are completely removable…
+Optic, cavernous sinus, and skull base meningiomas have a higher rate of
+complication and are more difficult to completely remove."* The page carried a
+compressed version of that sentence for three items before Wave 6 gave anyone the
+words for what was wrong with it. **Check the closing paragraph of every patient-
+education comparator for this, because it is where they all put it.**
+
+**FOUR SENTENCES ON A LIVE PAGE, AND THE ITEM WAS NOT LOOKING FOR THEM.** The
+backlog asked for a new section. What the item found first was that the page
+already keyed an outcome or a difficulty to a place four times — *"harder to take
+out completely, and they have more complications when they are"*, *"A small
+meningioma against the nerve to your eye **will** take your sight"*, *"A grade 1
+meningioma **in a bad place**"*, and the short version's softer copy of the eye
+sentence. Three of those four were outside the section the item was commissioned
+to write. **The sweep comes before the section.**
+
+**WHAT SURVIVES THE BAN, AND WHY IT IS NOT A LOOPHOLE.** *"Where it grows around a
+nerve or a large vein, it can be genuinely difficult to remove"* stays, because a
+difficulty attached to a **structure** is EANO's *"proximity or involvement of
+critical neurovascular structures"* — the FACTOR. A factor gives a reader nothing
+to look their own address up in. An address gives them a row. **The ban is on the
+row.**
+
+**THE GUARD FOR IT HAS TO BE A PROPERTY, AND IT TOOK A VERSION PER REVIEW ROUND —
+TEN OF THEM.** Every version was green on the shipped page, and every one before
+the last was green on the defect too. The narrative below is keyed to ROUNDS
+rather than to version numbers, because an earlier draft numbered the versions in
+this section and in the test, the two drifted apart, and a reader had two
+different accounts of what "version five" contained. Round 5's is the last one
+named below; rounds 6 to 10 are narrated in the paragraphs that follow.
+
+- **Version one** was a list of the wordings the item had just deleted, which
+  §12.17 already names as not-a-refusal — and two sentences of the banned property
+  were live on the page while it passed.
+- **Round 2's fix** allowed any hit whose preceding 250 characters mentioned a nerve
+  or a vein. The reasoning was right and the implementation was **proximity**, so
+  appending *"Tumors on that floor are harder to remove completely"* to a paragraph
+  about cranial nerves would have passed with the whole suite green.
+- **Round 3's** banned a sentence carrying the vocabulary where it or the
+  sentence before it names an address. Its vocabulary was called
+  "difficulty-or-outcome" and **contained no outcome word at all** — no *risk*,
+  *riskier*, *dangerous*, *safer*, *worse outlook*, *survival*, *prognosis*, *do
+  better*. `/review` round 3 wrote eight sentences of the banned property and all
+  eight passed, including *"A meningioma on the skull base has a worse outlook"*.
+  Its structure allowance also ran on the SENTENCE while the address ran on the
+  two-sentence WINDOW, so a row split across a full stop walked through it — and
+  the allowance fired on **zero** shipped sentences, because both legitimate ones
+  name no address in the first place. A door held open for nobody.
+- **Round 4's** deleted the allowance, evaluates one property, and carries the
+  outcome lexicon. It catches the eight attack sentences round 3 wrote and fires on
+  none of the page's own — **and round 4 then wrote five more that passed.** Three
+  of those five got through because the address lexicon carried only the REPORT
+  words (*sphenoid*, *petroclival*) while the page leads with the plain ones
+  (*near the brainstem*, *near the pituitary*); the other two were near-neighbours
+  of entries already on the list — *hard to reach* beside *harder to*, *the easy
+  ones* beside *easier to*. **Round 5's** added the plain words and the
+  neighbours, and widened the window to FOUR sentences, because round 4 also
+  split a row across four using this page's own convexity bullet as the
+  carrier — an address entry's address is in its bolded lead and a difficulty
+  can be three sentences later in the same bullet.
+
+**And "back to the start of the bullet" was tried first and was worse than a
+fixed window.** The text under test is flattened, so nothing marks where a
+bullet ENDS — a bullet-start pointer that never resets gives every later
+sentence on the page a window reaching back to the last address entry. It fired
+nineteen times on prose it had no business reading.
+
+**AND A SPLIT ROW HAS TO CARRY A BACK-REFERENCE, which is what makes a
+multi-sentence window safe at all.** Widening to four AND widening the lexicon
+produced, together, a false positive on the page's own *"Where the whole tumor
+cannot safely come out, the guideline's advice is to plan the smaller
+operation"* — a general principle standing three sentences after a paragraph
+that mentions the floor of the skull. **Proximity cannot tell a split row from
+two unrelated sentences. An anaphor can.** *"Those are harder to take out
+completely"* is a row; a sentence with no back-reference is not talking about the
+address three sentences up. So the rule is: the whole row in one sentence, OR the
+vocabulary plus a back-reference with the address inside four.
+
+**But the lesson is not "do not widen the window", and the measurement says so.**
+On this page two examined sentences sit **three** and **four** sentences after an
+address sentence, both of them inside the new subsection, so a four-sentence
+window reaches an address for the nearer of them. Neither fires, and the reason
+is the
+back-reference gate rather than distance. **The window was never the binding
+constraint; the lexicon was, every single time — but the headroom is three, not
+nine, so a wider window without the gate would need an allowance written back.**
+The first version of this paragraph said ten, which was measured against the
+wrong text and was caught by the round after the one that wrote it. Measure the
+headroom; then measure it again against what shipped.
+
+**AND ROUND 5 THEN WROTE SEVENTEEN AND SIXTEEN PASSED — AND ROUND 6 WROTE TEN
+MORE AND SIX OF THOSE PASSED.** Six on compartment and
+lobe names the page does not itself use (*over the temporal lobe*, *on the
+tentorium*, *at the cerebellopontine angle*), eight on harm and outcome verbs no
+version had ever carried (*a poor outcome*, *live longer*, *leaves more behind*,
+*permanent damage*, *impossible to remove*), and **two that no property guard can
+reach at all** — the pair this item was commissioned to delete. *"A small
+meningioma against the nerve to your eye will take your sight"* keys an outcome to
+a STRUCTURE, which the ban must allow; *"A larger one on the top of your head may
+cause nothing for years"* carries no loaded word, because it is the harmless half
+of a contrast whose other half did the damage.
+
+**So the four deleted sentences are pinned by name, BEHIND the property and not
+instead of it.** §12.17's objection is to a ban list being the whole guard. One
+sitting behind a working property is a belt, and for a pair no property can see it
+is the only thing there is.
+
+**AND THE THING THAT ENDS THE CYCLE IS A POSITIVE CONTROL.** Seven rounds, nine
+lexicons, **one hundred planted sentences** (8, 5, 17, 10, 16, 24, 20), and every
+version was verified by a human writing attacks by hand. The guard now runs its scan as a
+local function over `Plain` AND over `Plain + planted`, and asserts the second one
+FINDS something — thirteen planted controls, each one a shape an earlier version
+let through, including a three-sentence split and a bolded bullet lead. **A
+property guard that has never been seen to fail has not been shown to work.** That
+is the sentence WI-570 should copy before it copies any lexicon.
+
+**AND THE LAST HOLE WAS THE PAGE'S OWN FORMAT.** The back-reference gate listed
+*those*, *these*, *the ones*, *they*, *them* — and no **deictics**. `SentencesOf`
+splits on sentence ends, so every bolded bullet lead is its own sentence and what
+follows it refers back with *here*, *there*, *it* or *one*. Six of round 6's ten
+attacks walked through on the format the page is written in, which is the format
+WI-570 copies onto nine more hubs. **Attack a guard in the shape of the text it
+guards, not in the shape of English you would write by hand.**
+
+**Three things generalise.** A guard's vocabulary has to be attacked, not read —
+write the banned sentences and run them. An exception that fires on nothing is not
+protecting anything, it is only holding a door open. And when two guards test one
+property in two files, **the newer one is not automatically the stronger one**: the
+lexicon this item needed already existed in `WhereYourTumorIsPageTests`, and WI-570
+is where it gets promoted, because that item needs it on nine hubs at once.
+
+**And one word had to be QUALIFIED rather than banned.** A bare `\bworse\b` fires
+on *"back pain that is typically worse at night"*, which is a symptom and not a
+rank. The ban is on *worse outlook*, *worse than*, *worse for*. §12.17: a ban list
+that forbids the correct shape is worse than no ban list.
+
+**A GIVE-AWAY THE BLOCK CARRIES FOR A DIFFERENT ADDRESS IS ONE THE BLOCK CANNOT
+SAY FOR THIS ONE.** The item stripped the sphenoid-wing entry's *"double vision,
+numbness in the face"* on the reasoning that the block covered them — and it does,
+under **brainstem** and under **the floor of the skull**, neither of which is where
+that reader would look. Worse: the entry opened *"Behind the eyes, on the wing of
+bone there"*, and the block's **pituitary** bullet opens *"Behind the eyes, at the
+base of the brain"*. The routing sentence the item had just added therefore sent a
+sphenoid-wing reader to a paragraph about hormones, periods and puberty. **Before
+routing a reader into a shared list, match the words they were given against the
+words that list uses**, and check the whole composed page rather than the entry.
+
+**A ROUTING PROMISE IS A RULE, AND A RULE HAS TO BE TRUE OF EVERY ENTRY THAT
+FOLLOWS IT.** *"Each entry here names what a meningioma at that address tends to
+give away"* was false for two of eight. That is WI-568's failure shape — a rule
+that is wrong for the reader who follows it — reproduced by the item that cites it.
+Write the upper bound: *each entry adds only what the shared list cannot say
+about this type at that address*. A conditional (*where an address has a
+give-away of its own, the entry names it*) was tried first and was still false,
+because the page's own later prose named a give-away the entry did not carry. An
+upper bound cannot be falsified by a sentence somewhere else on the page.
+
+**AND CHECK THE RULE AGAINST THE SHARED LIST'S OWN SCOPE.** `[MECHANISM]`'s nine
+regions are all inside the head, so "what a tumor in each part of the brain tends
+to do is below" is silently false for the spinal entry. The page says so in the
+entry. Likewise *"each part of the brain"* closes a set of nine that has no
+sphenoid wing, no falx and no convexity — a closed count with no number in it,
+which is §12.17's fifth failure in a new costume.
+
+**§12.10 CUTS BOTH WAYS AND THE NEWER PAGE MAY BE THE OWNER.**
+`/where-your-tumor-is` shipped a day before this item and already carried the EANO
+four-factor sentence in anonymised form (*"A guideline for one common tumor type
+spells out what that planning weighs"*) and already carried *"must not cost you how
+you think or how your body works"*. The type page therefore **routes** for the
+factors rather than restating them — and the route is worth more than the
+restatement was, because it tells the reader that the anonymous guideline is
+theirs. Recorded because the instinct runs the other way: the claim is *about*
+meningioma, so the meningioma page feels like its home.
+
+**THE OTHER RESTATEMENT IS THE PAGE AND ITSELF, AND NOTHING CAN SEE IT.** The
+8-gram probe skips the page under test (§12.17). This item wrote *"[Spinal cord
+tumors](/tumors/spinal-cord-tumor) is the page for that half"* into a new paragraph
+while the same sentence sat thirty lines below it, and wrote *"what is left is then
+either watched or treated with radiation"* while the treatment section said it
+already. Both were found by reading, twice, by two different rounds. **Sweep the
+page against itself by hand, at a shorter window than eight.**
+
+**A LINK LABEL SHARED BY TWO PAGES POINTING AT THE SAME DESTINATION IS A CORPUS
+CONVENTION, NOT A RESTATEMENT.** The first version of this rule said "a label that
+is the destination's own title", and `/review` round 5 checked all three and found
+it true of one: `/treatments/craniotomy` is titled *"Brain surgery (craniotomy)…"*
+and the anchor's heading is *"How much did you get out?"*, so the shared label is
+neither. **Check a rule against every case it licenses, not against the one that
+suggested it.** Three
+turned up in one item — `/where-your-tumor-is`, `/treatments/craniotomy#how-much-
+came-out`, `/where-your-tumor-is#the-fluid` — each shared with a page that links to
+the same place with the same words. Exempt the label and reword the words *after*
+it; making the label deliberately different costs the reader a recognisable link
+and buys nothing. §12.17's "strip the URL, keep the label" is what makes these
+visible at all, and that is the right trade: a claim can be written into a label.
+
+**AND TWO WAYS A GUARD READ NOTHING.** `CuratedPage.Section` **flattens** its
+return value, so `(?m)^- \*\*` found zero entries and asserted nothing about a list
+of eight. `CountWord` has **no word boundaries**, so `"often spot"` matched as
+`"ten"` + `" spot"` and the guard fired on a sentence about caregivers. Both were
+found by running the suite once — which is the argument for a floor on every
+iterate-and-check guard, and for `Assert.True(count >= n)` rather than a comment
+saying how many there should be.
+
+**A COUNT BAN THAT HAS TO BE SILENCED SIX TIMES IS NOT A BAN.** Scanning the whole
+page for `both|neither|those two|the two` fires on *"the two halves of the brain"*,
+*"If those two words are on your report"*, *"Those two things get mixed up"* and
+three more — all correct English about things that are not places. The page-wide
+scan is kept for the shape that names a place (`<count> places/addresses/spots`)
+and the bare-demonstrative scan is scoped to the location material, **with the
+reason written next to it**, because §12.17 is explicit that a ban list which
+forbids the correct shape is worse than no ban list.
+
+**A SECOND DOOR TO A PAGE THAT ALREADY HAS ONE CAN BREAK THE FIRST DOOR'S
+GUARD.** `/review` round 3 asked for a `/treatments/stereotactic-radiosurgery`
+link beside the new fractionation sentence — reasonable, and it turned
+`StereotacticRadiosurgeryPageRenderTests.TheDoorsOnTheSiblingPagesAreAppended
+SentencesNearWhatTheyWereAppendedTo` red. That guard (WI-526, WI-530) finds the
+FIRST occurrence of the door on the sibling page and asserts it sits near the
+sentence it was appended to, which is how it proves a door was added rather than
+a paragraph replaced. A new, EARLIER link makes the first occurrence the wrong
+one. The link was dropped rather than the guard loosened: **a corpus guard that
+is inconvenient for one page's nit is not the thing that should move.**
+
+**THE FIX THAT WAS APPROVED, ASSERTED AND NEVER WRITTEN.** §12.17 records that a
+fix and its guard written in one script share that script's failure mode. This item
+found the next layer: **round 6's edit script printed `anchor 1: 1 hit ok` and then
+aborted on anchor 2, so NOTHING was written** — and the follow-up script, written to
+apply the remaining anchors, silently dropped the first one. Two rounds of review
+then read a page that still carried the sentence round 6 had deleted, because the
+deletion existed only in a review report and a script's stdout. **A dry run that
+reports `ok` is a report about the ANCHOR, not about the file.** Re-grep the file for
+what you deleted, or assert the absence in the suite; and when a multi-edit script
+aborts, re-run the WHOLE script rather than writing a new one for what is left.
+
+**AND THE SIXTEEN SENTENCES A DOCUMENTED EXCLUSION LET THROUGH.** The guard excluded
+bare *risk*, *damage* and *harm* as too noisy, and wrote the exclusion down, which is
+better than leaving it silent. It was still too wide: *carries a higher risk*, *the
+risk is greater for*, *does more damage* and a whole family of comparatives nobody
+had listed (*kinder*, *gentler*, *a smaller operation than*, *less of a job*,
+*simpler*, *a longer recovery*) all walked through. **§12.18's own rule about
+*worse* — qualify, do not ban — is the rule, and it had not been applied to the
+words the exclusion note named.** Qualifying them cost zero false positives, measured.
+
+**AND THE RESIDUAL, MEASURED RATHER THAN HOPED AT — AND IT DOES NOT CLOSE.** One
+shape is STRUCTURAL: *"Where it sits sets the ceiling on what surgery can achieve"*
+carries the vocabulary and names no address. Widening the address lexicon with
+*where it sits | the address | the spot* was tried and **costs three false
+positives, one of them the page's own refusal** (*"Nobody can read your outcome off
+the address"*), so it is written down rather than taken.
+
+**The LEXICAL residual is the bigger one, and it is not closed.** Round 9 wrote
+twenty fresh sentences and **eighteen passed** — almost all of them one word from
+an entry already in the list (*bigger chance* beside *higher chance*, *bigger job*
+beside *bigger operation*, *more than one operation* beside *second operation*,
+*sets a limit* beside *ceiling*), plus four address words nobody had listed (*optic
+chiasm*, *sagittal sinus*, *internal auditory canal*, *pineal region*). Ten cost
+nothing to add and were added. **The next twenty will find twenty more.**
+
+**So the lesson for WI-570 is which half is load-bearing.** The positive controls
+and the pinned deletions are; **the lexicon is a floor, not a fence.** Two sentences
+carried no loaded word at all — *"the surgeon can usually only get part of it"*,
+*"a partial removal is the rule on the floor of the skull"* — which is Mayfield's
+ranking written in plain English, and no word list reaches that by induction.
+
+**AND TWO CROSS-PAGE MEASUREMENTS, because WI-570 ports this lexicon to nine hubs.**
+Run unchanged, the guard fires **zero** times on `/treatments/craniotomy` — where
+*harder* and *easier* each occur twice and survive only because no address word
+shares their sentence — and **once, FALSELY, on `/where-your-tumor-is`**, on
+*"When it is somewhere that cannot be taken out, such as the brain stem"*, which is
+correct ACS-sourced prose. **Port the lexicon, and re-measure it per page before
+trusting it.**
+
+**And round 10 attacked version ten with twenty-five more: twenty-four passed.**
+That is not a regression — it is the same finding a seventh time, and it is why
+the paragraph above says the lexicon is a floor. **Stop adding words when the
+positive controls and the pinned deletions are in place; the next round will
+always find twenty more.**
+
+**Round 8's other measurement: bare `harder` and `easier` subsume TWO of the
+qualified entries above them** (`harder to`, `easier to`) and cost nothing; `hard
+to remove`, `difficult to remove` and `more difficult` are different words and
+survive on their own. The redundant pair is kept deliberately, so the diff reads.
+The in-sentence address requirement was doing the protecting all along, not the
+qualification — worth knowing before the next item spends a round qualifying a word
+it could have banned.
+
+**AND THE PLANNED-SUBTOTAL PRINCIPLE NOW HAS THREE WORDINGS ON THREE PAGES THAT
+LINK EACH OTHER — AND THIS ITEM NEARLY WROTE A FOURTH INSIDE THE THIRD.** Its own
+craniotomy fix first said "sometimes settled before the day" AND, two sentences
+later, "a smaller operation is planned from the start" — one idea, twice, four
+lines apart, on the page §12.18 names as the owner, caught by a hand read at round
+10 and by nothing else. `/treatments/craniotomy` owns it (*"a subtotal resection is not
+a failed operation"*), `/where-your-tumor-is` says it generically (*"aiming to get
+all of it must not cost you how you think or how your body works"*), and this item
+added the meningioma-specific third (*"Taking out less, on purpose, can be the
+plan rather than a disappointment"*). All three route to the same craniotomy
+anchor with the same label. No shingle check can see a paraphrase, so this is
+recorded rather than detected: **WI-570 should route, not write a fourth.**
+
+**CARRIED FORWARD.** `/tumors/meningioma` says weakness in a **leg** is the
+parasagittal give-away and no reachable source read for this item carries the limb
+— Mayfield's falx entry names weakness with no limb, EANO says nothing, StatPearls
+served a reCAPTCHA. The claim predates WI-569 and is **left as found and written
+down** rather than deleted on a hunch or dressed in an unsourced explanation; this
+item's own `/review` round 1 added exactly such an explanation and round 2 removed
+it. Re-ask, do not inherit.
