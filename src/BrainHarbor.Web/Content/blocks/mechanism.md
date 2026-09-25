@@ -149,3 +149,8 @@ new, the phone call above applies.
 If something on this list matches what you have noticed, it is worth writing
 down and taking to your next appointment. Your team can tell you whether it fits
 where your tumor actually is.
+
+This list is about what the place explains. The other half of the question is
+what the place changes: whether an operation is offered, how much of it can come
+out, and when the place makes something urgent on its own.
+[Where your tumor is, and what that changes](/where-your-tumor-is) is that half.

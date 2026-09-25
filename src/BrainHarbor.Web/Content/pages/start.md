@@ -56,6 +56,10 @@ Almost everyone has an MRI scan early on, and more of them later.
 [What an MRI is like, and what to ask](/tests/mri) walks through the day, the
 noise, the dye, and what to do if small spaces frighten you.
 
+If you have been told where it is, but not yet what it is, [where your tumor is,
+and what that changes](/where-your-tumor-is) puts the place on your scan report
+into plain words.
+
 If a piece of your tumor is about to be taken, [how tissue is
 taken](/tests/biopsy) goes through the needle, the operation, and what happens
 if the sample does not give an answer.

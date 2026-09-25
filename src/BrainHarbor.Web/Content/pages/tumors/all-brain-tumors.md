@@ -265,7 +265,7 @@ goes through the rest of it properly, including how long each test takes and why
 the name can change while you wait. **It counts its own steps from one**, so a
 number there is not a number here.
 
-## Why the scan cannot say on its own
+## Why the scan cannot say on its own {#why-the-scan-cannot-say-on-its-own}
 
 A scan is a very good photograph. That is the whole of its power and the whole
 of its limit.
@@ -300,7 +300,7 @@ risky to take a piece of, and
 sets out when that applies. It is your team's call rather than something to ask
 for, and it is a conversation rather than something that happens quietly.
 
-## Where is this coming from?
+## Where is this coming from? {#where-is-this-coming-from}
 
 Whatever it turns out to be, one rule explains most of what you have noticed.
 Where a thing sits in the brain usually decides what you feel. **The next
@@ -458,11 +458,11 @@ will be the other cancer's stage rather than a brain one.
 [Brain metastases](/tumors/brain-metastases) covers all of that, including what
 happens when the search does not find a starting point.!%tumor board%
 
-## The meeting about your case
+## The meeting about your case {#the-meeting-about-your-case}
 
 [TUMOR-BOARD]
 
-## Asking somebody else to look
+## Asking somebody else to look {#asking-somebody-else-to-look}
 
 Two different things get called a second opinion at this stage, and only one of
 them is available to you yet.

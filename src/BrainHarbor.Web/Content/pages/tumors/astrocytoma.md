@@ -143,8 +143,8 @@ than it looks like it does.
 
 ## Where does it grow, and why does it cause these symptoms?
 
-An IDH-mutant astrocytoma can occur anywhere in the brain or spinal cord, but it
-is usually **near or in the frontal lobes**, the front of the brain. That
+!%frontal lobe%An IDH-mutant astrocytoma can occur anywhere in the brain or spinal
+cord, but it is usually **near or in the frontal lobes**, the front of the brain. That
 matters more than a location usually does, and the next section is about why.
 
 [MECHANISM]
