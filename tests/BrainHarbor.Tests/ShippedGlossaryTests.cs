@@ -340,4 +340,71 @@ public sealed class ShippedGlossaryTests
         Assert.True(offenders.Count == 0,
             "Roman numeral grades in: " + string.Join(", ", offenders));
     }
+
+    /// <summary>
+    /// WI-567. A WI-105 suppression marker broken by a LINE WRAP is inert, and it
+    /// fails in the worst available direction: it suppresses nothing AND prints the raw
+    /// <c>!%frontal lobe%</c> characters to the reader. Nothing else catches it: the
+    /// build is green, ContentCheck is green, the page renders, and the tooltip the
+    /// author decided to switch off is still firing.
+    ///
+    /// <b>And the cause is not the regex.</b> <c>GlossaryTooltips.SuppressMarker</c> is
+    /// <c>!%(.+?)%</c>, so the obvious diagnosis is that <c>.</c> does not match a
+    /// newline — and a <c>RegexOptions.Singleline</c> "fix" would change nothing.
+    /// <c>CollectAndStripSuppressions</c> walks <c>LiteralInline</c>s; Markdig has
+    /// already split the wrapped paragraph at the soft break, and that pass runs
+    /// <em>before</em> <c>MergeSoftBreakRuns</c> puts it back together, so the marker
+    /// never exists as one string for the pattern to see. Recorded because an outcome
+    /// correctly observed and wrongly explained is how the next person fixes the wrong
+    /// thing (§12.17).
+    ///
+    /// This is here because it actually happened while writing
+    /// <c>/where-your-tumor-is</c> — a marker landed inside a wrapped sentence and
+    /// three of that page's own tests failed in three different-looking ways before
+    /// the cause was one line break. It is asserted corpus-wide rather than on that
+    /// page, because the next one will be wrapped by whoever is typing at the time.
+    /// The corpus was swept when this was added: this was the only occurrence.
+    ///
+    /// Read over the raw file with line endings normalised, since the working tree
+    /// is CRLF under <c>text=auto</c> and the index is LF.
+    /// </summary>
+    [Fact]
+    public void NoGlossaryMarkerIsBrokenAcrossALineBreakOrLeftUnterminated()
+    {
+        var content = Path.Combine(
+            FindRepoRoot(), "src", "BrainHarbor.Web", "Content");
+
+        var offenders = new List<string>();
+        var checkedFiles = 0;
+
+        foreach (var file in Directory.EnumerateFiles(content, "*.md", SearchOption.AllDirectories))
+        {
+            checkedFiles++;
+            var text = File.ReadAllText(file).Replace("\r\n", "\n");
+
+            var relative = Path.GetRelativePath(content, file).Replace('\\', '/');
+
+            offenders.AddRange(Regex.Matches(text, @"!%([^%]*)%")
+                .Where(m => m.Groups[1].Value.Contains('\n', StringComparison.Ordinal))
+                .Select(m => $"{relative}: "
+                    + $"!%{m.Groups[1].Value.Replace("\n", "\\n", StringComparison.Ordinal)}%"));
+
+            // THE SIBLING FAILURE, added at WI-567's /review round 3: a marker with no
+            // closing `%` at all. `!%(.+?)%` never matches it, so production leaves the
+            // characters `!%frontal lobe` on the page and suppresses nothing — the same
+            // outcome as the line-wrap case, reached a different way, and the check
+            // above cannot see it because it also requires the closing `%`.
+            offenders.AddRange(Regex.Matches(text, @"(?m)!%[^%\r\n]*$")
+                .Select(m => $"{relative}: {m.Value} (no closing %)"));
+        }
+
+        // The positive half. An enumerate-and-check guard is green over an empty
+        // directory, which is the one way this could stop being a guard (WI-517).
+        Assert.True(checkedFiles > 100, $"only {checkedFiles} content files scanned");
+
+        Assert.True(offenders.Count == 0,
+            "a glossary suppression marker is split across a line break, so it "
+            + "suppresses nothing and prints its own characters to the reader:\n  "
+            + string.Join("\n  ", offenders));
+    }
 }

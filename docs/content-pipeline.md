@@ -6067,3 +6067,214 @@ CRLF**, through five rounds that all read the guard. **The correction for a
 too-NARROW guard is a WIDER guard**: the paragraph, not the sentence, because the
 paragraph is what the reader reads as "the rule". Review reads what the page
 says; only a mutation shows what the guard can see.
+
+### 12.17 A page for an axis the site does not have (WI-567)
+
+§12.8 is the library-page template. This is about writing a page whose subject is
+neither a test, a treatment, a wait, a document nor a reference list, on a site
+organised by two axes when the reader arrives holding the third. And it is about
+**eleven review rounds and twenty-four blockers**, most of which were found inside
+the previous round's fix. The rounds are the lesson as much as the page is.
+
+**THE RULING: DO NOT EXTEND THE BLOCK, ANSWER THE OTHER HALF OF ITS QUESTION.**
+`[MECHANISM]` is live on eighteen hubs and owns **location to symptom** ("the
+symptom tells you where, the scan tells you what"). `/where-your-tumor-is` owns
+**the word on the report, to plain language, to what the team is weighing**. So a
+region entry here teaches a WORD: the plain name, the report's word, and a route
+where there is a sourced one. It never says what a tumor there does to the reader.
+That is not tidiness — it is the structural reason the page cannot become the
+location-to-risk table Wave 6 forbids. **An entry that teaches a word has nowhere
+for a risk to go. An entry made of "name + what happens to you here" grows one,
+one review round at a time.**
+
+The door WI-568 deferred therefore runs **both ways**, and the page is better for
+it: the block sends a reader here for what a place changes, and this page sends
+them to the block's own hub for what a place explains.
+
+**A CLOSED COUNT IS A CLAIM ABOUT EVERYTHING YOU DID NOT NAME, AND THIS ITEM MADE
+IT FIVE TIMES — INCLUDING ONCE IN THE FIRST DRAFT OF THIS PARAGRAPH, WHICH SAID
+THREE.** The escalation exception said *"One place has warnings this
+general list does not cover"* — false, because `blocks/spinal-cord.md` exists for
+that reason. Round 4 made it *"Two places"* — false the same way, and the case it
+omitted was that section's own fluid reader, whom `/tumors/craniopharyngioma`
+re-tiers by position. Round 6 found a third: *"the two growths here we have written
+about"*, when `/tumors/meningioma` and `/tumors/cns-germ-cell-tumor` both name that
+spot in their own reader text. Round 11 found a fourth and a fifth, both of them
+inside the fixes for the first three: *"This is one of the **two places** on this
+page with a warning of its own"*, in the entry that had just been opened up; and
+*"it names **the places** whose warnings the general list does not cover"* in the
+short version, plus *"the list above is yours **as it stands**"*, which is the same
+claim as a completeness assertion rather than as a number. Two of the eighteen hubs
+that link to the page escalate the shared list for a region that IS on it
+(`/tumors/hemangioblastoma` for the cerebellum, `/tumors/cns-germ-cell-tumor` for
+the deep middle), so every one of those five was false.
+
+**Write "some", "includes", "two of the", and let the reader's own word be the one
+you did not list.** It is a ban now — of the numbers AND of the completeness
+assertions, because round 11 proved the number is not the only way to close a
+set.
+
+**A GUARD SCOPED TO WHERE THE DEFECT WAS FOUND IS GREEN WHERE IT ARRIVES.** This
+was the single most repeated failure of the item, and it recurred *after* being
+written down:
+
+- a region-scoped ranking guard, while *"the location with the worst reputation of
+  all"* sat in the surgery section;
+- a section-scoped duration ban, while two more unsourced durations stood in the
+  section above it;
+- a body-scoped everything, while the front-matter `description` — which
+  `ContentPage.cshtml` renders as the first paragraph a reader meets — carried a
+  blocker for three rounds;
+- a section-scoped tumor-board hedge, while the flat version of the same sentence
+  sat 190 lines later, contradicting the block it linked to.
+
+**Scope a guard to the property, not to the paragraph the defect was in.** And
+bring the title and description into the page's own flattened text, because they
+are reader-facing prose that ContentCheck does not grade and most pages' guards
+cannot see.
+
+**A BAN LIST OF THE WORDINGS YOU JUST DELETED IS NOT A REFUSAL.** Rounds 1 and 2
+each banned the phrasing they had removed; the page shipped a third and a fourth
+that matched neither. The page's own front matter says it out loud now: *a refusal
+that only bans the words it was written against is not a refusal.* The fix is to
+name the PROPERTY — here, that no exclusivity claim attaches to urgency — collect
+the sentences that could carry it, assert a floor on how many were collected, and
+allow the negated form, which is usually the correct sentence.
+
+**AND A REFUSAL HAS TO BE RE-APPLIED TO ITS OWN PARAPHRASE.** Gate 1 refused the
+backlog's *"small, slow and low-grade and still an emergency"*, because the one
+source that addresses size says tumors block CSF *"when large enough"*. Round 1
+found the same claim back with the size words removed — and found the test
+**requiring** it as a canary, so the guard against the refusal depended on the
+refusal being present. Round 2 found one surviving clause of it (*"or instead of it
+for now"*). The claim was refused three times before it stayed refused.
+
+**THE UNREACHABLE COMPARATOR: READ IT, THEN CITE IT NOWHERE.** `moffitt.org`
+returns 403 on every path with three browser user-agents. The Wayback Machine
+capture closed the item's one unverified hole — Moffitt's location page is
+symptoms-only over six regions, so "no comparator answers *my tumor is here, so
+what happens to me?*" is now **checked against an archived capture** rather than
+assumed. That is enough for a competitive check and not enough for a citation, and
+the page draws exactly that line: it is cited nowhere, because a source we cannot
+open live is a source we cannot verify. **The 403s are recorded
+in the front matter**, because an absence nobody wrote down gets re-investigated by
+the next item.
+
+**THREE TOOLING TRAPS, ALL OF WHICH PRODUCED A GREEN GUARD OVER A REAL DEFECT.**
+
+- **A WI-105 authoring marker broken across a LINE WRAP is inert and prints its own
+  characters**, and **the cause is not the regex**. `GlossaryTooltips.SuppressMarker`
+  is `!%(.+?)%`, so the obvious diagnosis is that `.` does not match a newline — and
+  a `RegexOptions.Singleline` "fix" would change nothing. What actually happens is
+  that `CollectAndStripSuppressions` walks `LiteralInline`s, Markdig has already
+  split the wrapped paragraph at the soft break, and that pass runs **before**
+  `MergeSoftBreakRuns` puts it back together. The marker never exists as one string
+  for the pattern to see. So it suppresses nothing, renders `!%frontal lobe%` to the
+  reader, and builds green. Now guarded corpus-wide in `ShippedGlossaryTests`,
+  together with its sibling — an **unterminated** marker, which fails the same way by
+  a third route. **Write the cause down only after reading the code that produces
+  it**; an outcome correctly observed and wrongly explained is how the next person
+  fixes the wrong thing.
+- **`CuratedPage.ReaderText` cannot be used on a FRAGMENT.** It calls `Body`, which
+  looks for the end of the front matter, finds nothing, gets `-1` and slices from
+  index 3. Four call sites were reading every section and every region entry minus
+  its first three characters — including the guard for this item's central ruling.
+  The property those guards exist to check is §12.6's "answer in the first sentence
+  under the heading", which is the one thing that reading path cannot see. Use a
+  fragment-safe helper.
+- **On a CRLF checkout, `$` after a literal `}` matches nothing.** The working tree
+  is CRLF under `text=auto`; a pattern anchored that way found **zero** region
+  entries, which made one guard fail loudly and another pass vacuously. Normalise
+  once, in one place, and have every pattern read that.
+
+**AND THE RULE THAT CATCHES ALL THREE: AN ITERATE-AND-CHECK GUARD MUST SAY OUT LOUD
+HOW MUCH IT LOOKED AT.** `Assert.Equal(9, entries.Count)`, `preamble.Length > 400`,
+`urgentWindows.Count >= 4`, `checkedFiles > 100`. Every one of those floors was
+added after the guard had been green over nothing.
+
+**THE PART OF A SECTION NO GUARD READS IS THE PART BETWEEN THE HEADING AND THE
+FIRST SUB-HEADING.** The region guard matched `### … {#anchor}` blocks, so four
+paragraphs of preamble were covered by a length check — and that is exactly where
+round 6's fix for *the reader whose report word is none of the nine* landed. That
+reader is why Wave 6 exists. Deleting the paragraph was green.
+
+**A BAN LIST THAT FORBIDS THE CORRECT SHAPE IS WORSE THAN NO BAN LIST — AND A LINK
+LABEL CAN STILL CARRY A CLAIM.** Three guards in this item fired on legitimate
+prose: `"urgent"` FIRED, on the link label *"[When where it sits makes it urgent:
+the fluid]"*, which is a route and therefore the shape the ruling asks for;
+`"one in "` fired too, on *"the two lateral ventricles, one in each half of the
+brain"*, and was dropped from the list; and `"small"` was word-bounded
+**pre-emptively**, against *"smaller channels"*, a sentence the section does not
+carry and might. The distinction is worth keeping straight: two of those were
+caught by the suite, and the third was caught by asking §12.8's question of a list
+before shipping it.
+
+The first of those was fixed twice, and the second fix is the right one. Stripping
+whole links made the guard blind to a claim written INTO a label
+(*"[a tumor here is reached through the nose](/x)"*), so the label stays in scope
+and the over-broad word comes off the list instead. **Strip the URL, keep the
+label.**
+
+**With one recorded exception, because two of this item's three guards do the
+opposite deliberately.** Where a guard's banned vocabulary is words a route's label
+legitimately uses — *"urgent"* in the exclusivity scan, *"tissue"* in the tissue
+hedge — the whole link is stripped, because keeping the label would forbid the
+correct shape and no claim can hide in a label made of a destination's own title.
+The rule is therefore: **keep the label wherever a claim could be written into
+it, strip the whole link where the ban words are the destination's own.** State
+which you did and why, next to the guard.
+
+And record every rejected phrase WITH the correct sentence that rejected it, so the
+next item does not re-reach the wrong answer.
+
+**AND WHAT THE HARNESS FOUND THAT TWELVE REVIEW ROUNDS COULD NOT.** Two things, and
+both were invisible to reading:
+
+- **A ban list that was removed from the page but never added to the guard.** Round 12
+  deleted an unsourced likelihood claim from a region entry (*"A tube is an easy thing
+  to block"*) and added the matching entries to the guard's ban list **in the same
+  script** — a script that aborted on an earlier assertion and wrote nothing. The
+  sentence was gone; the ban was not. Two further review rounds read that list and saw
+  a list that looked complete. The harness put the sentence back and the guard let it
+  through, on LF and on CRLF. **A fix and its guard written in one script share that
+  script's failure mode**; apply them separately, or assert the guard afterwards.
+- **A SINGLE UNREADABLE SENTENCE CANNOT BE CAUGHT BY A WHOLE-PAGE AVERAGE**, and this
+  is now measured rather than suspected. A planted 36-word sentence
+  (*"the heterogeneity of intraoperative eloquence determinations consequently
+  precludes reproducible preoperative stratification of anatomically defined
+  neurosurgical risk"*) moved this page from grade **5.6 to 5.7** against a 6.0 gate,
+  and ContentCheck passed 283/0. It is also outside `dotnet test` entirely, because
+  ContentCheck is a separate tool. So the reading-level gate is a page-average gate by
+  construction, and on a site whose audience may be cognitively impaired, one sentence
+  is enough to lose a reader. It is recorded here as a **known survivor with its
+  reason** in the harness rather than deleted from it, because a mutation aimed at
+  nothing is a permanent red that teaches nothing after the first run, and deleting it
+  would hide the finding. **For `/pm`:** a per-sentence or per-paragraph grade check
+  would need a corpus sweep before it could be gated, because it will not be this page
+  alone.
+
+**WHAT REVIEW FOUND THAT NOTHING ELSE COULD.** The suite, ContentCheck and the
+8-gram restatement probe were green at every one of the eleven hand-offs. The probe
+is structurally blind to three things this item kept producing: a sentence restated
+in **different words** (five hits against `/treatments/craniotomy` alone, each one
+substitution apart); anything inside `## Where to go next` and `## What to ask your
+team`, which it strips **by literal heading** — so a page that re-heads slot 10, as
+this one does with *"What to ask your surgeon"*, loses the exemption and gains the
+comparison, which is a thing to know before a shared question trips it; and **the
+page restating itself**, because it skips the page under test, so the same twenty
+words in slot 4 and slot 9 were invisible.
+
+**Carried forward, for `/pm`:** `/treatments/craniotomy` states the tissue rule
+flat (*"Only a piece of the tumor itself, looked at in a lab, can give it a
+name"*), which this page had to hedge because the exception is keyed to location —
+the hedge is a corpus property, not a page property. `/tests/biopsy` says there is
+*"one exception worth knowing"* where the corpus now asserts two. Those two are
+recorded here and belong to whichever item next touches those pages.
+
+**Two others became work items rather than a fourth recording**, because that is
+the threshold WI-574's own entry sets. **WI-576**: `AssertDoesNotRestateTheCorpus`
+walks `pages/` and `blocks/` and not `glossary/`, so a tooltip and a page can drift
+apart unseen. **WI-575**: the front-matter `description` is reader-facing prose that
+ContentCheck does not grade and most pages' guards cannot see — WI-524 and WI-528
+each hit it before this item, and here it cost a `/review` blocker three rounds of
+survival inside one line nothing was reading.

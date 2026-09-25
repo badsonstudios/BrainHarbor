@@ -55,8 +55,12 @@ public sealed class MechanismBlockTests
     /// Discovering this list by globbing would defeat the point: the whole risk of a
     /// block edit is that a page nobody re-read inherits prose that is wrong for it.
     /// A list that grows by itself never makes anybody look.
+    ///
+    /// <c>internal</c> since WI-567, which needs the same eighteen to prove the door
+    /// it added to this block reaches a reader on every one of them rather than on a
+    /// sample of three.
     /// </summary>
-    private static readonly string[] IncludingHubs =
+    internal static readonly IReadOnlyList<string> IncludingHubs =
         ["acoustic-neuroma", "all-brain-tumors", "astrocytoma", "brain-metastases",
          "cns-germ-cell-tumor", "cns-lymphoma", "craniopharyngioma", "diffuse-midline-glioma",
          "dipg", "ependymoma", "glioblastoma", "glioma", "hemangioblastoma", "high-grade-glioma",
@@ -86,6 +90,19 @@ public sealed class MechanismBlockTests
         "numbness or weakness down one side of the face",
         "In a child, growth and puberty too",
         "so things start disappearing at the edge",
+
+        // WI-567 appended the door this block owed to /where-your-tumor-is, and
+        // that is prose on all eighteen hubs like everything above it. Verified
+        // block-only before use: no including page says these words.
+        //
+        // /review round 3 replaced the second of these. It was "when the place itself
+        // makes something urgent", which is also how /where-your-tumor-is's own
+        // front-matter DESCRIPTION ended — and that description renders as the first
+        // paragraph a reader meets. No including page carried it, so nothing here
+        // failed, but the deploy smoke needles for this item are written from this
+        // list, and WI-568's recorded probe defect is a needle with two homes.
+        "The other half of the question is",
+        "This list is about what the place explains",
     ];
 
     [Fact]
@@ -632,32 +649,51 @@ public sealed class MechanismBlockTests
         Assert.Contains("- **Inside the fluid spaces of the brain.**", meningioma, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// WI-568 deferred a route to `/where-your-tumor-is` because that page did not
+    /// exist and §12.8 bars linking to one that does not: the link would have been
+    /// eighteen dead links at once. The obligation was carried by a test
+    /// (<c>TheRouteToTheLocationPageIsOwedAndNotYetWritten</c>) that went RED the day
+    /// the page shipped, which is WI-554's rehab-door shape.
+    ///
+    /// WI-567 shipped the page, so that tripwire is spent. This is what replaces it,
+    /// and it is deliberately NOT a deletion. The tripwire proved the door was OWED;
+    /// this proves it is THERE, in both directions, and a later edit that tidies the
+    /// block's closing paragraph away cannot do it silently.
+    ///
+    /// The loose slug match is kept from the tripwire, for the same reason it was
+    /// written loosely: the assertion is about the obligation, not about the exact
+    /// word WI-567 chose.
+    /// </summary>
     [Fact]
-    public void TheRouteToTheLocationPageIsOwedAndNotYetWritten()
+    public void TheRouteToTheLocationPageIsWrittenNowThatThePageExists()
     {
-        // The acceptance criterion asked for a route to WI-567's /where-your-tumor-is.
-        // WI-567 DEPENDS ON THIS ITEM, so that page does not exist yet, and §12.8 says
-        // a page links only to pages that exist. Writing the link would ship EIGHTEEN
-        // dead links at once — one per including hub.
-        //
-        // So the obligation is carried here instead of in a chat message: this test
-        // goes RED the day /where-your-tumor-is ships, and whoever ships it adds the
-        // door. Same shape as
-        // TheRehabHalfIsSaidWithoutALinkBecauseNoRehabPageExistsYet (WI-554).
-        // Matched LOOSELY on purpose. /review round 1: pinning the exact slug
-        // "/where-your-tumor-is" makes the tripwire depend on guessing what WI-567
-        // will call its page — ship it as /tumors/where-it-is and the obligation
-        // evaporates silently, which is the exact failure this pattern exists to
-        // prevent. Any page whose slug is about where a tumor is trips it.
-        var exists = CuratedPage.AllPages()
-            .Any(p => p.Slug.Contains("where-your-tumor", StringComparison.Ordinal)
-                   || p.Slug.Contains("where-it-is", StringComparison.Ordinal)
-                   || p.Slug.Contains("tumor-location", StringComparison.Ordinal));
+        var page = CuratedPage.AllPages()
+            .FirstOrDefault(p => p.Slug.Contains("where-your-tumor", StringComparison.Ordinal)
+                              || p.Slug.Contains("where-it-is", StringComparison.Ordinal)
+                              || p.Slug.Contains("tumor-location", StringComparison.Ordinal));
 
-        Assert.False(exists,
-            "/where-your-tumor-is now exists, so WI-568's deferred route is due: add the door "
-            + "from blocks/mechanism.md's closing paragraph and delete this test");
+        Assert.False(page.Slug is null,
+            "the location page has been renamed or removed; blocks/mechanism.md links to "
+            + "/where-your-tumor-is from its closing paragraph and that link is now dead");
 
-        Assert.DoesNotContain("/where-your-tumor-is", Block, StringComparison.Ordinal);
+        // The door itself, and the sentence that makes it a door rather than a bare
+        // URL. WI-568's lesson: a needle must be a phrase only the BLOCK says, so the
+        // wording is asserted against the block and its absence against the page the
+        // reader is sent to, which must not carry the same sentence back.
+        Assert.Contains("[Where your tumor is, and what that changes](/where-your-tumor-is)",
+            Block, StringComparison.Ordinal);
+        Assert.Contains("The other half of the question is", CuratedPage.Flatten(Block),
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("The other half of the question is",
+            CuratedPage.Flatten(page.Text), StringComparison.Ordinal);
+
+        // And the route runs the other way too, so neither half is a dead end.
+        // Scoped to the sentence, because "/tumors/all-brain-tumors" has four homes
+        // on that page and a bare Contains() cannot be broken by any single edit
+        // (WI-549's rule, applied to the test that quotes it).
+        Assert.Contains(
+            "[what a tumor in each place tends to cause](/tumors/all-brain-tumors#where-is-this-coming-from)",
+            CuratedPage.Flatten(page.Text), StringComparison.Ordinal);
     }
 }
