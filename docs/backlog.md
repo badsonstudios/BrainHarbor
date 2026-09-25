@@ -4135,7 +4135,7 @@ a location against an outcome.
 resection rates from **2.3% to 100%** across centres for the same tumour. That
 spread is the argument for publishing none of them.
 
-- [ ] **WI-567 `/where-your-tumor-is` — the location page**
+- [x] **WI-567 `/where-your-tumor-is` — the location page**
   Goal: give the reader who knows WHERE their tumor is, but not what it is
   called, a page that says what that changes.
   **Why a standalone page and not an expansion of `[MECHANISM]`:** the block
@@ -4174,6 +4174,50 @@ spread is the argument for publishing none of them.
     "no comparator does this" conclusion. If Moffitt does do it, read it first.
   Refs: `docs/content-pipeline.md` §12.8, §12.10, §12.4, §12.5.
   Depends on: WI-568 (the region list must be settled first).
+
+  **Shipped 2026-09-24.** The ruling is `docs/content-pipeline.md` **§12.17**.
+  **THE MOFFITT HOLE IS CLOSED AND THE CONCLUSION SURVIVED.** `moffitt.org` 403s
+  on **every** path with three browser user-agents, so it was read through a
+  Wayback capture: **symptoms-only over six regions**, no surgery framing, no
+  urgency section, and it omits the skull base and the pituitary even though
+  Moffitt has separate type pages for both. "No comparator answers *my tumor is
+  here, so what happens to me?*" is therefore **checked against an archive**
+  rather than assumed, and Moffitt is **cited nowhere** — a source we cannot open
+  live is one we cannot verify. The 403s are recorded in the front matter.
+  **THE RULING: do not extend the block, answer the other half of its question.**
+  `[MECHANISM]` owns location → symptom; this page owns the report's word → plain
+  language → what the team is weighing. A region entry therefore **teaches a
+  word** and never says what a tumor there does to the reader, which is what
+  makes the location-to-risk table this wave forbids structurally impossible.
+  The deferred door runs **both ways**.
+  **TWO ACCEPTANCE CLAIMS REFUSED IN WRITING.** (1) "a tumor can be small, slow
+  and low-grade and still be an emergency because of the plumbing" — nothing
+  verified supports it and the only source that addresses size says tumors block
+  CSF *"when large enough"*. It came back twice in fresh words (once with the
+  test **requiring** it as a canary) before it stayed refused. (2) **NCI PDQ HP**
+  is cited nowhere: it is the argument for the page EXISTING, not a claim any
+  sentence needs, and §12.1 bars the patient PDQ for naming while the HP version
+  is clinician-level throughout. Recorded so WI-571 re-asks rather than inherits.
+  **PROOF: 75 break mutations red on LF AND CRLF (148/150 plus one documented
+  known survivor per ending); the plain suite 2,572/2,572 on a fully LF corpus
+  AND a fully CRLF corpus; ContentCheck 283/0 at grade 5.6; six rendered pages
+  captured with a CONTROL** (`/tumors/pituitary-tumor` excludes the block, so the
+  new door is absent there and present on the eighteen that include it);
+  **privacy scan 0 findings over 3,042 net-new lines; TWELVE `/review` rounds
+  (3, 6, 1, 2, 3, 2, 2, 1, 1, 2, 1, then none)**, most of them finding their
+  blocker inside the previous round's fix.
+  **THE HARNESS FOUND TWO THINGS TWELVE REVIEW ROUNDS DID NOT.** A ban-list entry
+  that was removed from the page and never added to the guard, because both were
+  written in one script that aborted on an unrelated assertion — **a fix and its
+  guard written in one script share that script's failure mode**. And a planted
+  36-word unreadable sentence that moved the page 5.6 → 5.7 against a 6.0 gate
+  with ContentCheck at 283/0: **a single unreadable sentence cannot be caught by a
+  whole-page average**, kept as a known survivor with its reason rather than
+  deleted. **For `/pm`:** a per-sentence grade check needs a corpus sweep first;
+  `/treatments/craniotomy` states the tissue rule flat where this page had to
+  hedge it (the hedge is a corpus property); `/tests/biopsy` says there is "one
+  exception worth knowing" where the corpus now asserts two. **WI-575 and WI-576
+  were raised** rather than recorded a fourth time.
 
 - [x] **WI-568 `[MECHANISM]`'s location list: three missing regions, and a rule
   that is wrong for the readers who need it most**
@@ -4322,6 +4366,55 @@ spread is the argument for publishing none of them.
   list rather than folding them into the page's; or let a block scope a source
   to the claim it supports. **Recording it a fourth time is not one of them.**
   Refs: `docs/content-pipeline.md` §12.10.
+
+- [ ] **WI-575 The front-matter `description` is reader-facing prose that nothing
+  grades and most guards cannot see** *(raised by WI-567, 2026-09-24)*
+  Goal: close a hole three items have now tripped over.
+  `Pages/ContentPage.cshtml` renders `description` as the **first paragraph a
+  reader meets**, and it is graded by nothing: `ContentChecker` grades
+  `page.Markdown`, and every page's own prose guards read the BODY, because
+  `CuratedPage.ReaderText` strips the front matter by design. WI-524 and WI-528
+  each hit it; WI-567 made it three, and the cost was concrete — a `/review`
+  blocker survived three rounds inside that one line, because the page had been
+  rescoped everywhere a test could look.
+  Acceptance:
+  - ContentCheck grades the description, or says out loud why it does not.
+  - A shared helper gives every page's guards a flattened text that INCLUDES the
+    title and description, so a prose rule cannot be body-only by accident.
+    **NINETEEN test files now carry a byte-identical `private static string
+    Headline`** (counted 2026-09-24): acoustic-neuroma, all-brain-tumors,
+    anti-seizure-medicines, brain-metastases, clinical-trials, cns-lymphoma,
+    craniopharyngioma, ct-scan, meningioma, neuro-exam-and-memory-testing,
+    pituitary-tumor, planning-scans, proton-therapy, shunts,
+    stereotactic-radiosurgery, steroids, targeted-therapy, tumor-treating-fields
+    and where-your-tumor-is. Eighteen existed before WI-567, **which wrote the
+    nineteenth instead of promoting it**, against the "factor at the second use"
+    rule §12.17 itself preaches. Size the work for nineteen call sites, not two.
+  - The corpus is swept once with the widened reader text, because a rule that
+    has never read the descriptions has never been tested against them.
+  Refs: `docs/content-pipeline.md` §12.17, §12.8.
+
+- [ ] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
+  *(raised by WI-567, 2026-09-24)*
+  Goal: let the restatement probe see the one content directory it is blind to.
+  `CuratedPage.AllPages()` walks `pages/` and `blocks/`. A glossary entry's
+  definition fires as a **tooltip on every page that says the term**, so it has
+  the same blast radius as a block — and §12.10's whole argument for including
+  blocks applies to it unchanged. WI-567 shipped `glossary/frontal-lobe.md` whose
+  definition is all but word-for-word the page's own region entry — the entry says
+  "the brain's four lobes" where the page says "the four lobes", which is exactly
+  the kind of drift nothing would catch. Defining inline and suppressing the
+  tooltip is sanctioned; nothing pinning the agreement is not.
+  Acceptance:
+  - `AllPages()` includes `glossary/`, or the callers that should be using
+    **`CuratedPage.SharedSources()`** — which already walks `blocks/` **and**
+    `glossary/`, and exists for exactly this reason — are switched to it.
+  - The corpus is swept once and every collision is either fixed or recorded as
+    deliberately shared WITH its reason — the WI-509 pattern, not a bare
+    allowlist.
+  - The known case is checked first: a page that defines a term inline and
+    suppresses its tooltip is the legitimate shape, and the rule must not fail it.
+  Refs: `docs/content-pipeline.md` §12.17, §12.10.
 
 - [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
   Goal: give a curated page a way to carry an image, with everything the site's
