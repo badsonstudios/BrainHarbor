@@ -165,6 +165,13 @@ It is also why these tumors often show up less dramatically on a scan than a
 faster-growing one. They usually do not light up when dye is used.
 [Your MRI scan](/tests/mri) goes through what the dye is doing.
 
+**Which part of the brain, and what that changes.** This page says the upper
+part and stops there, because that is as far as the sources it uses go.
+[Where your tumor is, and what that changes](/where-your-tumor-is) names each
+part in plain words and in the words a report uses. It also sets out the five
+things a team can land on about an operation. And it says why it will not rank
+one place against another.
+
 ## What symptoms does it cause?
 
 **Seizures are the big one.** A seizure is often the first sign of a low-grade

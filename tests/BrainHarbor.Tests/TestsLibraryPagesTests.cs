@@ -1334,6 +1334,786 @@ internal static class CuratedPage
             $"{slug} restates prose that already lives somewhere else in the corpus:\n  "
             + string.Join("\n  ", offenders));
     }
+
+    // ------------------------------------------------------------ §12.18/§12.19
+    // THE ANTI-RANKING GUARD, PROMOTED. WI-569 built it over ten review rounds
+    // inside MeningiomaPageTests; §12.18 closes by saying WI-570 is where it gets
+    // promoted, "because that item needs it on nine hubs at once". It is here
+    // rather than copied twenty-three times for the reason §12.8's
+    // factor-at-the-second-use rule exists — and for a second one §12.18 states
+    // outright: when two guards test one property in two files, the newer one is
+    // not automatically the stronger one, and a lexicon that only ever grows in
+    // one file protects one page.
+
+    /// <summary>
+    /// The places a reader could be told their own tumor is. Plain words AND the
+    /// report's words, because this corpus writes plain first — a lexicon holding
+    /// only <c>sphenoid</c> is blind to the half of each entry a reader meets.
+    ///
+    /// <para>WI-570 widened it once, measured: the corpus is written in the second
+    /// person and says <b>"the base of your skull"</b> where WI-569's lexicon said
+    /// <c>base of the skull</c>. That one word hid
+    /// <c>/tumors/chordoma</c>'s entire skull-base subsection from the scan. The
+    /// widening cost <b>zero false positives</b> anywhere in the corpus, measured
+    /// over all twenty-three tumor hubs plus <c>/where-your-tumor-is</c> and
+    /// <c>/treatments/craniotomy</c> before it was taken — it did find the chordoma
+    /// subsection, which is the point of it, and that is now a recorded
+    /// <see cref="Kept"/> rather than a silence. It is round 4's
+    /// report-words-versus-plain-words finding in a third costume, and the next one
+    /// will be a fourth: <b>the lexicon is a floor, not a fence.</b></para>
+    /// </summary>
+    public const string LocationAddress =
+        @"skull base|convexity|parasagittal|falx|sphenoid|olfactory groove|tuberculum"
+        + @"|suprasellar|posterior fossa|petroclival|intraventricular|\bfloor\b"
+        + @"|on the surface|spinal cord|fluid spaces"
+        + @"|deep in the middle|midline|behind the eye|wing of bone"
+        + @"|pituitary|brain ?stem|\bsell(?:a|ae|ar)\b|optic nerve|perioptic|\bspine\b"
+        + @"|ventricle|cavernous sinus|foramen magnum|between the two halves"
+        + @"|smelling nerves"
+        + @"|temporal|frontal|parietal|occipital|\blobe|cerebell|tentori|\bcliv"
+        + @"|\borbit|cerebellopontine|crown of the head"
+        + @"|(?:top|back) of (?:the|your) head"
+        + @"|optic chiasm|sagittal sinus|internal auditory canal|pineal"
+        + @"|ridge behind the eyes"
+        + @"|\bforamen\b|petrous|clinoid|\bplanum\b|falcine|parasellar"
+        + @"|jugular|torcul"
+        // THE PLAIN WORDS THIS CORPUS ACTUALLY USES FOR A COMPARTMENT (WI-570,
+        // /review). Round 4 found the lexicon carried the REPORT words while the
+        // pages lead with plain ones. This is that finding a fourth time, and worse,
+        // because these are the words LocationObligationSweepTests PINS as FOUR of
+        // the nine hubs' own address claims: "the upper part of the brain"
+        // (glioblastoma, low-grade, high-grade), "the back of the brain"
+        // (ependymoma). Attacks written in the pages' own register all walked
+        // through — "A glioma in the upper part of the brain usually comes out
+        // whole", and a bullet-lead-plus-deictic version of it.
+        //
+        // MEASURED OVER THE WHOLE CORPUS BEFORE BEING TAKEN, which is the only way
+        // §12.18 allows a widening: `upper part of the|your brain` costs ZERO, and
+        // `back of the brain` cost ONE when it was taken -- the recurrence pair on
+        // /tumors/ependymoma, WHICH THIS ITEM THEN DELETED. So it costs ZERO today,
+        // and what it is still load-bearing for is the `worst` qualification below,
+        // which only fires because of it. §12.18: a rationale that stopped being true
+        // is how one gets copied, so the rationale says which half is still live.
+        // `front of the brain` costs TWO and is NOT taken — it is the residual, and
+        // it is written down rather than hoped at: /tumors/meningioma's caregiver
+        // line "common with tumors near the front of the brain, and easy to mistake
+        // for the person choosing to be difficult" and /tumors/astrocytoma's "Ask
+        // the team what to expect after surgery near the front of the brain" are
+        // both correct, and that page is the one WI-569 measured at zero.
+        + @"|upper part of (?:the|your) brain|back of the brain"
+        // AND THE REST OF THE REGION NAMES THE CORPUS ACTUALLY TEACHES (/review
+        // round 2). The first pass took the two that the pinned type claims use and
+        // stopped, which left the guard blind to the ones `blocks/mechanism.md`
+        // broadcasts onto every hub that composes it: **"Side of the brain, near the
+        // temple"** and **"Upper back part of the brain"**, each reaching the
+        // EIGHTEEN hubs that include that block. Attacks written straight off those
+        // bullets walked through. Measured over all 23 hubs plus /where-your-tumor-is
+        // and /treatments/craniotomy: every token below costs ZERO.
+        //
+        // AND THE FIRST VERSION OF THIS NOTE QUOTED THE WRONG FILE, which /review
+        // round 7 caught by grepping for the quotations. It attributed "the side of
+        // YOUR brain, near your EAR" and "the upper back part of YOUR brain" to the
+        // block, at 20 and 19 pages. Those are `/where-your-tumor-is`'s own `### `
+        // HEADINGS, and each occurs ONCE in the whole corpus. The tokens are right
+        // either way, because they carry both branches — but the controls had been
+        // written off the wrong quotations, so three of them exercised only the
+        // `your` branch while the corpus is written in the `the` branch on eighteen
+        // pages. **A quotation in a note is a claim; grep it like one.**
+        + @"|side of (?:the|your) brain|upper back part of (?:the|your) brain"
+        + @"|stalk the brain sits on|\bthalam|cauda equina"
+        + @"|(?:top|bottom) end of the cord"
+        // `lower back` went in with that batch and came out at /review round 5, and it
+        // is `\bneck\b` VERBATIM one round later: 11 matches under Content/ and EIGHT
+        // are procedure or symptom prose — seven name the lumbar-puncture site ("a
+        // needle in the lower back", "an injection in the lower back", "the needle goes
+        // into the lower back"), across five hubs, plus one "lower back pain". The only
+        // real addresses are /tumors/hemangioblastoma's three "the lower back part of
+        // the brain", which the bare token caught by being an accidental PREFIX of a
+        // different phrase. So the PHRASE goes in, symmetrical with `upper back part
+        // of (?:the|your) brain` above it. Removing the bare token moves the row count
+        // by zero and deflates the address count on seven hubs, which is the point:
+        // **"costs zero rows" is not the same test as "is an address."**
+        //
+        // AND IT HAD A POSITIVE CONTROL, written for it one round earlier, in a
+        // register no page in this corpus uses ("A growth in the lower back is more
+        // dangerous than one higher up"). **A control can keep a bad token alive** —
+        // the ablation test reported it protected right up to the round that read it.
+        // The control below was rewritten with the phrase.
+        + @"|lower back part of (?:the|your) brain"
+        // AND TWO OF THAT BATCH WERE TAKEN BACK OUT AT /review ROUND 3, which is the
+        // part worth copying: "costs zero rows" is not the same test as "is an
+        // address".
+        //   `\bneck\b` has 42 matches under Content/ and FORTY-ONE of them are
+        // not addresses — they are symptom or procedure prose ("a stiff neck", "pain
+        // in the back or neck"), and one of them is in the shared escalation block,
+        // so it was on ~20 pages. (The one real address is
+        // /tumors/hemangioblastoma's "the neck is the most common part of the spine
+        // for one". One in forty-two is the argument, not none in forty-two --
+        // /review round 9 counted them.) It cost zero rows by luck, and it did real damage:
+        // it gave /treatments/craniotomy two address matches, which FALSIFIED the
+        // "zero addresses" measurement written three files away in the same round
+        // that added the token. Without it that page measures 0 again.
+        //   `near the surface` has ZERO matches anywhere under Content/. "Measured at
+        // zero cost" is trivially true of a token that matches nothing, and a dead
+        // token inflates the apparent width of the lexicon.
+        //
+        // AND THE DEAD-TOKEN RULE IS NOT SYMMETRIC BETWEEN THE TWO LEXICONS, which
+        // /review round 4 was right to make explicit rather than leave to be applied
+        // at random. THE ADDRESS lexicon's job is to RECOGNISE words the corpus
+        // already uses, so a token matching nothing recognises nothing — dead weight.
+        // THE DIFFICULTY lexicon's job is to FORBID words, so a token matching nothing
+        // is a ban doing exactly what a ban is for, and several of its entries are
+        // deliberately corpus-absent. Zero occurrences condemns an address token and
+        // commends a difficulty one.
+        // AND TWO REJECTED, measured, so the next item does not re-propose them.
+        // `middle of (?:the|your) brain` costs one — /treatments/craniotomy's "It
+        // looks exactly like the worst thing you were afraid of". `\bcord\b` costs
+        // FOUR, and the fourth is a sentence WI-570 itself wrote (the corrected
+        // number -- the doc was fixed a round before this comment was). The
+        // interesting one is /tumors/spinal-cord-tumor's "the commonest
+        // kind inside the cord, a tumor that comes back most often does so where the
+        // first one was", which is keyed to a KIND at one address and ranked against
+        // nothing, so it is not a row — but three allowances to reach it is the
+        // wrong trade, and §12.18 is explicit that the lexicon is a floor.
+        // WI-570: "the" OR "your", on WI-569's own skull and head tokens, measured.
+        // (An earlier note said "four tokens and no others", which was false twice
+        // over: the head pair gained `the` rather than `your`, and WI-570's own new
+        // tokens carry both determiners as well. Three different counts of this one
+        // widening were live in three files — /review round 13. The tokens are right
+        // here in the code; a number describing them is not worth keeping.) See the
+        // summary above — one word, and it was hiding a whole subsection.
+        //
+        // THE GREEDIER VERSION WAS WRITTEN FIRST, MEASURED, AND PUT BACK.
+        // Collapsing these into `(?:base|top|front|back) of (?:the|your)
+        // (?:brain|skull)` looks tidier and quietly adds THE FRONT AND BACK OF THE
+        // BRAIN, which are places, not skull landmarks. Measured over the whole
+        // corpus it costs TWO false positives and catches nothing:
+        // /tumors/meningioma's "common with tumors near the front of the brain, and
+        // easy to mistake for the person choosing to be difficult" (a symptom, in the
+        // caregiver section — and that page is the one WI-569 measured at ZERO), and
+        // /tumors/astrocytoma's "Ask the team what to expect after surgery near the
+        // front of the brain" (a question the READER asks). An earlier version counted
+        // THREE and named /tumors/ependymoma's "Headaches, often worst on waking up"
+        // as the third, which is not attributable to this widening at all: `back of
+        // the brain` is already its own token, and that sentence only becomes a row
+        // with `worst` unqualified. The correction was written twice and lost twice to
+        // an aborting script (§12.19 finding 8). §12.18 — measure the cost before
+        // taking a widening, and re-measure when the lexicon moves under it.
+        + @"|(?:top|front|back) of (?:the|your) skull"
+        + @"|base of (?:the|your) (?:brain|skull)"
+        // The sacral half of /tumors/chordoma, which is the only place in the
+        // corpus where an address has no other word for itself.
+        + @"|\btailbone\b|\bsacrum\b";
+
+    /// <summary>
+    /// The vocabulary that turns an address into a ROW: what an operation is like
+    /// there, or what becomes of the reader who has one there. WI-569 rewrote this
+    /// once per review round for ten rounds and every version was green on the page
+    /// while being green on the defect; §12.18 narrates all ten.
+    ///
+    /// <para><b>Do not read this list as the guard.</b> §12.18's own conclusion is
+    /// that the load-bearing halves are the POSITIVE CONTROLS and the pinned
+    /// deletions — one hundred planted sentences across seven rounds and no round
+    /// ever found none, and two of the four sentences WI-569 deleted carried no
+    /// banned word at all ("the surgeon can usually only get part of it"), which is
+    /// Mayfield's ranking written in plain English. Adding words is not how this
+    /// gets stronger.</para>
+    ///
+    /// <para><b>AND THREE WORDS DELIBERATELY LEFT OUT, because an undocumented hole
+    /// reads like an oversight to the next person.</b> Bare <c>risk</c>,
+    /// <c>damage</c> and <c>harm</c> are not banned: <c>risk</c> alone appears seven
+    /// times on <c>/tumors/meningioma</c>, five of them in the hormone section about
+    /// medicines, and it is ordinary prose on every treatment page in the corpus.
+    /// The QUALIFIED forms above are banned instead — and that is round 7's
+    /// correction, not the original design: the first version of this note excluded
+    /// the three words whole and <b>sixteen fresh attacks walked through</b> on
+    /// "carries a higher risk", "the risk is greater for", "does more damage", plus
+    /// a family of comparatives nothing had listed at all. The cost of what remains
+    /// is two sentences the guard cannot see — "wherever the tumor is right up
+    /// against something a surgeon will not risk" and "against the risk of the
+    /// operation itself", both on <c>/tumors/meningioma</c>, both correct, both
+    /// within four sentences of an address. <b>If the exclusion is ever lifted, both
+    /// have to be re-read by hand.</b> Carried here in the promotion because the
+    /// note was written next to the lexicon and would otherwise have stayed behind
+    /// with the file it was written in (/review).</para>
+    /// </summary>
+    public const string LocationDifficulty =
+        @"harder to|more difficult|difficult to (?:remove|take out|reach|get at)"
+        + @"|costs? you|comes? out whole|completely remov|complication|recurr"
+        + @"|comes? back|grows? back|second operation|second look|straightforward"
+        + @"|higher rate|easier to|riskier|risky|more risk|dangerous|safer|safest"
+        // "worse" is QUALIFIED rather than banned: /tumors/meningioma's spinal
+        // entry says back pain is "typically worse at night", which is a symptom
+        // and not a rank. §12.17 — a ban list that forbids the correct shape is
+        // worse than no ban list.
+        + @"|worse (?:outlook|outcome|place|spot|odds|chance|prospect)"
+        // WI-570: "worst" is qualified for the SAME reason "worse" is, one word
+        // over. Bare `\bworst\b` fires on /tumors/ependymoma's "Headaches, often
+        // worst on waking up" — the timing of a symptom, not a rank. §12.18 found
+        // this exact failure with the bare "risk"/"damage" exclusion and wrote down
+        // that its own qualify-do-not-ban rule "had not been applied to the words
+        // the exclusion note named". It had not been applied to this one either.
+        // `the worst` is kept bare, so "a skull base tumor is the worst" still
+        // fires; measured at zero false positives across the corpus.
+        //
+        // AND THE RATIONALE ABOVE IS CONDITIONAL, WHICH IS THE PART §12.18 SAYS TO
+        // WRITE DOWN. Measured 2026-09-25: with WI-569's address lexicon alone, bare
+        // `\bworst\b` costs NOTHING — that headache sentence only becomes a row
+        // once `back of the brain` is an address, which is a widening WI-570 then
+        // took twenty lines above. So the qualification is load-bearing in the
+        // shipped configuration and would be dead weight without it. §12.18 put a
+        // DATE on the "worse" re-measurement precisely because "a rationale that
+        // stopped being true is how one gets copied"; this one has its dependency
+        // named as well as its date, because /review found the first version of
+        // this note asserting the unconditional form, which was false.
+        + @"|worse than|worse for|worse off|do better|does better"
+        + @"|worst (?:outlook|outcome|place|spot|odds|chance|prospect)|\bthe worst\b"
+        + @"|better than|outlook|\boutcome|survival|prognosis|bigger operation"
+        + @"|takes longer|trick|all comes out|all come out|more serious"
+        + @"|less serious|rarely all"
+        + @"|cur(?:e|es|ed|able)|hard to (?:remove|take out|reach|get at)"
+        + @"|cannot\s+(?:\w+\s+){0,2}(?:be removed|come out|be taken out)"
+        + @"|how well .{0,20}\bdo\b|\beasy\b|\bfatal\b|deadly|life-threatening"
+        + @"|higher chance"
+        + @"|impossible|live longer|live shorter|leaves? (?:more |anything )?behind"
+        + @"|permanent damage|disabl|\bdie\b|\bdeath|mortality"
+        + @"|take your (?:sight|hearing|speech)|needs more surgery|greater chance"
+        + @"|(?:higher|greater|added|extra|more) risk|risk (?:is|was) (?:higher|greater)"
+        + @"|more damage|lasting damage|\bkinder\b|\bgentler\b"
+        + @"|smaller operation than|less of a (?:job|operation)|simpler"
+        + @"|longer recovery"
+        + @"|\bharder\b|\bhardest\b|\beasier\b|\btough|removal rate|resection rate"
+        + @"|\bthe odds\b"
+        + @"|what to expect|how things go|longer stay|asks? more of|forgiving"
+        + @"|brighter|no picnic|nothing to sneeze at|drag on|\bdemands?\b"
+        + @"|\bceiling\b|not an easy"
+        + @"|(?:bigger|lower|better|smaller) chance|\bdeficit|\bstroke\b|bigger job"
+        + @"|more than one operation|only (?:get|take|remove) part|rougher"
+        + @"|sets? a limit|in one piece|full clearance|partial removal"
+        // WI-570 /review round 3, AND THE FINDING IS WHICH HALF IS NOW THE
+        // BOTTLENECK. After the address lexicon was widened twice, twenty-five fresh
+        // attacks were written using ONLY addresses the guard already knew, varying
+        // the difficulty phrasing — and twenty-four passed. That is the same 96% the
+        // round before measured against the address half. **The address side is now
+        // the strong side; the difficulty side is where the next twenty get in.**
+        // That is the sentence to copy, and it is not the one §12.18 left.
+        // Every token below measured at ZERO rows across all 23 tumor hubs plus
+        // /where-your-tumor-is and /treatments/craniotomy. Almost all sit one word
+        // from something already here, which is round 9's finding for the fourth
+        // time: "do worse" beside "do better", "better place" beside "worse place",
+        // "returns" beside "comes back", "slower recovery" beside "longer recovery".
+        + @"|do(?:es)? worse|better (?:place|spot|odds|chance|prospect)"
+        + @"|recovery is slower|slower recovery"
+        // `returns` is QUALIFIED — and /review round 5 found this fix MISSING from the
+        // file one round after it was recorded as applied. The multi-anchor script
+        // carrying it aborted on a later anchor and wrote NOTHING, which is §12.17's
+        // failure and §12.18's, for the third time in this one item. The abort was
+        // correct; believing the round's own summary over the file was not.
+        // **Re-grep for what you changed. A script's stdout is not the file.**
+        //
+        // The qualification itself: bare `\breturns?\b` matches seven times in reader
+        // text and six are ordinary prose — "Some need time away and then return"
+        // (to work), "the day your child returns" (to school), "the treatment section
+        // returns to it" (a page talking about itself). Zero rows today, which is
+        // exactly the conditional the `worst` note above exists to stop being
+        // implicit. `poor` (below) was also qualified before a false positive arrived
+        // — but unlike the note that used to sit here claimed, it is not corpus-absent:
+        // it has fourteen matches.
+        + @"|returns? (?:in|to the same|to the very spot)"
+        + @"|less room|fewer options|more is left|more left behind"
+        // `poor` is QUALIFIED rather than banned, and NOT pre-emptively -- /review
+        // round 8 measured bare `\bpoor(er)?\b` at FOURTEEN matches under Content/,
+        // NINE of them live correct prose in PAGE bodies -- ten counting a glossary
+        // entry's "poor focus" -- ("Poor balance" twice, "a poor fit",
+        // "a poor word for this", "a poor thing to hear on its own"). Earlier notes
+        // here and in §12.19 said it had zero corpus matches, which was false and was
+        // also the WEAKER argument: nine correct uses is the case for qualifying — "poor balance", "poor appetite" and
+        // "feeding poorly" are all symptom prose this corpus writes. §12.18 had to
+        // learn qualify-do-not-ban twice, on "worse" and then on the bare
+        // risk/damage/harm exclusion, both times after the false positive arrived.
+        // This is the same rule applied before it does.
+        + @"|poor(?:er)? (?:outcome|result|results|chance|outlook|odds|prospect)"
+        // AND FOUR MEASURED AT ZERO AND DELIBERATELY NOT TAKEN, because §12.18's
+        // closing instruction is explicit and it is the one thing every round of the
+        // previous item ignored: "Stop adding words when the positive controls and
+        // the pinned deletions are in place; the next round will always find twenty
+        // more." `takes more out of`, `undertaking`, `bounce back` and `best case`
+        // are IDIOM rather than rank vocabulary — each would catch one attack
+        // sentence and widen the surface a reviewer has to hold in their head. The
+        // stop is the ruling, not the list.
+        ;
+
+    /// <summary>
+    /// The back-reference gate. A row split across sentences has to carry one, and
+    /// requiring it is what makes a four-sentence window safe at all: proximity
+    /// cannot tell a split row from two unrelated sentences, and an anaphor can.
+    ///
+    /// <para>THE DEICTICS AND BARE PRONOUNS ARE THE HALF THAT MATTERS. This corpus
+    /// writes address entries as bolded bullet leads, <c>SentencesOf</c> splits on
+    /// sentence ends, so every lead is its own sentence and what follows refers back
+    /// with "here", "there", "it" or "one" — never with "those". Six of ten attacks
+    /// walked through WI-569's round-6 version on the format the pages are actually
+    /// written in.</para>
+    /// </summary>
+    private const string LocationBackReference =
+        @"\b(?:those|these|that kind|that sort|the ones|ones there"
+        + @"|they|them|here|there|it|one|such)\b";
+
+    /// <summary>
+    /// Every window of four sentences that carries an address and the difficulty
+    /// vocabulary together. That window is the row itself.
+    /// </summary>
+    /// <returns>
+    /// The TRIGGER — the one sentence carrying the difficulty vocabulary — and the
+    /// WINDOW it was judged in.
+    ///
+    /// <para><b>They are returned separately because conflating them let one
+    /// allowance excuse a second, unreviewed sentence</b> (/review). An allowance is
+    /// matched against the trigger; a window is up to four sentences wide, so
+    /// matching against it meant an allowance written for sentence N also silenced
+    /// the different trigger three sentences later whose window happened to contain
+    /// it. On <c>/tumors/ependymoma</c> that was live: two written reasons were
+    /// covering three rows, and the third — "It can also come back, even years
+    /// later, so the scans go on for a long time" — had been reviewed by nobody. The
+    /// prose was innocent. The mechanism was not.</para>
+    /// </returns>
+    // Compiled: this runs over every sentence of every tumor hub, once for the page
+    // and once per positive control — around four hundred passes of two large
+    // alternations over ~40 KB each. Interpreting them every time is the difference
+    // between a fast suite and a slow one, and nothing else about them changes.
+    private static readonly Regex DifficultyRegex =
+        new(LocationDifficulty, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex AddressRegex =
+        new(LocationAddress, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static readonly Regex BackReferenceRegex =
+        new(LocationBackReference, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    /// <param name="address">
+    /// The address lexicon to judge with. Defaults to the real one; the ablation test
+    /// passes a copy with one token removed, which is how "every token has a control"
+    /// becomes a thing the suite asserts rather than a measurement somebody took once.
+    /// </param>
+    public static List<(string Trigger, string Window)> PlacesRankedIn(
+        string text, Regex? address = null)
+    {
+        address ??= AddressRegex;
+        var sentences = SentencesOf(text);
+        var rows = new List<(string Trigger, string Window)>();
+
+        for (var i = 0; i < sentences.Length; i++)
+        {
+            if (!DifficultyRegex.IsMatch(sentences[i]))
+            {
+                continue;
+            }
+
+            // THE WHOLE ROW IN ONE SENTENCE — the ordinary case.
+            if (address.IsMatch(sentences[i]))
+            {
+                rows.Add((sentences[i], sentences[i]));
+                continue;
+            }
+
+            if (!BackReferenceRegex.IsMatch(sentences[i]))
+            {
+                continue;
+            }
+
+            // FOUR, and a fixed window rather than "back to the start of the
+            // bullet": the text is flattened so nothing marks where a bullet ENDS,
+            // and a pointer that never resets gave every later sentence a window
+            // reaching back to the last address entry. It fired nineteen times.
+            var window = string.Join(" ", sentences[Math.Max(0, i - 3)..(i + 1)]);
+            if (address.IsMatch(window))
+            {
+                rows.Add((sentences[i], window));
+            }
+        }
+
+        return rows;
+    }
+
+    /// <summary>
+    /// A sentence the scan finds and the page is keeping, with the reason. §12.19:
+    /// <b>fixed or recorded with its reason, never a bare allowlist</b> — which is
+    /// the WI-509 pattern this corpus already applies to shared prose.
+    /// </summary>
+    /// <param name="Sentence">
+    /// A fragment of the TRIGGER sentence — the one carrying the difficulty
+    /// vocabulary — long enough to be unique. Not of the window: see
+    /// <see cref="PlacesRankedIn"/> for why that distinction is the whole point.
+    /// </param>
+    /// <param name="Why">Why it is not a row. This is the claim a reviewer checks.</param>
+    public sealed record Kept(string Sentence, string Why);
+
+    /// <summary>
+    /// THE POSITIVE CONTROLS, and they are the half that does the work.
+    ///
+    /// <para>Each is a sentence of the banned property that an EARLIER version of
+    /// WI-569's guard let through, and each is here because <b>a property guard that
+    /// has never been seen to fail has not been shown to work.</b> They are run over
+    /// every page this guard is asserted on, not over one — a lexicon that shrinks
+    /// to fit one page's prose goes red here before a real defect has to.</para>
+    ///
+    /// <para>The shapes, deliberately spread: a whole row in one sentence, an
+    /// outcome verb, a survival comparison, a compartment name no page uses, a
+    /// bolded bullet lead followed by a deictic, and a row split across three
+    /// sentences behind an anaphor.</para>
+    /// </summary>
+    public static readonly string[] LocationPositiveControls =
+    [
+        "A tumor on the skull base is harder to take out completely.",
+        "A tumor on the skull base has a poor outcome.",
+        "People with a convexity tumor live longer than people with a petroclival one.",
+        "A tumor over the temporal lobe usually comes out whole.",
+        "Tumors at the cerebellopontine angle rarely all come out.",
+        "A tumor at the base of your skull cannot safely come out.",
+        "An intraventricular tumor carries a much greater chance of permanent damage.",
+        "Surgery on the floor of the skull leaves more behind.",
+        "A clival tumor is more dangerous than one at the back of your head.",
+        // Round 4's PLAIN-WORDS control, and the only one exercising `brain ?stem`.
+        // It was dropped in the promotion and /review counted the list: WI-569 had
+        // thirteen and twelve arrived. A control list is the one place a silent
+        // off-by-one costs exactly what the list exists to prevent.
+        "A tumor near the brainstem is harder to take out.",
+        // The page's own FORMAT, which is the shape round 6 found and which the
+        // nine above have no member of.
+        "- On the floor at the front of the skull. Surgery there leaves more behind.",
+        "The umbrella word is skull base. Tumors here are harder to take out completely.",
+        // The split row, which is the hole rounds 3 and 4 each left open in a
+        // different width.
+        "On the floor of the skull, the nerves run through. Keeping those working is a "
+        + "major concern. Those are harder to take out completely.",
+        // WI-570's own additions, in the register the plain-compartment hubs write
+        // in -- the pinned claims of glioblastoma, low-grade-glioma, high-grade-glioma
+        // and ependymoma use these two phrases. (An earlier version said "five of the
+        // nine", which is nobody's count: four claims use these phrases, and seven of
+        // the nine write in the plain register.)
+        // Every one of these PASSED before `upper part of the brain` went into the
+        // address lexicon.
+        "A glioma in the upper part of the brain usually comes out whole.",
+        "- In the upper part of the brain. Tumors there come out whole more often.",
+        // AND /review ROUND 3'S: A TOKEN WITH NO CONTROL IS NOT PROTECTED. Ablating
+        // each of WI-570's eleven new address tokens one at a time turned NO control
+        // red except the two above — so nine of them could have been deleted by a
+        // later edit in silence, which is precisely what this list exists to stop.
+        // The first two are the attacks that MOTIVATED the widening. They are written
+        // in /where-your-tumor-is's HEADING form ("your"), which is where the earlier
+        // draft of this comment wrongly said blocks/mechanism.md's bullets were --
+        // see the note on that in LocationAddress. The block's own form ("the") is
+        // covered by the three controls at the end of this list. The third here
+        // covers the sacral end of /tumors/chordoma, the only place in the corpus
+        // where an address has no other word for itself.
+        "- On the side of your brain, near your ear. Tumors there are harder to take out completely.",
+        "A tumor in the upper back part of your brain has a poor outcome.",
+        // AND ONE CONTROL PER REMAINING NEW TOKEN (/review round 4). Round 3 wrote
+        // the rule — "add the control in the same edit as the token, or the token is
+        // decoration" — added three, and left EIGHT tokens still turning no control
+        // red. Writing a rule is not applying it, and the ablation is the acceptance:
+        // remove any one address token and exactly one control below must fail.
+        //
+        // THE CONTROL IT REPLACED IS THE REASON THE RULE IS "ONE PER TOKEN". It read
+        // "Surgery at the bottom end of the cord, near the cauda equina, leaves more
+        // behind" — TWO new tokens in one sentence, so under single-token ablation
+        // each masked the other and it went red for neither. A control carrying two
+        // of the things it is testing tests neither. (Its comment also claimed to
+        // cover the sacral end of /tumors/chordoma while containing neither
+        // `tailbone` nor `sacrum`.)
+        "A tumor low in the back of the brain is harder to take out.",
+        "A tumor on the stalk the brain sits on has a poor outcome.",
+        "Tumors in the thalamus rarely all come out.",
+        "Surgery near the cauda equina leaves more behind.",
+        "A tumor at the bottom end of the cord cannot safely come out.",
+        "A tumor in the lower back part of your brain is more dangerous than one higher up.",
+        "A chordoma at the tailbone is harder to take out completely.",
+        "Surgery at the sacrum leaves more behind.",
+        // AND THE OTHER BRANCH OF THE THREE TWO-BRANCH TOKENS (/review round 7). The
+        // three controls above them say "your"; `blocks/mechanism.md` says "the" --
+        // its bullets are "Side of the brain, near the temple" and "Upper back part of
+        // the brain", on the eighteen hubs that include it -- and
+        // /tumors/hemangioblastoma says "the lower back part of the brain".
+        // Whole-token ablation cannot tell the branches apart, so narrowing
+        // `(?:the|your)` to `your` in a later tidy-up would have blinded the guard on
+        // eighteen composed pages and stayed green.
+        // `NarrowingTheOrYourInTheAddressLexiconTurnsAControlRed` is the assertion
+        // that closes it; these are what it fires on.
+        "- On the side of the brain, near the temple. Tumors there are harder to take out completely.",
+        "A tumor in the upper back part of the brain has a poor outcome.",
+        // (Its `your` branch matches nothing in the corpus either, and is kept for the
+        // same prospective reason as `upper part of your brain` below. A dead BRANCH of
+        // a live token is not a dead TOKEN -- see LocationAddress on that asymmetry.)
+        "A tumor in the lower back part of the brain is more dangerous than one higher up.",
+        // AND THE ONE BRANCH THAT STILL HAD NO CONTROL: `upper part of (?:the|your)
+        // brain`'s `your` side. The corpus has ZERO occurrences of "upper part of your
+        // brain" -- so by the dead-token rule above this branch recognises nothing
+        // today. It is kept prospectively rather than trimmed, because unlike a dead
+        // ADDRESS token it costs nothing and the corpus's own register does use "your"
+        // for other regions; and a branch kept prospectively still owes a control, or
+        // `NarrowingTheOrYourInTheAddressLexiconTurnsAControlRed` cannot be per-token.
+        "A tumor in the upper part of your brain usually comes out whole.",
+        // AND THE WIDEST-REACH BRANCH IN THE WHOLE LEXICON, which had no control at
+        // all until /review round 11 measured the branches one at a time.
+        // `base of (?:the|your) (?:brain|skull)`'s THE form is live in both halves
+        // (seven "base of the brain", seven "base of the skull"), and one of them is
+        // blocks/mechanism.md's "Behind the eyes, at the base of the brain" -- so it reaches all EIGHTEEN composing hubs, more than
+        // any other branch here. Ablation could not see it, because the only control
+        // carrying that token ("A tumor at the base of your skull cannot safely come
+        // out") uses the OTHER branch. Nothing in this sentence but the token itself
+        // is an address, so narrowing either way now reddens exactly one control.
+        "A tumor at the base of the brain is harder to take out.",
+    ];
+
+    /// <summary>
+    /// Sentences carrying NEITHER lexicon, placed between the page and the planted
+    /// control so a four-sentence window cannot reach back into the page's own prose.
+    ///
+    /// <para><b>THIS IS THE THIRD AND LAST LAYER OF ONE FAILURE.</b> Round 2 found
+    /// that asserting only "the row count went up" proves a row appeared, not that
+    /// the planted one did. Round 3 required a fragment of the control in the found
+    /// row — and for a multi-sentence control the fragment is inside the window <i>by
+    /// adjacency</i>, whatever the lexicon matches, so four controls still "passed"
+    /// on <c>/tumors/craniopharyngioma</c> with the address tokens they depend on
+    /// removed: the window reached back into that page's trailing prose and found a
+    /// real address there. **A control appended to a page is being scanned in that
+    /// page's context, and the context is doing the work.** Isolate it, or it is the
+    /// page under test that passes the control rather than the guard.</para>
+    /// </summary>
+    private const string ControlSpacer =
+        " The rest of this note is here to keep two pieces of text apart. "
+        + "It says nothing about anybody's diagnosis. "
+        + "It is three sentences long and it means nothing at all. ";
+
+    /// <summary>
+    /// The fragment of each control that must appear in the row the guard finds.
+    /// Keyed by index into <see cref="LocationPositiveControls"/>.
+    ///
+    /// <para>WITHOUT THIS THE CONTROLS PASS FOR THE WRONG REASON. Asserting only
+    /// that the row COUNT went up proves a row appeared, not that the planted one
+    /// did — and /review demonstrated it: with the lexicon artificially narrowed,
+    /// two of the bullet-lead controls still "passed" on
+    /// <c>/tumors/craniopharyngioma</c>, because the four-sentence window reached
+    /// back into that page's own trailing prose and found a real address there. A
+    /// control that can be satisfied by the page it is planted in is not a
+    /// control.</para>
+    /// </summary>
+    private static readonly string[] LocationControlFragments =
+    [
+        "A tumor on the skull base is harder", "has a poor outcome",
+        "live longer than people with a petroclival", "over the temporal lobe usually comes out",
+        "cerebellopontine angle rarely all come out", "at the base of your skull cannot safely",
+        "An intraventricular tumor carries", "Surgery on the floor of the skull leaves more behind",
+        "A clival tumor is more dangerous", "near the brainstem is harder to take out",
+        "Surgery there leaves more behind", "Tumors here are harder to take out completely",
+        "Those are harder to take out completely",
+        "in the upper part of the brain usually comes out whole",
+        "Tumors there come out whole more often",
+        "Tumors there are harder to take out completely",
+        "in the upper back part of your brain has a poor outcome",
+        "low in the back of the brain is harder to take out",
+        "on the stalk the brain sits on has a poor outcome",
+        "Tumors in the thalamus rarely all come out",
+        "Surgery near the cauda equina leaves more behind",
+        "at the bottom end of the cord cannot safely come out",
+        "in the lower back part of your brain is more dangerous",
+        "at the tailbone is harder to take out completely",
+        "Surgery at the sacrum leaves more behind",
+        "Tumors there are harder to take out completely",
+        "in the upper back part of the brain has a poor outcome",
+        "in the lower back part of the brain is more dangerous",
+        "in the upper part of your brain usually comes out whole",
+        "at the base of the brain is harder to take out",
+    ];
+
+    /// <summary>
+    /// The ADDRESS half of each control, which is the half that has to have done the
+    /// work. Same index as <see cref="LocationPositiveControls"/>.
+    ///
+    /// <para><b>WITHOUT THIS THE FRAGMENTS ABOVE ARE HALF A FIX.</b> For every
+    /// multi-sentence control the fragment IS the trigger sentence, and a window
+    /// always contains its own trigger — so the fragment proves the trigger was
+    /// found and proves nothing about whether the planted ADDRESS is what made it
+    /// fire. /review round 2 measured it: with the address lexicon narrowed, three
+    /// of the multi-sentence controls still "passed" on
+    /// <c>/tumors/craniopharyngioma</c>, because the four-sentence window reached
+    /// back into that page's own prose and found a real address there. Requiring
+    /// BOTH halves in the same window narrows it; <see cref="ControlSpacer"/> is what
+    /// actually closes it, and the two together are the third attempt at one failure.
+    /// For most single-sentence controls the two fragments are deliberately the same
+    /// string — the address and the difficulty are in one sentence, so there is
+    /// nothing to separate. Where they sit far enough apart to be worth naming
+    /// separately, they are.</para>
+    /// </summary>
+    private static readonly string[] LocationControlAddressFragments =
+    [
+        "A tumor on the skull base is harder", "A tumor on the skull base has",
+        "live longer than people with a petroclival", "over the temporal lobe usually comes out",
+        "cerebellopontine angle rarely all come out", "at the base of your skull cannot safely",
+        "An intraventricular tumor carries", "Surgery on the floor of the skull leaves more behind",
+        "A clival tumor is more dangerous", "near the brainstem is harder to take out",
+        // The four where the address sits in a DIFFERENT sentence from the trigger.
+        "On the floor at the front of the skull",
+        "The umbrella word is skull base",
+        "On the floor of the skull, the nerves run through",
+        "in the upper part of the brain usually comes out whole",
+        "In the upper part of the brain",
+        "On the side of your brain, near your ear",
+        "in the upper back part of your brain",
+        "low in the back of the brain",
+        "on the stalk the brain sits on",
+        "in the thalamus",
+        "near the cauda equina",
+        "at the bottom end of the cord",
+        "in the lower back part of your brain",
+        "at the tailbone",
+        "at the sacrum",
+        "On the side of the brain, near the temple",
+        "in the upper back part of the brain",
+        "in the lower back part of the brain",
+        "in the upper part of your brain",
+        "at the base of the brain",
+    ];
+
+    /// <summary>
+    /// §12.18's ruling, as a guard that runs on more than one page: <b>an address
+    /// entry may carry a SYMPTOM and must never carry a DIFFICULTY.</b> A symptom is
+    /// a fact about what the reader notices and it belongs to them; a difficulty is a
+    /// fact about an operation, and the moment one address carries one, every other
+    /// address needs one for the list to look finished. That is the location-to-risk
+    /// column the Wave 6 preamble forbids, growing one review round at a time.
+    /// </summary>
+    /// <param name="readerText">
+    /// The COMPOSED page as a reader meets it, title and description included.
+    /// Composed, because §12.18's worst near-miss was an entry stripped on the
+    /// reasoning that a shared block covered it, when the block covered it under a
+    /// different address. Title and description included, because the description
+    /// renders as the first paragraph a reader meets and nothing else reads it
+    /// (WI-575).
+    /// </param>
+    /// <param name="slug">Named in every failure, since this runs over many pages.</param>
+    /// <param name="kept">
+    /// Rows this page is keeping, with reasons. <b>Every one is asserted to still
+    /// fire</b>: an exception that matches nothing is not protecting anything, it is
+    /// only holding a door open (§12.18), and it is how a lexicon silently narrows.
+    /// </param>
+    /// <param name="minAddresses">
+    /// How many address words this page must contain for the co-occurrence ban to
+    /// have anything to fire on.
+    ///
+    /// <para><b>THE PROMOTION KEPT THE DIFFICULTY FLOOR AND DROPPED THE ADDRESS
+    /// ONE</b>, which /review round 2 caught by measuring rather than reading:
+    /// <c>/treatments/craniotomy</c> has 21 difficulty matches and <b>zero</b>
+    /// addresses. So §12.18's much-quoted "the guard fires ZERO times on
+    /// /treatments/craniotomy" is a fact about the lexicon and not about the page —
+    /// no row could be found there whatever the page said. The zero is real and it
+    /// is not evidence. Passing the number in makes each caller say what its page
+    /// has, and craniotomy's 0 is now written down as structural instead of being
+    /// read as a clean bill of health.</para>
+    /// </param>
+    public static void AssertNoPlaceIsRankedAgainstAnother(
+        string readerText, string slug, int minAddresses, params Kept[] kept)
+    {
+        var addresses = AddressRegex.Matches(readerText).Count;
+        Assert.True(addresses >= minAddresses,
+            $"{slug}: {addresses} address words, and this call claims at least "
+            + $"{minAddresses}. Either the page's location material has gone, or the "
+            + "address lexicon has narrowed — and either way the co-occurrence ban below "
+            + "is green over text it cannot fire on.");
+
+        // A FLOOR, because a property guard is green over a page it never read
+        // (§12.17). The lowest count measured across the twenty-three tumor hubs is
+        // NINE, on /tumors/acoustic-neuroma, so the floor is eight — one under the
+        // measurement rather than four under it. §12.18: measure the headroom, and
+        // then measure it again against what shipped.
+        var vocabulary = DifficultyRegex.Matches(readerText).Count;
+        Assert.True(vocabulary >= 8,
+            $"{slug}: the difficulty vocabulary matched {vocabulary} times, so this guard "
+            + "ran over text it did not really read — check the page was composed and "
+            + "flattened before it got here");
+
+        var rows = PlacesRankedIn(readerText);
+
+        // MATCHED AGAINST THE TRIGGER, NOT THE WINDOW. See PlacesRankedIn: matching
+        // the window let one written reason silence a second sentence nobody read.
+        var unexplained = rows
+            .Where(r => !kept.Any(k => r.Trigger.Contains(k.Sentence, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        Assert.True(unexplained.Count == 0,
+            $"{slug} keys a difficulty or an outcome to a place (§12.18 — an address entry "
+            + "may carry a symptom and must never carry a difficulty). Either rewrite it so "
+            + "the claim hangs off the FACTOR the source names, or add it to `kept` WITH the "
+            + $"reason it is not a row:\n  "
+            + string.Join("\n  ", unexplained.Select(r => r.Window)));
+
+        foreach (var k in kept)
+        {
+            var matched = rows
+                .Count(r => r.Trigger.Contains(k.Sentence, StringComparison.OrdinalIgnoreCase));
+
+            Assert.True(matched > 0,
+                $"{slug}: the kept row \"{k.Sentence}\" matches nothing on the page any more. "
+                + "Delete it rather than leaving it: an exception that fires on nothing is a "
+                + "door held open for nobody, and it hides a lexicon that has narrowed.");
+
+            // EXACTLY ONE. A fragment that matches two triggers silences a sentence
+            // its reason was not written about — which is the window-versus-trigger
+            // failure one layer down, and the same failure it takes two review rounds
+            // to notice, because the suite is green either way.
+            Assert.True(matched == 1,
+                $"{slug}: the kept row \"{k.Sentence}\" matches {matched} different "
+                + "sentences, so one written reason is standing over more than one of "
+                + "them. Lengthen the fragment until it identifies exactly one, and give "
+                + "the others their own reasons.");
+        }
+
+        // AND THE POSITIVE CONTROLS. Run the SAME scan over the page and over the
+        // page with a defect planted in it, and require the second to find THE
+        // PLANTED ONE. This is the half that ended WI-569's ten-round cycle.
+        // THE COUNT, because this was the one list in the item without one — and its
+        // own comment narrates a control being lost in a promotion (thirteen went in,
+        // twelve arrived). Three arrays asserted only to be the SAME length is a
+        // check a synchronised deletion passes.
+        Assert.Equal(30, LocationPositiveControls.Length);
+        Assert.Equal(LocationPositiveControls.Length, LocationControlFragments.Length);
+        Assert.Equal(LocationPositiveControls.Length, LocationControlAddressFragments.Length);
+
+        for (var i = 0; i < LocationPositiveControls.Length; i++)
+        {
+            var planted = LocationPositiveControls[i];
+
+            Assert.True(planted.Contains(LocationControlFragments[i], StringComparison.Ordinal)
+                        && planted.Contains(LocationControlAddressFragments[i], StringComparison.Ordinal),
+                $"control {i}'s fragments are not both substrings of the control itself, so "
+                + "they could never identify it");
+
+            Assert.True(ControlIsCaught(readerText, i, AddressRegex),
+                $"{slug}: the guard did not catch a planted row — \"{planted}\". The lexicon "
+                + "has narrowed, or the page's own prose is masking it. This is the control "
+                + "that proves the guard can fail at all.");
+        }
+    }
+
+    /// <summary>
+    /// Does control <paramref name="i"/>, planted behind the spacer, come back as a
+    /// row carrying BOTH of its fragments? Factored out so the ablation test can ask
+    /// the same question with a token removed from <paramref name="address"/>.
+    /// </summary>
+    public static bool ControlIsCaught(string readerText, int i, Regex? address = null) =>
+        PlacesRankedIn(readerText + ControlSpacer + LocationPositiveControls[i], address)
+            .Any(r => r.Window.Contains(LocationControlFragments[i], StringComparison.OrdinalIgnoreCase)
+                   && r.Window.Contains(LocationControlAddressFragments[i], StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>The address tokens WI-570 added, each of which owes a control.</summary>
+    public static readonly string[] LocationAddressTokensAddedByWi570 =
+    [
+        @"|upper part of (?:the|your) brain", @"|back of the brain",
+        @"|side of (?:the|your) brain", @"|upper back part of (?:the|your) brain",
+        @"|stalk the brain sits on", @"|\bthalam", @"|cauda equina",
+        @"|(?:top|bottom) end of the cord", @"|lower back part of (?:the|your) brain",
+        @"|\btailbone\b", @"|\bsacrum\b",
+    ];
 }
 
 public sealed class MriPageContentTests

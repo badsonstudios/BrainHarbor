@@ -4335,7 +4335,7 @@ spread is the argument for publishing none of them.
   the moment"*, which is false for the reader this item routes there), and
   **WI-577** was opened for the sellar seam and §12.17's carried-forward.
 
-- [ ] **WI-570 Sweep: the location section on the remaining location-variable
+- [x] **WI-570 Sweep: the location section on the remaining location-variable
   hubs**
   Goal: apply WI-569's pattern to the rest.
   Scope: the glioma family (glioma, astrocytoma, glioblastoma, oligodendroglioma,
@@ -4344,6 +4344,61 @@ spread is the argument for publishing none of them.
   Acceptance: every hub either carries the section or routes, and **a test
   asserts which** — §12.15's rule that an obligation may be answered, re-headed
   or routed, but never dropped. Depends on: WI-569.
+  **Shipped 2026-09-26.** The ruling is `docs/content-pipeline.md` **§12.19**.
+  **THE ITEM WAS COMMISSIONED TO WRITE NINE SECTIONS AND WROTE NONE, because the
+  sweep ran first and said so.** Running §12.18's property over all twenty-three
+  hubs before writing found **all nine already carrying their own location prose**
+  — pinned now, one claim per hub, so a later tidy-up cannot quietly make a tenth
+  page that routes for everything and says nothing. What was actually missing was
+  somewhere else:
+  **(1) TWO RANKED PAIRS, BOTH ON `/tumors/ependymoma`, NEITHER IN A LOCATION
+  SECTION.** The sweep found the outlook gate ranking *"Tumors in the spinal cord
+  in adults tend to do better than tumors at the back of the brain in young
+  children"* — two addresses by outcome, which Wave 6 forbids twice over since it
+  is also prognosis keyed to a place, and which carried AGE as a second variable
+  inside the same comparison. `/review` found the second, in "If it comes back":
+  *"After a tumor at the back of the brain, it tends to come back in the same
+  place. After one higher up in the brain, it more often turns up somewhere
+  else."* **The guard could only ever see half of that one** — the second sentence
+  carries no difficulty word at all. It was SOURCED (StatPearls) and it had been
+  PINNED BY A TEST at an earlier item's review request: **a true, previously
+  approved sentence can still be the forbidden artifact.** Both deleted, the
+  replacement gives every reader the same answer, and the old pin is now a
+  tripwire in the opposite direction.
+  **(2) FIVE HUBS WITH NO ROUTE TO `/where-your-tumor-is` AT ALL** — and they are
+  exactly the five of twenty-three that do not compose `[MECHANISM]`, because the
+  route lives in that block's closing paragraph. **§12.10's blast radius running
+  the other way, which is the more dangerous direction: a block is a silent
+  OMISSION on every page that does not include it, because no single page is
+  individually wrong and no page-scoped test can see a gap.** Assert the
+  complement, not the includers.
+  **WHAT §12.19 ADDS TO §12.18: THE ROW TEST.** Could a reader read their OWN
+  address off this sentence and get a different answer from a reader with a
+  different one? If yes it is a row; if no — true of the type wherever it sits, or
+  keyed to a factor, an age, a gene or a structure — it is the type's own fact.
+  That is what tells `/tumors/cns-lymphoma`'s *"the whole reason surgery is not the
+  treatment"* apart from Mayfield's closing paragraph, and it licenses
+  `/tumors/chordoma`'s address-keyed plan passage, whose SOURCE is itself scoped by
+  site. Plus the bounded-remainder rule, the lexicon asymmetry (zero occurrences
+  condemns an ADDRESS token and commends a DIFFICULTY one), and three residual
+  lists instead of one.
+  **PROOF: 28 break mutations red on LF AND CRLF (56 of 56, no known survivors);
+  the plain suite 2,588/2,588 on a fully LF corpus AND a fully CRLF corpus;
+  ContentCheck 283/0 with every touched page at or BELOW WI-569's baseline grade
+  (chordoma 5.9 → 5.8, pituitary 5.4 → 5.3, four unchanged); nine rendered pages
+  captured with THREE CONTROLS** (`/tumors/meningioma`, `/tumors/glioma` and
+  `/tumors/cns-lymphoma` compose the same block and were not touched, so a zero
+  byte delta on them separates "six pages changed" from "somebody edited the
+  block"); **privacy scan 0 findings over 2,407 net-new lines; THIRTEEN `/review`
+  rounds.**
+  **WHAT THIRTEEN ROUNDS COST AND WHAT THEY BOUGHT.** Rounds 9 to 12 each found
+  their blocker in the SAME note — a hand-kept census of which lexicon branches a
+  positive control protects — and each correction got the arithmetic wrong again.
+  Round 12's finding was that the census WAS the defect: **a count in prose beside
+  a count in code, which is what this item asserts against everywhere else.** So it
+  was deleted and the test's iterated set is the record. Six aborting edit scripts
+  were believed over the file, twice costing a whole round; §12.19 finding 8 is
+  that rule with a date on it.
 
 - [ ] **WI-571 Tectal glioma, and the tumors whose only name is a location**
   Goal: give the reader who was told "tectal glioma" somewhere to land.

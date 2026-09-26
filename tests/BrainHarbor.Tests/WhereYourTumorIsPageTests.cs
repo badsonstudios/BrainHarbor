@@ -794,6 +794,20 @@ public sealed class WhereYourTumorIsPageContentTests
     ///
     /// A guard scoped to where the defect was expected is green where it arrives.
     /// </summary>
+    /// <remarks>
+    /// THIS IS A BAN LIST AND IT IS NOT THE ONLY GUARD ON THIS PROPERTY ANY MORE.
+    /// Since WI-570, <c>LocationObligationSweepTests.TheTwoPagesTheRulingWasMeasured
+    /// AgainstAreSweptToo</c> runs §12.18's PROPERTY over this same page — the
+    /// address-plus-difficulty co-occurrence, with positive controls — and pins this
+    /// page's one known false positive with its reason. Keep both: the property
+    /// generalises and this list pins words no property reaches ("reputation"),
+    /// which is the belt-and-property arrangement §12.18 settled on.
+    ///
+    /// <b>But widen one and you must re-measure the other.</b> §12.18's whole
+    /// argument for promoting the scanner was that when two guards test one
+    /// property in two files, the newer is not automatically the stronger — and the
+    /// lexicon WI-569 needed already existed here, unnoticed, for two items.
+    /// </remarks>
     [Fact]
     public void NoPlaceIsRankedAgainstAnotherAnywhereOnThePage()
     {

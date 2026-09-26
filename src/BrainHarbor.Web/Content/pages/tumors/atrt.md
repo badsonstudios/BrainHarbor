@@ -1017,6 +1017,13 @@ treatment often has to reach the entire nervous system instead of one spot.
 the finding. What this section is for is making the words they use make sense
 when they use them.
 
+**And if you want the place itself explained.** [Where your tumor is, and what
+that changes](/where-your-tumor-is) goes through the parts of the brain one at
+a time. It is written to an adult about their own scan, and it tells you how to
+read it for a child. It also says which part of it was written for adults: the part
+about surgery. And it says the signs of blocked fluid in a baby are different
+ones.
+
 ## What symptoms does it cause in a baby or young child?
 
 **A toddler cannot tell you they have a headache.** So the things you notice are

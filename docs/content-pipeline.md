@@ -6624,3 +6624,503 @@ served a reCAPTCHA. The claim predates WI-569 and is **left as found and written
 down** rather than deleted on a hunch or dressed in an unsourced explanation; this
 item's own `/review` round 1 added exactly such an explanation and round 2 removed
 it. Re-ask, do not inherit.
+
+### 12.19 The location obligation across the corpus (WI-570)
+
+§12.18 settled how ONE tumor-type page carries location. This is that ruling applied
+to all twenty-three, and the item it names is the one that changed shape when the
+sweep ran first.
+
+**THE ITEM WAS COMMISSIONED TO WRITE NINE SECTIONS AND WROTE NONE.** The backlog
+scoped WI-570 as "apply WI-569's pattern to the rest" — the glioma family,
+ependymoma, CNS lymphoma, brain metastases. Running §12.18's property over all
+twenty-three hubs before writing a word found that **all nine were already carrying
+their own location prose**, with the address claim in their own words, and that what
+was actually missing was somewhere else entirely. §12.18 says the sweep comes before
+the section. It does, and sometimes it replaces it.
+
+**WHAT THE SWEEP FOUND: ONE DEFECT, AND IT WAS NOT IN A LOCATION SECTION.**
+`/tumors/ependymoma`'s outlook gate read *"Tumors in the spinal cord in adults tend
+to do better than tumors at the back of the brain in young children."* Two addresses
+ranked against each other by outcome — the Wave 6 preamble forbids it twice over,
+since it is also a prognosis claim keyed to a place — and it was not even a clean
+one, because AGE sat inside the same comparison as a second variable, so neither half
+could be read against the other. Deleted. Nothing was lost: the sentence two lines
+above already keys the same material to this tumor's own factors (how much came out,
+how young the child is, the gene result), which is the form §12.18 asks for.
+
+**WHAT THE SWEEP DID NOT FIND, AND AN AUDIT DID: FIVE HUBS WITH NO ROUTE AT ALL.**
+The route from a type page to `/where-your-tumor-is` lives in the closing paragraph
+of `blocks/mechanism.md`. Eighteen hubs compose that block. The other five —
+`low-grade-glioma`, `atrt`, `chordoma`, `pituitary-tumor`, `spinal-cord-tumor` — had
+no route to the location page anywhere. **That is §12.10's blast radius running the
+other way, and it is the more dangerous direction: a block is a silent OMISSION on
+every page that does not include it, because no single page is individually wrong
+and no page-scoped test can see a gap.** The five are not an arbitrary set; they are
+exactly the complement of the include list, which is what makes the rule assertable.
+
+> **An obligation whose only home is a shared block is dropped on every page that
+> does not compose it. Assert the complement, not the includers.**
+
+`LocationObligationSweepTests` is that assertion: a closed per-hub table saying which
+of the two each hub got, failing on a page with no entry rather than skipping it, and
+asserting the include and the ruling against each other in both directions.
+
+#### The row test, which is what nine hubs needed and one did not
+
+§12.18's line — *an address entry may carry a SYMPTOM and must never carry a
+DIFFICULTY* — was written for a page whose address list is eight bullets. Across
+twenty-three hubs it is not sufficient on its own, because the corpus is full of
+sentences that name a place and an operation in the same breath and are correct.
+So:
+
+> **Could a reader read their OWN address off this sentence and get a different
+> answer from a reader with a different one? If yes it is a row. If no — if it is
+> true of the type wherever it sits, or keyed to a factor, an age, a gene or a
+> structure — it is the type's own fact and it belongs on the type's page.**
+
+That is what tells `/tumors/cns-lymphoma`'s *"those two facts are the whole reason
+surgery is not the treatment"* — true of every reader of that page — apart from
+Mayfield's closing paragraph, which hands a different answer to each address. It is
+the same instrument §12.18 used to keep *"where it grows around a nerve or a large
+vein"*: a factor gives a reader nothing to look themselves up in, and **the ban is on
+the row.**
+
+**AND `/tumors/chordoma` IS THE LICENSED EXCEPTION, NAMED RATHER THAN INFERRED.**
+§12.18 part 3 says the plan passage is keyed on the factors the guideline names *"and
+never on the addresses"*. Chordoma's is keyed on two addresses, in two sub-headings —
+the skull base, and the spine and sacrum — and it is right, because **its source's own
+scope is the site**: the Chordoma Foundation writes the en-bloc goal for the mobile
+spine and the sacrum, and the expert consensus group states that at the skull base
+removal may have to be piecemeal. The page splits them on purpose and says why
+(*"this is the part most likely to be flattened into one rule"*), attaches a mechanism
+to each, labels the harder half *"and that is not a failure"*, and — the part that
+settles it — **neither half is better than the other**: the spine half carries the
+harsher consequence. The rule, then, is not "never key on an address"; it is that an
+address may key **what is aimed at** only where the source itself is scoped by site,
+and never **how the reader does**.
+
+**THE RESIDUAL ON THAT PAGE, MEASURED AND LEFT.** Three sentences later chordoma says
+*"How high up the tumor sits decides how much of that function is at risk, and your
+team can usually tell you beforehand."* By the row test a reader **can** read their
+own address off that, and the answer is about what happens to them. No property guard
+reaches it — *how high up* is not an address token and bare *at risk* is deliberately
+not a difficulty token (see the exclusion note). It is kept: it is sourced, it is what
+a reader needs before an irreversible operation, and it points at a conversation
+rather than at an outcome. It is written down here because the claim "the sweep found
+one defect" is true of a lexicon, not of the corpus, and §12.18's rule is that the
+lexicon is a floor.
+
+#### What changed in the guard, and what the promotion cost
+
+§12.18 closes by saying WI-570 is where the guard gets promoted. It is now
+`CuratedPage.AssertNoPlaceIsRankedAgainstAnother`, run over all twenty-three hubs
+plus `/where-your-tumor-is` and `/treatments/craniotomy`; `/tumors/meningioma`'s own
+test calls it instead of carrying a second copy of the lexicon.
+
+**The lexicon changes — eleven address tokens, nine difficulty tokens and three
+qualifications — each measured over the whole corpus before it was taken**, which is
+the only way §12.18 permits one. They arrived over four review rounds rather than in
+one edit, and the order is part of the record:
+
+- **`the` OR `your`, on WI-569's own skull and head tokens.** This corpus writes in the
+  second person. `base of the skull` could not see *"the base of your skull"*, and
+  that one word was hiding `/tumors/chordoma`'s entire skull-base subsection. Zero
+  false positives.
+- **`upper part of the|your brain` and `back of the brain`.** Round 4's
+  report-words-versus-plain-words finding in a fourth costume, and the worst one yet:
+  these are the words the test's own pinned claims use for four of the nine hubs
+  (`glioblastoma`, `low-grade-glioma` and `high-grade-glioma` for *the upper part of
+  the brain*, `ependymoma` for *the back of the brain*), so
+  *"A glioma in the upper part of the brain usually comes out whole"* walked straight
+  through. Cost: zero for the first, and ONE for the second when it was taken — the
+  sourced recurrence pair on `/tumors/ependymoma`, **which this item then deleted**. So
+  `back of the brain` costs **zero today**, and what it is still load-bearing for is the
+  `worst` qualification below, which only fires because of it. §12.18: a rationale that
+  stopped being true is how one gets copied, so the rationale says which half is live.
+- **And then a FIFTH costume, because taking two of them was not taking the set.**
+  `/review` round 2 wrote twenty-five fresh attacks in the corpus's own register and
+  **twenty-four passed**, on the region names this site teaches everywhere.
+  `blocks/mechanism.md`'s own bullets are *"Side of the brain, near the temple"* and
+  *"Upper back part of the brain"*, and they reach the **eighteen** hubs that include
+  that block; the guard could not see either. (An earlier draft of this bullet quoted
+  *"the side of your brain, near your ear"* and *"the upper back part of your brain"*
+  and put them on twenty and nineteen pages. Those are `/where-your-tumor-is`'s own
+  `###` HEADINGS and each occurs ONCE in the whole corpus. The TOKENS were right
+  either way, because they carry both determiners — but the positive controls had been
+  written off the quotation instead of off the corpus, so three of them exercised only
+  the `your` branch while eighteen composed pages are written in the `the` branch.
+  **A quotation in a ruling is a claim. Grep it like one.**) Nine more tokens went in, **every one measured at
+  zero across all twenty-three hubs plus both control pages** — and then `/review`
+  round 3 took **two of the nine back out**, which is the part to copy:
+
+  > **"Costs zero rows" is not the same test as "is an address."**
+
+  `\bneck\b` has 42 matches under `Content/` and **forty-one of them are not
+  addresses** — they are symptom and procedure prose (*"a stiff neck"*, *"pain in the
+  back or neck"*), one of them inside the shared escalation block, so it was on ~20
+  pages. (The single real address is `/tumors/hemangioblastoma`'s *"the neck is the
+  most common part of the spine for one"*. One in forty-two is the argument; an earlier
+  draft said none in forty-two, and `/review` counted them.) It
+  cost zero rows by luck, and it did real damage: it gave `/treatments/craniotomy` two
+  address matches and thereby **falsified the "zero addresses" measurement written
+  three files away in the same review round that added the token** (see finding 6
+  below). `near the surface` matches **nothing anywhere** — "measured at zero" is
+  trivially true of a dead token, and a dead token inflates the apparent width of a
+  lexicon a reviewer is trusting. **Nine went in; two came out and one was REPLACED, so seven stayed.** Out: `neck`
+  and `near the surface`, for the reasons above. **Replaced: bare `lower back`, and it
+  is `neck` all over again one round later** — 11 matches under `Content/` and EIGHT are
+  procedure or symptom prose, seven of them *"a needle in the lower back"*, the
+  lumbar-puncture site. The only real addresses were `/tumors/hemangioblastoma`'s three
+  *"the lower back part of the brain"*, which the bare token caught by being an
+  accidental PREFIX of a different phrase — so the phrase is what went in. **AND IT HAD
+  A POSITIVE CONTROL, written for it one round earlier, in a register no page in this
+  corpus uses** (*"A growth in the lower back is more dangerous than one higher up"*),
+  so the ablation test reported the token protected right up to the round somebody read
+  it. **A control can keep a bad token alive.** The seven that stayed: *side of the|your
+  brain* and *upper back part of the|your brain* — the two the attacks above were
+  written from — plus *the stalk the brain sits on*, `thalam`, *cauda equina*,
+  *top/bottom end of the cord* and *lower back part of the|your brain*. **THE ELEVEN IN FULL**, since the count is
+  quoted elsewhere and the enumeration has to reach it: *upper part of the|your
+  brain*, *back of the brain* (batch one); those seven (batch two); and *tailbone*
+  and *sacrum*, taken for the sacral end of `/tumors/chordoma`, the only place in the
+  corpus where an address has no other word for itself.
+  The lesson is not "widen once more". It is that **the pinned claims and the shared
+  block are where to read the lexicon off**, because those are the words the corpus is
+  actually written in, and a lexicon derived from one page's prose is a lexicon for one
+  page.
+- **AND THEN THE BOTTLENECK MOVED, which is the measurement WI-571 should start
+  from.** With the address side widened, `/review` round 3 wrote twenty-five fresh
+  attacks using **only addresses the guard already knew**, varying the difficulty
+  phrasing — and **twenty-four passed**, the same 96% the round before had measured
+  against the address half. Almost all sat one word from something already banned:
+  *do worse* beside *do better*, *better place* beside *worse place*, *returns* beside
+  *comes back*, *slower recovery* beside *longer recovery*. Nine went in at zero cost,
+  and **two of them were qualified rather than banned bare**: `poor`, which has
+  **nine live correct uses in reader text** (*"Poor balance"* twice, *"a poor fit"*,
+  *"a poor word for this"*, *"a poor thing to hear on its own"*), and `returns`, which
+  has **seven**, six of them innocent (*"Some need time away and then return"*, *"the day
+  your child returns"*, *"the treatment section returns to it"*). §12.18 had to learn
+  qualify-do-not-ban twice, both times after the false positive arrived; `poor` is the
+  first time the rule was applied before it did. **And `returns` is the one that shows
+  why the rule needs an assertion and not an intention:** the qualification was recorded
+  as applied in one round and was found MISSING FROM THE FILE in the next — finding 8. **Four more measured at zero and were
+  deliberately NOT taken** (*takes more out of*, *undertaking*, *bounce back*, *best
+  case*): they are idiom rather than rank vocabulary, and §12.18's closing instruction
+  is the ruling — *stop adding words once the positive controls and the pinned
+  deletions are in place; the next round will always find twenty more.*
+- **AND A TOKEN WITH NO POSITIVE CONTROL IS NOT PROTECTED.** Ablating each of the
+  eleven new address tokens one at a time turned **no** control red except for the two
+  covering `upper part of the brain`. Nine could have been deleted by a later edit in
+  silence — which is exactly what the control list exists to stop, and the control list
+  said so in its own doc comment while being false of nine-elevenths of the item's own
+  work. **Add the control in the same edit as the token, or the token is decoration.**
+  **AND THEN WRITING THAT RULE DOWN DID NOT APPLY IT.** Round 3 wrote the sentence
+  above and added three controls; round 4 re-measured and found **eight of the eleven
+  still unprotected**, plus one of the three new controls carrying TWO new tokens, so
+  each masked the other under single-token ablation and it went red for neither. **A
+  control carrying two of the things it is testing tests neither.** So the rule is now
+  a test — `EveryAddressTokenThisItemAddedHasAControlThatFailsWithoutIt` removes each
+  token from the lexicon and requires a control to go red — and the test was itself
+  checked by deleting one control and watching it fail. A rule in a comment is a hope;
+  a rule in an assertion is a rule.
+- **AND THE CONTROLS WERE BEING SCANNED IN THE PAGE'S CONTEXT, WHICH WAS DOING THE
+  WORK.** A control appended to the page under test sits inside a four-sentence window
+  that reaches back into that page's own prose — so four controls still "passed" on
+  `/tumors/craniopharyngioma` with the very tokens they depend on removed, because the
+  window found a real address in the page behind them. Fixed with a three-sentence
+  spacer carrying neither lexicon. **Isolate a planted defect from the text it is
+  planted in, or the text is what passes the control.** This is one failure found in
+  three successive rounds at three depths: the count, then the fragment, then the
+  context.
+- **Three were measured and NOT taken.** `front of the brain` costs two false
+  positives, one of them on `/tumors/meningioma` — the page WI-569 measured at zero.
+  `middle of the|your brain` costs one. `cord` costs four — and the fourth is a sentence WI-570 itself wrote,
+  `/tumors/spinal-cord-tumor`'s *"it says why it has no list of which places are
+  dangerous"*, the neatest demonstration available that a measurement is only true
+  of the corpus it was taken on. Recorded rather than
+  taken, with their numbers, so the next item re-measures instead of re-proposing —
+  §12.18: measure the cost before the widening, not after.
+- **`worst` is qualified**, and **the rationale is conditional, which is the part to
+  copy.** Bare `\bworst\b` costs nothing against WI-569's lexicon; it only fires on
+  *"Headaches, often worst on waking up"* once `back of the brain` is an address,
+  which WI-570 then made it. §12.18 put a date on the `worse` re-measurement because
+  *"a rationale that stopped being true is how one gets copied"*; a rationale that was
+  never true of the shipped configuration is the same failure one step earlier, and
+  `/review` caught the first draft of this note asserting the unconditional form.
+
+#### Eight ways this went wrong, seven of them silently
+
+Every one was found by running the thing rather than reading it, or by re-reading the
+file instead of the report about it. Seven were silent; the other (5) failed loudly and
+is here because a binding that had happened to find a file would not have.
+
+1. **`CuratedPage.Section` on a COMPOSED page stops at the block's own heading.**
+   `blocks/mechanism.md` contains `## Why your symptoms are the ones you have`, and
+   `Section` cuts at the next `## `. So on all eighteen composing hubs, "the location
+   section of the composed page" is only the part ABOVE the include — and every one
+   of them puts its type-specific prose BELOW it. **Compose for a prose PROPERTY over
+   a whole page; never for a structural cut.**
+2. **`ReaderText` on a SECTION eats three characters.** It calls `Body`, which slices
+   from the front matter's closing `---`; a section has none, `IndexOf` returns -1,
+   and the slice starts at index 3. Strip the markers from the page, then cut.
+3. **An allowance matched against the four-sentence WINDOW silences sentences nobody
+   read.** On `/tumors/ependymoma` two written reasons were covering three rows: the
+   third trigger's window happened to contain the fragment excusing the first. The
+   prose was innocent and the mechanism was not. **Match an allowance against the
+   TRIGGER — the sentence carrying the vocabulary — not against the window it was
+   judged in.**
+4. **A positive control that asserts only that the row COUNT went up can pass for the
+   wrong reason.** With the lexicon artificially narrowed, two bullet-lead controls
+   still "passed" on `/tumors/craniopharyngioma`, because the window reached back into
+   that page's own prose and found a real address. **Assert the PLANTED row is the one
+   that was found.** §12.18's positive controls are the load-bearing half of the
+   guard; a control that can be satisfied by the page it is planted in is not one.
+   **AND THE FIRST FIX FOR IT WAS HALF A FIX**, which is the part worth copying: the
+   required fragment was the control's TRIGGER sentence, and a window always contains
+   its own trigger — so three multi-sentence controls still passed on that same page.
+   A control has to name **both halves**, the difficulty and the address, and require
+   them in one window. An identifier that the thing under test supplies for free
+   identifies nothing.
+5. **A `params string[]` overload beside a `string` overload is ambiguous at exactly
+   one call site.** `Plain("where-your-tumor-is.md")` bound to the slug overload and
+   went looking for `where-your-tumor-is.md.md`. It failed loudly; a binding that
+   happened to find a file would not have.
+6. **The promotion kept one floor and dropped the other, and the dropped one was
+   load-bearing for a published claim.** `/treatments/craniotomy` has 21 difficulty
+   matches and **zero addresses** — so §12.18's much-quoted *"fires ZERO times on
+   /treatments/craniotomy"*, which WI-570 used as its licence to trust the ported
+   scanner on nine hubs, is a fact about the lexicon and not about the page. No row
+   could have been found there whatever it said. The zero is real and it is not
+   evidence. Every caller now states its own minimum, and craniotomy's `0` is written
+   down as structural. **A guard measured on a page it cannot fire on has been
+   measured on nothing** — and this one had been quoted forward twice.
+7. **An allowance fragment that matches two triggers silences a sentence its reason
+   was not written about.** That is finding 3 one layer down, and it is invisible the
+   same way: the suite is green either way. Assert each kept row matches **exactly
+   one**.
+8. **AND THE ONE THAT HAPPENED THREE TIMES IN THIS ITEM ALONE: A MULTI-ANCHOR EDIT
+   SCRIPT THAT ABORTS WRITES NOTHING, AND ITS ROUND SUMMARY SAYS IT WROTE.** §12.17
+   records this; §12.18 found the next layer (the follow-up script silently dropping
+   the first anchor). Here it happened three times, and the third cost a whole review
+   round: the `returns` qualification was recorded as applied, reviewed as applied,
+   and **was not in the file** — one script had aborted on a later anchor and written
+   nothing. The abort is correct behaviour and is not the bug. **The bug is believing
+   the round's own summary over the file.** Re-grep for what you changed, in the file,
+   after the write; and when a script aborts, re-run the WHOLE script rather than
+   writing a new one for what is left.
+
+#### The routing promise failed SIX times in one item, twice inside its own fix, and the sixth was not about wording
+
+This is the failure §12.18 named and this item cited, and it is worth its own heading
+because it did not stop happening when it was pointed at.
+
+1. `/tumors/low-grade-glioma` said the location page *"sets out what each part does"*.
+   **That page refuses to, in its own words:** *"These entries do not list symptoms.
+   That question has a better answer of its own, region by region, and it lives on the
+   page for the first week."*
+2. `/tumors/pituitary-tumor` sent a reader to *"the range a team picks from"*. That
+   range is five **surgical** options with no medicine in it, while the pituitary page
+   itself says twice that a prolactinoma is usually treated with a pill. The route
+   would have walked that reader past their own first-line treatment.
+3. `/tumors/chordoma` said the destination *"fits a chordoma up there and not one lower
+   down"*. **Two** of that page's parts are head-scoped — its regions list and its
+   urgent-signs list, each of which says so in its own words — and the rest of it is
+   location-general, so the sentence told the two thirds of that page's readers whose
+   tumor is in the spine or sacrum that the page was not for them. (A count of "ten of
+   twelve sections" stood here until round 7. It was dropped rather than corrected: the
+   fluid section is intracranial throughout and carries no scope statement of its own,
+   so it is a third candidate and the arithmetic turns on a judgement rather than on
+   the page's own words. **Bound by naming the parts the destination scopes out loud; a
+   number invites the next reader to recount it and get a different answer.**
+   Over-including a call-us section is also the safe direction, which the destination
+   itself prefers.) (The first version of this bullet
+   said *"only its regions list is head-scoped"*, which is the claim 4 and 5 below
+   exist to refute, stated two paragraphs above them. **A ruling that contradicts
+   itself gets copied one paragraph at a time.**)
+4. and 5. **The fixes for 2 and 3 then over-corrected in the opposite direction, and
+   this pair is the one that mattered.** `/tumors/chordoma` became *"Only its list of
+   places is about the head. The rest of it works wherever your tumor is"* and
+   `/tumors/spinal-cord-tumor` *"The rest of it is still yours"* — and it is **not
+   only the regions list** that is head-scoped. The destination says so: *"If it is in
+   or pressing on your spinal cord, parts of the list above were written for a tumor
+   in the brain, and the signs that matter most for you are different ones."* **The
+   over-claim was in the URGENT-SIGNS direction**, which is the one direction a
+   mistake on this site is not allowed to run.
+
+   **WHAT SHIPPED IS NOT A DELETION IN EITHER CASE, and the difference is the whole
+   lesson.** *"The rest of it works wherever your tumor is"* is still live on
+   `/tumors/chordoma`, and it is correct there — because the two sentences in front of
+   it now name **both** head-scoped parts, so "the rest" is a defined remainder rather
+   than a claim about a page nobody has counted. `/tumors/spinal-cord-tumor`'s version
+   was reworded outright (*"What is left over is still yours"*) because its sentence
+   sat after only one of the two bounds. **An unbounded remainder is the defect; the
+   fix is to define what it is the remainder OF, not to stop saying it.** (An earlier
+   draft of this very paragraph recorded the chordoma sentence as removed, which would
+   have told the next item that a sentence currently serving a reader was a mistake —
+   §12.18's "a note that describes text a later round replaced", running backwards.)
+
+6. **AND THE SIXTH IS NOT ABOUT WORDING AT ALL, WHICH IS WHY THREE ROUNDS OF READING
+   THE SENTENCES DID NOT FIND IT.** `/tumors/chordoma` names three sites — skull base,
+   spine, sacrum. Its route sat at the END of `### In the spine and at the tailbone`,
+   led with *"The floor of the skull"*, and deep-linked
+   `/where-your-tumor-is#skull-base`. So the two thirds of that page's readers whose
+   tumor is lower down finished THEIR subsection on a lead about the skull and landed
+   inside the destination's head-only regions list, in the one entry that is not
+   theirs. **Every sentence in that paragraph was true by then.** The prose had been
+   corrected over three rounds while the filing stayed wrong.
+
+   > **A route can be word-perfect and still be addressed to the wrong reader. On a
+   > page with more than one site, check the FILING and the ANCHOR as well as the
+   > promise.**
+
+   The paragraph moved up into the section preamble, where it speaks to all three
+   sites, and the anchor went — a deep link into a head-only list is the same defect
+   in a different costume. Both the placement and the absence of the anchor are now
+   asserted, because nothing had been guarding either.
+
+**The pattern, and it is not carelessness.** A route is written while looking at the
+page being edited, and **it is a claim about a page that is not on the screen** — so
+the natural failure is to describe the destination from memory of why you linked it.
+Both the under-claim and the over-claim come from the same place. **Open the
+destination, read the section you are promising, and write the upper bound; then check
+the bound against the destination's own scope statements, which is where it says what
+it is NOT for.**
+
+#### The second deletion, which the sweep could only see half of
+
+`/review` round 2 found what the lexicon had missed, one section away from the defect
+the sweep did find. `/tumors/ependymoma`'s "If it comes back" section read:
+
+> *"After a tumor at the back of the brain, it tends to come back in the same place.
+> After one higher up in the brain, it more often turns up somewhere else in the brain
+> or spine."*
+
+Two addresses, two answers, and the second is materially worse news than the first.
+**The claim is true and it is in that page's own sources** — StatPearls: posterior
+fossa ependymomas *"recur locally, whereas supratentorial ependymomas tend to be
+disseminated at relapse"*. It had been pinned by a test, because an earlier item's
+`/review` round asked for the split by site as a nit.
+
+> **A true, sourced, previously-approved sentence can still be the forbidden artifact.
+> §12.18's line is about what an address entry may CARRY, not about whether the claim
+> has evidence — and Wave 6 bans the location-keyed lookup whatever its evidence is.**
+> That is the whole reason the constraint is written as a property of the SHAPE.
+
+What replaced it names the territory without handing two addresses two answers: *"It
+can come back in the place it started, or somewhere else in the brain or spine. Both of
+those happen."* Every reader gets the same answer, so the row test passes rather than
+being argued around, and nobody loses the fact that it can turn up in the spine. The
+pinning test now asserts the replacement **and** that the split does not come back,
+which is how an old review nit gets retired rather than silently reversed.
+
+**AND THE HALF THE GUARD COULD NOT SEE IS THE FINDING.** The first sentence carried
+*come back* plus an address and fired. **The second carried no difficulty word at all
+and was invisible.** So one written allowance was standing over one half of a pair —
+and its reason, written to excuse the visible half, claimed the passage *"changes what
+the team WATCHES, not what happens to the reader"*, which **nothing on the page said**.
+A property guard standing over one sentence of a pair is not standing over the pair,
+and an allowance is the place where that goes unnoticed: it looks like the sentence has
+been considered. **Read the sentences either side of every kept row.**
+
+#### The residual, listed rather than implied — and it is TWO lists, not one
+
+`/review` round 3's correction, and it matters because the two categories need
+opposite things from the next reader.
+
+**(a) Kept rows the guard DOES see.** Thirteen, on seven hubs, each with a written
+reason in `LocationObligationSweepTests`, each asserted to still fire and to match
+exactly one trigger. These are safe in the ordinary way: a reviewer can read the
+reason against the sentence, and a lexicon that narrows turns them red.
+`/tumors/hemangioblastoma`'s *"In the brainstem, symptoms can be more serious"* is one
+of these — a symptom with its mechanism attached, sourced, and carried deliberately in
+the under-triage-safe direction, since that page's own `/review` round 1 called it a
+BLOCKER when a draft took *"more serious"* and dropped *"needing emergency
+attention"*.
+
+**(b) Sentences NO property guard reaches. These are the list that matters**, because
+nothing will ever raise them again:
+
+- `/tumors/chordoma`: *"How high up the tumor sits decides how much of that function is
+  at risk, and your team can usually tell you beforehand."* *How high up* is not an
+  address token and bare *at risk* is deliberately not a difficulty token. Kept: it is
+  sourced, it points at a conversation rather than at an outcome, and it is what a
+  reader needs before an irreversible operation.
+- `/tumors/ependymoma`: *"That is not always possible, because of where it sits. When
+  some has to be left behind, it is much harder to cure."* **Split across two
+  sentences, and that is why nothing reaches it**: the first carries neither an address
+  nor a difficulty word, and the second carries the difficulty and no place. It is kept
+  because it is keyed to EXTENT, which is this tumor's own factor, and names no address
+  for a reader to look up. This is the item's own *read the sentences either side*
+  lesson landing on a pair that is CORRECT — the same shape as the recurrence pair it
+  deleted, with the opposite verdict. (An earlier draft quoted only the first sentence
+  and said it "carries the vocabulary", which is true of neither half on its own.
+  §12.18's structural residual is a different shape — *"Where it sits sets the ceiling
+  on what surgery can achieve"* — measured there at three false positives to close, one
+  of them a page's own refusal, and left open. Still open.)
+- `/tumors/spinal-cord-tumor`'s outlook gate: *"What happens next turns on four things:
+  the kind of tumor, where it sits, how much came out, and how bad things were before
+  treatment."* Factor-keyed, and *where it sits* is one factor among four rather than a
+  lookup — so not a row — but it is an outlook passage naming place, and no guard
+  touches it.
+- **AND ONE THAT IS A SHAPE RATHER THAN A SENTENCE: THE WINDOW IS FOUR.** A row spread
+  over FIVE sentences is invisible even though every word in it is already in both
+  lexicons: *"- On the floor of the skull. It is a crowded place. Nerves for the eyes
+  run through it. Big vessels do too. Tumors there are harder to take out
+  completely."* This is a different class from a missing word, and it is the only one
+  of twenty-five fresh attacks at round 4 that was. **Widening the window is not the
+  fix** — §12.18 measured that and found a fixed window plus the back-reference gate
+  is what keeps the false-positive rate at zero; the headroom it measured was three,
+  not nine. The width is named here so the next item knows what it costs rather than
+  rediscovering it: five sentences of bulleted prose between an address and its
+  difficulty walks through.
+
+**(c) LEXICON BRANCHES NO ABLATION REACHES — a third kind, and the one that took
+FOUR review rounds to stop getting wrong.** Several address tokens carry
+`(?:the|your)`, because the corpus writes a region one way in a shared block (*"Side of
+the brain, near the temple"*) and the other way in a page heading (*"The side of your
+brain, near your ear"*).
+`EveryAddressTokenThisItemAddedHasAControlThatFailsWithoutIt` ablates whole TOKENS, so
+it cannot see a branch being trimmed.
+
+**AND THE REAL LESSON IS ABOUT THE RECORD, NOT ABOUT THE BRANCHES.** Rounds 9, 10, 11
+and 12 each found the previous round's account of which branches were covered wrong —
+four rounds on one paragraph, every time an arithmetic slip in a hand-maintained
+census. **A census of a thing the code already enumerates is a count in prose beside a
+count in code**, which is the failure this very item asserts against everywhere else
+(`Assert.Equal(9, …)`, `(13, …)`, `(11, …)`, `(30, …)`). So the census was deleted and
+the iterated set of
+`NarrowingTheOrYourInTheAddressLexiconTurnsAControlRed` is the record: whatever it
+covers is covered, and adding a token there is how a branch gets watched. What is left
+in prose is only what the code cannot say:
+
+> **A branch can be alive in the corpus, load-bearing, and still invisible to ablation,
+> because ablation measures the CONTROLS and not the pages.** And a branch INSIDE a
+> control can be invisible too, if that control carries a second address token which
+> masks it.
+
+`base of the brain` was the case worth acting on rather than recording: it reaches all
+eighteen `[MECHANISM]` hubs and had no control at all, so it got one. Four branches are
+left uncovered, each needing a control written to carry exactly ONE address — which is
+§12.18's stop rule deciding where this item ends and the next one starts.
+
+**The claim "the sweep found one defect" is true of a lexicon, not of the corpus.**
+Writing the residual down is what keeps that distinction visible to the next item.
+
+#### Where the item's own new prose came from
+
+Five routes, one per hub, each worded for its own reader; the shared link label is
+left identical on purpose (§12.18: making a label deliberately different costs the
+reader a recognisable link and buys nothing), and the words AFTER it differ. Two of
+the five collided there on the first suite run — both closed with *"is the page for
+the address rather than the diagnosis"*, which is also a seven-word neighbour of
+`/tumors/meningioma`'s own sentence — and the corpus restatement probe caught all
+three in one run. **That probe is the reason the shared-label convention is safe at
+all; without it the convention is just a licence to copy.**
+
+One report word was added: `/tumors/ependymoma`'s middle location bullet said *"Higher
+up in the brain"* and stopped, while the bullet above it teaches *posterior fossa*.
+It now teaches **supratentorial**, which is §12.18 part 2 applied to the one entry
+that had dropped it. (The first version of this sentence said *"the bullets on either
+side"*; the bullet BELOW teaches *myxopapillary*, which is a subtype name and not a
+report word for a place. A justification deserves the same check as a claim.)
