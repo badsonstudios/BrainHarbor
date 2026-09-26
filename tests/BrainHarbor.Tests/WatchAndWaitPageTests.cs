@@ -341,7 +341,13 @@ public sealed class WatchAndWaitPageContentTests
                     var before = sentence[Math.Max(0, match.Index - 40)..match.Index];
                     Assert.True(
                         Regex.IsMatch(before,
-                            @"\b(not|never|none|nobody|nothing|cannot|can't|hardly|no|n't|far from)\b[^.,;:]{0,45}$",
+                            // Boundary inside the alternation (WI-571 /review round 18): a
+                            // leading `\b` made `n't` unreachable (no word boundary inside
+                            // "isn't"), so this positive assert FALSE-FAILED a correct
+                            // contracted negation. `can't` begins with a word character and was
+                            // never affected -- round 19 corrected the note that said it was.
+                            @"(?:\bnot|\bnever|\bnone|\bnobody|\bnothing"
+                                + @"|\bcannot|can't|\bhardly|\bno|n't|\bfar from)\b[^.,;:]{0,45}$",
                             RegexOptions.IgnoreCase),
                         $"'{heading}' now promises relief nothing has been shown to give: \"{sentence}\"");
                 }

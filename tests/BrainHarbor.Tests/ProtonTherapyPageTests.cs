@@ -324,8 +324,37 @@ public sealed class ProtonTherapyPageContentTests
         // protect, and a bare ban fires on it. A window lookbehind fails both
         // ways; the working form is a negation close by AND on this side of the
         // nearest punctuation. §12.8 (WI-522): a negation inside a superlative
-        // is not a negation, which is why "no better way" is not in the list.
-        const string NotNegated = @"(?<!\b(?:not|never|no|n't|hardly|far from)\b[^.,;:]{0,25})";
+        // is not a negation, which is why "no better way" is not in the list — and **`\bno` is
+        // not in the alternation either, as of WI-571's /review round 18.** It was, and the
+        // comment said it was not: so "There is no better option than proton therapy" was
+        // suppressed, a real superiority claim going unguarded on the page whose subject is not
+        // over-claiming. Removing it costs nothing measurable (41/41 here, 2,601/2,601 overall).
+        // **A comment saying a case is handled, beside code that suppresses it, is worse than no
+        // comment: it stops the next reader looking.**
+        // THE WORD BOUNDARY IS INSIDE THE ALTERNATION, and it was not until WI-571's /review
+        // round 17 swept for the shape. Written `\b(?:not|never|no|n't|hardly|far from)\b`, the
+        // leading `\b` binds the WHOLE group — and there is no word boundary between the `e`
+        // and the `n` of "aren't", so **the `n't` alternative could never match** and this
+        // guard FIRED on "Protons aren't better than x-rays", which is the contracted form of
+        // the exact sentence the comment above says it exists to protect. Measured on the real
+        // .NET engine: old fires, new does not, and both still fire on the unnegated claim.
+        //
+        // **A dead alternative in a negation guard does not make it weaker. It makes it fire on
+        // the correct sentence the alternative was added to protect.** WI-571 fixed its own
+        // copy at round 16 and found this one at round 17 by grepping the FIX rather than the
+        // defect, which is content-pipeline §12.20's standing rule. **Both behavioural claims
+        // this comment makes are asserted below rather than left in prose** (/review round 19),
+        // because a revert of either change would otherwise go green -- which is how the bug
+        // survived from WI-522 to round 17 in the first place.
+        //
+        // AND ROUND 17's SWEEP WAS STILL WRITTEN FROM THE INSTANCE. It looked for
+        // `(?<!\b(?:` — a LOOKBEHIND with a NON-CAPTURING group — and reported the suite clean.
+        // Round 18 found four more, every one a POSITIVE `Regex.IsMatch` with a CAPTURING group,
+        // plus the prescription in §12.8 itself. **A sweep written from the instance finds the
+        // instance; the shape is what the next copy will be written in, and the RULING is where
+        // it will be copied from.**
+        const string NotNegated =
+            @"(?<!(?:\bnot|\bnever|n't|\bhardly|\bfar from)\b[^.,;:]{0,25})";
 
         // WIDENED AFTER /review BEAT IT SIX WAYS. Every one of the beating
         // sentences is in the canary list below. The first version banned the
@@ -372,6 +401,19 @@ public sealed class ProtonTherapyPageContentTests
         Assert.DoesNotMatch(guard, "Protons are not stronger than x-rays.");
         Assert.Matches(guard,
             "It is not a difficult treatment, and protons are stronger than x-rays.");
+
+        // AND THE TWO THINGS WI-571's /review ROUNDS 17-19 CHANGED HERE, ASSERTED RATHER THAN
+        // DESCRIBED IN THE COMMENT ABOVE. Both were measured on the real engine and then left in
+        // prose, and a revert of either would have gone green — which is exactly how the first
+        // of them survived from WI-522 to round 17.
+        //
+        // One: the CONTRACTED form of the sentence this guard exists to protect. It fired on this
+        // until the word boundary moved inside the alternation.
+        Assert.DoesNotMatch(guard, "Protons aren't better than x-rays.");
+
+        // Two: `\bno` came out of the negation list, because it was suppressing a real
+        // superiority claim while the comment above said it was not in the list at all.
+        Assert.Matches(guard, "There is no better option than proton therapy.");
 
         var hits = guard.Matches(scanned).Select(m => m.Value).ToList();
         Assert.True(hits.Count == 0,

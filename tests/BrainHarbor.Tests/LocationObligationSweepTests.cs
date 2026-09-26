@@ -751,6 +751,48 @@ public sealed class LocationObligationSweepTests
     }
 
     /// <summary>
+    /// THE SAME ACCEPTANCE FOR WI-571's TWO TOKENS: remove either from the lexicon and a
+    /// positive control must stop catching its own planted row.
+    ///
+    /// <para><b>WHY THEY EXIST IS §12.20's, AND THIS DOES NOT RESTATE IT</b> — see
+    /// <see cref="CuratedPage.LocationAddressTokensAddedByWi571"/>, which points at the same
+    /// place. The one-line version: a planted row in WI-571's new section would not fire
+    /// because the lexicon had never heard of <i>midbrain</i> or <i>tectum</i>, and only
+    /// <i>tectum</i> was new — <b>nothing in this family derives the LEXICON from the
+    /// pages</b>, so a word the corpus already teaches can sit outside it for four items.
+    /// </para>
+    ///
+    /// <para>Both were measured over the whole corpus before being taken, which is the only
+    /// way §12.18 permits a widening, and both cost zero rows.</para>
+    /// </summary>
+    [Fact]
+    public void EveryAddressTokenWi571AddedHasAControlThatFailsWithoutIt()
+    {
+        var page = Plain("low-grade-glioma");
+
+        Assert.Equal(2, CuratedPage.LocationAddressTokensAddedByWi571.Length);
+
+        foreach (var token in CuratedPage.LocationAddressTokensAddedByWi571)
+        {
+            Assert.Contains(token, CuratedPage.LocationAddress, StringComparison.Ordinal);
+
+            var ablated = new Regex(
+                CuratedPage.LocationAddress.Replace(token, "", StringComparison.Ordinal),
+                RegexOptions.IgnoreCase);
+
+            var lost = Enumerable.Range(0, CuratedPage.LocationPositiveControls.Length)
+                .Where(i => CuratedPage.ControlIsCaught(page, i)
+                         && !CuratedPage.ControlIsCaught(page, i, ablated))
+                .ToList();
+
+            Assert.True(lost.Count > 0,
+                $"removing the address token `{token.TrimStart('|')}` from the lexicon turns "
+                + "no positive control red, so nothing would notice if a later edit deleted "
+                + "it. Add a control that depends on this token ALONE.");
+        }
+    }
+
+    /// <summary>
     /// NARROWING <c>(?:the|your)</c> TO EITHER BRANCH MUST TURN A CONTROL RED.
     ///
     /// <para><b>FOUR</b> of the tokens in
@@ -769,9 +811,14 @@ public sealed class LocationObligationSweepTests
     /// <c>(?:the|your)</c> into three of WI-569's own tokens:
     /// <c>base of (?:the|your) (?:brain|skull)</c>,
     /// <c>(?:top|front|back) of (?:the|your) skull</c> and
-    /// <c>(?:top|back) of (?:the|your) head</c>. Two of those three are not in this
-    /// loop; <c>base of (?:the|your) (?:brain|skull)</c> is, and both of its branches
-    /// have a control of their own.</para>
+    /// <c>(?:top|back) of (?:the|your) head</c>. <b>All three are in this loop as of
+    /// WI-571</b>, and each branch has a control of its own. (Until then only
+    /// <c>base of (?:the|your) (?:brain|skull)</c> was, which is what the rest of this
+    /// docstring was written about — and a docstring left in the present tense after the
+    /// hole it describes is closed is how the next reader is told to go and close it
+    /// again. <c>/review</c> round 2 of WI-571 found this paragraph still saying "two of
+    /// those three are not in this loop" thirty lines above the code that puts them
+    /// there.)</para>
     ///
     /// <para><b>AND FOUR REVIEW ROUNDS IN A ROW FAILED ON THIS ONE NOTE'S ARITHMETIC,
     /// WHICH IS THE FINDING.</b> Round 9 wrote <i>"the remaining five branches match
@@ -791,10 +838,15 @@ public sealed class LocationObligationSweepTests
     ///   <item><b>TWO WAYS A BRANCH GOES UNWATCHED, and the second is the
     ///     non-obvious one.</b> Either no control exercises it — or a control does, and
     ///     that control carries a SECOND address token which masks it, so narrowing the
-    ///     first cannot show a loss. <c>(?:top|front|back) of the skull</c> is masked
-    ///     inside its control by <c>floor</c>; <c>(?:top|back) of your head</c> by
-    ///     <c>cliv</c>. Closing either means writing a control that carries exactly
-    ///     ONE address, or de-masking the existing one.</item>
+    ///     first cannot show a loss. <b>That was the state of both remaining tokens
+    ///     until WI-571 closed them</b>: <c>(?:top|front|back) of the skull</c> was
+    ///     masked inside its control by <c>\bfloor\b</c>, and
+    ///     <c>(?:top|back) of your head</c> by <c>\bcliv</c>. Each was closed the only
+    ///     way it can be closed — a control carrying exactly ONE address — and that is
+    ///     still the fix for the next one. (The two regex escapes above were LITERAL
+    ///     BACKSPACE CHARACTERS until WI-571's /review round 2 went looking for this
+    ///     paragraph and could not match it: a `\b` written through a shell heredoc
+    ///     arrives as 0x08. §12.19's heredoc trap, sitting in a shipped file.)</item>
     ///   <item><b>A DEAD BRANCH IS NOT A TRIMMABLE ONE HERE.</b> Some branches match
     ///     nothing in the corpus today and are kept prospectively, because unlike a dead
     ///     ADDRESS TOKEN a dead branch of a live token costs nothing. Do not read
@@ -802,15 +854,23 @@ public sealed class LocationObligationSweepTests
     ///     why that asymmetry exists.</item>
     /// </list>
     ///
-    /// <para><b>The one branch that was worth acting on rather than recording</b> was
+    /// <para><b>The one branch WI-570 acted on rather than recording</b> was
     /// <c>base of (?:the|your) (?:brain|skull)</c>'s <c>the</c> form: it is in
     /// <c>blocks/mechanism.md</c>'s <i>"Behind the eyes, at the base of the brain"</i>,
     /// so it reaches all eighteen composing hubs, and it had no control at all while its
     /// sibling branch had one. It got one, and the token joined this loop. <b>Eighteen
-    /// hubs is not a residual.</b> The rest is §12.18's stop rule, and what generalises
-    /// is one sentence: <b>a branch can be alive in the corpus, load-bearing, and still
-    /// invisible to ablation, because ablation measures the CONTROLS and not the
-    /// pages.</b></para>
+    /// hubs is not a residual.</b> What generalises is one sentence: <b>a branch can be
+    /// alive in the corpus, load-bearing, and still invisible to ablation, because
+    /// ablation measures the CONTROLS and not the pages.</b></para>
+    ///
+    /// <para><b>THE REST WAS §12.18's STOP RULE, AND WI-571 IS WHERE IT STOPPED BEING A
+    /// RESIDUAL.</b> The four remaining branches are closed, and there is no residual left
+    /// for this loop — which the <c>your</c>-count assertion below states as a computed
+    /// invariant rather than as a sentence anybody has to maintain. (This paragraph is
+    /// past tense on purpose: <c>/review</c> round 2 found three paragraphs of this
+    /// docstring still describing the open state in the present tense, thirty lines above
+    /// the code that closed it, which is how the next reader gets told to close it
+    /// again.)</para>
     ///
     /// <para>That the tokens were RIGHT was never in doubt. What was wrong was that
     /// the note claiming which wording they covered had quoted the wrong file, and the
@@ -837,12 +897,20 @@ public sealed class LocationObligationSweepTests
         // ROUND 11. `base of (?:the|your) (?:brain|skull)` is not in the ADDED list,
         // but both its branches now have a control of their own, so it belongs in the
         // loop — and its `the` form is the widest-reach branch in the lexicon, on
-        // eighteen hubs through blocks/mechanism.md. The other two widened tokens stay
-        // out: see the summary for which of their branches are live, which are masked
-        // inside a control by a second address token, and why closing them is the next
-        // item's measurement.
+        // eighteen hubs through blocks/mechanism.md.
+        //
+        // AND THE LAST TWO WENT IN AT WI-571, WHICH IS WHERE §12.18's STOP RULE SENT
+        // THEM. §12.19 left them out because each was MASKED inside its only control by
+        // a second address token — `(?:top|front|back) of (?:the|your) skull` by
+        // `\bfloor\b`, `(?:top|back) of (?:the|your) head` by `\bcliv` — so narrowing
+        // either could not show a loss. Four controls carrying exactly ONE address each
+        // closed it (see the end of CuratedPage.LocationPositiveControls). Every
+        // `(?:the|your)` token in the lexicon is now in this loop, which is a fact this
+        // loop's own membership assertion below states rather than a number in prose.
         var watched = CuratedPage.LocationAddressTokensAddedByWi570
             .Append(@"|base of (?:the|your) (?:brain|skull)")
+            .Append(@"|(?:top|front|back) of (?:the|your) skull")
+            .Append(@"|(?:top|back) of (?:the|your) head")
             .Where(t => t.Contains(both, StringComparison.Ordinal))
             .ToList();
 
@@ -852,8 +920,81 @@ public sealed class LocationObligationSweepTests
         // the widest-reach branch in the lexicon (eighteen hubs) out of watch — and the
         // suite would have stayed green, because a smaller iterated set simply asserts
         // less. A record that can shrink silently is not a record.
-        Assert.Equal(5, watched.Count);
+        Assert.Equal(7, watched.Count);
         Assert.Contains(@"|base of (?:the|your) (?:brain|skull)", watched);
+        Assert.Contains(@"|(?:top|front|back) of (?:the|your) skull", watched);
+        Assert.Contains(@"|(?:top|back) of (?:the|your) head", watched);
+
+        // AND THE SET IS NOW CLOSED, DERIVED RATHER THAN CLAIMED. §12.19 spent four
+        // review rounds getting a hand-kept census of these branches wrong, and its
+        // conclusion was that the census WAS the defect — a count in prose beside a
+        // count in code. So the completeness claim is computed off the lexicon itself:
+        // every `(?:the|your)` token in LocationAddress is in `watched`, and the day somebody
+        // widens ANOTHER determiner token this fails until its control exists. (It said "a
+        // twelfth token" until /review round 15, which corresponds to nothing in scope —
+        // `watched` holds 7 and the two added-token arrays hold 11 and 2 — inside the comment
+        // whose own argument is that this claim has to be computed rather than counted.)
+        // AND THE FIRST VERSION OF THIS CHECK COULD NOT WORK, which is worth one line:
+        // it split the lexicon on `|` to pull the tokens out, and `(?:the|your)` contains
+        // a literal `|`, so `[^|]*` cannot span the thing being looked for. What holds
+        // instead is to count OCCURRENCES on both sides — every `(?:the|your)` in the
+        // lexicon must sit inside a token this loop watches.
+        foreach (var token in watched)
+        {
+            Assert.Contains(token, CuratedPage.LocationAddress, StringComparison.Ordinal);
+        }
+
+        // AND IT COUNTS `your`, NOT THE LITERAL `(?:the|your)` — /review round 1 of WI-571.
+        // Keying the count to one SPELLING is a ban list in disguise: a later token written
+        // `(?:your|the)`, `(the|your)` or `(?:the|your|a)` adds an unwatched determiner
+        // branch and a check looking for `(?:the|your)` stays green, so the comment above
+        // would have been stronger than the code. `your` appears in this lexicon ONLY
+        // inside determiner alternations, which makes it the spelling-proof proxy: every
+        // occurrence must sit inside a token this loop watches.
+        // IgnoreCase, because /review round 2 pointed out the obvious: a token spelled
+        // `(?:the|Your)` would add an unwatched branch and a case-sensitive count would
+        // stay green. "Spelling-proof except for case" is not spelling-proof.
+        var inLexicon = Regex.Matches(CuratedPage.LocationAddress, "your",
+            RegexOptions.IgnoreCase).Count;
+        var inWatched = watched.Sum(t => Regex.Matches(t, "your",
+            RegexOptions.IgnoreCase).Count);
+        Assert.True(inLexicon == inWatched,
+            $"the address lexicon says `your` {inLexicon} times and this loop's tokens "
+            + $"account for {inWatched} of them, so at least one determiner alternation can "
+            + "be narrowed with the whole suite staying green — which is exactly what was "
+            + "true of eighteen composed pages before /review round 11 measured the "
+            + "branches one at a time. Give the new token a control carrying exactly ONE "
+            + "address and add it to the Append chain above.");
+
+        // AND THE "EXACTLY ONE ADDRESS" PROPERTY OF WI-571's NEW CONTROLS IS ASSERTED
+        // RATHER THAN CLAIMED IN A COMMENT BESIDE THEM (/review round 1). It is the
+        // load-bearing property for everything below — a control carrying two address
+        // tokens masks both and proves neither — and §12.19 paid four review rounds for the
+        // rule that a count in prose beside a count in code is the defect, not the record.
+        // NAMED, NOT SLICED — /review round 2. `LocationPositiveControls[^6..]` is correct
+        // today and silently wrong tomorrow: a thirty-seventh control appended at the end
+        // drops the first of these out of the check, and any reorder covers a different
+        // six. **A positional slice is a claim about an array's order that the array does
+        // not make.** Each is asserted to still be IN the list, so a rename fails loudly
+        // rather than quietly testing nothing.
+        string[] singleAddressControls =
+        [
+            "A tumor at the top of the skull is harder to take out.",
+            "A tumor at the top of your skull has a poor outcome.",
+            "A tumor at the back of the head is harder to take out.",
+            "A tumor at the top of your head has a poor outcome.",
+            "A tumor in the midbrain is harder to take out.",
+            "A tumor in the tectum has a poor outcome.",
+        ];
+
+        var address = new Regex(CuratedPage.LocationAddress, RegexOptions.IgnoreCase);
+        var difficulty = new Regex(CuratedPage.LocationDifficulty, RegexOptions.IgnoreCase);
+        foreach (var control in singleAddressControls)
+        {
+            Assert.Contains(control, CuratedPage.LocationPositiveControls);
+            Assert.Equal(1, address.Matches(control).Count);
+            Assert.Equal(1, difficulty.Matches(control).Count);
+        }
 
         foreach (var token in watched)
         {
@@ -899,12 +1040,30 @@ public sealed class LocationObligationSweepTests
 
         CuratedPage.AssertNoPlaceIsRankedAgainstAnother(
             PlainOfPage("where-your-tumor-is.md"), "/where-your-tumor-is",
-            // 55 against a measured 61, and DELIBERATELY not one-under: the
+            // 66 against a measured 72, and DELIBERATELY not one-under: the
             // region COUNT is already pinned exactly, by
             // WhereYourTumorIsPageTests' Assert.Equal(9, entries.Count). This
             // floor is here to catch the lexicon collapsing, not to re-pin a
             // number another file owns.
-            minAddresses: 55,
+            // WAS 55 against 61. WI-571 added `## When the word you were given is a
+            // place`, and the floor moved with the measurement rather than being left
+            // where it was — a floor that stops tracking the page is a floor that stops
+            // catching anything.
+            //
+            // RE-MEASURED THREE TIMES, WHICH IS THE POINT AND NOT THE EMBARRASSMENT.
+            // 61 before the item; 65 once the section landed; 72 once /review round 1
+            // added `\bmidbrain\b` and `\btect` to the lexicon, because those are the two
+            // report words the new section uses -- and only `\btect` was new to the corpus:
+            // `\bmidbrain\b` has been in this page's reader text since WI-567 and the
+            // lexicon never had it. (A seventh copy of "the corpus had never said either"
+            // survived round 7's fix of six, in this same file. /review round 8.)
+            // Each number came from failing this assertion on purpose and reading the
+            // count out of its own message. (An earlier version of this note said the
+            // section "brought four more address words with it". /review counted them:
+            // some of the new matches are URL FRAGMENTS — `#brainstem`, `#ventricles` —
+            // because PlainOfPage keeps link targets. The delta was right and the account
+            // of it was not.)
+            minAddresses: 66,
             new CuratedPage.Kept(
                 "When it is somewhere that cannot be taken out, such as the brain stem",
                 "§12.18's one recorded false positive, and it is correct ACS-sourced "
