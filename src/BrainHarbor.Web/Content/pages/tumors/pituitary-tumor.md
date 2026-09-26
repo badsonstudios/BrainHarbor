@@ -474,6 +474,10 @@ so you end up with too little. Both happen, and they feel completely different.
 That three-way split is why two people with the same diagnosis can describe
 nothing alike.
 
+**The place rather than the name.** [Where your tumor is, and what that
+changes](/where-your-tumor-is#pituitary) works from the spot on the scan. The
+same page has a section on why a scan result takes time to turn into a plan.
+
 ## What symptoms does it cause?
 
 **They fall into the three groups above: pressure on sight, pressure on the

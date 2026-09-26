@@ -830,6 +830,13 @@ differently. Treat them as rough shares.
 itself.** That is the whole of it. A tumor this size in a roomy place might cause
 nothing for years. The same tumor against a nerve causes trouble early.
 
+**Looking it up by place instead of by name.** [Where your tumor is, and what
+that changes](/where-your-tumor-is) starts from the spot rather than the
+diagnosis. Two parts of it are written for the head: its list of places, and the
+signs it says to call about. It says so both times. The rest of it works wherever
+your tumor is. If yours is at the base of your skull, the entry called the floor
+of the skull is the one that names the word your report may use.
+
 ### At the base of the skull
 
 **The bone it grows in sits in a crowded place.** It is called the clivus. It

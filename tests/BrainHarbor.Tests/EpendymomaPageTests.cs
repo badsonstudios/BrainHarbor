@@ -146,6 +146,32 @@ public sealed class EpendymomaPageContentTests
         }
     }
 
+    /// <summary>
+    /// THE MIDDLE LOCATION ENTRY TEACHES THE WORD A REPORT USES FOR ITS PLACE, which is
+    /// content-pipeline §12.18 part 2 and is WI-570's own one-line contribution to this
+    /// page's prose.
+    ///
+    /// <para>The bullet ABOVE it teaches <i>posterior fossa</i>; this one taught nothing.
+    /// NOT "each entry": the bullet BELOW teaches <i>myxopapillary</i>, which is a subtype
+    /// name and not a report word for a place — §12.19 retired that claim explicitly (a
+    /// justification deserves the same check as a claim) and the first draft of this test
+    /// re-made it.</para>
+    ///
+    /// <para>Its own fact rather than a line inside the ordering test, where /review round
+    /// 11 found it: a failure there reports an ordering problem, and deleting the ordering
+    /// test would drop the pin with it. Another test in this class asserts the tooltip is ABSENT (the page suppresses it page-wide and
+    /// defines the word by apposition instead); nothing asserted the word itself until the
+    /// round that pointed out the item had not pinned its own contribution.</para>
+    /// </summary>
+    [Fact]
+    public void TheMiddleLocationEntryTeachesItsReportWord()
+    {
+        var section = CuratedPage.Flatten(Section(LocationHeading));
+
+        Assert.Contains("Your report may call this **supratentorial**", section,
+            StringComparison.Ordinal);
+    }
+
     [Fact]
     public void TheEscalationTiersMatchTheSiblingPagesTheySendPeopleTo() =>
         CuratedPage.AssertEscalationTiers(Page, Slug, SymptomHeading);
@@ -551,8 +577,25 @@ public sealed class EpendymomaPageContentTests
         Assert.Contains("Recent reviews say it can be an option for adults and for children", section, StringComparison.Ordinal);
         Assert.Contains("The CERN Foundation says someone who has had radiation before may not be able to have more", section, StringComparison.Ordinal);
 
-        // StatPearls, split by site (/review round 1 nit).
-        Assert.Contains("After a tumor at the back of the brain, it tends to come back in the same place", section, StringComparison.Ordinal);
+        // STATPEARLS' RECURRENCE PATTERN, AND WI-570 REVERSED HOW IT IS CARRIED.
+        // This line used to pin the claim SPLIT BY SITE — "After a tumor at the back
+        // of the brain, it tends to come back in the same place. After one higher up
+        // in the brain, it more often turns up somewhere else in the brain or spine"
+        // — which an earlier /review round asked for as a nit. content-pipeline
+        // §12.19 refuses it: two addresses, two answers, and the second is materially
+        // worse news, which is the location-keyed lookup Wave 6 forbids whatever its
+        // evidence. THE SOURCE IS NOT IN DOUBT and is not what changed; StatPearls
+        // really does say posterior fossa ependymomas "recur locally, whereas
+        // supratentorial ependymomas tend to be disseminated at relapse". What
+        // changed is that a true sentence can still be the forbidden artifact.
+        //
+        // The territory is kept, so no reader loses the fact that it can turn up in
+        // the spine. The per-address answer is gone, and the DoesNotContain below is
+        // what stops the nit being re-applied by somebody reading the old round.
+        Assert.Contains("It can come back in the place it started, or somewhere else in the brain or spine", section, StringComparison.Ordinal);
+        Assert.Contains("Both of those happen", section, StringComparison.Ordinal);
+        Assert.DoesNotContain("tends to come back in the same place", section, StringComparison.Ordinal);
+        Assert.DoesNotContain("more often turns up somewhere else", section, StringComparison.Ordinal);
 
         // The radiation page's second-course section describes a gap of "around a year
         // or more", which is not what these sources say (WI-535).

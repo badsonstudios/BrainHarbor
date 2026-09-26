@@ -1317,234 +1317,54 @@ public sealed class MeningiomaPageContentTests
             Assert.DoesNotContain(deleted, Plain, StringComparison.OrdinalIgnoreCase);
         }
 
-        // AND THE PROPERTY, WHICH IS WHAT ACTUALLY GENERALISES: no window of four
-        // sentences may carry an ADDRESS word and difficulty-or-outcome vocabulary
-        // together. That window is the row itself.
-        const string address =
-            @"skull base|convexity|parasagittal|falx|sphenoid|olfactory groove|tuberculum"
-            + @"|suprasellar|posterior fossa|petroclival|intraventricular|\bfloor\b"
-            + @"|on the surface|top of the skull|spinal cord|fluid spaces"
-            + @"|deep in the middle|midline|behind the eye|wing of bone"
-            + @"|base of the (?:brain|skull)"
-            // THE PLAIN WORDS (round 4). The list above is the REPORT vocabulary, and
-            // this page's editorial rule is plain words first — so the guard was
-            // blind to the half of each entry a reader meets.
-            // `\bsellar\b` matched neither "sella" nor "sellae" — the page teaches
-            // "tuberculum sellae" and the guard could not see it (round 7).
-            + @"|pituitary|brain ?stem|\bsell(?:a|ae|ar)\b|optic nerve|perioptic|\bspine\b"
-            + @"|ventricle|cavernous sinus|foramen magnum|between the two halves"
-            + @"|smelling nerves|front of the skull"
-            // THE COMPARTMENTS AND LOBES (round 5). Six more planted sentences got
-            // through on names this page does not itself use — "over the temporal
-            // lobe", "on the tentorium", "at the cerebellopontine angle". A guard
-            // that only knows the vocabulary the page already has cannot catch the
-            // sentence somebody adds next.
-            + @"|temporal|frontal|parietal|occipital|\blobe|cerebell|tentori|\bcliv"
-            + @"|\borbit|cerebellopontine|crown of the head|back of your head"
-            // Four more addresses nobody had listed (round 9), including the page's
-            // own OLD wording for the sphenoid ridge.
-            + @"|optic chiasm|sagittal sinus|internal auditory canal|pineal"
-            + @"|back of the skull|ridge behind the eyes"
-            + @"|top of your head"
-            // THE SKULL-BASE SUB-SITES (round 6). "jugular foramen", "petrous apex"
-            // and "anterior clinoid" all walked through, while "foramen magnum" was
-            // pinned as a two-word literal. Mayfield's refused paragraph names optic,
-            // cavernous sinus and skull base; the finer names a report uses for that
-            // floor are the ones a future edit reaches for.
-            + @"|\bforamen\b|petrous|clinoid|\bplanum\b|falcine|parasellar"
-            + @"|jugular|torcul";
-        const string loaded =
-            @"harder to|more difficult|difficult to (?:remove|take out|reach|get at)"
-            + @"|costs? you|comes? out whole|completely remov|complication|recurr"
-            + @"|comes? back|grows? back|second operation|second look|straightforward"
-            + @"|higher rate|easier to|riskier|risky|more risk|dangerous|safer|safest"
-            // "worse" is QUALIFIED, not banned outright: the spinal entry says back
-            // pain is "typically worse at night", which is a symptom and not a rank.
-            // A bare \bworse\b fired on it — TRUE OF v4, BEFORE THE BACK-REFERENCE
-            // GATE. Re-measured at round 8, bare \bworse\b now costs zero false
-            // positives here, because that sentence carries no in-sentence address
-            // and no anaphor. The qualification is kept and the DATE is on it,
-            // because the rationale is what WI-570 copies and it is true of that
-            // item's pages only if they re-measure. §12.17 — a ban list that forbids
-            // the correct shape is worse than no ban list, and a rationale that
-            // stopped being true is how one gets copied.
-            + @"|worse (?:outlook|outcome|place|spot|odds|chance|prospect)"
-            + @"|worse than|worse for|worse off|\bworst\b|do better|does better"
-            + @"|better than|outlook|\boutcome|survival|prognosis|bigger operation"
-            + @"|takes longer|trick|all comes out|all come out|more serious"
-            + @"|less serious|rarely all"
-            // Near-neighbours of entries already here (round 4): "hard to reach"
-            // beside "harder to", "the easy ones" beside "easier to".
-            + @"|cur(?:e|es|ed|able)|hard to (?:remove|take out|reach|get at)"
-            + @"|cannot\s+(?:\w+\s+){0,2}(?:be removed|come out|be taken out)"
-            + @"|how well .{0,20}\bdo\b|\beasy\b|\bfatal\b|deadly|life-threatening"
-            + @"|higher chance"
-            // The HARM and OUTCOME verbs (round 5). Eight more planted sentences got
-            // through because every earlier version described an operation and none
-            // described what happens to the reader.
-            + @"|impossible|live longer|live shorter|leaves? (?:more |anything )?behind"
-            + @"|permanent damage|disabl|\bdie\b|\bdeath|mortality"
-            + @"|take your (?:sight|hearing|speech)|needs more surgery|greater chance"
-            // QUALIFIED "risk" AND "damage" (round 7). The exclusion note below
-            // used to cover both words whole, and sixteen fresh attacks walked
-            // through on "carries a higher risk", "the risk is greater for", "does
-            // more damage" -- plus a family of comparatives nothing banned at all.
-            // §12.18's own rule about "worse" applies here and had not been applied.
-            + @"|(?:higher|greater|added|extra|more) risk|risk (?:is|was) (?:higher|greater)"
-            + @"|more damage|lasting damage|\bkinder\b|\bgentler\b"
-            + @"|smaller operation than|less of a (?:job|operation)|simpler"
-            + @"|longer recovery"
-            // NOMINALISATIONS, LITOTES, ADVICE AND IDIOM (round 8). Seventeen of
-            // twenty-four fresh attacks walked through on shapes no earlier version
-            // had reached for: "the removal rate", "no picnic", "if yours is on the
-            // skull base, expect a longer stay", "asks more of a surgeon", "a
-            // brighter future", "sets the ceiling on what surgery can achieve".
-            // BARE `harder` AND `easier` SUBSUME the four qualified entries above and
-            // cost nothing — the in-sentence address requirement was doing the
-            // protecting all along, not the qualification.
-            + @"|\bharder\b|\bhardest\b|\beasier\b|\btough|removal rate|resection rate"
-            + @"|\bthe odds\b"
-            + @"|what to expect|how things go|longer stay|asks? more of|forgiving"
-            + @"|brighter|no picnic|nothing to sneeze at|drag on|\bdemands?\b"
-            + @"|\bceiling\b|not an easy"
-            // ONE-WORD NEIGHBOURS AGAIN (round 9). Twenty more fresh sentences,
-            // eighteen passed, and almost all of them sat one word from an entry
-            // already here: "bigger chance" beside "higher chance", "bigger job"
-            // beside "bigger operation", "more than one operation" beside "second
-            // operation", "sets a limit" beside "ceiling". Two carried NO loaded word
-            // at all — "the surgeon can usually only get part of it" and "a partial
-            // removal is the rule on the floor of the skull" — which is Mayfield's
-            // ranking in plain English. Measured at zero false positives on
-            // /tumors/meningioma AND /treatments/craniotomy.
-            + @"|(?:bigger|lower|better|smaller) chance|\bdeficit|\bstroke\b|bigger job"
-            + @"|more than one operation|only (?:get|take|remove) part|rougher"
-            + @"|sets? a limit|in one piece|full clearance|partial removal";
-
-        // AND THREE WORDS DELIBERATELY LEFT OUT, recorded because an undocumented
-        // hole reads like an oversight to the next person. BARE "risk", "damage" and
-        // "harm" are too noisy on THIS page to ban — "risk" appears seven times
-        // page-wide, five of them in the hormone section, about medicines. The
-        // QUALIFIED forms are banned above, which is the round-7 correction: the
-        // first version of this note excluded the words whole and sixteen attacks
-        // walked through. The cost is two sentences the guard
-        // cannot see: "wherever the tumor is right up against something a surgeon
-        // will not risk", and "against the risk of the operation itself". Both
-        // sit within four sentences of an address, both are correct prose, and both
-        // would have to be re-checked by hand if the exclusion is ever lifted.
-
-        // The scan, as a local function, so the SAME code runs over the page and over
-        // the page with a defect planted in it.
-        static List<string> RowsIn(string text)
-        {
-            var sentences = CuratedPage.SentencesOf(text);
-            var rows = new List<string>();
-
-            for (var i = 0; i < sentences.Length; i++)
-            {
-                if (!Regex.IsMatch(sentences[i], loaded, RegexOptions.IgnoreCase))
-                {
-                    continue;
-                }
-
-                // THE WHOLE ROW IN ONE SENTENCE — the ordinary case.
-                if (Regex.IsMatch(sentences[i], address, RegexOptions.IgnoreCase))
-                {
-                    rows.Add(sentences[i]);
-                    continue;
-                }
-
-                // A ROW SPLIT ACROSS SENTENCES HAS TO CARRY A BACK-REFERENCE, and
-                // requiring one is what makes the multi-sentence window safe.
-                //
-                // Round 3 closed the two-sentence split; round 4 walked through the
-                // FOUR-sentence one using this page's own convexity bullet. Round 5
-                // widened the window to four AND widened the lexicon, and the two
-                // together produced a FALSE POSITIVE on the page's own "Where the
-                // whole tumor cannot safely come out, the guideline's advice is to
-                // plan the smaller operation" — a general principle standing three
-                // sentences after a paragraph that mentions the floor of the skull.
-                // Proximity alone cannot tell those apart. An anaphor can: "Those are
-                // harder to take out completely" is a row, and a sentence with no
-                // back-reference is not talking about the address three sentences up.
-                //
-                // FOUR SENTENCES, and a fixed window rather than "back to the start of
-                // the bullet" — that was tried first and was worse, because the text
-                // is flattened so nothing marks where a bullet ENDS, and a pointer
-                // that never resets gave every later sentence a window reaching back
-                // to the last address entry. It fired nineteen times.
-                // THE DEICTICS AND THE BARE PRONOUNS ARE IN THE LIST, and leaving
-                // them out was /review round 6's blocker. `SentencesOf` splits on
-                // sentence ends, so every bolded bullet LEAD on this page is its own
-                // sentence — and the sentence after it refers back with "here",
-                // "there", "it" or "one", never with "those". Six of ten fresh
-                // attacks walked through on the page's own native format, which is
-                // also the format WI-570 copies onto nine more hubs.
-                if (!Regex.IsMatch(sentences[i],
-                        @"\b(?:those|these|that kind|that sort|the ones|ones there"
-                        + @"|they|them|here|there|it|one|such)\b",
-                        RegexOptions.IgnoreCase))
-                {
-                    continue;
-                }
-
-                var window = string.Join(" ", sentences[Math.Max(0, i - 3)..(i + 1)]);
-                if (Regex.IsMatch(window, address, RegexOptions.IgnoreCase))
-                {
-                    rows.Add(window);
-                }
-            }
-
-            return rows;
-        }
-
-        Assert.Empty(RowsIn(Plain));
-
-        // THE POSITIVE CONTROLS. Each of these is a sentence of the banned property
-        // that an EARLIER version of this guard let through, and each is here because
-        // a guard that has only ever been green proves nothing. If a later edit
-        // narrows the lexicon, these go red before a real defect has to.
-        foreach (var planted in new[]
-                 {
-                     "A meningioma on the skull base is harder to take out completely.",
-                     "A meningioma on the skull base has a poor outcome.",
-                     "People with a convexity meningioma live longer than people with a petroclival one.",
-                     "A meningioma over the temporal lobe usually comes out whole.",
-                     "Meningiomas at the cerebellopontine angle rarely all come out.",
-                     "A skull base meningioma cannot safely come out.",
-                     "An intraventricular meningioma carries a much greater chance of permanent damage.",
-                     "A meningioma near the brainstem is harder to take out.",
-                     "Surgery on the floor of the skull leaves more behind.",
-                     "A clival meningioma is more dangerous than one at the back of your head.",
-                 })
-        {
-            Assert.NotEmpty(RowsIn(Plain + " " + planted));
-        }
-
-        // AND THE BULLET-LEAD AND DEICTIC CONTROLS, the shapes round 6 found and
-        // which the ten above have no member of. The page's own format puts the
-        // address in a bolded lead that is its own sentence, and what follows refers
-        // back with "there" or "here".
-        Assert.NotEmpty(RowsIn(
-            Plain + " - On the floor at the front of the skull. Surgery there leaves more behind."));
-        Assert.NotEmpty(RowsIn(
-            Plain + " The umbrella word is skull base. Tumors here are harder to take out completely."));
-
-        // AND THE SPLIT-ACROSS-SENTENCES CONTROL, because that is the hole rounds 3
-        // and 4 each left open in a different width.
-        Assert.NotEmpty(RowsIn(
-            Plain
-            + " On the floor of the skull, the nerves run through."
-            + " Keeping those working is a major concern."
-            + " Those are harder to take out completely."));
+        // AND THE PROPERTY, WHICH IS WHAT ACTUALLY GENERALISES — AND IT NO LONGER
+        // LIVES HERE. WI-569 built the lexicon, the four-sentence window, the
+        // back-reference gate and the positive controls in this file over ten review
+        // rounds. §12.18 closes by saying WI-570 is where it gets promoted, "because
+        // that item needs it on nine hubs at once", and gives the reason in the same
+        // breath: when two guards test one property in two files, the newer one is
+        // not automatically the stronger one, and a lexicon that only ever grows in
+        // one file protects one page.
+        //
+        // So the property, the window, the gate, the lexicons and the
+        // positive controls are now CuratedPage.AssertNoPlaceIsRankedAgainstAnother,
+        // asserted over all twenty-three tumor hubs by LocationObligationSweepTests
+        // and over this page here. The narrative of the ten rounds stayed above,
+        // because it is the argument for the shape and it was written against this
+        // page's own prose.
+        //
+        // WI-570 CHANGED THREE THINGS IN IT, EACH MEASURED BEFORE IT WAS TAKEN.
+        // The address lexicon reads "the OR your" on WI-569's own skull and head tokens
+        // — the corpus is written in the second person and /tumors/chordoma's entire
+        // skull-base subsection was invisible for want of one word — and "worst" is
+        // qualified the way "worse" already was, because bare \bworst\b fires on
+        // /tumors/ependymoma's "Headaches, often worst on waking up". Both cost zero
+        // false positives here. THIS PAGE IS THE ONE THAT PROVES THAT: WI-569
+        // measured it at zero rows, and a widening that put one back would be caught
+        // by this very call.
+        // FORTY, against a measured 42 -- and lower than the 56 the corpus sweep
+        // measures on the same page, because THIS call runs on the UNCOMPOSED page
+        // while LocationObligationSweepTests runs it composed. Both are wanted:
+        // composed is what the reader meets (§12.18's give-away lesson), uncomposed
+        // is what this page is answerable for. The 14-word gap between them is the
+        // shared blocks' own address vocabulary -- THIRTEEN in [MECHANISM] and one in
+        // [CAUSES] -- and noticing that a block carries thirteen address words onto
+        // eighteen hubs is worth more than either floor. (/review rounds 5 and 6: the
+        // first version of this note said 57 and fifteen, and the second credited all
+        // fourteen to MECHANISM. Re-measure a number when the lexicon under it moves;
+        // WI-570 moved it four times.)
+        CuratedPage.AssertNoPlaceIsRankedAgainstAnother(
+            Plain, "/tumors/meningioma", minAddresses: 40);
 
         // AND THE FLOORS, because a property guard is green over a page it never read
         // (§12.17). The vocabulary was actually looked for, the page is still the
         // page, and the sentences the bans exist to stand over are present.
-        Assert.True(Regex.Matches(Plain, loaded, RegexOptions.IgnoreCase).Count >= 8,
-            "the loaded vocabulary appears nowhere on the page, so this guard had "
-            + "nothing to judge");
-        Assert.True(Regex.Matches(Plain, address, RegexOptions.IgnoreCase).Count >= 15,
-            "the address vocabulary has gone, so the co-occurrence ban has nothing to fire on");
+        // THE TWO VOCABULARY FLOORS ARE NOT REPEATED HERE. The call above asserts
+        // both — difficulty >= 8 for every caller, addresses >= the number passed in —
+        // and a local copy with the same numbers is two things to keep in step, in
+        // the file whose own subject is not keeping two copies of a guard in step.
+        // What stays below is what is SPECIFIC to this page: the sentences the bans
+        // exist to stand over, and that the page is still the page.
         Assert.Contains("no list here of good spots and bad ones", Plain, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("neither is a place being ranked", Plain, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("genuinely difficult to remove", Plain, StringComparison.OrdinalIgnoreCase);

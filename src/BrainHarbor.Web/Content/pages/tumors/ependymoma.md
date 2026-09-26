@@ -252,6 +252,72 @@ sources:
     title: "Ependymoma Guide | CERN Foundation"
     accessed: 2026-09-15
     # "The focus audience is newly diagnosed patients, care partners, and advocates."
+# WI-570: TWO PLACES ON THIS PAGE RANKED ONE ADDRESS AGAINST ANOTHER, and the
+# second one was found by /review rather than by the sweep, because the sweep
+# could only see half of it.
+#
+# THE SECOND, in "If it comes back, or changes": "After a tumor at the back of
+# the brain, it tends to come back in the same place. After one higher up in the
+# brain, it more often turns up somewhere else in the brain or spine." Two
+# addresses, two answers, and the second is materially worse news than the
+# first. The claim is REAL and is in this page's own sources -- StatPearls has
+# "Posterior fossa ependymomas tend to recur locally, whereas supratentorial
+# ependymomas tend to be disseminated at relapse" -- which is exactly why it is
+# recorded here rather than quietly dropped: a true sentence can still be the
+# forbidden artifact. §12.18's line is about what an address entry may CARRY,
+# not about whether the claim is sourced, and Wave 6 bans the location-keyed
+# lookup whatever its evidence.
+# WHAT REPLACED IT KEEPS THE INFORMATION AND DROPS THE LOOKUP: "It can come
+# back in the place it started, or somewhere else in the brain or spine. Both of
+# those happen." Every reader of this page gets the same answer, which is the
+# §12.19 row test passing rather than being argued around.
+# AND THE HALF THE GUARD COULD NOT SEE IS THE LESSON. The first sentence
+# carried "come back" plus an address and fired; the second carried no
+# difficulty word at all and was invisible. A property guard standing over one
+# sentence of a pair is not standing over the pair.
+#
+# WI-570: ONE SENTENCE DELETED FROM THE OUTLOOK GATE, and it is the only
+# defect the sweep found on its own. (It ran over all twenty-three tumor hubs;
+# nine was the backlog's page scope, not the sweep's.) It read "Tumors in the spinal cord in
+# adults tend to do better than tumors at the back of the brain in young
+# children", and it is the shape content-pipeline §12.18 bans: two addresses
+# ranked against each other, so a reader looks their own up and reads their
+# outlook off it. The Wave 6 preamble forbids it twice over, because it is
+# also a PROGNOSIS claim keyed to a place. It was not even a clean location
+# claim -- it carried AGE as a second variable inside the same comparison,
+# so neither half could be checked against the other.
+# NOTHING WAS LOST BY IT. The sentence two lines above already keys the same
+# material to the FACTORS this tumor's own sources name -- how much came out,
+# how young the child is, the gene result -- which is the form §12.18 asks
+# for, and it is sourced. No source was dropped; no figure was carried.
+# WHAT WAS KEPT, and why -- four because the sweep flagged them, one because it
+# cannot see it at all -- because a silent
+# allowance reads like an oversight (§12.19):
+# - "It was moved because it comes back about as often as other ependymomas
+#   in the spine" is the history of a WHO regrade, and it REFUSES to rank --
+#   it says this kind behaves like its neighbours at the same address.
+# - "It can come back in the place it started, or somewhere else in the brain
+#   or spine" is what replaced the deleted pair. It names the whole territory
+#   instead of handing two addresses two answers, so every reader of this page
+#   gets the same one. It reaches the scan only because "spine" is in the
+#   territory it names.
+# - "Some ependymomas can be cured that way, when all of it can be taken
+#   out" is keyed to EXTENT, not to a place. The sweep reaches it only
+#   because the short version names two addresses three sentences earlier.
+# - "It can also come back, even years later, so the scans go on for a long
+#   time" is true of every ependymoma on this page at any address -- it is the
+#   argument for long follow-up. It is listed here because /review found it
+#   being silenced by the reason written for the sentence above it, back when
+#   an allowance was matched against the four-sentence window rather than
+#   against the sentence that triggered the scan.
+# - "That is not always possible, because of where it sits. When some has to
+#   be left behind, it is much harder to cure." The FIRST sentence carries
+#   neither an address nor a difficulty word; the difficulty is in the SECOND,
+#   which carries no place. Split that way the pair is invisible to the scan
+#   from both ends, and it is kept: it is keyed to EXTENT, which is this
+#   tumor's factor, and it names no address for a reader to look up. This is
+#   the same "read the sentences either side" lesson that the deleted
+#   recurrence pair taught, landing on a pair that is CORRECT.
 reviewed: 2026-09-15
 review_due: 2027-03-15
 disclaimers: [medical]
@@ -336,7 +402,8 @@ notice**.
   !%posterior fossa%**posterior fossa**. It holds the cerebellum, which helps with
   balance, and the brain stem. Most ependymomas in children are here.
 - **Higher up in the brain.** Here it is more likely to cause seizures, or
-  weakness on one side of the body.
+  weakness on one side of the body. Your report may call this
+  **supratentorial**.
 - **In the spinal cord.** Most ependymomas in adults are here. The kind called
   myxopapillary grows at the very bottom end of the cord.
 
@@ -545,9 +612,8 @@ the answer.
 
 ## If it comes back, or changes
 
-After a tumor at the back of the brain, it tends to come back in the same place.
-After one higher up in the brain, it more often turns up somewhere else in the
-brain or spine.
+It can come back in the place it started, or somewhere else in the brain or
+spine. Both of those happen.
 
 There are still choices. Your team may talk about **surgery again**, radiation
 again, chemotherapy, or a clinical trial.
@@ -590,9 +656,8 @@ not a prediction about any one person.
 With this tumor the kind matters a lot. The outlook tends to be harder when the
 tumor could not all be taken out, when the child is younger, or with certain
 gene results. It is also usually harder once it has come back after surgery and
-radiation. Tumors in the spinal cord in adults tend to do better than tumors at
-the back of the brain in young children. And a median cannot show you the people
-who do far better than the middle.
+radiation. And a median cannot show you the people who do far better than the
+middle.
 
 Your own team knows your situation, and a page written for everybody does not.
 They can talk it through with you whenever you want to.
