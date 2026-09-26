@@ -497,6 +497,14 @@ different parts of the body at different heights. High up, the arms are
 involved. Lower down, it is the legs, the bladder and the bowel. The middle part
 of your back is the narrowest stretch of the whole canal.
 
+**Starting from where it sits, and two honest limits on that.** [Where your
+tumor is, and what that changes](/where-your-tumor-is) is arranged by place
+rather than by diagnosis. Its list of regions was written for the head. So
+was its list of urgent signs. The page says both of those out loud, and each
+time it sends a cord reader back here. What is left over is still yours. It
+says why it has no list of which places are dangerous. And it has the questions
+to put to a surgeon about a place.
+
 ## What symptoms does it cause?
 
 **Pain is usually the first thing people notice**, and it has a pattern worth
