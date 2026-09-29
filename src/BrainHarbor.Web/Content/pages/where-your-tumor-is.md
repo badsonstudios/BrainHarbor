@@ -82,10 +82,15 @@ sources:
     # lobes are "the largest of the four lobes"; "Broca's area, important in
     # language production, is found in the frontal lobe, usually on the left
     # side."; the temporal lobes are "located on each side of the brain at about
-    # ear level"; the parietal lobe is "the brain's primary sensory processing
-    # area" (phrasing checked against the page's own parietal section, which
-    # says these lobes "interpret simultaneously, signals received from other
-    # areas of the brain"); the occipital lobes are "located at the back of the
+    # ear level"; the parietal lobe's own AANS sentence is that these lobes "interpret
+    # simultaneously, signals received from other areas of the brain such as vision,
+    # hearing, motor, sensory and memory" -- NOT the phrase "the brain's primary sensory
+    # processing area", which stood inside this Verbatim: list until /review round 12 and
+    # appears NOWHERE on the AANS page. It was the note's own paraphrase, and the
+    # parenthetical beside it said so while the quotation marks said otherwise. **A
+    # paraphrase inside a "Verbatim:" list is a misattribution to a source a reader can
+    # follow** -- pre-existing from WI-567, found by the sweep this item ran, fixed here.
+    # The occipital lobes are "located at the back of the
     # brain and enable humans to receive and process visual information"; the
     # cerebellum is "located at the back of the brain beneath the occipital
     # lobes"; the brainstem "consists of three structures: the midbrain, pons
@@ -171,11 +176,15 @@ sources:
     # What it DOES support, and it carries the whole useful part of that claim:
     # "Hydrocephalus can serve as a determining factor for ICP management,
     # surgical approach, and the decision to deal first with either
-    # hydrocephalus or the tumor." Plus the narrow-channel point, on pineal
+    # hydrocephalus or the tumor" -- the paper's full stop follows "[ 49 ]", so a
+    # quotation ending in one matches
+    # nothing (/review round 12, the reference-marker case again). Plus the narrow-channel
+    # point, on pineal
     # region tumors: "hydrocephalus occurs due to aqueductal compression."
     # Already a trusted corpus source in blocks/mechanism.md.
     # NOT USED, deliberately: "TAE is more common with frontal and temporal
-    # tumors and less common with occipital and infratentorial tumors." That is
+    # tumors and less common with occipital and infratentorial tumors" -- again stopping
+    # before the paper's "[ 51 , 52 ]" (/review round 12). That is
     # a location-keyed risk statement, which is the one thing every Wave 6 item
     # is forbidden to publish, and it is clinician level besides.
   - url: https://europepmc.org/article/MED/40397319
@@ -204,6 +213,291 @@ sources:
     # The SECOND OPINION conclusion that follows from it is ROUTED, not written
     # again: /tumors/all-brain-tumors already says "asking another team what
     # they would do is an ordinary thing to do".
+  # ---- WI-571: the tumors whose only name is a location ----
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11922996/
+    title: "Imoto et al: Tectal glioma - clinical, radiological, and pathological features, and the importance of molecular analysis (Brain Tumor Pathology)"
+    accessed: 2026-09-26
+    # Open access, curled and read live with work_files/wi571/totext.py rather than
+    # taken from the research dossier that named it. The source for WHERE the word
+    # points. Verbatim, stopping before the reference marker: "Tectal glioma (TG) is a rare
+    # glioma originating in the dorsal part of the midbrain, consisting of the superior and
+    # inferior colliculi, occurring predominantly in children" -- the paper's full stop
+    # follows "[ 8 , 12 ]", so a quotation ending in one matches nothing (/review round 11).
+    # AND THE COHORT, which is what the page's "in the small group one study followed" rests
+    # on -- recorded at /review round 10, because "small group" had no measurement behind it
+    # on a page whose standard is a verbatim quote beside every used claim. Verbatim: "Six
+    # cases were identified"; "The median age at diagnosis was 30.5"; "two of the six
+    # patients were pediatric cases".
+    # AND A TRAP WORTH MORE THAN THIS ITEM, found by failing this note's own grep twice:
+    # THE FETCHED TEXT USES NON-BREAKING SPACES BETWEEN A NUMBER AND ITS UNIT, and an EN DASH
+    # in the range. The source reads 30.5<U+00A0>years and 6<U+2013>45<U+00A0>years, so
+    # "30.5 years" and "6-45" typed with an ordinary space and a hyphen match NOTHING. Every
+    # "Verbatim:" quotation in this corpus that spans a number-unit boundary is exposed to
+    # that, and a grep that finds nothing looks exactly like a quotation that was invented.
+    # §12.19 says a quotation in a ruling is a claim and to grep it like one; this is the
+    # other half -- **grep it in the characters the source actually used.** The quotations
+    # above stop before the boundary for that reason.
+    # AND THAT COHORT IS TWO THIRDS ADULT, which is worth saying next to this source's own
+    # "occurring predominantly in children" -- and is the second reason the page has a
+    # paragraph headed "And it is not only a childhood word." The first was the JNS series.
+    # AND THE SOURCE FOR THE ONLY CLASSIFICATION THING THIS PAGE SAYS, which is that
+    # the tissue has differed. Verbatim: "The integrated diagnosis, according to the
+    # fifth edition of the World Health Organization Classification of Tumours of the
+    # central nervous system, included two cases of PA and one case each of diffuse
+    # high-grade glioma; diffuse midline glioma H3 K27-altered; glioblastoma; and
+    # circumscribed astrocytic glioma."; "the DNA methylation profile of TG suggests
+    # its classification as a distinct entity from other lower grade glioma (LrGG)s";
+    # and "TG is typically classified as pilocytic astrocytoma (PA) or lower grade
+    # astrocytic glioma". THE LAST TWO DO NOT AGREE WITH EACH OTHER, and that
+    # disagreement -- a fact about the paper's own text -- is the whole of what the page
+    # says about classification. It names no answer, and it does not say the question is
+    # "open": that was the page's inference attributed to the authors with the verb
+    # "reports", deleted at /review round 3 and banned in reader text. This note said it
+    # too, one round longer, which is round 4's finding.
+    # AND THE SENTENCE THE FLUID PARAGRAPH RESTS ON, verbatim: "The clinical course is
+    # generally indolent and tends to present with neurological symptoms such as
+    # intracranial pressure increases due to hydrocephalus obliterans." (Recorded here at
+    # /review round 9. It had been quoted inside the paragraph about Childs Nerv Syst, which
+    # at the time was a non-citation -- round 10 turned that into the Igboechi citation below
+    # (10.1007/s00381-013-2110-z), so the quotation had been filed under a source the page did
+    # not cite. This note said "170 lines below" until /review round 17, when it was 187: a
+    # FIFTH cross-reference written as a distance in this item, rotted for exactly the reason
+    # round 15 wrote down. Name the thing.)
+    # §12.18 permits an address to carry a SYMPTOM and never a DIFFICULTY, and
+    # that is the clause the page's fluid sentence sits under.
+    # NOT USED, AND IT IS IN THIS SOURCE RATHER THAN IN THE HOSPITAL PAGES THE BACKLOG
+    # WARNED ABOUT: "tends to have a good prognosis". §12.5, and the bar is a property
+    # rather than a list of two publishers -- the barred wording was waiting in the
+    # item's own best source.
+    # NOT USED: the symptom list, and the clause an earlier draft cut off is the one that
+    # matters -- it is the visual-field one. Verbatim, in the source's own case and stopping
+    # before its reference marker: "The most common symptoms are headache, gait disturbance,
+    # and ataxia related to hydrocephalus obliterans, along with visual field deficits and
+    # cognitive dysfunction". (/review round 11 found this quotation shouting VISUAL FIELD
+    # DEFICITS inside the marks -- a modified quotation, which §12.20 had just written a rule
+    # against -- and ending on a full stop the paper prints AFTER "[ 8 , 10 , 12 ]", so the
+    # string did not exist as typed.) The symptom question is routed to
+    # /tumors/all-brain-tumors#where-is-this-coming-from, as it is everywhere else here --
+    # and the last clause is WI-573's subject, so THIS source is a second place that ban
+    # held, not a decoration on the first. An earlier version of this note stopped at
+    # "obliterans", which is the truncation this item records as a defect for the other
+    # source ("a NOT-USED list that stops at the first barred clause"). /review round 5.
+    # AND THE RATIONALE IS NARROWED TO WHAT THE PAGE ACTUALLY DOES. It used to say this
+    # page "never says what a tumor somewhere does to the reader", which is wider than the
+    # truth: the section DOES say a blockage and the pressure it raises is how this shows
+    # itself, sourced to the sentence above, and §12.18 permits an address to carry a
+    # SYMPTOM and never a DIFFICULTY. What the page refuses is the symptom LIST.
+  - url: https://link.springer.com/article/10.1007/s10143-021-01653-8
+    title: "Management strategies for pediatric patients with tectal gliomas: a systematic review (Neurosurgical Review)"
+    accessed: 2026-09-26
+    # PMID 34609665. Paywalled for the full text; the ABSTRACT is served in full on the
+    # publisher page and was curled and read live, then read a SECOND time through the
+    # Europe PMC REST API and found identical but for TWO characters -- offsets 693 and
+    # 765, where the API renders the publisher's em dashes as hyphens. /review round 2
+    # measured that; the first version of this note said "character-identical", which is
+    # the kind of claim that is true of the LENGTHS and gets written as if it were true of
+    # the text. Two routes rather than one,
+    # because the other two are closed: pubmed.ncbi.nlm.nih.gov serves a reCAPTCHA and
+    # europepmc.org's own article page returns 403 to every user agent tried -- which is
+    # the same wall §12.8 has a rule for and the same one WI-567 hit on PMC12367934.
+    # THE SENTENCE THE WHOLE SECTION TURNS ON, verbatim: "Most tectal gliomas in the
+    # pediatric population can be observed through radiographic surveillance and CSF
+    # diversion." Plus "CSF diversion was the most performed procedure, occurring in
+    # 317 patients (89.3%)." and "For management options, 232 patients were
+    # radiologically monitored (65.4%)".
+    # THE LICENCE FOR KEYING THIS TO AN ADDRESS AT ALL, named rather than inferred.
+    # §12.19: "an address may key **what is aimed at** only where the source itself is
+    # scoped by site, and never **how the reader does**" -- lower case inside the
+    # marks and the emphasis outside them, because §12.19 prints it that way and a
+    # quotation capitalised for emphasis is a modified quotation (/review round 13,
+    # the third instance of that defect and the first on this quotation).
+    # This review's entire scope IS the site, and what it keys to the site is what a team
+    # aims at. Nothing in the section
+    # ranks this address against any other, so unlike /tumors/chordoma's licensed pair
+    # there is not even a harder half and an easier half to balance.
+    # NO FIGURE FROM IT IS PUBLISHED, and the reason is printed qualitatively in the
+    # section: "Resection was the most variable treatment option between individual
+    # studies, ranging from 2.3 to 100.0%." A spread that wide BETWEEN THE STUDIES THE
+    # REVIEW POOLED is the argument for publishing none of the numbers, which is the Wave 6
+    # preamble's own argument arriving with a name on it. (This note said "across centres"
+    # until /review round 9 -- one clause after the quotation that refutes it, and the
+    # reading the test one file over bans by name. The page says "which study was counted"
+    # and always has; the audit trail did not.)
+    # NOT USED: "Abnormal ocular findings" -- the source continues with an EM DASH and lists
+    # "gaze palsies, papilledema, diplopia, and visual field changes". The quotation stops at
+    # the dash rather than retyping it as a hyphen, which is what an earlier version did and
+    # /review round 12 caught: this publisher prints U+2014 and the EPMC route renders it as a
+    # hyphen, a fact recorded two entries above and then not applied here.
+    # WI-573 owns visual field loss and the
+    # driving consequence, and this item would have taken that item's subject while
+    # quoting a source correctly. **NOT the only place it could have**: Imoto says "visual
+    # field deficits" in the symptom sentence recorded above, and this file names
+    # "extraocular eye movement abnormalities" from the third source below. An earlier
+    # version of this note called it "the one place", which is a closed count -- §12.17's
+    # error again on this page. A count of one is the easiest closed count to believe,
+    # because nobody recounts it. /review round 5.
+    # AND ROUND 6 MADE THE FOLLOW-ON CLAIM TRUE INSTEAD OF SOFTENING IT. This note used to
+    # add that the page's own suite "bans that string in reader text", and it did not: the
+    # closed-count list ran only over sentences containing urgency words, and only inside
+    # the fluid section. **A note claiming coverage a guard does not have is §12.17's
+    # scoping failure running backwards -- it tells the next reader to stop checking.** The
+    # ban is now page-wide, in ThePageNeverAssertsAClosedCount -- its own [Fact] as of
+    # /review round 7, because the test it was first written into is about pre-empting later
+    # Wave 6 items and that subject expires. (This note named the old host until round 8.
+    # §12.20: grep the fix, not just the defect.)
+    # NOT USED: "Surgical resection should be reserved for large tumors and/or those
+    # that are refractory to other treatment modalities." That is a SIZE rule, and this
+    # page refused a size claim twice already (§12.17) in the opposite direction. A
+    # reader who measures themselves against "large" has been handed a rule nobody
+    # meant them to apply.
+    # NOT USED: "generally have a benign clinical course" and "more aggressive tumors".
+    # §12.5 and CuratedPage.Characterisations.
+    # AND THE REVIEW IS PEDIATRIC THROUGHOUT, which the section says out loud rather
+    # than in this comment. This page already warns that two of its three surgery
+    # sources are written about adults; this is the mirror of that warning.
+  - url: https://doi.org/10.3171/2023.4.peds22485
+    title: "Predicting disease progression and the need for tumor-directed treatment in tectal plate gliomas (Journal of Neurosurgery: Pediatrics)"
+    accessed: 2026-09-26
+    # PMID 37347621. Read LIVE off the publisher page through the DOI, which serves the
+    # paper's FULL TEXT to a plain fetch -- Methods, Results and Discussion, not just the
+    # abstract, which is more than the two closed routes give for the other clinician-level
+    # source on this page. /review round 6 corrected this note, which had said "the whole
+    # abstract"; the difference matters because a NOT-USED list drawn from an abstract is
+    # incomplete for an article, which is the defect this file records twice already.
+    # ADDED AT /review ROUND 1, AND IT CLOSED A CLAIM RATHER THAN DECORATING ONE. The
+    # section said "nothing read for this page says the same of adults". This series makes
+    # that FALSE: "The median patient age of the full cohort was 24 years" -- the range that
+    # follows it is printed with an EN DASH (0 U+2013 73), so a quotation carrying it typed
+    # with a hyphen matches the Europe PMC record and NOT the publisher page this entry says
+    # it read. /review round 14, the fourth instance of that defect in this item and the
+    # second on a fact this file had already written down twice. It is 170 patients against
+    # the pediatric review's 355 children. An
+    # absence claim is only as good as the last search, and this one had a source behind
+    # it within one round.
+    # WHAT IS USED, verbatim: "Tectal plate gliomas are rare, slow-growing tumors of the
+    # midbrain that are discovered predominantly in the pediatric population. Because of
+    # their indolent nature, treatment mainly consists of observation and management of
+    # hydrocephalus." -- which is the SAME two-part approach the pediatric review found,
+    # from a cohort that is half adult. And "the adult population had more instances of
+    # incidental lesions", which is the one thing this page can hand an adult reader that
+    # is neither a figure nor an outcome.
+    # NOT USED, AND THIS IS THE WAVE 6 ARTIFACT ITSELF, IN A SOURCE THIS PAGE NOW CITES:
+    # "lesion involvement of the pons ... significantly associated with worse radiographic
+    # PFS" and "involvement of the lesion beyond the tectum" as a predictor of needing
+    # treatment. That is a LOCATION KEYED TO AN OUTCOME -- the one artifact every Wave 6
+    # item is forbidden to publish (PMC12367934: only a minority of surveyed neurosurgeons
+    # apply any eloquence scale). It is recorded by name because the next person to open
+    # this source will meet it in the abstract's own results.
+    # AND THREE MORE FROM THE SAME SENTENCE, because a NOT-USED list that stops at the
+    # first barred clause is the shape /review round 2 caught. "moderate T1 hypointensity,
+    # moderate contrast enhancement" is a SCAN FEATURE keyed to an outcome, on the page
+    # whose thesis is that a picture cannot name a growth; "extraocular eye movement
+    # abnormalities at presentation" is an eye finding, which is WI-573's subject by the
+    # same reasoning that kept the review's "visual field changes" out; and "an increase in
+    # total lesion size" is a size-linked predictor, which is the size rule recorded for
+    # the review arriving a second time from a different paper.
+    # NOT USED: the 24% radiological-progression and 25% needed-treatment figures.
+    # NOT USED, AND FOUND ONLY BECAUSE THIS FETCH IS THE FULL TEXT: the introduction's
+    # "Neurological deficits are less commonly observed but may include nystagmus,
+    # diplopia, seizures, and visual deficits." That is a FOURTH place WI-573's ban held.
+    # /review round 8 found this entry filed under the SYSTEMATIC REVIEW instead, whose own
+    # note says its full text is paywalled -- so the next person opening that paper to check
+    # the quotation could not have found it, and could not have got at the text to be sure.
+    # **A NOT-USED entry belongs to the source it was drawn from, and the check that it does
+    # is to open the source.**
+    # NOT USED: the 1-, 5- and 10-year progression-free survival rates, the 94/2/4%
+    # follow-up split, and the hydrocephalus rates by age group. §12.5 and the item's own
+    # acceptance.
+    # NOT USED: "the natural history of these lesions lends to excellent long-term
+    # survival". THAT IS THE THIRD SOURCE IN THIS ITEM TO CARRY THE BARRED WORDING the
+    # backlog attributed to two hospital pages -- after Imoto's "tends to have a good
+    # prognosis" and the review's "generally have a benign clinical course". The bar is a
+    # PROPERTY, not a blocklist of publishers (§12.14).
+  #
+  # CHASED AND UNREADABLE, DO NOT CITE AND DO NOT PUBLISH WHAT IT MIGHT SAY. The
+  # backlog names, as unverified, the claim that WHO CNS5 folds most tectal gliomas
+  # into "diffuse low-grade glioma, MAPK pathway-altered", and asks for
+  # 10.1007/s00401-026-03066-7 to be chased before any classification sentence is
+  # written. CHASED. The DOI is real: Tauziede-Espariat, Metais, Aldape et al,
+  # "Tectal glioma versus pilocytic astrocytoma: revisiting tumor classification in
+  # light of molecular heterogeneity", Acta Neuropathologica volume 152 article 22,
+  # Correspondence, published 2026-08-20, PMID 42622715. It cannot be read: the
+  # publisher page says "This is a preview of subscription content" and carries no
+  # abstract, and Europe PMC has isOpenAccess N, inEPMC N, no PMCID and a null
+  # abstract, so there is no second route. §12.17's Moffitt rule therefore applies --
+  # a source we cannot open live is a source we cannot verify -- and NO
+  # CLASSIFICATION SENTENCE IS PUBLISHED. The claim is neither published nor
+  # refuted; it is recorded as still unverified, with the identifiers, so the next
+  # item does not chase it from scratch.
+  #
+  # TWO HOMES FOR AN "ALIAS" WERE CONSIDERED AND BOTH ARE REFUSED, because the word
+  # "alias" matching is not an argument.
+  #   taxonomy.yml's `also`: refused, and its own header is the reason -- aliases are
+  # "aliases the classifier may be given; they never render" and must be "true
+  # synonyms, never 'close enough'". A location is not a synonym of a type, and
+  # §12.2 item 3 requires WHO CNS5 naming throughout. Adding it would put a place
+  # into the closed list of diagnoses the classifier may emit.
+  #   The glossary's `also`: a real candidate, because unlike the taxonomy it DOES
+  # render ("Also called:" on /glossary) and it DOES feed tooltips. Refused by
+  # WI-519's rule -- an entry defined and used in ONE place fires nowhere. This page
+  # defines the word and the word appears nowhere else in the corpus, which is the
+  # same refusal WI-567 wrote for temporal, parietal and occipital lobe. It buys the
+  # search half nothing either: /glossary is a Razor page, not a curated page under
+  # Content/pages, so ContentStore.SearchPages never enumerates it.
+  #   AND THE SEARCH HALF NEEDS NO MECHANISM AT ALL, measured in the code rather than
+  # assumed: SearchPages scores page.Markdown, which Parse sets to the COMPOSED BODY
+  # after the front matter is sliced off. So the word in the PROSE is what makes this
+  # page findable, a word in one of these comments is invisible to search and to the
+  # reader alike, and no new field or index exists to add.
+  - url: https://doi.org/10.1007/s00381-013-2110-z
+    title: "Igboechi et al: Tectal plate gliomas - a review (Child's Nervous System)"
+    accessed: 2026-09-26
+    # PMID 23612874, Childs Nerv Syst 29:1827-1833. Not open access; the ABSTRACT was read
+    # live twice today -- off the publisher page through the DOI, and again through the
+    # Europe PMC REST record -- and the two agree.
+    #
+    # THIS ENTRY EXISTS BECAUSE /review ROUND 10 CAUGHT THE ITEM RECORDING IT AS UNREADABLE,
+    # AND THAT IS THE ITEM'S SHARPEST FINDING. Rounds 2 through 9 carried a note saying the
+    # backlog had named this source, that it was "searched and NOT read: it is not open
+    # access and has no abstract in EPMC", and that the claim it was named for had therefore
+    # been changed rather than kept "on a source nobody opened". The abstract was in hand the
+    # whole time, in the JSON this item wrote at round 1. Three things were wrong at once:
+    # the reason, the readability, and -- the one that matters -- the conclusion, because
+    # this abstract SOURCES the claim round 1 deleted as "an inference wearing a citation".
+    # Verbatim, and the emphasis is OUTSIDE the quotation marks because a quotation with
+    # words capitalised inside it is a modified quotation -- the clause that matters is
+    # "obstruct the aqueduct of Sylvius": "Tectal plate gliomas are generally benign
+    # neoplastic lesions arising in the brainstem which can, with local extension, obstruct
+    # the aqueduct of Sylvius and lead to hydrocephalus."
+    # **An absence claim about a SOURCE is the same liability as an absence claim about the
+    # literature.** This item made both. The literature one died in one review round; this
+    # one survived ten, because nobody re-opens a source recorded as unopenable.
+    #
+    # WHAT IT IS USED FOR: nothing in reader text, and that is deliberate rather than
+    # leftover. The fluid sentence already says what it needs to in Imoto's words ("This is
+    # a spot where the fluid can be held up"), it grades where it needs to, and §12.18's stop
+    # rule says an item stops widening once its property holds. **But the aqueduct adjacency
+    # is SOURCED, and that is recorded here so the next item does not read round 1's deletion
+    # as a prohibition:** it was deleted for being unsourced, and it is not.
+    # AND IT IS A FOURTH CORROBORATION OF THE PAGE'S TWO-PART CLAIM, verbatim: management
+    # "may range from diligent observation and periodic screening for advancing tumor
+    # development, to cerebrospinal fluid shunting in an effort to resolve obstructive
+    # hydrocephalus, to radio- and chemotherapy."
+    # NOT USED: "generally benign". **That is the FOURTH source in this item to carry the
+    # barred prognosis wording the backlog attributed to two hospital pages** -- after
+    # Imoto's "tends to have a good prognosis", the review's "generally have a benign
+    # clinical course" and the JNS paper's "excellent long-term survival". §12.14: the bar is
+    # a property, not a blocklist of publishers, and four sources in one item is the proof.
+    # NOT USED: the imaging description, the biopsy-for-definitive-diagnosis claim and the
+    # endoscopy list. Clinician level, and /tests/biopsy and /treatments/shunts own the two
+    # subjects a reader would need.
+    #
+    # AND THE OTHER HALF OF ROUND 1's DELETION STANDS: `roof` appears in none of the four
+    # sources, so "the roof of the midbrain" was an inference and stays deleted. What the
+    # page says is Imoto's own word for the place. Imoto's fluid quotation lives in ITS OWN
+    # BLOCK above rather than here (/review round 9, applying to a used quotation the rule
+    # this file writes for an unused one), and `aqueduct` is taught in the region entry,
+    # where AANS is the source for it.
   # A SOURCE THE ITEM'S ACCEPTANCE NAMED AND THIS PAGE DOES NOT CITE, recorded
   # rather than silently dropped: NCI's PDQ for health professionals. It was named
   # in the backlog as a source for the surgery framing, on the strength of its
@@ -246,7 +540,7 @@ sources:
   # nowhere. They are refused for now and glossed inline instead. The trigger
   # for adding them as a set is recorded: WI-569 and WI-570 put location
   # sections on the glioma family and will be the second user.
-reviewed: 2026-09-24
+reviewed: 2026-09-26
 review_due: 2027-03-31
 disclaimers: [medical]
 ---
@@ -352,6 +646,11 @@ instance, means at or near the center line, and more than one of the nine sits o
 that line. Ask which of these nine yours is in, or nearest to. It is a short question
 and it does not need an appointment of its own.
 
+**And some words name a place without naming a type at all.** A report or a doctor can
+hand you an address where you expected the name of a growth.
+[When the word you were given is a place](#a-place-for-a-name) is the section for that,
+and the word it works through is **tectal glioma**.
+
 **These entries do not list symptoms.** That question has a better answer of its
 own, region by region, and it lives on the page for the first week:
 [what a tumor in each place tends to
@@ -454,6 +753,60 @@ beginning, and [the tumor types](/tumors) has the rest.
 **This is one of the places on this page with a warning of its own**, and
 [when where it sits makes it urgent: the fluid](#the-fluid) is where that sits.
 Read it if this is your region.
+
+## When the word you were given is a place {#a-place-for-a-name}
+
+Some of the words people are handed name a place rather than a type. **Tectal glioma** is
+one of those words, and it is the one this section works through. If yours is a different
+place-word, the shape of the answer is the same. The word tells your team where to look.
+It does not tell them what the growth is.
+
+**What the word says.** **Tectal** points at the **tectum**, which is the back part of the
+**midbrain**. The midbrain is one of the three parts of
+[the stalk the brain sits on](#brainstem). So the word is an address with *glioma*
+attached to it.
+
+**What the word does not say.** It does not say what the growth is made of.
+[The place is not a diagnosis](#what-it-means) is the general form of that. In the small
+group one study followed, the tissue turned out to be a different thing in different
+people. That study's own words for where this group belongs do not agree with each other.
+
+**Where the fluid comes into it.** This is a spot where the fluid can be held up. That same
+study says a blockage, and the pressure it raises, is the usual way this shows itself.
+[Deep in the middle, where the fluid runs](#ventricles) is the entry that names the tube
+the fluid has to pass through. **[When where it sits makes it urgent: the
+fluid](#the-fluid) is the section to read today if this is your word.**
+
+**What a team often does about it.** Here is what a review of how this is managed in
+children found. Most of these were watched with repeat scans, rather than having the
+growth removed. That is not the same as nothing being done. The review says patients often
+need treatment for the fluid. A procedure to get the fluid moving was the most common
+operation in it. That is the general point the fluid section below makes, arriving here
+with a name on it.
+
+**"Most" is a word about a group.** It is never a prediction about one person, including
+everywhere this section uses it. What your own team is weighing is a question you can put
+to them today.
+
+**And it is not only a childhood word.** Another paper, with adults as well as children in
+it, reports the same two parts: watch the growth, and deal with the fluid. It also reports
+that in adults these are more often found by chance. So if you are an adult holding this
+word, those two parts are usually what a team is working with. Ask your team what is known
+for yours.
+
+**And something this page will not print.** No number from any of those papers is on this
+page. In the review, how often the growth itself was taken out ran from almost never to
+always, depending on which study was counted.
+[Why there is no list here](#no-list) makes the same kind of case about the whole page.
+
+**And do not read an operation out of the word either.**
+[Can they just take it out?](#can-they-take-it-out) is where this page keeps the range a
+team picks from. It says in as many words that a place is not what settles that.
+
+**The word is still worth chasing.**
+[Ask what it is being called for now](#finding-your-type) is the first step of the path
+from a place to a name. It works the same way whether or not the word you were handed is a
+place.
 
 ## How long before this turns into a plan? {#how-long}
 
@@ -651,8 +1004,8 @@ the word.
   you can see which family a word belongs to before you read anything.
 
 If the word you were given is not on that list, that is worth knowing rather than
-worrying about. Some of the words people are handed are descriptions of a place
-rather than names of a tumor, and we are still writing about those.
+worrying about. Some of what people are handed is an address instead of a name, and
+[when the word you were given is a place](#a-place-for-a-name) is the section for that.
 
 ## Who decides, and how will you hear? {#who-decides}
 
