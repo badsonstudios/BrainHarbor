@@ -4427,7 +4427,11 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   2026 `10.1007/s00401-026-03066-7` (not read) before writing classification.
   Depends on: WI-567.
 
-  **Shipped 2026-09-26.** The ruling is `docs/content-pipeline.md` **§12.20**.
+  **Implemented 2026-09-26; SHIPPED AND DEPLOYED 2026-09-29** (PR #175 -> `develop`
+  squashed as `9958973`, release PR #176 -> `main` merge `5e74cf6`, deploy run
+  `36631012520` success first attempt; post-deploy smoke clean, +5,092 bytes on the one
+  page and four control pages byte-identical). The ruling is
+  `docs/content-pipeline.md` **§12.20**.
   **THE DOI WAS CHASED AND IT CANNOT BE READ**, which is the item's most consequential
   non-result: it resolves to a real paper (Tauziede-Espariat et al, *"Tectal glioma
   versus pilocytic astrocytoma: revisiting tumor classification in light of molecular
