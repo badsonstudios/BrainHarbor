@@ -285,7 +285,16 @@ internal static class CuratedPage
                 // `[^.,;:]{0,20}$` is what does the work: the negation has to
                 // be close AND on this side of the nearest punctuation.
                 Assert.True(
-                    Regex.IsMatch(before, @"\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$",
+                    // THE WORD BOUNDARY IS INSIDE THE ALTERNATION (WI-571 /review round 18), and
+                    // here the consequence runs the WORSE way. This is a POSITIVE assert -- a
+                    // negation must be present -- so a dead alternative does not weaken it, it
+                    // makes it FALSE-FAIL a correct page. Written `\b(...|n't|...)`, the leading
+                    // `\b` binds the whole group and there is no word boundary inside "isn't",
+                    // so `n't` never matched and the sentence named six lines above -- "isn't a
+                    // minor procedure" -- was flagged by the widening written to rescue it.
+                    // §12.8: a rule that fails a correct page is worse than no rule.
+                    Regex.IsMatch(before,
+                        @"(?:\bnot|\bnever|\bhardly|\bno|n't|\bfar from)\b[^.,;:]{0,20}$",
                         RegexOptions.IgnoreCase),
                     $"{slug} calls this a \"{phrase}\" without negating it");
             }
@@ -1503,7 +1512,23 @@ internal static class CuratedPage
         + @"|base of (?:the|your) (?:brain|skull)"
         // The sacral half of /tumors/chordoma, which is the only place in the
         // corpus where an address has no other word for itself.
-        + @"|\btailbone\b|\bsacrum\b";
+        + @"|\btailbone\b|\bsacrum\b"
+        // WI-571: the two report words its own section teaches, and the reason they are
+        // here is the one general lesson of that item's guard work — AN ITEM THAT TEACHES
+        // THE CORPUS A NEW PLACE-WORD HAS WIDENED THE CORPUS PAST ITS OWN GUARD. See
+        // LocationAddressTokensAddedByWi571 for the corpus measurements, including why the
+        // bare `tect` (no word boundary) would have been a disaster: 34 `*.md` files under
+        // Content/ (36 counting the two .cs files that also match), 17 of them in reader
+        // text, the matches dominated by `protect` and its inflections. The FILE counts above
+        // are the same case-sensitively (34/36/17); it is the OCCURRENCE counts that shrink
+        // (`protect` 34 -> 32, `detection` 20 -> 19), and §12.20 is where those live. Round 19
+        // corrected a clause here that claimed the printed numbers were the ones that move.
+        // (This comment said
+        // "twenty files" until /review round 3, and lacked the `*.md` scope until round 5 —
+        // both times while the docstring it points at had the right version.
+        // **Correcting a claim in one file does not correct its copies**, and this file is
+        // where that line lives.)
+        + @"|\bmidbrain\b|\btect";
 
     /// <summary>
     /// The vocabulary that turns an address into a ROW: what an operation is like
@@ -1863,6 +1888,33 @@ internal static class CuratedPage
         // out") uses the OTHER branch. Nothing in this sentence but the token itself
         // is an address, so narrowing either way now reddens exactly one control.
         "A tumor at the base of the brain is harder to take out.",
+        // ---- WI-571: THE LAST FOUR BRANCHES, AND WHY THEY NEEDED NEW CONTROLS RATHER
+        // THAN AN ARGUMENT. §12.19 left two tokens whose `(?:the|your)` branches were
+        // invisible to ablation, and the reason was MASKING, not absence: the only
+        // control carrying each token also carried a SECOND address token, so narrowing
+        // the first could never show a loss.
+        //   `(?:top|front|back) of (?:the|your) skull` was masked inside "- On the floor
+        // at the front of the skull. Surgery there leaves more behind." by `\bfloor\b`.
+        //   `(?:top|back) of (?:the|your) head` was masked inside "A clival tumor is
+        // more dangerous than one at the back of your head." by `\bcliv`.
+        // Each of these four must carry EXACTLY ONE address token and one difficulty
+        // token, which is the only shape single-token — and now single-BRANCH — ablation
+        // can read. THAT IS ASSERTED, in
+        // NarrowingTheOrYourInTheAddressLexiconTurnsAControlRed, and it is asserted
+        // because /review read this comment and pointed out it was a count in prose
+        // about something the code can enumerate — §12.19's four-review-round lesson,
+        // arriving in the note that cites it. §12.18's stop rule made this WI-571's work
+        // rather than WI-570's; the iterated set there is the record and nothing here
+        // can drift from it.
+        "A tumor at the top of the skull is harder to take out.",
+        "A tumor at the top of your skull has a poor outcome.",
+        "A tumor at the back of the head is harder to take out.",
+        "A tumor at the top of your head has a poor outcome.",
+        // AND ONE EACH FOR THE TWO REPORT WORDS WI-571's OWN SECTION TEACHES. Without
+        // these the tokens are decoration (§12.19), and the ablation test below is what
+        // says so.
+        "A tumor in the midbrain is harder to take out.",
+        "A tumor in the tectum has a poor outcome.",
     ];
 
     /// <summary>
@@ -1924,6 +1976,15 @@ internal static class CuratedPage
         "in the lower back part of the brain is more dangerous",
         "in the upper part of your brain usually comes out whole",
         "at the base of the brain is harder to take out",
+        // WI-571's, and the fragments name the ADDRESS as well as the verb, because
+        // "is harder to take out" and "has a poor outcome" are each shared by several
+        // controls and a fragment that identifies a family identifies nothing.
+        "at the top of the skull is harder to take out",
+        "at the top of your skull has a poor outcome",
+        "at the back of the head is harder to take out",
+        "at the top of your head has a poor outcome",
+        "in the midbrain is harder to take out",
+        "in the tectum has a poor outcome",
     ];
 
     /// <summary>
@@ -1973,6 +2034,18 @@ internal static class CuratedPage
         "in the lower back part of the brain",
         "in the upper part of your brain",
         "at the base of the brain",
+        // WI-571's are all single-sentence, so the address half and the difficulty half
+        // are the same string — there is nothing to separate. For these the two-fragment
+        // conjunction in ControlIsCaught therefore carries one fact rather than two, which
+        // is strictly stronger than the split (the fragment already contains the address)
+        // but means the array name describes six of its entries loosely. /review round 3
+        // recorded it rather than renaming an array thirty other entries depend on.
+        "at the top of the skull is harder to take out",
+        "at the top of your skull has a poor outcome",
+        "at the back of the head is harder to take out",
+        "at the top of your head has a poor outcome",
+        "in the midbrain is harder to take out",
+        "in the tectum has a poor outcome",
     ];
 
     /// <summary>
@@ -2075,7 +2148,7 @@ internal static class CuratedPage
         // own comment narrates a control being lost in a promotion (thirteen went in,
         // twelve arrived). Three arrays asserted only to be the SAME length is a
         // check a synchronised deletion passes.
-        Assert.Equal(30, LocationPositiveControls.Length);
+        Assert.Equal(36, LocationPositiveControls.Length);
         Assert.Equal(LocationPositiveControls.Length, LocationControlFragments.Length);
         Assert.Equal(LocationPositiveControls.Length, LocationControlAddressFragments.Length);
 
@@ -2113,6 +2186,38 @@ internal static class CuratedPage
         @"|stalk the brain sits on", @"|\bthalam", @"|cauda equina",
         @"|(?:top|bottom) end of the cord", @"|lower back part of (?:the|your) brain",
         @"|\btailbone\b", @"|\bsacrum\b",
+    ];
+
+    /// <summary>
+    /// The address tokens WI-571 added, each of which owes a control.
+    ///
+    /// <para><b>THE FINDING THAT PUT THEM HERE IS §12.20's, AND THIS DOCSTRING DELIBERATELY
+    /// DOES NOT RESTATE IT.</b> In short: a planted row inside WI-571's new section would not
+    /// fire, because the lexicon had never heard of <i>midbrain</i> or <i>tectum</i> — and
+    /// only <i>tectum</i> was new. <i>midbrain</i> had been in
+    /// <c>/where-your-tumor-is</c>'s reader text since WI-567, through two later widenings
+    /// and every ablation round, because <b>nothing in this family derives the LEXICON from
+    /// the pages</b>. §12.20 carries the measurements (reader-text scopes, the bare-token
+    /// cost, why the word boundary is load-bearing), the round history and the sweep
+    /// obligation that follows.</para>
+    ///
+    /// <para><b>AND THE POINTER IS THE POINT.</b> <c>/review</c> round after round of WI-571
+    /// kept finding the same shape: one claim written in several files, corrected in fewer. A
+    /// measurement at two scopes, a count at three and four, a score at 5 and 6, a sentence
+    /// fixed in six copies and alive in a seventh. Each was fixed by hand; none of the fixes
+    /// stopped the next one. §12.8's factor-at-the-second-use rule is the structural answer
+    /// and it was available the whole time — <b>the ruling is the home, and the code points
+    /// at it.</b> What is left here is only what is true of THIS array.</para>
+    ///
+    /// <para>Both tokens were measured over the whole corpus before being taken, which is the
+    /// only way §12.18 permits a widening, and both cost ZERO rows. Each has a control
+    /// carrying exactly one address;
+    /// <c>EveryAddressTokenWi571AddedHasAControlThatFailsWithoutIt</c> is the acceptance.
+    /// </para>
+    /// </summary>
+    public static readonly string[] LocationAddressTokensAddedByWi571 =
+    [
+        @"|\bmidbrain\b", @"|\btect",
     ];
 }
 

@@ -856,7 +856,13 @@ TREATMENT page):**
   N-character lookback for `not|never` fails both ways: *"it is not painful,
   and it is a simple procedure"* passes (the negation belongs to the other
   clause), and *"there is no such thing as a simple procedure"* fails. The
-  working form is `\b(not|never|hardly|no|n't|far from)\b[^.,;:]{0,20}$` — close
+  working form is `(?:\bnot|\bnever|\bhardly|\bno|n't|\bfar from)\b[^.,;:]{0,20}$` — with
+  **the word boundary INSIDE the alternation, which WI-571's `/review` round 18 had to correct
+  here and in four guards.** A leading `\b` binds the whole group, and there is no word boundary
+  inside *isn't*, so `n't` can never match: in a POSITIVE assert like these that does not weaken
+  the rule, **it makes it FALSE-FAIL a correct page that negates with a contraction** — which is
+  the §12.8 failure this very paragraph is about. This sentence is the one a future item greps
+  for, so it is the copy that mattered most and the one the first sweep never looked at. Close
   AND on this side of the nearest punctuation.
 - **A substring ban list is a stemming problem, and stemming bugs read as
   correct rules.** WI-511's British-spelling list shipped five entries that are
@@ -6835,7 +6841,8 @@ one edit, and the order is part of the record:
   context.
 - **Three were measured and NOT taken.** `front of the brain` costs two false
   positives, one of them on `/tumors/meningioma` — the page WI-569 measured at zero.
-  `middle of the|your brain` costs one. `cord` costs four — and the fourth is a sentence WI-570 itself wrote,
+  `middle of the|your brain` costs one. `\bcord\b` costs four — and the fourth is a
+  sentence WI-570 itself wrote,
   `/tumors/spinal-cord-tumor`'s *"it says why it has no list of which places are
   dangerous"*, the neatest demonstration available that a measurement is only true
   of the corpus it was taken on. Recorded rather than
@@ -7124,3 +7131,605 @@ It now teaches **supratentorial**, which is §12.18 part 2 applied to the one en
 that had dropped it. (The first version of this sentence said *"the bullets on either
 side"*; the bullet BELOW teaches *myxopapillary*, which is a subtype name and not a
 report word for a place. A justification deserves the same check as a claim.)
+
+### 12.20 When the only name a reader has is a place (WI-571)
+
+§12.17 built a page for the location axis. §12.18 and §12.19 settled what a TYPE page may
+carry about location, and where the obligation lives across the corpus. This is the
+remaining reader: the one handed a word that **is** an address, with no type behind it.
+*"Tectal glioma"* is that word, and the ruling starts by refusing the obvious home for it.
+
+**IT CANNOT BE TUMOR TYPE #24, AND THE REASON IS IN `taxonomy.yml`'s OWN HEADER.** That
+file says `also` lists *"aliases the classifier may be given; they never render"* and that
+aliases *"must be true synonyms, never 'close enough'"*. A location is not a synonym of a
+type, and §12.2 item 3 requires WHO CNS5 naming throughout — CNS5 has no entity of that
+name. Adding it would put a **place** into the closed list of **diagnoses** the classifier
+may emit, which is the one list on this site whose closedness is a safety property.
+
+> **A word that names a place gets a section, never a slug.**
+
+#### The "search alias" needed no mechanism, and that is a measurement
+
+The backlog asked for *"a search alias, so the word a reader was actually given finds
+something"*. There is nothing to build, and the reason is in the code rather than in a
+hope. `ContentStore.SearchPages` (WI-309) scores every file under `Content/pages` as
+`title.Contains(term) ? 5 : 0` plus `body.Contains(term) ? 1 : 0`, where `body` is
+`page.Markdown` — which `Parse` sets to the **composed body**, after the front matter has
+been sliced off. Three consequences, and each has a test because `/review` round 6 found
+that only the first one did:
+
+- **The word in the PROSE is the whole mechanism.** No field, no index, no alias table.
+- **A word in a front-matter source comment is invisible to search** — and invisible to
+  the reader, by the same mechanism. The two failure modes coincide for once, which is
+  worth knowing because they usually do not.
+- **`/glossary` is not searched at all.** It is a Razor page, not a curated page under
+  `Content/pages`, so `SearchPages` never enumerates it.
+
+**AND THE SCORING HAS A CONSEQUENCE THE ITEM HAD TO MEASURE.** Scoring is per-term, so a
+search for *"tectal glioma"* puts every page with *glioma* in its TITLE above the one page
+that carries *tectal* in its body. That is fine while `SearchModel.PageLimit` exceeds the
+number of glioma-titled pages, and **that comparison is a test rather than a sentence here
+precisely because both sides of it move.** The reader who types the word they were handed
+falls off the end of the list when the pages that outrank it fill the limit — and a
+sentence here saying which page number that is would be the count-in-prose this ruling
+spends two sections on. (`/review` round 6 caught the first version saying *"the day
+somebody adds a sixth"*, which is wrong and was also the count.)
+
+**AND A MULTI-WORD QUERY IS NOT A PHRASE QUERY**, which the same scoring implies and which
+cost a test one round: `SearchPages` splits on whitespace and scores per term, so a search
+for a two-word glossary phrase can match a page on its common word alone. The negative
+assertion for "the glossary is not searched" therefore has to be a single word.
+
+#### Both "alias" homes are refused, on their merits rather than because the word matched
+
+The glossary's `also` is a REAL candidate and deserves a real answer: unlike the taxonomy
+it **does** render (*"Also called:"* on `/glossary`) and it **does** feed tooltips
+(`GlossaryTooltips` adds `term.Aliases` to the trigger names). It is refused by **WI-519's
+rule — an entry defined and used in ONE place fires nowhere.** An entry would be suppressed
+on the page that defines the word, and no other page says it, so it would fire nowhere —
+exactly the refusal WI-567 wrote for `temporal`, `parietal` and `occipital lobe`. (Stated
+as a conditional, because it is one: there is no entry and no `!%…%` marker, and `/review`
+round 2 caught the first draft writing that the suppression already happens.)
+
+**The trigger for revisiting is DERIVED, not remembered.** The test counts the corpus's
+reader-text occurrences of the word outside this page and requires zero, so the day a
+second page says it, the refusal expires loudly and the entry gets written. §12.19's
+lesson, applied before it cost anything: never write a count in prose about something the
+code can enumerate.
+
+#### The row test on a reader who has exactly one address
+
+This is the hard half. §12.19's instrument is *could a reader read their OWN address off
+this sentence and get a different answer from a reader with a different one?* — and **a
+reader whose only word is a place is by definition reading about one address**, so the ban
+is easy to trip and easy to miss. Every sentence had to be asked.
+
+Most of the section passes without argument: where the tectum is, is anatomy; the sentence
+routing to *"The place is not a diagnosis"* is the refusal of a row.
+
+**AND THE FLUID SENTENCE IS PERMITTED BY §12.18, NOT BY §12.19's STRUCTURE ALLOWANCE**,
+which is `/review` round 6's correction and the distinction matters more than it looks.
+*"This is a spot where the fluid can be held up"* names what a reader notices happening
+where their tumor sits, and §12.18's line is that **an address entry may carry a SYMPTOM
+and must never carry a DIFFICULTY** — which is the clause the page's front matter has cited
+all along. Reaching instead for §12.19's row-test allowance (*"keyed to a factor, an age, a
+gene or a structure"*) is an over-read, because the structure in that sentence IS the
+reader's own address. And the allowance is dangerous in the other direction too: §12.18
+records it leaving an OUTCOME keyed to a structure **unreachable by any property guard** —
+*"A small meningioma against the nerve to your eye will take your sight"* — which is why
+that sentence had to be deleted by name rather than caught. **The allowance does not permit
+such a sentence; it makes the guard unable to bar it.** (Round 5 corrected an earlier
+version of this clause that said §12.18 was *"licensing"* it, which inverts the holding;
+round 6 found the clause was also being applied to the wrong sentence. Two copies of one
+justification, giving two different reasons — the front matter's is the right one.)
+
+**The management claims are the row-shaped ones, and they are licensed as a cluster rather
+than singly**: every sentence that says what a team aims at for this address. They include
+that most were watched rather than having the growth removed, that patients often need
+treatment for the fluid, that a fluid procedure was the most common operation, and that the
+second paper reports the same two parts. (An earlier version said *"One sentence is
+row-shaped"*, and its replacement said *"Four are"* — which is the same shape one increment
+along, in the paragraph naming that error. **The property is the record; the count is the
+defect.** Rounds 6 and 7.) The licence:
+
+> §12.19: *"an address may key **what is aimed at** only where the source itself is scoped
+> by site, and never **how the reader does**."*
+
+The systematic review behind *most of these were watched with repeat scans* is scoped to
+nothing but the site — its subject IS tectal gliomas — and what it keys to the site is what
+a team aims at. **Nothing in the section is ranked against another address**, so unlike
+`/tumors/chordoma`'s licensed pair there is not even a harder half and an easier half
+needing to balance. The licence is written into the front matter and into the test, because
+§12.19's own rule is that the exception is **named rather than inferred**.
+
+**AND THE GUARD'S SILENCE OVER THIS SECTION IS STRUCTURAL, NOT EVIDENCE — WHICH IS §12.19
+FINDING 6 ARRIVING A THIRD TIME, INSIDE THE ITEM WHOSE SUBJECT IS THE ROW TEST.** The first
+draft of the test docstring said the ranking guard and the corpus sweep *"both run over this
+prose and both stay green … which is the measurement rather than the intention."* `/review`
+measured it: the section matches `LocationDifficulty` **zero** times, so no window in it can
+carry a difficulty word and no row could have been found there whatever it said. That is
+§12.19's sentence about `/treatments/craniotomy`'s famous zero — *a guard measured on a page
+it cannot fire on has been measured on nothing* — and the ZERO it was written about had
+already been quoted forward twice before this. **The sentence transfers; the zero does
+not.** Craniotomy's is zero
+ADDRESSES with twenty-one difficulty matches; this section's is zero DIFFICULTIES with
+several addresses. Both make the guard unable to fire, from opposite ends, and a note that
+says "the same zero" invites the next reader to check only the half that was checked last
+time.
+
+> **When a guard is green over new prose, ask whether it could have fired. Assert the zero,
+> and plant a row to prove the guard reaches that text at all.**
+
+#### AND THE LESSON THAT GENERALISES: THE ITEM'S OWN NEW WORDS WERE OUTSIDE ITS OWN GUARD
+
+Planting that row is what found it. **The planted row would not fire**, because the address
+lexicon had never heard of *midbrain* or *tectum*. A row written in the new section's own
+vocabulary was invisible — not through an attack, not through a costume, but because
+nothing had told the guard those words exist.
+
+**AND THE TWO WORDS GOT THERE BY DIFFERENT ROUTES, WHICH IS THE PART WORTH COPYING.**
+*tectum* was genuinely new: WI-571 taught it. ***midbrain* was not.** WI-567's own
+`#brainstem` entry on this page has said *"the **midbrain**, the **pons** and the
+**medulla**"* in reader text since it shipped — **four work items, two lexicon widenings
+(WI-569 and WI-570), twenty-odd review rounds and every ablation test ago** — and the
+address lexicon never had it. Nothing found it until a planted row needed it. (An earlier
+version of this paragraph said both words were ones *"this corpus had never said"*, which
+is false of *midbrain* and made the safe half of the finding the only half.
+`/review` round 7.)
+
+> **An item that teaches the corpus a new place-word has widened the corpus past its own
+> guard: add the word to the address lexicon in the same edit that teaches it. And the
+> harder half — A REPORT WORD CAN SIT IN READER TEXT FOR FOUR ITEMS WITHOUT ENTERING THE
+> LEXICON, because **nothing in this family derives the LEXICON from the pages.** The
+> page-facing checks — the corpus sweep, the `minAddresses` floors — read the pages
+> *through* it, so a place-word the lexicon lacks is invisible to them too: deleting
+> `\bmidbrain\b` costs three of seventy-two matches and no floor fires. Sweep the words the
+> corpus already teaches against the lexicon; do not wait for an attack to name one.**
+
+Both tokens were measured over the whole corpus before being taken, which is the only way
+§12.18 permits a widening. `\bmidbrain\b` and `\btect` match on **one file** — this page —
+and nothing else in the corpus begins a word either way. Both cost **zero rows**, and the
+reason is narrower than it first looked: the new section carries no difficulty vocabulary,
+and the `#brainstem` entry that has said *midbrain* since WI-567 carries none either.
+
+**And the counts are quoted at the scope the lexicon actually reads**: `\bmidbrain\b`
+matches **three times in reader text** and `\btect` **four**. Everything else either token
+matches on that page is in the FRONT MATTER, which the strip removes before any guard sees it —
+and the two halves of that are not the same: `midbrain`'s are all in source comments, while four
+of `tect`'s are in source **`title:` values**, which `ContentPage.cshtml` renders into the
+reader's source list. **So those four are invisible to every guard in this item and visible to
+every reader**, which is the blind spot `TheSectionForTheReaderWhoseOnlyWordIsAPlace` records by
+name. (An earlier version of this sentence said "source comments" of both tokens, which is the
+claim-in-two-homes shape this section is written about, with the wrong version in the ruling.
+`/review` round 16.)
+
+**THE WHOLE-FILE COUNTS WERE HERE AND ARE DELETED, AND WHY IS THE BEST EXAMPLE THIS ITEM
+PRODUCED OF ITS OWN RULE.** `/review` round 2 corrected the "twenty files" claim below and,
+in the same edit, wrote whole-file counts of *six* and *thirteen* — which the note it was
+adding in that edit made wrong. The note it added said *tectal*, *midbrain* and *roof of the
+midbrain* in its own text, so the file counts became 8 and 14 the moment the sentence
+quoting them was written. (Round 11: two of the three strings this
+sentence used to quote no longer exist in the file, because round 10 replaced that note with
+a citation whose `title:` uses a hyphen. **A ruling that quotes a file quotes a moving
+target**; what is durable is the mechanism, so the words are named rather than quoted.)
+
+> **A count in prose about something the code can enumerate does not merely drift. It can
+> be falsified by the sentence that states it.**
+
+So they are deleted rather than re-derived: they are the scope no guard reads, they move
+whenever anybody edits a source comment, and the reader-text numbers were right both times.
+
+**The bare form was measured too and it is the cautionary half.** `tect` without the word
+boundary matches **34 files** under `Content/` — 17 of them in reader text — and the
+matches are dominated by ***protect*** and its inflections (34 occurrences) and
+***detection*** (20) — substring counts and CASE-INSENSITIVE, which are the relevant ones
+because the whole subject of this paragraph is what a bare, case-insensitive token matches;
+a case-sensitive pass over the same scope gives 32 and 19, which is what would make a
+re-checker think the numbers had drifted; the word-bounded count for
+*protect* is 18, and quoting that one reversed the ranking until `/review` round 5. A `*.md`
+scope, since
+`Content/` also holds two `.cs` files that match. (An earlier version of
+this paragraph said "twenty files including the shared escalation block", and all three
+parts of that were wrong: no scope gives twenty; it named *detect* and *detected*, which
+are the rare ones at one and three; and `blocks/escalation.md`'s only match is inside a
+source URL in its FRONT MATTER, so it is stripped before composition and the token could
+never have reached a single composed page through it. **The example chosen to show the
+widest blast radius was the one place the token cannot go.** §12.19's own line — *a
+quotation in a ruling is a claim; grep it like one* — and this claim had already been
+copied into four files.)
+Each token got a control carrying exactly ONE address in the same edit, and
+`EveryAddressTokenWi571AddedHasAControlThatFailsWithoutIt` is the acceptance.
+
+#### The four branches §12.18's stop rule left, closed
+
+§12.19 left two address tokens whose `(?:the|your)` branches no ablation could reach, and
+the cause was **masking** rather than absence: the only control carrying each token also
+carried a second address token, so narrowing the first could never show a loss.
+`(?:top|front|back) of (?:the|your) skull` was masked inside its control by `\bfloor\b`;
+`(?:top|back) of (?:the|your) head` by `\bcliv`. Four controls carrying exactly one address
+each closed it, and every `(?:the|your)` token in the lexicon is now watched.
+
+**The completeness claim is computed, and it is not keyed to a spelling.** The first version
+counted occurrences of the literal `(?:the|your)`, which is a ban list in disguise: a later
+token written `(?:your|the)` or `(the|your)` adds an unwatched branch and the check stays
+green. It counts `your` instead — a word that appears in this lexicon only inside determiner
+alternations — so the invariant holds however the alternation is spelled.
+
+#### What was barred, and the barred wording was in the item's own sources
+
+The backlog barred Dana-Farber's and Boston Children's cure-rate and *"excellent
+prognosis"* language. **All FOUR of the sources this item read carry the same
+shape:** Imoto et al write *"tends to have a good prognosis"*; the systematic review's
+abstract opens *"generally have a benign clinical course"*; the series added at `/review`
+round 1 concludes *"the natural history of these lesions lends to excellent long-term
+survival"*; and the 2013 review added at round 10 opens *"generally benign neoplastic
+lesions"*. (Three, until round 10 found the fourth source — and round 11 found this sentence
+still saying three while two other homes said four. **Adding a source means re-counting every
+sentence that counts them.**)
+
+> **A bar has to be a PROPERTY, not a blocklist of publishers.** §12.14 said banning a
+> citation is not fixing a claim; this is the same rule from the other end — the claim was
+> never the publishers' invention, it is what the literature says, and a page that only
+> refuses two hospital websites has refused nothing.
+
+Also barred and recorded by name, because the next person to open these sources meets each
+one in an abstract:
+
+- **Every figure from the review.** Its own resection rate runs *"from 2.3 to 100.0%"*
+  across studies for one tumor. The page prints that qualitatively — *from almost never to
+  always, depending on which study was counted* — and routes to the section that already
+  owns the argument. (`/review` caught the first draft writing *"nearly always"* for 100%
+  and *"which hospital"* for what the source counted across **studies**. Understating the
+  top of that range weakens the item's own case, since the WIDTH of the spread is the whole
+  reason no number is published.)
+- **A location keyed to an outcome, in a source this page now cites.**
+  `10.3171/2023.4.peds22485` reports *"lesion involvement of the pons … significantly
+  associated with worse radiographic PFS"* and involvement *"beyond the tectum"* as a
+  predictor of needing treatment. That is the Wave 6 artifact itself.
+- **A size rule.** The review says resection *"should be reserved for large tumors"*. This
+  page refused a size claim twice already (§12.17) in the OPPOSITE direction, and a reader
+  who measures themselves against *"large"* has been handed a rule nobody meant them to
+  apply.
+- **`visual field` and driving.** WI-573 owns both, and **the three sources here that carry
+  symptom or presentation lists each offered the chance to break that ban while quoting
+  correctly**: the review's abstract
+  names *"visual field changes"* among the common findings, Imoto's symptom sentence says
+  *"along with visual field deficits and cognitive dysfunction"*, and the third source
+  names *"extraocular eye movement abnormalities at presentation"* **and, in its
+  introduction, *"Neurological deficits are less commonly observed but may include
+  nystagmus, diplopia, seizures, and visual deficits"*** — because the DOI serves that
+  paper's FULL TEXT, not just its abstract, which `/review` round 6 noticed while the item's
+  own notes were calling it an abstract. So the ban held **four** times across three
+  sources. That is what a ban on another item's subject is for. (An earlier version of
+  this bullet said *"this is the one
+  place"* — a closed count, §12.17's error again, and the page's own suite bans that string
+  in reader text. **A count of one is the easiest closed count to believe, because nobody
+  recounts it.** The Imoto quotation in the front matter had also been truncated one clause
+  short of the words that falsify it, which is the same defect this item records for the
+  review.)
+
+#### The unverified classification claim: chased, and it stays unpublished
+
+The backlog flagged as unverified the claim that CNS5 folds most tectal gliomas into
+*"diffuse low-grade glioma, MAPK pathway-altered"*, and asked for
+`10.1007/s00401-026-03066-7` to be chased before any classification sentence. **Chased. The
+DOI is real and the paper cannot be read.** Tauziède-Espariat, Métais, Aldape et al,
+*"Tectal glioma versus pilocytic astrocytoma: revisiting tumor classification in light of
+molecular heterogeneity"*, Acta Neuropathologica 152, article 22, Correspondence, published
+2026-08-20, **PMID 42622715**. The publisher page says *"This is a preview of subscription
+content"* and carries no abstract; Europe PMC has `isOpenAccess: N`, `inEPMC: N`, no PMCID
+and a null abstract. There is no second route.
+
+**So §12.17's Moffitt rule applies and no classification sentence is published.** The claim
+is neither published nor refuted — it is recorded as still unverified, with its identifiers,
+so the next item does not chase it from scratch.
+
+**WHAT THE PAGE SAYS INSTEAD IS AN OBSERVATION ABOUT THE OPEN-ACCESS PAPER'S TEXT, NOT A
+CONCLUSION ATTRIBUTED TO ITS AUTHORS — AND THE DIFFERENCE TOOK TWO ROUNDS TO GET RIGHT.**
+Imoto et al. say both *"TG is typically classified as pilocytic astrocytoma (PA) or lower
+grade astrocytic glioma"* and *"the DNA methylation profile of TG suggests its
+classification as a distinct entity from other lower grade glioma (LrGG)s"*. Those two do
+not agree about which named category the group belongs to, and **that disagreement is a
+fact about the paper's own words**, which a reader can check. So the page says the tissue
+turned out to be a different thing in different people, and that the paper's own words
+about where the group belongs do not agree with each other. It names no answer.
+
+It said *"where the group belongs among the named types is still an open question"* until
+`/review` round 3, attributed to the paper with the verb *reports*. Imoto never says that;
+it is the inference a reader would draw, which is a different thing from a finding.
+
+> **An observation about what a source SAYS can be published where a conclusion drawn FROM
+> it cannot. The OBJECT of the verb is the whole difference: *says* and *reports* are right
+> for what is in the paper, and wrong for what a reader would conclude from it.**
+
+This maxim took two rounds to stop being a ban list. Round 4 wrote *"'reports' is the one
+that launders one into the other"*, which condemns a verb this page uses correctly twice
+four paragraphs away — *"Another paper … reports the same two parts"* and *"It also reports
+that in adults these are more often found by chance"*, both genuine findings of that paper.
+Round 5 fixed the clause after the colon and left *"the verb is the whole difference"*
+standing in front of it, which round 6 pointed out is self-contradicting: if the same two
+verbs are right or wrong depending on what they are attached to, **the verb is exactly not
+the difference.** §12.17's ban-list lesson, arriving inside a maxim about attribution.
+
+**AND THIS PARAGRAPH IS WHERE THAT FIX FAILED TO LAND, WHICH IS ROUND 4's ONLY BLOCKER.**
+Round 3 deleted the sentence from the page and left it in the ruling and in the page's own
+front matter — the ruling still saying the page said it, and still calling it *"the one thing
+the open-access source carries"*, which is the attribution being removed. The suite bans the
+phrase in reader text, so §12.20 was describing prose its own guard forbade.
+`TestsLibraryPagesTests.cs` carries the line this broke, written in the same round:
+**correcting a claim in one file does not correct its copies.** Grep the fix, not just the
+defect.
+
+#### Grepping a quotation is not enough: grep it in the characters the source used
+
+§12.19's standing rule is that **a quotation in a ruling is a claim; grep it like one.** This
+item applied that rule and it still nearly published a quotation nobody could check, because
+the rule is incomplete.
+
+`/review` round 10 asked for the open-access paper's cohort to be recorded — the section says
+*"in the small group one study followed"*, and *small group* had no measurement behind it on a
+page whose standard is a verbatim quote beside every used claim. The note written to close that
+**failed its own grep twice**: first on the en dash in *6–45*, then on the **non-breaking
+space** between the figure and its unit. The fetched text reads `30.5` + **U+00A0** +
+`years`, and the range as
+`6` + **U+2013** + `45` + **U+00A0** + `years`. The characters are NAMED here rather
+than pasted, and that is not fussiness: pasted, they are indistinguishable from a space
+and a hyphen, so a paragraph explaining the trap would demonstrate nothing and would
+quietly put three invisible characters into a design doc. (The first version of this
+paragraph did exactly that, including a stray U+200B nobody asked for.) Typed with an
+ordinary space and a hyphen, the quotation matched nothing.
+
+> **A grep that finds nothing looks exactly like a quotation that was invented.** So the rule
+> needs its second half: grep a quotation in the characters the SOURCE used, and where a
+> quotation would span a number-unit boundary, stop it before the boundary rather than retype
+> the whitespace.
+
+Every item in this corpus that quotes a figure is exposed to this, which is why it is here and
+not in one page's front matter.
+
+**AND IT PROMPTED A SWEEP OF ALL OF THEM, which is the part to copy.** Rather than fix the one
+note, this item ran every source quotation in the page's front matter against every fetched
+source text for both items that wrote them — `work_files/wi571/verify-quotes4.py`, whose
+printed output is the record rather than a number repeated here. (Versions 2 and 3 are the
+artifacts of the two defects below; **naming the broken one as the record is what `/review`
+round 13 caught this paragraph doing.**) **The residue falls into six
+categories, and the list was rewritten twice before it was derived from the items rather than
+the items sorted into it:**
+
+1. **Quotations of CORPUS ARTIFACTS rather than of sources** — this page's own reader text, a
+   sentence from another page, an earlier draft the note records as deleted, a repo file
+   (`taxonomy.yml`'s header — where the nested `'close enough'` is a single-quote substitution
+   for the file's own double quotes, which is itself a modified quotation forced by nesting and
+   recorded here rather than left to be found), a §12.x ruling, or the backlog's own refused
+   claim. **This is the
+   largest group and no version of the list had it**, because the question the list was written
+   to answer was *which source is this from* and most of these are not from a source at all.
+2. A source neither item could save locally — the Europe PMC article, whose HTML 403s.
+3. A legitimate elision (`…`) or a reconstruction from a bulleted list, where the ` / `
+   separators are the note's own.
+4. **A full stop the paper prints after a REFERENCE MARKER** — *"…occurring predominantly in
+   children."* against `…in children [ 8 , 12 ].` Several of these were live across two items, and
+   the earlier four-category list had concluded *"no quotation on the page is unsupported"* over
+   them. All four now stop before the marker.
+5. **An artefact of the FETCHED TEXT's own extraction** — the ACS page renders as `(CSF) ,` with
+   a space before the comma, which the publisher does not print. **The quotation is right and
+   the haystack is wrong**, which is the one residue category where the fix is to leave the
+   quotation alone.
+6. Segments the check sets aside before looking — **a mechanism, not a kind**, which is why it
+   sits last: it drops anything under twenty characters or four words, or carrying a marker only
+   this file's prose uses. It cannot recognise the file's own prose as such, so most of that
+   lands in category 1 instead. (`/review` round 14: an earlier version of this entry claimed it
+   could, which read as a category when it is a filter.)
+
+> **A residue you have categorised is only as good as the categories. If a list of reasons
+> explains every item, check that it was written from the items rather than the items sorted
+> into the list.** This section's own list failed that twice — once because the extractor was
+> hiding a third of the subject, and once because, with the subject recovered, the two largest
+> groups had no category.
+
+**AND THE SWEEP ITSELF HAD A BLIND SPOT COVERING ABOUT A THIRD OF ITS SUBJECT, WHICH IS THE
+FINDING THAT OUTRANKS EVERY QUOTATION IT FOUND.** The extractor was
+`re.findall(r'"([^"]{25,})"')`, and a length filter applied AT EXTRACTION re-phases the
+pairing: the page has a quotation shorter than the floor (*"twelve"*), so from there every
+CLOSING quote pairs with the next OPENING one — the real quotations became the "between" text
+and the commentary became the candidates, which a later filter then dropped as commentary.
+**About a third of the subject was never looked at**, including the sentence this section calls
+*the sentence the whole section turns on*. Re-reading the recovered residue produced three more
+defects: an em dash typed as a hyphen, two more reference-marker full stops, and a phrase inside
+a *"Verbatim:"* list that the source it names does not contain. (The exact candidate counts
+before and after are in the scripts' output, not here — round 11 had already corrected this
+section for giving two different numbers for one run, and round 13 found the replacement pair
+falsified by the very fixes that prompted it. **Run the script.**)
+
+> **A check that filters its candidates while pairing them is not measuring what you think.
+> Extract first, filter second — and make the coverage LOUD: assert that every delimiter is
+> accounted for, so a silent re-phasing fails instead of reporting a smaller job done.**
+
+This is §12.17's rule for an iterate-and-check guard (*say out loud how much you looked at*)
+applied to a scratch script — and the reason it matters here is that the sweep's output was
+being used to underwrite a completeness claim about the page's whole audit trail.
+
+**AND THE THIRD VERSION HAD A WORSE PROBLEM THAN THE SECOND, WHICH IS THE ONE TO CARRY
+FORWARD.** Its haystack was a glob over both items' working directories, and **nine of the
+twenty-four files it loaded were not publisher fetches at all** — six rendered captures of
+BrainHarbor's own pages, a ContentCheck log, a pre-deploy baseline and a regex scratch file. So
+a quotation could be "verified" against this site's own rendered output, and two were: a
+sentence this page attributes to itself by kind, and one it borrows from
+`/tumors/all-brain-tumors`. Both belong in residue category 1, and the sweep was quietly
+absorbing the category this section calls the largest.
+
+> **A check whose haystack contains its own subject cannot report a miss.**
+
+And the floor written to prove the haystack was complete — *abort if fewer than twenty texts* —
+**was being met by the padding**: there are fifteen real fetches, so dropping the nine
+non-sources makes the old version abort.
+
+> **A floor satisfied by the thing that makes the measurement wrong is worse than no floor.**
+
+The source set is a whitelist now, asserted against the directory, and the run prints the files
+it deliberately excluded — so a fetch added later is either listed on purpose or reported.
+(Fifteen fetches, and **three of them are walls rather than text**: two reCAPTCHA pages
+(`nsr-pubmed.txt`, `statpearls-hydro.txt`) and the Acta paywall preview (`acta.txt`), kept as
+evidence that
+the route was tried. Naming them matters because two OTHER fetches carry the same publisher's
+"preview of subscription content" banner while still holding their abstracts, so a reader
+re-deriving the split from the banner alone gets five. Naming the split matters because
+that fifteen is now doing the work the discredited floor used to do, and a number doing that
+work is the next padded floor.)
+
+**AND THE FOURTH VERSION STILL MISSED ONE, WHICH IS ROUND 13's LESSON ONE LEVEL DOWN.** The
+whitelist holds TWO ROUTES of the same paper for two of the sources, and **on one of those pairs
+the API route normalises the publisher's dashes to hyphens.** (One pair only: the other
+aggregator fetch is a reCAPTCHA wall, so it normalises nothing and cannot exercise the rule. The
+check watches both; only one can fire today, and saying so is the difference between a guard and
+a guard somebody believes in.) So a
+quotation typed from the normalising copy verifies against the normalising copy, and the
+divergence from the route the note *says* it read is silent. That is exactly how a fourth
+en-dash defect survived to `/review` round 14, on a fact this page's front matter had already
+written down twice.
+
+> **A haystack that contains a NORMALISING COPY of its subject cannot report a normalisation
+> defect.** Name the file each quotation matched, and say so when the only match is the
+> aggregator's.
+
+Three real defects came out of the sweep: the non-breaking space above, the two reference
+markers, and a quotation with words CAPITALISED inside the quotation marks for emphasis —
+**which is a modified quotation, and it fails the grep for the same reason.** The emphasis
+belongs outside the marks. The CAPS one was found twice, because the first fix corrected one
+copy and §12.20 said it was fixed while the page's own copy still shouted.
+
+The sweep's own weakness is written down too, because a scratch check with a high
+false-positive rate teaches nothing: its first version reported most of its candidates
+"unmatched" by treating the prose *between* two quotations as a quotation. A filter and both
+items' source sets cut that to a residue readable by hand. **State what a check cannot see
+before quoting its number** — and do not quote its number here at all, which is round 11's
+correction: two sentences in this section gave two different counts for one script run, in the
+section whose own maxim is that a count in prose can be falsified by the sentence that states
+it. Run the script.
+
+#### A sweep written from the instance finds the instance
+
+The item's last three rounds were one defect, found three times, because each sweep for it was
+written from the copy in front of the author.
+
+A negation guard is written as *"do not fire if a negation is nearby"*, and the natural
+expression is `\b(?:not|never|no|n't|hardly|far from)\b`. **The leading `\b` binds the whole
+group**, and there is no word boundary inside *isn't* — so `n't` can never match, and the
+alternative added to rescue contracted negations does nothing.
+
+- **Round 16** found it in one lookbehind on this item's own page guard and fixed it.
+- **Round 17** found a second live copy by grepping the FIX rather than the defect — in
+  `ProtonTherapyPageTests`, where the guard **fired on *"Protons aren't better than x-rays"***,
+  the contracted form of the sentence its own docstring says it exists to protect. It then swept
+  with `\(\?<!\\b\(\?:` — a lookbehind containing a non-capturing group, which is exactly what
+  both known instances had been — got a clean report over the rest, and wrote that claim into a
+  comment.
+- **Round 18** swept over `.cs` **and** `.md` and found **five more**: **four** positive
+  `Regex.IsMatch` guards with CAPTURING groups, which round 17's pattern could not match, and
+  **the prescription in §12.8 itself**, which called the broken pattern *"the working form"*.
+
+> **A sweep written from the instance finds the instance. Sweep for the DEFECT, in every file
+> type, and remember that the RULING is where the next copy will be written from.**
+
+**AND THE FOUR FOUND LAST ARE THE WORST OF THE SIX, because the consequence runs the other way.**
+Those are POSITIVE asserts — *a negation must be present* — so a dead alternative does not weaken
+them, **it makes them FALSE-FAIL a correct page that negates with a contraction.** §12.8's own
+rule is that a rule which fails a correct page is worse than no rule, and
+`TestsLibraryPagesTests` names the rescued sentence in the FALSE FAIL list above its own pattern:
+*"isn't a minor procedure" — all correct, all flagged.* The widening written to rescue it had
+never worked. Every one is now boundary-inside-the-alternation, and the suite is unchanged at
+2,601 — **which is the measurement that says no page was relying on the bug.**
+
+**A second hole came out of the same const and closed for free.** `ProtonTherapyPageTests`'
+comment said *"a negation inside a superlative is not a negation, which is why 'no better way' is
+not in the list"* — while `\bno` was in the list, so *"There is no better option than proton
+therapy"* was suppressed. Dropping `\bno` costs nothing measurable. **A comment that says a case
+is handled, beside code that suppresses it, is worse than no comment: it stops the next reader
+looking.**
+
+**AND ROUND 18's SWEEP WAS THE THIRD ONE WRITTEN FROM THE WRONG THING, which is the last and
+sharpest turn of this.** Its criterion was *"an alternative that cannot BEGIN a word"* — and
+`n't` begins with `n`, a word character, so **the criterion did not describe the defect at all.**
+`/review` round 19 fed that script the five pre-fix files from `HEAD` — every instance this item
+ever found — and it printed *"none"* and exited 0.
+
+> **A sweep whose criterion is not the defect returns a clean bill it cannot issue. Validate a
+> sweep against the BROKEN tree, not the fixed one.**
+
+The defect is a **word-internal** alternative, and that is measurable rather than a judgement
+about first characters:
+
+> **An alternative `A` is unreachable behind a group-leading `\b` when `A` occurs in the corpus
+> and `\bA` never does.**
+
+Fed the same five pre-fix files, that criterion catches all five. **Its residue still needs
+reading, and saying so is the point** — two benign classes come out of it: **suffix alternations**,
+where the `\b` is correctly in front of the stem and the alternatives are endings
+(`\b(?:plan|scan)ned`), and `BrainHarbor.Safety`'s **apostrophe-free spellings** (`arent`,
+`doesnt`), which exist for text a model might emit and so never appear at a word boundary in
+curated prose. Earlier versions of this paragraph claimed the sweep reported *none*;
+**a sweep's clean run is only worth what its criterion is worth**, and this one's output is a list
+to read rather than a verdict. `work_files/wi571/sweep-boundary.py` carries the criterion, the
+validation against the broken tree, and both benign classes.
+
+#### Two roundings the item got wrong first, both in the direction that matters
+
+1. **"Watched rather than TREATED" was false, and it ran in the under-triage direction.**
+   The first draft said most of these children were *"watched with repeat scans rather than
+   treated"*. The review's very next sentence is *"However, patients often need treatment
+   for obstructive hydrocephalus"*, and CSF diversion happened in **89.3%** of them. 65.4%
+   monitored supports *most were watched*; *rather than treated* is false of a group where
+   nine in ten had a procedure — and `treated` is the SOURCE's own word for the thing they
+   needed. On the one page that owns the fluid escalation, that understatement is the one
+   direction a mistake here may not run. The contrast is now with having the **growth**
+   removed, which is what the review actually contrasts, and the sentence that keeps it
+   honest (*"That is not the same as nothing being done"*) is pinned.
+
+2. **AN ABSENCE CLAIM DID NOT SURVIVE ONE REVIEW ROUND.** The section said *"nothing read
+   for this page says the same of adults"*. `/review` falsified it inside a round by finding
+   a 170-patient series whose median age is 24 — half of it adult — reporting the SAME
+   two-part approach (*"treatment mainly consists of observation and management of
+   hydrocephalus"*). §12.17's rule is that an unreachable source must be recorded so the
+   next item does not re-investigate it; **the other half of that rule is that an absence
+   is worth re-searching before it is published.** An absence claim is only as good as its
+   last search, and this one had a source behind it within a round. The page now hands the
+   adult reader the two-part shape instead of a shrug.
+
+#### Two guards that could go green about the same deletion
+
+Worth its own note, because neither was individually wrong.
+
+The regions preamble was allowed to name the word only as a door, expressed as
+*if the preamble says `tectal` then it must also carry the route*. That is a **no-op the
+moment the word goes** — and the only unconditional assertion of the route was scoped to
+`Section(RegionsHeading)`, which per §12.19 finding 1 spans all nine `###` entries. So an
+edit dropping the word from the preamble and moving the link down into a region entry left
+**both** green and left the preamble's reader with nothing.
+
+> **A conditional guard and a loosely-scoped one can be green about the same deletion.
+> Assert both halves unconditionally, against the same slice of text.**
+
+And the retired ban needed a replacement, not a deletion.
+`ThePageDoesNotTakeOverTheWorkOfTheItemsThatFollowIt` forbade `tectal` on this page
+because WI-571 owned the word; WI-571 rewrote it rather than deleting it (WI-547's
+precedent). But *"require the word in the section"* is a different property from *"forbid it
+everywhere else"*, and nothing was stopping tectal material spreading into the fluid or
+surgery sections — the two least able to take a location-keyed plan claim. Containment is
+now asserted by occurrence count: every instance on the page is either the section or the
+preamble's one door.
+
+#### The reading grade, measured after every write
+
+§12.17 measured that a single hard sentence moves this page's average by 0.1 and passes
+ContentCheck. So this item enforced a per-sentence **word ceiling** of 24 and re-measured
+after every write — which is how it caught its own regression: the fix for the *"rather than
+treated"* blocker pushed the longest sentence in the section from 22 words back to 28.
+**A correctness fix undoing a readability fix is a trade nobody notices unless the number is
+re-measured**, and the page shipped at grade **5.4**, below the **5.6** it started at.
+
+**AND THE CEILING IS A SHIPPED TEST, NOT A SCRATCH SCRIPT** —
+`NoSentenceInTheSectionRunsPastTheCeilingAPageAverageCannotSee`. It was tooling until
+`/review` round 6 asked the obvious question: the section that regressed twice had no guard.
+This is NOT the corpus-wide per-sentence check §12.17 hands to `/pm`, which needs a sweep
+first because it will not be this page alone. It is one section's ceiling, and it is the
+cheapest possible answer to a gate that averages.

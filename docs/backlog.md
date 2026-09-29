@@ -4132,8 +4132,13 @@ table.** Every item below is an expectation-setter and question-generator:
 a location against an outcome.
 
 **NO PROGNOSIS, AND NO LOCATION PERCENTAGES.** The tectal literature reports
-resection rates from **2.3% to 100%** across centres for the same tumour. That
-spread is the argument for publishing none of them.
+resection rates from **2.3% to 100%** between the studies one systematic review
+pooled, for the same tumor. That spread is the argument for publishing none of
+them. (WI-571 corrected this line at its `/review` round 9: it said "across
+centres", which the source does not — *"Resection was the most variable treatment
+option between individual studies"* — **the emphasis belongs outside the marks, which is
+§12.20's own rule and which an earlier version of this line broke** — and "tumour", a British
+form `CuratedPage.BritishForms` bans in reader text and nothing gates in a design doc.)
 
 - [x] **WI-567 `/where-your-tumor-is` — the location page**
   Goal: give the reader who knows WHERE their tumor is, but not what it is
@@ -4400,7 +4405,7 @@ spread is the argument for publishing none of them.
   were believed over the file, twice costing a whole round; §12.19 finding 8 is
   that rule with a date on it.
 
-- [ ] **WI-571 Tectal glioma, and the tumors whose only name is a location**
+- [x] **WI-571 Tectal glioma, and the tumors whose only name is a location**
   Goal: give the reader who was told "tectal glioma" somewhere to land.
   **IT CANNOT BE TUMOR TYPE #24.** "Tectal glioma" is a location descriptor, not
   a WHO CNS5 name, and §12.2 item 3 requires CNS5 naming throughout. Adding it
@@ -4421,6 +4426,71 @@ spread is the argument for publishing none of them.
   Europe PMC full-text search returned zero hits. Chase Acta Neuropathologica
   2026 `10.1007/s00401-026-03066-7` (not read) before writing classification.
   Depends on: WI-567.
+
+  **Shipped 2026-09-26.** The ruling is `docs/content-pipeline.md` **§12.20**.
+  **THE DOI WAS CHASED AND IT CANNOT BE READ**, which is the item's most consequential
+  non-result: it resolves to a real paper (Tauziede-Espariat et al, *"Tectal glioma
+  versus pilocytic astrocytoma: revisiting tumor classification in light of molecular
+  heterogeneity"*, Acta Neuropathologica 152:22, Correspondence, 2026-08-20, **PMID
+  42622715**) that is paywalled with no abstract anywhere — Europe PMC has
+  `isOpenAccess: N`, `inEPMC: N`, no PMCID and a null abstract. §12.17's Moffitt rule
+  applies and **no classification sentence is published**; the claim is recorded as still
+  unverified with its identifiers so nobody chases it twice.
+  **THE SEARCH-ALIAS HALF NEEDED NO MECHANISM, AND BOTH "ALIAS" HOMES ARE REFUSED IN
+  WRITING.** `ContentStore.SearchPages` scores `page.Markdown`, which `Parse` sets to the
+  COMPOSED BODY, so the word in the prose is the whole mechanism — and a word in a
+  front-matter comment is invisible to search and to the reader by the same mechanism.
+  `taxonomy.yml`'s `also` is refused by that file's own header (aliases "never render" and
+  must be "true synonyms"); a glossary entry is refused by WI-519's rule, with the trigger
+  for revisiting DERIVED from the corpus rather than remembered.
+  **THE ONE LESSON THAT GENERALISES: THE ITEM'S OWN NEW WORDS WERE OUTSIDE ITS OWN
+  GUARD.** Planting a row inside the new section would not fire, because the address lexicon
+  had never heard of *midbrain* or *tectum*. **And only one of those two was new**: WI-567's
+  `#brainstem` entry on this same page has taught *midbrain* in reader text since it shipped,
+  through two later lexicon widenings and every ablation test, and nothing found it until a
+  planted row needed it — **so the harder half of the lesson is to sweep the words the corpus
+  already teaches, not just to add the ones you teach**. Both added, measured at zero cost,
+  each with a control carrying exactly one address. The bare `tect` was measured too and
+  rejected — **34 `*.md` files** under
+  `Content/` (36 counting two `.cs` files that also match), dominated by *protect* and its
+  inflections. (This note said "twenty files" until `/review` round 2, and carried the
+  wrong scope and the wrong ranking until round 6 — while the two copies round 5 corrected
+  had the right version. **Correcting a claim in one file does not correct its copies**,
+  which §12.20 says about this very claim.)
+  Also: the four `(?:the|your)` branches §12.18's stop rule handed forward are CLOSED, and
+  the completeness claim is computed off the lexicon rather than written in prose.
+  **Two roundings were wrong first, both in the direction that matters**: "watched rather
+  than TREATED" was false of a cohort where 89.3% had CSF diversion (the review's own next
+  sentence is "patients often need treatment for obstructive hydrocephalus"), and an
+  absence claim — "nothing read for this page says the same of adults" — was falsified
+  inside one `/review` round by a 170-patient series whose median age is 24.
+  **Proof:** suite **2,601/2,601**; ContentCheck 283/0 with the page at grade **5.4**,
+  below the 5.6 it started at; the section's longest sentence held at 23 under a 24-word
+  ceiling that is now a shipped test
+  (`NoSentenceInTheSectionRunsPastTheCeilingAPageAverageCannotSee`) rather than a scratch
+  script; and **nineteen `/review` rounds, every one of which found blockers** — the run was
+  stopped there as a deliberate call rather than because a round came back clean, on the basis
+  that every blocker from round 13 on was a factual error in a note, a doc or the scratch
+  tooling, and six consecutive reviewers verified the reader-facing section, its routes, its
+  source quotations and every medical-safety bar clean. **The number is printed here because it
+  is now closed and measured, which is what an earlier version of this line could not say** —
+  almost all of them inside the previous round's fix, which is the shape §12.20 is written
+  about: one claim written in several places and corrected in fewer. Two
+  of round 12's were text GARBLES written by round 11's own edit script, which had re-grepped
+  for the text it added and not for the text it should have removed; round 13's sharpest was
+  that the item's own quotation-checking sweep had **BrainHarbor's rendered pages in its
+  haystack**, so the page could verify its own words against itself. **The tally is deliberately
+  not printed here:** two earlier versions of this line gave a number, and both were wrong
+  before the item shipped.
+  **THE SHAPE IS THE ITEM'S OWN LESSON AND IT IS IN §12.20.**
+  Round 9 stopped hand-correcting copies and collapsed the duplicated narrative into
+  pointers at the ruling (§12.8's factor-at-the-second-use rule), which is the only fix that
+  addressed the shape rather than an instance. **Round 10 found the sharpest one: a source
+  recorded for nine rounds as "searched and NOT read: it is not open access and has no
+  abstract in EPMC", whose abstract was in the item's own saved JSON the whole time -- and
+  which SOURCES the claim round 1 had deleted as an inference.** It is cited now. An absence
+  claim about a source is the same liability as an absence claim about the literature, and
+  nobody re-opens a source recorded as unopenable.
 
 - [ ] **WI-572 The brain diagram: one picture of where the regions are**
   Goal: let a reader see where their location is, instead of parsing "upper back

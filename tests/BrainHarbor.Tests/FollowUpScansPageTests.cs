@@ -552,7 +552,15 @@ public sealed class FollowUpScansPageContentTests
                 var before = sentence[Math.Max(0, match.Index - 40)..match.Index];
 
                 Assert.True(
-                    Regex.IsMatch(before, @"\b(not|never|cannot|can't|hardly|no|n't|far from)\b[^.,;:]{0,20}$",
+                    // Boundary inside the alternation (WI-571 /review round 18): with it in
+                    // front of the group, **`n't`** could never match -- there is no word
+                    // boundary inside "isn't" -- so this positive assert FALSE-FAILED any
+                    // correct sentence that negated with that contraction. (`can't` was never
+                    // dead: it begins with a word character. Round 19 corrected three comments
+                    // that said it was.)
+                    Regex.IsMatch(before,
+                        @"(?:\bnot|\bnever|\bcannot|can't"
+                            + @"|\bhardly|\bno|n't|\bfar from)\b[^.,;:]{0,20}$",
                         RegexOptions.IgnoreCase),
                     $"this sentence promises a scan can settle pseudoprogression: \"{sentence}\". "
                     + "Two sources disagree about how well the extra scans do, and both agree the "
@@ -770,7 +778,11 @@ public sealed class FollowUpScansPageContentTests
                         // sentence is "Nobody has shown that closing that gap
                         // fixes the waiting", and a negation list without them
                         // fails the correct page.
-                        @"\b(not|never|none|nobody|nothing|cannot|can't|hardly|no|n't|far from)\b"
+                        // Boundary inside the alternation (WI-571 /review round 18) -- see the
+                        // sibling guard above for why a leading `\b` kills `n't` and why
+                        // `can't` was never affected.
+                        @"(?:\bnot|\bnever|\bnone|\bnobody|\bnothing|\bcannot"
+                        + @"|can't|\bhardly|\bno|n't|\bfar from)\b"
                         + @"[^.,;:]{0,45}$", RegexOptions.IgnoreCase),
                     $"this sentence promises an intervention works, and five trials say none did: "
                     + $"\"{sentence}\"");
