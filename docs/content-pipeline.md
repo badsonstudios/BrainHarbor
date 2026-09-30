@@ -7942,3 +7942,154 @@ sentence it used to be in, and an instruction needle broken by a hard wrap.
 - **A refusal can be too broad.** A smoke refusal on `Either way` fired on pre-existing
   innocent prose three hundred lines from the edit. Refuse the CLAUSE that was removed, not
   the connective it happened to start with — §12.18's qualify-do-not-ban, in a scratch tool.
+
+### 12.22 The line nothing graded, and the two ways a fix can switch a gate off (WI-575)
+
+§12.17 to §12.21 are about what a page says. This is about the one line most readers
+actually read, which no guard could see: the front-matter `description`.
+`ContentPage.cshtml` renders it as the **first paragraph under the heading** and
+`ContentStore.SearchPages` renders it again as the **blurb under every search hit** —
+and `ContentChecker` graded `page.Markdown`, the composed body, while
+`CuratedPage.ReaderText` strips the front matter by design. Four items fell through the
+gap: WI-524, WI-528, WI-567 (which paid a `/review` blocker that survived three rounds
+inside that one line) and **WI-573, twice in one item**.
+
+#### The hole was real and the corpus fell through it in exactly one way
+
+Swept with the widened text, **all 55 headlines are clean on every rule the corpus
+enforces on its body** — no British form, no em or en dash, no smart quote, no
+non-breaking space, no percentage, no Roman-numeral grade. Every numeral is legitimate
+(WHO grades in Arabic, *"about 1 in 4"*, and `H3 K27`, which is a mutation name and the
+case a digit ban gets wrong for a reason that has nothing to do with grades).
+
+> **So the pain those four items felt was GUARDS NOT READING the description, not the
+> description being wrong.** That is worth measuring before deciding what to build: the
+> fix was structural — one promoted helper and one corpus sweep — and not a content job.
+
+**The one rule nothing applied is the one that finds something, and it finds a lot.**
+41 of 49 gradeable descriptions read above the 6.0 limit; median 8.4, max 19.7. The cause
+is **not vocabulary** — the words are simple (*"Why you were put on one"*, *"what the
+drug does to sleep, appetite, mood"*). **45 of the 55** are a contents list in one or two
+comma-spliced sentences, 15 of them a single sentence, and the longest sentence runs to a
+median of 27 words across the corpus (28 across the gradeable 49) and a maximum of 51.
+Flesch-Kincaid's words-per-sentence term is doing all of it. That is **WI-578**, raised with the measurement attached so it is sized rather
+than guessed.
+
+#### Reported, not gated — and a non-gate is not nothing
+
+Gating at 6.0 today would fail the build on 41 pages, and a gate that does that becomes
+the thing people route around. The grade is reported at **Warn** (it was Info for a
+round, which renders as `ok` and discharged *"says out loud"* by printing `ok` beside the
+worst line in the corpus), and **drift is gated** by two numbers that catch different
+regressions:
+
+- the **count** over the limit, because the corpus may not grow the backlog; and
+- the **worst grade**, because a count cannot see one description getting worse — push
+  any of the 41 from 8.4 to 40.0 and the count does not move.
+
+A ceiling at today's maximum gates nothing *as a value ratchet*; as the **other half** of
+a count it gates the regression the count is blind to. Both fall on their own as WI-578
+lands, because both are upper bounds.
+
+> **And the down-count names the too-short tally beside it.** A description that drops
+> under the 25-word grading floor stops being graded rather than getting better, so
+> "40, down from 41" and "40, because one got shorter" must not read the same.
+
+#### TWO WAYS A FIX SWITCHED THE GATE OFF, and both were invisible
+
+This is the part to copy, because the gate was dead twice and the suite was green both
+times.
+
+**1. A value round-tripped through a human-readable string.** The grade was recovered by
+parsing it back out of the finding's message. The message was formatted with
+`CurrentCulture`; the parser used `InvariantCulture`. On any comma-decimal locale
+*"reading grade 8,4"* matched nothing, every description scored −1, the count became 0,
+and ContentCheck reported *"0 above the limit, down from 41"* and exited 0. Forever.
+
+> **A value with two representations has one that depends on the machine.** The
+> defence written for the round-trip — *"one place produces it, one place parses it"* —
+> was true and still wrong, because the two places disagreed about culture. The fix is
+> not an invariant format string; it is to stop round-tripping. The grade rides on the
+> record.
+
+**2. And the fix for that switched it off a different way.** The new field was populated
+in exactly one producer. The ratchet's precondition asked for findings that *have* a
+grade and are *not* descriptions — which, with `GradeFinding` still using the
+three-argument constructor, is the empty set. So `pagesWalked` was always 0, and the
+count, the ceiling, the silent-death failure and the progress line were all dead on the
+real corpus.
+
+> **THE FIX FOR A SILENTLY DISABLED GATE SILENTLY DISABLED IT A SECOND WAY, and seven
+> tests written in the same round stayed green through it** — because each built a
+> synthetic input whose body rows carried a grade the real producer never sets.
+> **A test builder that does not match its producer tests the builder.** Branch coverage
+> with a hand-made input proves the branches, not the wiring.
+
+The fix is to stop *inferring* a fact the caller knows: `CheckAll` counts the pages it
+walked and passes the number. And one end-to-end test now runs the real `CheckAll` over
+the shipped corpus and asserts the ratchet was reached — the single assertion that would
+have caught both rounds, and the thing none of the seven could.
+
+#### A normaliser upstream of a check destroys its subject
+
+This landed **twice in one item**, in two different normalisers, and the break harness
+caught both.
+
+- **`Flatten` is `\s+` and .NET's `\s` matches U+00A0**, so flattening replaced the
+  non-breaking space the typography check hunts for with a plain space. The check was
+  green because its subject had been erased upstream.
+- **Both corpus sweeps replaced `\r\n` with `\n` before calling the promoted helper**,
+  so the only two whole-corpus callers were immune to the `\s*$` CRLF trap the helper
+  exists for — while a comment claimed they were that coverage.
+
+> **Ask what a check's subject IS. If it is a character or a line ending, nothing may
+> normalise the text on the way in.** And the corollary for the coverage claim: reading
+> the raw bytes exercises the anchor **on a CRLF checkout only** — a Windows working
+> tree, not the Linux CI runner. That is real coverage and not universal coverage, and
+> the ending suite is what covers the other case.
+
+#### What the anchor is load-bearing for, measured
+
+The `\s*$` in the promoted regexes is the lesson twenty-three hand-written parses were each narrating in
+their own words. Replacing it with `"$`:
+
+| corpus | result |
+|---|---|
+| fully **LF** | the whole suite passes |
+| fully **CRLF** | **208 failures** |
+
+> **The defect is completely invisible on one line ending and catastrophic on the other.**
+> That is why the ending suite is not optional on this corpus, and it is the number the
+> promotion is worth.
+
+#### The promotion, and what "byte-identical" was right about
+
+The backlog said nineteen **byte-identical** copies of a private `Headline` property.
+Whitespace-normalised there are **five** distinct variants; with comments stripped there
+is **one implementation, nineteen times over**. The claim was right about what matters and
+wrong as stated, and the five different narrations of one CRLF lesson are themselves the
+argument for promoting it.
+
+Counting every hand-written front-matter parse rather than just the properties, the first
+pass removed all of them but one — and the survivor was found by `/review` in a file whose
+own `Headline` had already been promoted, which is §12.20's *correcting a claim in one file
+does not correct its copies* in a file the correction had touched. **Zero remain.**
+
+> **The promotion took the BEST version, not the most common one.** Nineteen copies
+> asserted the title and description together with no context; the twentieth call site
+> asserted them separately with the page's slug in each message. A promotion that keeps
+> the weaker form because it had more copies is a vote rather than a decision.
+
+#### Two smaller things worth carrying
+
+- **A set defined by "every finding that looks like X" is redefined by every new kind of
+  X.** `EveryShippedPagePassesTheReadabilityGate` broke for the third time this way —
+  WI-505 added glossary grades, WI-575 added description grades — and each fix added
+  another exclusion. It is defined positively now: a finding whose file is exactly a page
+  path. And its set-difference assertions compare against the **directory**, not against
+  another 55-element subset of the same 55 files, which is what the previous pair did and
+  why they could never fail.
+- **A ban list can be too broad in a scratch tool too.** A smoke refusal on `Either way`
+  fired on innocent pre-existing prose three hundred lines from the edit; a bare Roman
+  numeral fires on `IV` meaning **intravenous**, which is live on
+  `/treatments/chemotherapy`. Refuse the clause, not the word it happens to start with.

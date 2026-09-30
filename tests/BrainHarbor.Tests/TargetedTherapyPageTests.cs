@@ -81,18 +81,16 @@ public sealed class TargetedTherapyPageContentTests
     private static string Reader(string section) =>
         Regex.Replace(Regex.Replace(section, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
-    private static string Headline
-    {
-        get
-        {
-            var front = CuratedPage.FrontMatter(Page);
-            var title = Regex.Match(front, @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
-            var description = Regex.Match(front, @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
-            Assert.False(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description),
-                "the title or description could not be read, so the guards over them prove nothing");
-            return title + " " + description;
-        }
-    }
+    /// <summary>
+    /// The title and description a reader meets before the body — <b>promoted to
+    /// <see cref="CuratedPage.Headline"/> by WI-575</b>, which found this property
+    /// duplicated in NINETEEN files with one implementation and five different
+    /// narrations of the same CRLF lesson. The lesson, the <c>\s*$</c> anchor and the
+    /// non-empty assertion now live in one place; see
+    /// <see cref="CuratedPage.EverythingAReaderMeets"/> for the widened reader text a
+    /// prose rule should usually be written against.
+    /// </summary>
+    private static string Headline => CuratedPage.Headline(Page);
 
     private static string Body => CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 

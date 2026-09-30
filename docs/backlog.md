@@ -4604,7 +4604,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   to the claim it supports. **Recording it a fourth time is not one of them.**
   Refs: `docs/content-pipeline.md` §12.10.
 
-- [ ] **WI-575 The front-matter `description` is reader-facing prose that nothing
+- [x] **WI-575 The front-matter `description` is reader-facing prose that nothing
   grades and most guards cannot see** *(raised by WI-567, 2026-09-24)*
   Goal: close a hole three items have now tripped over.
   `Pages/ContentPage.cshtml` renders `description` as the **first paragraph a
@@ -4630,6 +4630,95 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   - The corpus is swept once with the widened reader text, because a rule that
     has never read the descriptions has never been tested against them.
   Refs: `docs/content-pipeline.md` §12.17, §12.8.
+
+  **Shipped 2026-09-30.** The ruling is `docs/content-pipeline.md` **§12.22**.
+  **ALL THREE CRITERIA MET, and the measurement changed what the item was.**
+  (1) ContentCheck grades the description and says out loud why it does not gate.
+  (2) One `CuratedPage.Headline` / `.Title` / `.Description` replaces every
+  hand-written front-matter parse in the suite. (3) The corpus is swept once with
+  the widened text, as a shipped test.
+  **THE HOLE WAS REAL AND THE CORPUS FELL THROUGH IT IN EXACTLY ONE WAY.** Swept
+  with the widened text, all 55 headlines are **clean** on every rule the corpus
+  enforces on its body -- no British form, no em or en dash, no smart quote, no
+  non-breaking space, no percentage, no Roman-numeral grade. **So the pain four
+  items felt was guards NOT READING the description, not the description being
+  wrong**, which is why the fix is structural rather than a content job.
+  **THE ONE RULE NOTHING APPLIED IS THE ONE THAT FINDS SOMETHING: 41 of 49
+  gradeable descriptions read above the 6.0 limit**, median 8.4, max 19.7, and the
+  cause is uniform and not vocabulary -- every description is a contents list
+  written as one or two comma-spliced sentences (median longest 27 words, max 51).
+  Reported at **Warn**, not gated, with **WI-578** raised carrying the whole
+  measurement. What IS gated is drift, by two numbers that catch different
+  regressions: the count over the limit, and the worst grade -- because a count
+  cannot see one description getting worse.
+  **THE GATE WAS DEAD TWICE AND THE SUITE WAS GREEN BOTH TIMES, which is §12.22's
+  centre.** First the grade was round-tripped through the finding's MESSAGE
+  (CurrentCulture format, InvariantCulture parse), so on any comma-decimal locale
+  every description scored -1 and the gate reported "0 above the limit" and passed
+  forever. Then the fix for that populated the new field in ONE producer, so the
+  ratchet's precondition asked for a set that was always empty and the whole thing
+  was dead on the real corpus -- **and seven tests written in the same round stayed
+  green through it, because each built a synthetic input whose body rows carried a
+  grade the real producer never sets.** A test builder that does not match its
+  producer tests the builder. `CheckAll` passes the page count now, and one
+  end-to-end test over the shipped corpus asserts the ratchet was reached.
+  **AND A NORMALISER UPSTREAM OF A CHECK DESTROYS ITS SUBJECT, twice in one item**:
+  `Flatten` is `\s+` and .NET's `\s` matches U+00A0, so it erased the
+  non-breaking space the typography check hunts for; and both corpus sweeps
+  replaced CRLF with LF before calling the promoted helper, so the only two
+  whole-corpus callers were immune to the `\s*$` trap the helper exists for.
+  **WHAT THE ANCHOR IS WORTH, MEASURED:** replacing `\s*$` with `"$`, a fully-LF
+  corpus passes the whole suite and a fully-CRLF corpus fails **208** times.
+  **Proof:** suite **2,625 / 2,625**; **16 break mutations red on LF AND CRLF**
+  over a verified-green unmutated tree; the plain suite green on a fully-LF and a
+  fully-CRLF corpus, restored byte-for-byte; ContentCheck **339 checks, 0
+  failures** (61 warnings: 41 the WI-578 backlog, 20 pre-existing), identical
+  under `LANG=de_DE`, with both halves of the ratchet proved
+  to fire there. **NO CONTENT FILE CHANGED** -- the item touches only tools and
+  tests, which is why its smoke asserts every rendered byte is unchanged.
+
+- [ ] **WI-578 The 41 page descriptions that read above sixth grade**
+  *(raised by WI-575, 2026-09-30, WITH the measurement)*
+  Goal: bring the one line most readers actually read down to the level the rest
+  of the page is held to.
+  **WI-575 made the front-matter `description` graded for the first time and the
+  result is the reason this item exists.** `ContentPage.cshtml` renders it as the
+  first paragraph a reader meets and `ContentStore.SearchPages` renders it again
+  as the blurb under every search hit, and nothing graded it until WI-575.
+  **THE MEASUREMENT, so this is sized rather than guessed** (all of it from
+  ContentCheck's own instrument, not a reimplementation):
+  - **41 of 49 gradeable descriptions are above the 6.0 limit.** Median **8.4**,
+    max **19.7** (`/treatments/anti-seizure-medicines`). One is in the 5.5-6.0
+    warn band; 6 of the 55 are under the 25-word floor and are not graded.
+  - **THE CAUSE IS NOT VOCABULARY.** The words are simple -- *"Why you were put
+    on one"*, *"what the drug does to sleep, appetite, mood"*. **45 of the 55** are
+    a contents list in one or two comma-spliced sentences, 15 of them a single
+    sentence, and the longest sentence runs to a **median of 27 words** across the
+    corpus (28 across the gradeable 49) and a **maximum of 51**. Flesch-Kincaid's
+    words-per-sentence term is doing all of it.
+  - **The text is otherwise CLEAN.** WI-575 swept all 55 headlines for every rule
+    the corpus enforces on its body and found no British form, no em or en dash,
+    no smart quote, no non-breaking space, no percentage and no Roman-numeral
+    grade. This is a sentence-length job and nothing else.
+  Acceptance:
+  - Every description grades at or under 6.0, or carries a written reason why it
+    cannot.
+  - **Split, do not shorten.** A description that drops under ContentCheck's
+    25-word floor stops being graded rather than getting better, and
+    `DescriptionRatchet` reports the too-short count beside the gain precisely so
+    that a truncation cannot be read as a rewrite.
+  - `ContentChecker.DescriptionsOverTheLimit` and
+    `ContentChecker.WorstDescriptionGrade` are lowered as the work lands -- they
+    are upper bounds, so they ratchet down and lock each gain in.
+  - The `description` still says what the page answers. It is a contents list on
+    purpose (§12.3: readers consume 20-28% of a page), so the fix is sentence
+    boundaries, not deletion.
+  - When every description passes, promote the grade from Warn to **Fail** in
+    `ContentChecker.GradeDescription` and delete the not-gated note.
+  **Scope warning:** 41 medical page descriptions, each needing the page's own
+  sourcing discipline. This is not one evening. Split it by directory
+  (`tumors/`, `treatments/`, `tests/`) if it needs splitting.
+  Refs: `docs/content-pipeline.md` §12.22, §12.8, §12.3.
 
 - [ ] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
   *(raised by WI-567, 2026-09-24)*

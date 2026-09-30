@@ -684,6 +684,138 @@ internal static class CuratedPage
         return end < 0 ? raw[start..] : raw[start..end];
     }
 
+    /// <summary>
+    /// The front-matter <c>title</c>, raw. One parse, one place.
+    ///
+    /// <para><c>\s*$</c> and not <c>"$</c> — see <see cref="Headline"/> for why that
+    /// single character is the reason this helper exists.</para>
+    /// </summary>
+    public static string Title(string page) =>
+        Regex.Match(FrontMatter(page), @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
+
+    /// <summary>
+    /// The front-matter <c>description</c>, raw — <b>the first paragraph a reader meets,
+    /// and the one line nothing graded until WI-575.</b>
+    ///
+    /// <para>Separate from <see cref="Headline"/> because a caller can legitimately want
+    /// this field alone: <c>StereotacticRadiosurgeryPageTests</c> asserts the page's
+    /// "nothing is cut" promise over the short version AND over the description
+    /// independently, because §12.8 records a section-scoped position test that could not
+    /// see the summary (WI-520) and a description that shipped past twenty-four tests
+    /// (WI-524). It was the twenty-first site parsing the front matter by hand, and
+    /// leaving it to do so would have left the CRLF anchor in two places — which is the
+    /// defect this promotion exists to remove.</para>
+    ///
+    /// <para><b>THE TESTS READ THIS FIELD MORE STRICTLY THAN THE SITE DOES, and the
+    /// break harness surfaced it.</b> This regex requires a single-line, double-quoted
+    /// value; <c>ContentStore</c> parses the front matter with a real YAML reader, so a
+    /// description FOLDED onto a second line is graded correctly by ContentCheck and
+    /// reads as EMPTY here — fatal to every headline guard and invisible to the tool.
+    /// One field, two readings. The strictness is deliberate, because a folded
+    /// description would silently shrink every guard built on this, but it is a
+    /// constraint only the tests enforce and so it is written down rather than left to
+    /// be discovered.</para>
+    /// </summary>
+    public static string Description(string page, string? describedAs = null)
+    {
+        var description = Regex.Match(
+            FrontMatter(page), @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
+
+        // ASSERTED HERE, so `Headline` inherits it and a caller wanting the field alone
+        // gets it too. /review round 2: the promotion's own argument is that "a headline
+        // the regex could not read is indistinguishable from a page with nothing to
+        // check", and this helper had no such assert — so the first caller to write a
+        // DoesNotContain over it would have got a silent green on a CRLF checkout.
+        Assert.False(string.IsNullOrWhiteSpace(description),
+            (describedAs is null ? "" : describedAs + ": ")
+            + "the description could not be read as a single quoted line, so the one "
+            + "piece of reader-facing prose no other guard can see is not in scope");
+
+        return description;
+    }
+
+    /// <summary>
+    /// The TITLE and DESCRIPTION, which <c>ContentPage.cshtml</c> renders as the
+    /// heading and the first paragraph under it — <b>and which nothing graded and most
+    /// guards could not see until WI-575.</b>
+    ///
+    /// <para><b>THE HOLE THIS CLOSES, AND WHAT IT COST.</b> <c>ReaderText</c> strips the
+    /// front matter by design, so every prose guard built on it is body-only. Four items
+    /// fell through: WI-524 and WI-528 each hit it; WI-567 made it three and paid a
+    /// <c>/review</c> blocker that survived three rounds inside that one line, because
+    /// the page had been rescoped everywhere a test could look; and <b>WI-573 hit it
+    /// twice in one item</b> — its own break harness found a containment count blind to
+    /// the description it had just written, and its new corpus sweep stripped the whole
+    /// front-matter block and went blind to a live carrier.</para>
+    ///
+    /// <para><b>NINETEEN FILES CARRIED THIS, and they were not byte-identical.</b> Five
+    /// distinct whitespace-normalised variants — differing only in how much of the CRLF
+    /// lesson each one narrated. With comments stripped there was one implementation
+    /// nineteen times over. §12.8's factor-at-the-second-use rule was overdue at the
+    /// nineteenth, and WI-567 wrote that nineteenth rather than promoting it.</para>
+    ///
+    /// <para><c>\s*$</c> and not <c>"$</c>, which is the lesson the nineteen copies were
+    /// each explaining: this repo is <c>text=auto</c>, so on a CRLF checkout the line
+    /// ends <c>"\r\n</c>, .NET's multiline <c>$</c> does not match before the
+    /// <c>\r</c>, and every guard over the headline then runs on an EMPTY STRING —
+    /// silently green. WI-524 recorded it; a break harness caught it once by reporting a
+    /// mutation as correctly failing on CRLF while it walked through green on LF.</para>
+    ///
+    /// <para>Both fields are asserted non-empty for that reason: a headline the regex
+    /// could not read is indistinguishable from a page with nothing to check.</para>
+    /// </summary>
+    public static string Headline(string page, string? describedAs = null)
+    {
+        var title = Title(page);
+        var description = Description(page, describedAs);
+        var where = describedAs is null ? "" : describedAs + ": ";
+
+        // SEPARATELY, and each with the caller's context. The nineteen promoted
+        // copies asserted both together with no context at all; the twentieth call
+        // site — LocationObligationSweepTests.PlainOfPage — had the better version,
+        // one assert per field naming the page. A promotion that kept the weaker
+        // form because it had more copies would be a vote rather than a decision.
+        Assert.False(string.IsNullOrWhiteSpace(title),
+            $"{where}the title could not be read, so every guard over the headline ran "
+            + "on less text than it claims to");
+        return title + " " + description;
+    }
+
+    /// <summary>
+    /// <b>Everything a reader meets, flattened: the headline AND the body.</b> WI-575's
+    /// second acceptance criterion — <i>a prose rule must not be body-only by
+    /// accident</i>.
+    ///
+    /// <para>This is the one to reach for when a rule is about what a reader READS.
+    /// <see cref="ReaderText"/> is the body, and its name does not say so; this one's
+    /// does. A rule written against the body and believed to cover the page is the shape
+    /// four items tripped over, and the fix is a helper whose name makes the wider scope
+    /// the easy thing to type.</para>
+    ///
+    /// <para><b>Additive on purpose.</b> <see cref="ReaderText"/> is called from most
+    /// test files in the suite and widening its meaning would silently re-scope every
+    /// one of those assertions — the same defect in the opposite direction, and a far
+    /// larger blast radius than the hole being closed. (A count stood here and was
+    /// wrong; §12.20 — do not write one about something the code can enumerate.)</para>
+    ///
+    /// <para>Flattened because the corpus is hard-wrapped at ~80 columns and a phrase of
+    /// more than a few words spans a line break in the BODY. WI-570 recorded that trap
+    /// and WI-573 was bitten by it again in an assertion; a helper that returns
+    /// unflattened text hands the next author the same trap. <b>Do not use this for a
+    /// rule whose subject is a CHARACTER:</b> <see cref="Flatten"/> is <c>\s+</c> and
+    /// .NET's <c>\s</c> matches U+00A0, so flattening destroys a non-breaking space —
+    /// which is how <c>HeadlineSweepTests</c>' typography check came to be green over a
+    /// planted one.</para>
+    ///
+    /// <para><b>COMPOSED.</b> The first version called <c>ReaderText(page)</c> on the raw
+    /// page, so a rule written against it went blind to every shared block — the WI-514
+    /// trap, in the helper whose whole point is that a rule should not be narrower than
+    /// it looks. /review round 1 caught it before anything used it.</para>
+    /// </summary>
+    public static string EverythingAReaderMeets(string page, string? describedAs = null) =>
+        Flatten(Headline(page, describedAs) + " "
+                + ReaderText(Composed(page, describedAs ?? "a curated page")));
+
     /// <summary>The YAML front matter, without the body.</summary>
     public static string FrontMatter(string page) => page[..page.IndexOf("\n---", 3, StringComparison.Ordinal)];
 
