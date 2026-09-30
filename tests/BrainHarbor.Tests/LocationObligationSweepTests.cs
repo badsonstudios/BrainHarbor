@@ -1074,4 +1074,298 @@ public sealed class LocationObligationSweepTests
                 + "same page refuses the ranking outright under 'Why there is no list "
                 + "here of which places are dangerous'."));
     }
+
+    /// <summary>
+    /// EVERY SENTENCE IN THE CORPUS THAT TIES SIGHT TO DRIVING CARRIES A ROUTE, and this
+    /// assertion exists because the claim it replaces was FALSE in the dangerous direction.
+    ///
+    /// <para>WI-573's backlog entry says <c>/tumors/craniopharyngioma</c> carries <i>"the
+    /// one"</i> sentence tying vision to driving, and the item's own front-matter note said
+    /// <i>"the other"</i>. <b>There were four, and three of them routed nowhere</b> —
+    /// <c>/tumors/pituitary-tumor</c>, <c>/tumors/hemangioblastoma</c> and
+    /// <c>/tumors/cns-germ-cell-tumor</c>. <c>/review</c> found them by sweeping; nothing
+    /// could have raised them otherwise, which is §12.19's finding about an obligation whose
+    /// absence is invisible: <b>no single page was individually wrong, so no page-scoped
+    /// test could see the gap.</b></para>
+    ///
+    /// <para><c>/tumors/pituitary-tumor</c> was the sharpest of the three. Its version was
+    /// almost word for word the restatement this item deleted from craniopharyngioma, and it
+    /// is the page the SELLAR reader most likely starts on — the same reader
+    /// <c>/where-your-tumor-is</c>'s <c>#pituitary</c> door sends into the new section. A
+    /// door built into the location page while the type page beside it stayed shut.</para>
+    ///
+    /// <para><b>The property, not a list:</b> a page that tells a reader their sight bears
+    /// on their driving owes that reader somewhere to go. Either route counts — the driving
+    /// question itself, or the section that owns the sight half — because the two are
+    /// linked. A page that says neither is the defect, whatever its prose.</para>
+    ///
+    /// <para><b>AND THE COUNT IS NOT WRITTEN DOWN.</b> Two of this item's first-draft
+    /// docstrings each stated how many pages route to the driving anchor, they gave two
+    /// different numbers, and both were wrong by a factor of three. Their replacements then
+    /// said <i>"the enumeration says eleven"</i> — in two files, about an enumeration that
+    /// existed in neither. §12.20: <i>never write a count in prose about something the code
+    /// can enumerate</i>, and the fix for a missing enumeration is an enumeration. This test
+    /// carries it, at the bottom.</para>
+    /// </summary>
+    [Fact]
+    public void EverySightAndDrivingSentenceInTheCorpusCarriesARoute()
+    {
+        // `eyesight` is in the list because it is live in this corpus today
+        // (/tumors/meningioma) and is the word CRUK reaches for; `hemianop` and
+        // `scotoma` because this item just taught them, and §12.20's rule is that an
+        // item which teaches the corpus a new word has widened it past its own
+        // guard. Each was measured over the corpus before it went in: none adds a
+        // carrier that the list without it does not already find.
+        var sight = new Regex(
+            @"\b(sight|eyesight|vision|see|eyes?|visual|blind|hemianop\w*|scotomas?)\b",
+            RegexOptions.IgnoreCase);
+        var driving = new Regex("driv", RegexOptions.IgnoreCase);
+
+        string[] routes =
+        [
+            "/seizures/living-with#driving",
+            "/where-your-tumor-is#your-sight",
+        ];
+
+        var unrouted = new List<string>();
+        var scanned = 0;
+        var carriers = new List<string>();
+
+        var pagesRoot = CuratedPage.PagesDirectory;
+
+        foreach (var file in Directory.EnumerateFiles(pagesRoot, "*.md",
+                     SearchOption.AllDirectories))
+        {
+            var slug = Path.GetRelativePath(pagesRoot, file).Replace('\\', '/')[..^3];
+            var raw = File.ReadAllText(file).Replace("\r\n", "\n");
+
+            // COMPOSED, not raw, as a PROPERTY rather than as a measurement. A route
+            // or a sight-and-driving sentence that lives in a shared block reaches
+            // every including hub, and a sweep reading raw files would be blind to it
+            // in both directions — §12.10's blast radius, and WI-514's rule that a
+            // claim about a block's prose has to run on the composed page. This test
+            // says "InTheCorpus" in its own name.
+            //
+            // **No block carries either route today**, so composing changes nothing
+            // this test can currently see. /review round 3 caught the first version of
+            // this comment asserting it would have reported "all eighteen" hubs
+            // unrouted, which is a measurement of a situation that does not exist. The
+            // read is right; the justification was fiction.
+            var composed = CuratedPage.Composed(raw, slug);
+
+            // Reader text only, with ONE exception: the `description`. A source
+            // `title:` legitimately carries both words ("fitness to drive", "visual
+            // field") and a front-matter comment discussing the bar would be read as
+            // the defect it explains — but `description` is the first paragraph a
+            // reader MEETS (ContentPage.cshtml), nothing grades it, and this same
+            // diff had to fix a different guard for exactly that blindness
+            // (WI-575's hole). /where-your-tumor-is's description carries a
+            // sight-and-driving sentence today, so stripping the whole block was
+            // hiding a live carrier.
+            var description = Regex.Match(raw, @"(?m)^description: ""(.+)""\s*$")
+                .Groups[1].Value;
+            var composedFront = Regex.Match(composed, @"\A---\n.*?\n---\n",
+                RegexOptions.Singleline);
+            var body = description + "\n\n"
+                + (composedFront.Success ? composed[composedFront.Length..] : composed);
+
+            // Link LABELS kept, targets dropped, because a label is text a reader
+            // reads. **The comment here used to claim the opposite consequence** — that
+            // keeping the label stops a route supplying its own sight word — and
+            // /review round 3 measured it backwards: this item's shared route label is
+            // "when what changed is your sight", so on /tumors/craniopharyngioma and
+            // /tumors/pituitary-tumor the ROUTE SENTENCE is a carrier all by itself.
+            // Delete those pages' real prose and the page stays counted.
+            //
+            // That is why the five carrier pages are named below rather than counted.
+            var prose = Regex.Replace(body, @"\[([^\]]*)\]\([^)]*\)", "$1");
+
+            foreach (var sentence in Regex.Split(prose, @"(?<=[.!?])\s+"))
+            {
+                var flat = Regex.Replace(sentence, @"\s+", " ").Trim();
+                if (!driving.IsMatch(flat) || !sight.IsMatch(flat))
+                {
+                    continue;
+                }
+
+                scanned++;
+                carriers.Add(slug);
+                if (!routes.Any(r => body.Contains(r, StringComparison.Ordinal)))
+                {
+                    unrouted.Add($"{slug}: {flat}");
+                }
+            }
+        }
+
+        // TWO FLOORS, AND THEY HAVE DIFFERENT JOBS — which is the answer to
+        // /review round 2's "pick one philosophy", because the two are not the same
+        // kind of number.
+        //
+        // The SENTENCE floor is an anti-vacuity floor: without it this test passes
+        // just as happily on a corpus that has stopped tying sight to driving at all,
+        // which is the state it exists to protect (§12.17: an iterate-and-check guard
+        // says out loud how much it looked at). It sits well under the measurement,
+        // because merging or splitting two sentences anywhere in the corpus is not a
+        // regression and must not be a red.
+        //
+        // The PAGE floor is the PROPERTY: a known set of pages carries this subject,
+        // and a page dropping out means either its prose went or the page did. Both
+        // are worth a red, so that one has no headroom by design.
+        //
+        // NEITHER MEASUREMENT IS WRITTEN HERE, and the two attempts to write one are
+        // why. The first said "nine sentences across five pages" and contradicted the
+        // assertion two lines below it; the correction gave a different number, which
+        // /review round 3 then measured differently again. Three values, none of them
+        // load-bearing, in the test whose own docstring bans counts in prose.
+        // §12.20: run the code.
+        Assert.True(scanned >= 10,
+            $"only {scanned} sentence(s) in the corpus tie sight to driving, so either "
+            + "this sweep is reading the wrong thing or the subject has gone. It was 6 "
+            + "until the break harness deleted the whole sight section and this floor "
+            + "stayed green over the remainder: a floor far enough under the "
+            + "measurement to survive losing the subject is not a floor.");
+
+        // AND THE LINK COUNT IS ENUMERATED HERE, because two docstrings in this diff
+        // said "the enumeration says eleven" while no enumeration existed anywhere —
+        // a measurement quoted in prose, in two files, that lived in nobody's code.
+        // It lives here now, so those sentences can point at a test instead of
+        // repeating a number. The floor is what shipped; a route being ADDED is not a
+        // regression, a route silently disappearing from many pages is.
+        var linkers = Directory.EnumerateFiles(pagesRoot, "*.md", SearchOption.AllDirectories)
+            .Count(f => CuratedPage
+                .Composed(File.ReadAllText(f).Replace("\r\n", "\n"),
+                    Path.GetRelativePath(pagesRoot, f).Replace('\\', '/')[..^3])
+                .Contains("/seizures/living-with#driving", StringComparison.Ordinal));
+
+        // THE FLOOR IS THE MEASUREMENT, not the measurement minus headroom, and that
+        // is deliberate: a route being ADDED is not a regression and passes this, while
+        // a route disappearing is exactly what the floor is for. It was written at
+        // eleven in the review round that added the twelfth — /tumors/cns-germ-cell-
+        // tumor gained the #driving anchor in the same edit — so it was stale before
+        // the file was saved, and deleting an untouched hub's route left eleven and
+        // stayed green. **A floor is a constant and the thing it measures is not.**
+        // AND THE META SENTENCE IS BANNED CORPUS-WIDE, which is /review round 3's
+        // sharpest finding about this item's own record-keeping. WI-573 deleted "a
+        // website cannot, and that includes this one" from /tumors/craniopharyngioma
+        // and wrote in a note that it had done the same to /tumors/pituitary-tumor's
+        // "a website does not, including this one". It had not — a later round's
+        // rewrite of that page put the sentence back, and the only live instance in
+        // the corpus was sitting on the page the note said was clean.
+        //
+        // **A deletion recorded in a note and not in an assertion is a deletion the
+        // next edit can undo.**
+        //
+        // THIS IS A REGRESSION PIN ON TWO DELETED STRINGS, NOT THE PROPERTY, and
+        // /review round 4 was right to say so. The property is "a page says what this
+        // site will not do INSTEAD OF routing", and the second half is what makes it a
+        // defect — which no string ban can see. The corpus legitimately carries
+        // several sentences of the first half beside a route, including one this item
+        // wrote ("it is the one this page cannot answer for you") and
+        // /tests/neuro-exam-and-memory-testing's "no website knows yours", which does
+        // sit beside a route. (The first version of this comment claimed this item's
+        // was "immediately above a link" too; it is twelve paragraphs up. /review
+        // round 5 — a claim about adjacency is a claim about a distance.)
+        // Widening this to a property regex would red all of them. §12.17: a ban list
+        // is not the guard — and the honest form of a ban list is one that says it is
+        // one.
+        foreach (var file in Directory.EnumerateFiles(pagesRoot, "*.md",
+                     SearchOption.AllDirectories))
+        {
+            var slug = Path.GetRelativePath(pagesRoot, file).Replace('\\', '/')[..^3];
+            var body = CuratedPage.ReaderText(File.ReadAllText(file).Replace("\r\n", "\n"));
+
+            Assert.False(body.Contains("a website does not", StringComparison.OrdinalIgnoreCase)
+                         || body.Contains("a website cannot", StringComparison.OrdinalIgnoreCase),
+                $"{slug} tells the reader what this website will not do, where a route "
+                + "belongs. WI-573 removed the two live instances and recorded the "
+                + "removal in a note rather than an assertion, and one of them came "
+                + "back inside the same item.");
+        }
+
+        Assert.True(linkers >= 12,
+            $"only {linkers} page(s) route to /seizures/living-with#driving, and twelve "
+            + "did when WI-573 shipped. That anchor is where this corpus keeps the "
+            + "driving question; a drop means routes were deleted or the anchor moved.");
+        // NAMED, NOT COUNTED — which fixes "any five" and does NOT fix the label
+        // problem, and /review round 4 was right that the first version of this comment
+        // claimed otherwise. On /tumors/craniopharyngioma and /tumors/pituitary-tumor
+        // the ROUTE SENTENCE is a carrier by itself (the shared label contains "sight",
+        // its body contains "driving"), so deleting those pages' own prose leaves the
+        // named assertion green exactly as a counted one would. What names buy is that
+        // a page dropping out entirely is loud. The remaining hole is recorded rather
+        // than papered over: the prose on those two pages is pinned by their own
+        // page-scoped tests, which is where a page's own words belong.
+        // NOT `seizures/living-with`. It is the DESTINATION, not a carrier — a page
+        // that is about driving throughout does not need the word in the same sentence
+        // as "sight", and it does not owe itself a route. The first version of this
+        // list had it, from memory rather than from the sweep's own output, which
+        // listed five. **Naming a set is only stronger than counting it if the names
+        // come from the measurement** — and this assertion, written to stop a count of
+        // five being satisfied by any five, caught its own author on the first run.
+        string[] expectedCarriers =
+        [
+            "tumors/cns-germ-cell-tumor",
+            "tumors/craniopharyngioma",
+            "tumors/hemangioblastoma",
+            "tumors/pituitary-tumor",
+            "where-your-tumor-is",
+        ];
+
+        var missing = expectedCarriers
+            .Where(p => !carriers.Contains(p, StringComparer.Ordinal))
+            .ToList();
+
+        Assert.True(missing.Count == 0,
+            "a page that tied sight to driving when WI-573 shipped no longer does. "
+            + "Either its prose went or the page did — both worth knowing, because "
+            + "this test's other half can only report on the pages it finds:\n  "
+            + string.Join("\n  ", missing));
+
+        // AND A CARRIER OWES AN INSTRUCTION AS WELL AS A DOOR. /review round 4 asked
+        // for the get-checked-first instruction on the two carrier pages that lacked
+        // it; round 4 added it to both and recorded that in a DOCSTRING. Nothing
+        // asserted any of the three new ones, so deleting them was silent and the
+        // route mutations aim at the link rather than at the instruction. §12.19
+        // finding 8 with the roles swapped for the third time in this item: **an
+        // addition recorded in a note and not in an assertion.**
+        //
+        // Worded per page on purpose — the corpus restatement probe fired when two of
+        // them were written the same way, which is §12.18's rule that a shared LABEL
+        // may repeat and a shared SENTENCE may not.
+        (string Slug, string Instruction)[] instructions =
+        [
+            ("tumors/craniopharyngioma", "get it tested before you go back to driving"),
+            ("tumors/pituitary-tumor", "have it checked properly before you drive"),
+            ("tumors/hemangioblastoma", "have your sight looked at before going back to the wheel"),
+            ("tumors/cns-germ-cell-tumor", "sight is worth getting checked before you drive again"),
+            ("where-your-tumor-is", "Get your sight checked before you drive again"),
+        ];
+
+        foreach (var (slug, instruction) in instructions)
+        {
+            // FLATTENED. The corpus is hard-wrapped at ~80 columns, so an instruction
+            // of more than a few words spans a line break in the file — WI-570's
+            // recorded trap, and it fired here on the first run against a page that
+            // carries the sentence. Every other prose guard on these pages flattens;
+            // this one did not, because it was written as a table of strings rather
+            // than beside the helpers that already do it.
+            var text = CuratedPage.Flatten(CuratedPage.ReaderText(
+                File.ReadAllText(Path.Combine(pagesRoot, slug.Replace('/', Path.DirectorySeparatorChar) + ".md"))
+                    .Replace("\r\n", "\n")));
+
+            Assert.True(text.Contains(instruction, StringComparison.OrdinalIgnoreCase),
+                $"{slug} ties sight to driving and no longer tells the reader to get "
+                + $"checked first. Expected: \"{instruction}\". A page that says sight "
+                + "bears on driving and stops there has handed the reader the question "
+                + "and not the first step.");
+        }
+
+        Assert.True(unrouted.Count == 0,
+            "a page tells a reader their sight bears on their driving and gives them "
+            + "nowhere to go. WI-573 owns that answer; link "
+            + "/where-your-tumor-is#your-sight (the sight half) or "
+            + "/seizures/living-with#driving (the driving question). §12.15: an "
+            + "obligation may be answered, re-headed or routed — never dropped:\n  "
+            + string.Join("\n  ", unrouted));
+    }
 }
