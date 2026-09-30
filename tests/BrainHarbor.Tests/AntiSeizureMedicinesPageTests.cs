@@ -51,27 +51,15 @@ public sealed class AntiSeizureMedicinesPageContentTests
         Regex.Replace(Regex.Replace(section, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
     /// <summary>
-    /// The title and description, which <c>ReaderText</c> strips and every
-    /// body-scoped guard below is therefore blind to — while
-    /// <c>ContentPage.cshtml</c> renders the description as the first paragraph
-    /// under the heading (§12.8, WI-524, where the description asserted the
-    /// exact claim its page existed to correct).
+    /// The title and description a reader meets before the body — <b>promoted to
+    /// <see cref="CuratedPage.Headline"/> by WI-575</b>, which found this property
+    /// duplicated in NINETEEN files with one implementation and five different
+    /// narrations of the same CRLF lesson. The lesson, the <c>\s*$</c> anchor and the
+    /// non-empty assertion now live in one place; see
+    /// <see cref="CuratedPage.EverythingAReaderMeets"/> for the widened reader text a
+    /// prose rule should usually be written against.
     /// </summary>
-    private static string Headline
-    {
-        get
-        {
-            var front = CuratedPage.FrontMatter(Page);
-            // `\s*$` before the anchor, not `"$`: on a CRLF checkout the line
-            // ends `"\r\n`, the match fails, and every guard over the headline
-            // then runs on an empty string (§12.8, WI-524).
-            var title = Regex.Match(front, @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
-            var description = Regex.Match(front, @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
-            Assert.False(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description),
-                "the title or description could not be read, so the guards over them prove nothing");
-            return title + " " + description;
-        }
-    }
+    private static string Headline => CuratedPage.Headline(Page);
 
     private static string Body => CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 
