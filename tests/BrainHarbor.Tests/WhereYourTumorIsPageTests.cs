@@ -113,6 +113,8 @@ public sealed class WhereYourTumorIsPageContentTests
     private const string SurgeryHeading = "Can they just take it out?";
     private const string NoListHeading = "Why there is no list here of which places are dangerous";
     private const string PlaceWordHeading = "When the word you were given is a place";
+    private const string SightHeading =
+        "When what changed is your sight, and what that means for driving";
     private const string FindingHeading = "How to find out what yours is called";
     private const string DecidesHeading = "Who decides, and how will you hear?";
     private const string QuestionsHeading = "What to ask your surgeon";
@@ -177,6 +179,40 @@ public sealed class WhereYourTumorIsPageContentTests
         Headline + " " + CuratedPage.Flatten(Reader);
 
     private static string Section(string heading) => CuratedPage.Section(Page, heading);
+
+    /// <summary>
+    /// The page's reader text with WI-573's section AND ITS HEADING removed.
+    ///
+    /// <para><b>The heading itself carries <c>driving</c></b>, and
+    /// <see cref="CuratedPage.Section"/> returns the body WITHOUT it — so a helper that
+    /// strips only the body leaves a <c>driv</c> match that has nothing to do with
+    /// containment. That artifact showed up in this item's own occurrence count before
+    /// the assertion was written from it, which is the only reason it is not in the
+    /// assertion: <b>derive a count from the page, then read what the count is made
+    /// of.</b></para>
+    /// </summary>
+    private static string OutsideTheSightSection
+    {
+        get
+        {
+            // FLAT, NOT Flatten(Reader) -- and this is WI-575's hole, found by this
+            // item's own break harness rather than by reading. `Reader` is the BODY:
+            // `ReaderText` strips the front matter by design, so the `description`
+            // that ContentPage.cshtml renders as the FIRST PARAGRAPH a reader meets
+            // is invisible to it. This item ADDED a driving clause to that
+            // description, and deleting the clause left this test green. A
+            // containment count that cannot see half the page a reader reads was
+            // getting the right answer for the wrong reason.
+            var reader = Flat;
+            var section = FlatSection(SightHeading);
+
+            Assert.Contains(section, reader, StringComparison.Ordinal);
+
+            return reader
+                .Replace(section, " ", StringComparison.Ordinal)
+                .Replace(SightHeading, " ", StringComparison.Ordinal);
+        }
+    }
 
     /// <summary>
     /// A section, flattened, with the WI-105 authoring markers removed.
@@ -471,7 +507,7 @@ public sealed class WhereYourTumorIsPageContentTests
         // so the date the content was last read against its sources moved with it — a
         // `reviewed` date that stays put through an edit is the one field on the page
         // that lies about itself.
-        Assert.Contains("reviewed: 2026-09-26", front, StringComparison.Ordinal);
+        Assert.Contains("reviewed: 2026-09-30", front, StringComparison.Ordinal);
         Assert.Contains("review_due:", front, StringComparison.Ordinal);
         Assert.Contains("disclaimers: [medical]", front, StringComparison.Ordinal);
 
@@ -1863,15 +1899,421 @@ public sealed class WhereYourTumorIsPageContentTests
     [Fact]
     public void ThePageDoesNotTakeOverTheWorkOfTheItemsThatFollowIt()
     {
-        // WI-573 owns visual field loss and the driving consequence, and driving is
-        // routed to /seizures/living-with#driving wherever it appears.
-        Assert.DoesNotContain("visual field", Flat, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("driving", Flat, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("drive", Flat, StringComparison.OrdinalIgnoreCase);
+        // WI-573 IS THIS EDIT, so its three bans are retired and replaced by
+        // CONTAINMENT rather than deleted — WI-547's precedent, and the same move
+        // WI-571 made on `tectal` one item ago. "Require the word in the section" is
+        // a DIFFERENT property from "forbid it everywhere else", and §12.20 records
+        // that nothing was stopping the retired subject spreading into the fluid or
+        // surgery sections. Those two are the least able to carry a jurisdictional
+        // driving rule, so both halves are asserted.
+        Assert.Contains("visual field", FlatSection(SightHeading),
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("visual field", OutsideTheSightSection,
+            StringComparison.OrdinalIgnoreCase);
+
+        // `driv` HAS EXACTLY THREE LICENSED HOMES OUTSIDE THE SECTION, and this
+        // count has been wrong twice, in opposite directions, which is why all three
+        // are NAMED as well as counted. It was ONE until the break harness pointed
+        // out that the scope could not see the front-matter description at all
+        // (WI-575's hole), and TWO until /review round 1 pointed out that the
+        // `#pituitary` door was the one that should mention driving — the sellar
+        // reader is the likelier driving reader, so the asymmetry ran backwards.
+        //
+        // The three: the door in the `#back` entry (the region whose own text says
+        // it is where seeing happens), the door in the `#pituitary` entry, and the
+        // front-matter `description`, which is the first paragraph a reader meets.
+        // The count is asserted rather than the absence, because a door is a
+        // sentence a later edit can move — and each is named too, because a count of
+        // three is satisfied by any three and this item has already been caught
+        // twice by a count that was right for the wrong reason.
+        var strays = Regex.Matches(OutsideTheSightSection, "driv", RegexOptions.IgnoreCase);
+        Assert.True(strays.Count == 3,
+            $"`driv` occurs {strays.Count} times in the text a reader meets outside "
+            + "the sight section, and exactly three are licensed (the doors in the "
+            + "`#back` and `#pituitary` entries, and the front-matter description). "
+            + "Driving is routed on this page, never stated, and a fourth home for it "
+            + "is how a jurisdictional rule reaches a section that cannot carry one.");
+        Assert.Contains("and it covers driving", OutsideTheSightSection,
+            StringComparison.Ordinal);
+        Assert.Contains("covers it, including what it means", OutsideTheSightSection,
+            StringComparison.Ordinal);
+        Assert.Contains("it says what that means for driving", Headline,
+            StringComparison.Ordinal);
 
         // WI-572 owns the diagram, and the corpus has no images at all today.
         Assert.DoesNotContain("![", Page, StringComparison.Ordinal);
         Assert.DoesNotContain("<figure", Page, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// WI-573's SECTION: the general answer said ONCE, the rule ROUTED, and no duration
+    /// anywhere.
+    ///
+    /// <para><b>THE BACKLOG'S NAMED SOURCE DOES NOT CARRY THE CLAIM</b>, which is this
+    /// item's first finding and the reason the citation in the front matter is not the one
+    /// the acceptance asked for. Cancer Research UK's driving page was read live: the
+    /// string <c>visual field</c> occurs ZERO times on it and <c>visual</c> zero times as
+    /// a word. Its two vision sentences are pituitary-scoped UK regulation — one a waiting
+    /// time, one a notification duty — so there is nothing on it this page may publish. The
+    /// source that carries the link is PMC11913653, a brain-tumor fitness-to-drive review
+    /// the corpus ALREADY cites on <c>/tests/neuro-exam-and-memory-testing</c>, which makes
+    /// it a corpus source rather than one page's find. (This said "its second user"
+    /// until <c>/review</c> round 4, after the <c>.md</c> note carrying the same
+    /// claim had already been corrected in round 3 — §12.20's <i>correcting a claim
+    /// in one file does not correct its copies</i>, inside the item that cites
+    /// it.)</para>
+    ///
+    /// <para><b>AND THE ROUTE'S BOUND IS MEASURED RATHER THAN ASSUMED</b> —
+    /// §12.19 finding 6, <i>a route can be word-perfect and still be addressed to the
+    /// wrong reader.</i> <c>/seizures/living-with#driving</c> is SEIZURE-SCOPED throughout
+    /// (<i>"rules about driving after a seizure"</i>, <i>"free of seizures for a set length
+    /// of time"</i>, and its lookup tool is the Epilepsy Foundation's). A reader whose
+    /// problem is vision and who has never had a seizure is not served by its rules half.
+    /// The route is still right, because the SHAPE and the practical half are the whole
+    /// point — so the bound is written into the prose and the destination got a door back,
+    /// and both are asserted here.</para>
+    /// </summary>
+    [Fact]
+    public void TheSightSectionAnswersTheQuestionAndRoutesTheRuleAway()
+    {
+        var section = FlatSection(SightHeading);
+
+        // THE ANSWER. The report word a reader is handed, and the plain-language
+        // meaning, because the word on the paper is often the only clue they have.
+        Assert.Contains("visual field", section, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hemianopia", section, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("scotoma", section, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("perimetry", section, StringComparison.OrdinalIgnoreCase);
+
+        // THE SENTENCE THE SECTION TURNS ON, and it is the one that makes the whole
+        // thing a measurement rather than a hedge: the source reports a wide range in
+        // hazard detection among people with SIMILAR amounts of loss. Without it,
+        // "we cannot tell you" reads as evasion instead of as the finding it is.
+        Assert.Contains("Two people missing the same amount can drive very differently",
+            section, StringComparison.Ordinal);
+
+        // NOT A GLASSES PROBLEM. The source's own clause is "cannot be addressed with
+        // prescription glasses", and this is the most directly useful thing on the
+        // page for a reader who passed an eye chart and was told they were fine.
+        Assert.Contains("not a glasses problem", section, StringComparison.OrdinalIgnoreCase);
+
+        // THE ROUTE, WITH ITS BOUND. Both halves: the link, and the sentence saying
+        // what the destination was written around. A route whose promise is unbounded
+        // is §12.19's over-claim, and the over-claim direction that matters here is
+        // telling a vision reader that a seizure page has their rule.
+        Assert.Contains("(/seizures/living-with#driving)", Section(SightHeading),
+            StringComparison.Ordinal);
+        Assert.Contains("It was written for seizures", section, StringComparison.Ordinal);
+
+        // AND THE STATE LOOKUP IS NAMED AS INAPPLICABLE, not just the requirement.
+        // /review round 1: the destination's practical half includes the Epilepsy
+        // Foundation's state tool, which returns SEIZURE-FREE INTERVALS. A vision
+        // reader told "the practical half is the whole point" could read one of those
+        // as their own answer, which is the under-triage direction. Naming the
+        // requirement as separate did not name the TOOL as inapplicable.
+        Assert.Contains("The state lookup on it is about seizures too", section,
+            StringComparison.Ordinal);
+
+        // AND THE RULE ITSELF IS NOT RESTATED. No requirement, no threshold, no state
+        // named. §12.20's closed-count lesson applies to a licensing figure too: a
+        // number from the wrong place is the one thing this corpus refuses hardest,
+        // and the source hands over both a degree threshold and two named states.
+        Assert.DoesNotContain("Massachusetts", Flat, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("New Hampshire", Flat, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("degree", section, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotMatch(new Regex(@"\d"), section);
+
+        // A LEGAL YES IS NOT A SAFE YES, and this is the under-triage-safe direction.
+        // The section says a state can set no minimum at all; a reader who stops
+        // reading there has been told they may drive. That is the one direction a
+        // mistake on this page may not run, so the correction is pinned.
+        Assert.Contains("Being allowed to drive is not the same as being safe to drive",
+            section, StringComparison.Ordinal);
+
+        // AND THE ONE INSTRUCTION IN THE SECTION, which /review round 2 found was
+        // missing entirely. TWO of the four pages that route in told the reader to
+        // get checked before driving — /review round 4 counted, after an earlier
+        // version of this comment said all four — and the other two say only "ask
+        // your team". Both have the instruction now, so the claim is true as well
+        // as corrected. The section they route TO did not have it at all,
+        // while supplying the permissive reading itself ("The state next door can
+        // set none at all"). That is the one direction a mistake here may not run.
+        Assert.Contains("Get your sight checked before you drive again", section,
+            StringComparison.Ordinal);
+
+        // AND BOTH PATTERNS, which is round 2's BLOCKER. The section said the loss
+        // is "most often the same side in both eyes" — true of brain tumor patients
+        // as a group, FALSE for the sellar reader, whose loss is the outer edge on
+        // both sides. /tumors/craniopharyngioma and /tumors/pituitary-tumor both say
+        // so in their own words and both route into this section, and round 1's own
+        // #pituitary door is what aimed that reader at that sentence. The source
+        // carves it out in its very next sentence. Naming both patterns and telling
+        // the reader to ask which is theirs hands nobody a lookup, so it is not a
+        // Wave 6 row — which is what the first draft wrongly claimed it would be.
+        Assert.Contains("the missing piece is on the same side in both eyes", section,
+            StringComparison.Ordinal);
+        Assert.Contains("For others it is the outer edge in both eyes instead", section,
+            StringComparison.Ordinal);
+        Assert.Contains("ask your team which one is yours", section,
+            StringComparison.Ordinal);
+
+        // NOT "which of the two". /review round 4: the paragraph opens "There is
+        // more than one pattern" (open), narrowed to "which of the two" (closed),
+        // and the very next sentence named a third thing — and the source names a
+        // fourth and fifth this page does not teach. §12.17's closed count, on the
+        // page §12.17 was written about, introduced by the fix for round 2's blocker.
+        Assert.DoesNotContain("which of the two", Flat, StringComparison.OrdinalIgnoreCase);
+
+        // AND THE SELLAR READER IS TOLD THE EVIDENCE IS NOT ABOUT THEM. Round 3
+        // re-scoped every driving-evidence sentence to the same-side pattern, which
+        // was correct — and left the reader with the OTHER pattern reading a section
+        // in which nothing applied to them, including the caution. Absence of
+        // evidence must not read as absence of a problem.
+        Assert.Contains("Most of what has been studied is the same-side pattern",
+            section, StringComparison.Ordinal);
+
+        // AND THE DOUBLE-VISION PARAGRAPH IS PINNED. It is the only double-vision
+        // content in the section, nothing asserted it, and the sentence floor had
+        // exactly enough headroom to lose it silently — /review round 4 measured
+        // that deleting it landed the count ON the floor rather than under it.
+        Assert.Contains("Double vision matters here too", section,
+            StringComparison.Ordinal);
+
+        // AND THE SECTION'S OWN OPENER, which was the one paragraph of seventeen
+        // that no string in the whole suite asserted — so deleting the section's
+        // headline landed the sentence count exactly ON the floor and stayed green.
+        // /review round 5 found it by constructing the regression rather than by
+        // reading the guard. **Ask what regression a guard is for, then build it.**
+        Assert.Contains("If sight is the thing that changed, this is the section for it",
+            section, StringComparison.Ordinal);
+
+        // AND THE CORRECTION COMES BEFORE THE WAY OUT. Pinning its STRING is not
+        // pinning its PLACE: it used to sit after the outbound link, so a reader who
+        // took the permissive reading ("Another state can set none at all") and
+        // followed the link never met it. Four rounds rewrote these two paragraphs
+        // and none re-checked the sequence.
+        var permissiveAt = section.IndexOf("The same eyes, two answers",
+            StringComparison.Ordinal);
+        var correctionAt = section.IndexOf("Being allowed to drive is not the same",
+            StringComparison.Ordinal);
+        var wayOutAt = section.IndexOf("/seizures/living-with#driving",
+            StringComparison.Ordinal);
+
+        Assert.True(permissiveAt > 0 && correctionAt > 0 && wayOutAt > 0,
+            "a landmark was not found, so the ordering assertion below proves nothing");
+        Assert.True(permissiveAt < correctionAt && correctionAt < wayOutAt,
+            $"the correction (at {correctionAt}) has to sit between the permissive "
+            + $"sentence (at {permissiveAt}) and the link out (at {wayOutAt}). A "
+            + "correction placed after an exit is a correction the reader can miss, "
+            + "and the reading it corrects is that they may drive.");
+
+        // AND THE EVIDENCE IS SCOPED TO THE PATTERN THE SOURCE STUDIED, which is
+        // /review round 3's blocker and which round 2's fix created. Every
+        // driving-evidence sentence in the source is HOMONYMOUS-scoped; the moment
+        // the section described a second pattern, "people with similar losses" and
+        // "people with this loss" silently covered both. The direction was
+        // reassuring, on the page whose reader may not drive safely. **A fix's blast
+        // radius is every sentence that depended on the old scope.**
+        Assert.Contains("people who had lost the same side in both eyes ranged widely",
+            section, StringComparison.Ordinal);
+        Assert.Contains("Some people who have lost the same side are assessed as safe",
+            section, StringComparison.Ordinal);
+        Assert.Contains("the side or sides you cannot see", section,
+            StringComparison.Ordinal);
+
+        // AND `hemianopia` IS NOT ATTACHED TO ONE PATTERN. Bitemporal hemianopia is
+        // hemianopia, and /tumors/pituitary-tumor's own source list names hemianopia
+        // for exactly the reader the `#pituitary` door sends here. Teaching the word
+        // as the same-side pattern would hand that reader the wrong answer from the
+        // one word on their report they recognise.
+        Assert.Contains("You may hear either one called **hemianopia**", Page,
+            StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// NO WAITING TIME IN THE SIGHT SECTION, asserted with both canaries.
+    ///
+    /// <para>WI-560 owns waiting times and this item prints none, and
+    /// <c>SeizureContentTests.NoCuratedPagePrintsADrivingWaitingPeriod</c> already scans
+    /// the whole corpus for a duration in a sentence mentioning driving. <b>That guard
+    /// found this item's own front matter</b>, where the first draft quoted CRUK's barred
+    /// waiting-time sentence verbatim in order to record that it is barred — the corpus's
+    /// usual way of refusing a claim, which puts the figure in the file. The guard was not
+    /// touched and the note was rewritten. <i>A quotation is not exempt from a ban on the
+    /// claim it quotes.</i></para>
+    ///
+    /// <para>This test is the section-scoped half, and it exists because the corpus guard
+    /// only looks at sentences containing <c>driv</c>: a duration two sentences away from
+    /// the word is invisible to it and would read to a reader as exactly the same promise.
+    /// <b>Both canaries are asserted</b>, because a scan that has never been seen to fire
+    /// has not been shown to work (§12.18) — and §12.8's prescribed negation pattern was
+    /// wrong for a year for want of exactly this.</para>
+    /// </summary>
+    [Fact]
+    public void NoWaitingTimeAppearsAnywhereInTheSightSection()
+    {
+        const string number =
+            @"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|twelve|eighteen)";
+        var duration = new Regex($@"\b{number}[\s-]+(?:day|week|month|year)s?\b",
+            RegexOptions.IgnoreCase);
+
+        // THE POSITIVE CANARY: a sentence this section must never carry, which the
+        // pattern MUST catch. Without it a typo in the pattern reads as a clean page.
+        Assert.Matches(duration, "You cannot drive for six months after that.");
+
+        // THE NEGATIVE CANARY: prose the section does carry, which the pattern must
+        // NOT catch. "A no now is not always a no later" is the shape that replaced
+        // every duration, and a pattern that fired on it would push the next author
+        // back toward printing the number.
+        Assert.DoesNotMatch(duration, "A no now is not always a no later.");
+
+        Assert.DoesNotMatch(duration, FlatSection(SightHeading));
+    }
+
+    /// <summary>
+    /// THE ANCHOR THIS ITEM ROUTES TO EXISTS, verified rather than assumed.
+    ///
+    /// <para>Many pages in this corpus point at <c>/seizures/living-with#driving</c> and
+    /// this item adds another. §12.19 finding 6's ruling is that a route's FILING and ANCHOR
+    /// need checking as well as its promise, and an anchor is the half that fails silently:
+    /// a wrong <c>#id</c> lands the reader at the top of a long page with no error anywhere.
+    /// <b>An earlier version of this paragraph said "three pages, and this is the fourth",
+    /// and its replacement said "the enumeration says eleven" when no enumeration
+    /// existed.</b> §12.20: never write a count in prose about something the code can
+    /// enumerate — and the sibling copy of this count, in <c>SeizurePagesTests</c>, gave a
+    /// different wrong number, which is the two-homes-two-answers shape that ruling is
+    /// written about. The enumeration is real now and lives in
+    /// <see cref="LocationObligationSweepTests.EverySightAndDrivingSentenceInTheCorpusCarriesARoute"/>.</para>
+    ///
+    /// <para>It also asserts the door BACK, so the pair cannot be half-deleted. A vision
+    /// reader who lands on a seizure page and finds only seizure rules concludes the
+    /// question does not apply to them, which is the under-triage direction.</para>
+    /// </summary>
+    [Fact]
+    public void TheDrivingAnchorExistsAndTheDoorRunsBothWays()
+    {
+        var destination = CuratedPage.Read("seizures", "living-with.md");
+
+        Assert.Matches(new Regex(@"(?m)^## .*\{\#driving\}\s*$"), destination);
+        Assert.Contains("/where-your-tumor-is#your-sight", destination,
+            StringComparison.Ordinal);
+
+        // AND THE ANCHOR ON THIS SIDE, which the other three pages' route depends on
+        // too now that the destination points back at it.
+        Assert.Matches(new Regex(@"(?m)^## .*\{\#your-sight\}\s*$"), Page);
+    }
+
+    /// <summary>
+    /// THE RANKING GUARD OVER THE SIGHT SECTION: a THIRD configuration of §12.19's zero,
+    /// and the one no earlier item has recorded.
+    ///
+    /// <para>§12.20 names two: <c>/treatments/craniotomy</c> has zero ADDRESSES with
+    /// twenty-one difficulty matches, and WI-571's section has zero DIFFICULTIES with
+    /// several addresses. <b>This section has zero of BOTH</b>, which makes the guard
+    /// unable to fire from both ends at once — the weakest possible silence, and the one
+    /// most likely to be read as a clean bill of health. §12.19: <i>a guard measured on a
+    /// page it cannot fire on has been measured on nothing.</i></para>
+    ///
+    /// <para><b>That is a property of the section rather than an accident.</b> Its subject
+    /// is a SYMPTOM and what to do about it, and the one sentence that could have keyed a
+    /// place to it — the source's <i>"most commonly from a pituitary tumor near the optic
+    /// chiasm"</i> — was deliberately not written, because the chiasm mechanism already
+    /// belongs to <c>/tumors/craniopharyngioma</c> and restating it here would have put a
+    /// Wave 6 row on the location page to say something another page already says. The
+    /// section routes instead.</para>
+    ///
+    /// <para>So both zeros are asserted, and a row carrying BOTH halves is planted to
+    /// prove the scanner reaches this text at all.</para>
+    /// </summary>
+    [Fact]
+    public void TheRankingGuardCanFireInsideTheSightSectionOnceThereIsAnythingToFireOn()
+    {
+        var section = FlatSection(SightHeading);
+
+        var addresses = Regex.Matches(section, CuratedPage.LocationAddress,
+            RegexOptions.IgnoreCase).Count;
+        var difficulties = Regex.Matches(section, CuratedPage.LocationDifficulty,
+            RegexOptions.IgnoreCase).Count;
+
+        Assert.True(addresses == 0 && difficulties == 0,
+            $"the sight section now matches {addresses} address word(s) and "
+            + $"{difficulties} difficulty word(s). Both were zero when it shipped, and "
+            + "that is why the ranking guard is green over it. The moment either is "
+            + "non-zero the row test has to be re-asked of the sentence that brought the "
+            + "vocabulary in, and §12.21's account of why the guard is silent here has to "
+            + "change with it. This is not a ban — it is the conversation a silent green "
+            + "never starts.");
+
+        // NOTHING IS FOUND TODAY, which is what the two zeros predict.
+        Assert.Empty(CuratedPage.PlacesRankedIn(section));
+
+        // AND THE PLANTED ROW, carrying BOTH halves in one sentence, because a plant
+        // missing either one tests the lexicon rather than the reach of the scan. This
+        // is what turns "no row was found" into "no row is there".
+        const string planted =
+            " A tumor at the base of the skull is harder to take out completely.";
+        var withRow = CuratedPage.PlacesRankedIn(section + planted);
+
+        Assert.Contains(withRow, r =>
+            r.Trigger.Contains("base of the skull is harder", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// NO SENTENCE IN THE SIGHT SECTION RUNS PAST 24 WORDS.
+    ///
+    /// <para>WI-571 shipped this ceiling for its own section
+    /// (<see cref="NoSentenceInTheSectionRunsPastTheCeilingAPageAverageCannotSee"/>) after
+    /// §12.17 measured a planted 36-word sentence moving this page from grade 5.6 to 5.7
+    /// with ContentCheck passing at a 6.0 limit. <b>The gate is a page-average gate by
+    /// construction</b>, and on a site whose audience may be cognitively impaired one
+    /// unreadable sentence is enough to lose a reader.</para>
+    ///
+    /// <para>It is a second copy of the pattern rather than a shared helper on purpose:
+    /// the two sections have different floors, and §12.8's factor-at-the-second-use rule
+    /// is about the PROPERTY, which is here the ceiling and not the plumbing. If a third
+    /// section needs one, that is the second use of the ceiling and it gets factored.</para>
+    /// </summary>
+    [Fact]
+    public void NoSentenceInTheSightSectionRunsPastTheCeilingEither()
+    {
+        var prose = Regex.Replace(FlatSection(SightHeading), @"\[([^\]]*)\]\([^)]*\)", "$1");
+        prose = Regex.Replace(prose, "[*#\"]", "");
+
+        var sentences = Regex.Split(prose, @"(?<=[.!?])\s+")
+            .Select(s => s.Trim())
+            .Where(s => s.Length > 0)
+            .ToList();
+
+        // A FLOOR ON WHAT IT READ (§12.17: an iterate-and-check guard says out loud
+        // how much it looked at). It was 45 until the break harness deleted the
+        // section's last two paragraphs and this guard STAYED GREEN — eight sentences
+        // of headroom is enough room to gut a section in, which is the criticism
+        // WI-571's round 7 made of a floor of 30 against 45. The floor now sits a few
+        // sentences under what the section had when it shipped, so losing a paragraph
+        // is a red. The measurement is deliberately not written here: the split
+        // enumerates it, and a number in a comment beside a number in code is the
+        // shape §12.20 spends two sections on.
+        //
+        // IT WAS RAISED FIVE TIMES, and that is the lesson rather than the number.
+        // Every readability pass in this item SPLIT sentences and grew the section, so
+        // each raise was measured against the draft in front of the author and was
+        // loose again by the next round; the gutting mutation stayed green twice more
+        // after the first fix. **A floor is a constant and the thing it measures is
+        // not.** The operational rule, which this item learned the expensive way and
+        // which belongs here rather than in a ruling nobody reads mid-edit: <b>run the
+        // break harness after the LAST prose edit</b>. A floor raised against an
+        // earlier draft has been raised against nothing.
+        Assert.True(sentences.Count >= 62,
+            $"only {sentences.Count} sentences were found in the sight section, so either "
+            + "it has been gutted or this split is reading the wrong thing");
+
+        var over = sentences
+            .Where(s => s.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length > 24)
+            .ToList();
+
+        Assert.True(over.Count == 0,
+            "a sentence in the sight section has run past 24 words, and the reading-grade "
+            + "gate cannot see it. Split it.\n  " + string.Join("\n  ", over));
     }
 
     /// <summary>

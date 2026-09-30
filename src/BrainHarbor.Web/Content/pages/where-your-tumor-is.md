@@ -1,7 +1,7 @@
 ---
 title: "Where your tumor is, and what that changes"
 slug: where-your-tumor-is
-description: "You know roughly where it sits, even if nobody has named it yet. This page turns the place on your scan report into plain words. It says what your team is weighing about it, and what to do when a place carries a warning of its own."
+description: "You know roughly where it sits, even if nobody has named it yet. This page turns the place on your scan report into plain words. It says what your team is weighing about it, and what to do when a place carries a warning of its own. If what changed is your sight, it says what that means for driving."
 tags: [location, newly-diagnosed, surgery, questions-to-ask]
 sources:
   # WI-567. Every quote below was re-fetched and read LIVE on 2026-09-24 with
@@ -498,7 +498,282 @@ sources:
     # BLOCK above rather than here (/review round 9, applying to a used quotation the rule
     # this file writes for an unused one), and `aqueduct` is taught in the region entry,
     # where AANS is the source for it.
-  # A SOURCE THE ITEM'S ACCEPTANCE NAMED AND THIS PAGE DOES NOT CITE, recorded
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11913653/
+    title: "Brain tumors and fitness to drive: A review and multi-disciplinary approach (Neuro-Oncology Practice)"
+    accessed: 2026-09-30
+    # WI-573. THE SOURCE FOR THE WHOLE SIGHT-AND-DRIVING SECTION, and it is NOT the
+    # source the backlog named. Already cited on
+    # /tests/neuro-exam-and-memory-testing for one narrow claim, which is what makes it
+    # a corpus source rather than one page's find. (This said "this is its second
+    # user" until /review round 3, and the same diff had already made it a third by
+    # citing it on /seizures/living-with. A count in prose, falsified by the change
+    # that wrote it.)
+    #
+    # THE BACKLOG NAMED CANCER RESEARCH UK's DRIVING PAGE AND IT DOES NOT CARRY THE
+    # CLAIM. Read live 2026-09-30, HTTP 200, "Last reviewed: 08 May 2026" -- the date
+    # the backlog gives, so it is the right page. The string "visual field" occurs
+    # ZERO times on it and "visual" occurs zero times as a word. It has exactly two
+    # vision sentences and both are pituitary-scoped UK regulation. The first makes
+    # trouble with eyesight a reason a licence may be withheld and puts a number of
+    # months on it -- A WAITING TIME, which WI-560 owns and this item is barred from,
+    # and which is NOT QUOTED HERE for the reason two paragraphs down. The second is
+    # a DVLA notification rule, and it carries no figure, so it can be quoted: "you
+    # must not drive until you have recovered from treatment and do not have problems
+    # with your vision." That second one is a driving PROHIBITION that follows an
+    # exemption from the notification duty, not a notification rule -- /review round 3
+    # corrected this note's description of it after reading the surrounding
+    # paragraph rather than the sentence alone. Every other sentence on that page
+    # THAT BEARS ON DRIVING is a
+    # waiting time or a UK licensing duty, so there is nothing on it this page may
+    # publish. (The scope matters: /review round 2 caught the first version saying
+    # "every other sentence" full stop, which is false -- the page also carries plain
+    # definitions of glioma grades and of what a biopsy is. The CONCLUSION survives
+    # the correction; the universal did not.) It is therefore NOT CITED here at all --
+    # recorded rather than silently dropped, and recorded with the measurement so the
+    # next item does not re-fetch it hoping. (It is also barred for idiom on
+    # /tumors/craniopharyngioma, WI-538, which is one of the pages carrying a
+    # vision-and-driving sentence -- so the backlog's source could not have
+    # served either home. (This said "the corpus's OTHER vision-and-driving
+    # sentence" until /review round 3, four lines above the paragraph headed AND
+    # "THE OTHER" WAS WRONG. 12.19: a ruling that contradicts itself gets copied
+    # one paragraph at a time -- and this one contradicted itself inside one note.)
+    #
+    # AND "THE OTHER" WAS WRONG: THERE WERE FOUR, AND THREE OF THEM ROUTED NOWHERE.
+    # The backlog says /tumors/craniopharyngioma carries "the one" sentence tying
+    # vision to driving and the first draft of this note said "the other" -- a CLOSED
+    # COUNT, 12.17's most-repeated error, and /review round 1 falsified it by
+    # sweeping for sentences carrying a driving token AND a sight word.
+    # /tumors/pituitary-tumor, /tumors/hemangioblastoma and /tumors/cns-germ-cell-
+    # tumor each carry their own. TWO of the three had no route at all, and the third
+    # had one that excluded this reader: /tumors/cns-germ-cell-tumor already linked
+    # /seizures/living-with -- WITHOUT the #driving anchor, and only "if seizures are
+    # part of it", so the reader whose problem is sight was excluded by the sentence
+    # that looked like it was helping. It gains the anchor and a sight route. (This
+    # note said "NONE of the three" until /review round 2 checked it against
+    # `develop`. A claim about what three other pages do is three claims.) **/tumors/pituitary-tumor was the sharpest miss in the set**:
+    # its version is almost word for word the restatement this item deleted from
+    # craniopharyngioma ("is set locally. Your team knows the rules where you live; a
+    # website does not, including this one"), and it is the page the SELLAR reader
+    # most likely starts on -- the same reader this page's #pituitary door now sends
+    # into the new section. All four route now, each in its own words, and
+    # /tumors/pituitary-tumor's restatement is replaced rather than supplemented.
+    # (True on the THIRD attempt. A later round put the first half of that sentence
+    # back after the route -- "Either way, your team knows the rules where you
+    # live" -- with an "Either way" that had no two ways, and this note went on
+    # saying replaced. /review round 5. The corpus assertion cannot see it either,
+    # because it bans two literal strings and says so.)
+    # /tumors/hemangioblastoma's and /tumors/cns-germ-cell-tumor's own sentences are
+    # KEPT, and the line between the two pairs is narrower than the first version of
+    # this note drew it. All four ended by pointing the reader at their team, so that
+    # is not the difference. **The two that went each added a sentence ABOUT THIS
+    # SITE** -- "a website cannot, and that includes this one", "a website does not,
+    # including this one" -- which is the site telling the reader what it will not do,
+    # in place of telling them where to go. The two that stayed name the factors
+    # driving turns on and stop. What all four were missing was the door.
+    # (THIS NOTE WAS FALSE FOR TWO ROUNDS. It said /tumors/pituitary-tumor's
+    # restatement was "replaced rather than supplemented", and a later round's
+    # rewrite of that page PUT THE META SENTENCE BACK -- so the only live instance of
+    # "a website does not, including this one" in the corpus was sitting on the page
+    # this note said it had cleaned, and nothing asserted its absence. /review round 3
+    # found it. **A deletion recorded in a note and not in an assertion is a deletion
+    # that can be undone by the next edit to the same file** -- which is 12.19
+    # finding 8 with the roles swapped: there the script lied about the file, here the
+    # note did. It is asserted now, corpus-wide.)
+    # **AND THE CLAIM IS AN ASSERTION NOW, NOT A SENTENCE HERE** -- see
+    # EverySightAndDrivingSentenceInTheCorpusCarriesARoute. 12.19: assert the
+    # COMPLEMENT, not the includers, because no single page was individually wrong
+    # and no page-scoped test could see the gap.
+    #
+    # AND THE BARRED QUOTATION COULD NOT BE RECORDED VERBATIM, WHICH IS THIS ITEM'S
+    # SHARPEST TOOLING FINDING AND IT WAS FOUND BY AN EXISTING GUARD RATHER THAN BY
+    # READING. The first draft of this note quoted CRUK's waiting-time sentence in
+    # full, the way this corpus records every other refused claim, and
+    # SeizureContentTests.NoCuratedPagePrintsADrivingWaitingPeriod turned RED: it
+    # reads the RAW file, front matter included, and splits per sentence on "driv".
+    # THE GUARD WAS NOT TOUCHED, and it should not be. A comment does not render --
+    # but a source title: two lines above it DOES (12.10, 12.20), the ban is on the
+    # SHAPE rather than on the rendering, and a figure sitting in a comment is one
+    # copy-paste away from prose. **A quotation is not exempt from a ban on the claim
+    # it quotes.** The corpus's habit of pasting barred wording verbatim in order to
+    # refuse it has a floor, and this is where it is.
+    #
+    # WHAT IS USED, verbatim, each beside the sentence it carries:
+    #   "mostly present with some form of visual field loss, more commonly a
+    # homonymous visual field loss (ie, affecting the same side, left or right, of the
+    # visual field in both eyes)" -- the common pattern, and the reason the page says
+    # "the same side in both eyes" rather than naming a side. **THE GLOSS IS THIS
+    # PAGE'S, NOT THE SOURCE'S:** the source's word for that property is
+    # "homonymous", and the page teaches "hemianopia" -- which the source lists as one
+    # of the FORMS homonymous loss takes -- instead of teaching a fourth word. That is
+    # a simplification and it is recorded as one, because an unrecorded simplification
+    # reads as a misattribution to the next person who greps the source.
+    #   AND THE PAGE EXTENDS hemianopia TO BOTH PATTERNS, WHICH THIS SOURCE DOES NOT.
+    # It lists hemianopia only among the forms HOMONYMOUS loss takes; for the other
+    # pattern it says "binasal or bitemporal" and never uses the word. The page says
+    # "you may hear either one called hemianopia, and that word does not say which",
+    # which is standard general vocabulary and is what a reader handed the word on a
+    # report needs -- but it rests on general usage rather than on this source's
+    # scope, and /review round 5 caught the record documenting every other gloss and
+    # being silent on this one. An unrecorded EXTENSION is the same liability as an
+    # unrecorded simplification, one direction over.
+    #   "including partial or complete hemianopia, quadrantanopia or scotoma" -- the
+    # two report words taught. quadrantanopia is NOT taught: a reader handed it can
+    # read the hemianopia sentence, and 12.8's vocabulary rule is that a word earns
+    # its place by being one a reader is handed.
+    #   "cannot be addressed with prescription glasses" -- the glasses paragraph. The
+    # full clause names the mechanisms ("optic nerve ... or optic pathway") and the
+    # page keeps only the pathway, because the eye-and-retina half is a different
+    # subject. **BUT THE SUBJECT OF THAT CLAUSE IS "a decrease in visual acuity", NOT
+    # FIELD LOSS**, which /review round 1 caught this note failing to say while the
+    # paragraph around it is about the field. The two halves are sourced separately
+    # and deliberately: the glasses sentence carries "new lenses cannot put back what
+    # is missing" for a pathway problem, and the EYE-CHART sentence rests on a
+    # different sentence of the review's -- "Vision requirements for driver licensing
+    # primarily consider visual acuity and horizontal field extent" -- which is what
+    # makes acuity and field two separate things a licence looks at. Without that
+    # second source the eye-chart line was an inference.
+    #   "The impact of visual field loss on driving depends on the extent of the
+    # defect, the location within the visual field" and, after a possessive this file
+    # cannot reproduce, "ability to compensate by using eye and head scanning" -- the
+    # three factors. **THE QUOTATION IS SPLIT RATHER THAN RETYPED**: the source prints
+    # a RIGHT SINGLE QUOTATION MARK (U+2019) in "the patient's", and an ASCII
+    # apostrophe here is a modified quotation. The character is NAMED rather than
+    # pasted (12.20), and the split is that ruling's number-unit rule applied to a
+    # character boundary -- stop before it rather than reproduce it.
+    # **AND THE HAYSTACK IS WHY THIS SURVIVED TWO ROUNDS OF CHECKING.** Both earlier
+    # passes verified against work_files/wi573/fitness.txt, and totext.py NORMALISES
+    # U+2019 to an apostrophe and the curly double quotes to straight ones -- so the
+    # extract agreed with the typo and could never have disagreed. 12.20: a haystack
+    # containing a NORMALISING COPY of its subject cannot report a normalisation
+    # defect. It was written about an aggregator; here the normalisation was ours.
+    # Quotations in this record were re-checked against the raw fetched HTML.
+    # NOTE: the
+    # "location" in that sentence is location within the VISUAL FIELD, not the
+    # tumor's address, which is why this sentence is not a Wave 6 row. An earlier
+    # draft of this note had to be corrected for reading it the other way.
+    #   "Some drivers with homonymous field defects have been rated as safe to drive
+    # in on-road studies." and "However, there is evidence that others have impaired
+    # steering stability and lane position, and impaired responses to road hazards."
+    # -- BOTH halves, because either alone is the wrong page. The first alone reads as
+    # reassurance to drive; the second alone reads as a verdict.
+    #   THE SECOND PATTERN, AND THE SCOPE IT FORCED ON EVERYTHING BELOW IT. The source:
+    # "Rarely the visual field loss heteronymous (binasal or bitemporal), most commonly
+    # from a pituitary tumor near the optic chiasm." **The page presents the two patterns
+    # SYMMETRICALLY where the source calls the second rare, and that is a deliberate
+    # departure recorded here rather than left to be found.** The reason is the audience:
+    # this page's #pituitary door sends the sellar reader into this section, and for that
+    # reader the rare pattern is the likely one. A page that says "most often the same
+    # side" hands them the wrong answer, which is what /review round 2 found it doing.
+    # The address in the source's sentence -- "a pituitary tumor near the optic chiasm" --
+    # is NOT published: the page says which one you get depends on where along the pathway
+    # the growth presses, and tells the reader to ask. That keys the difference to a
+    # structure without handing anyone a lookup, which is what keeps it off the Wave 6 row.
+    #   **AND EVERY DRIVING-EVIDENCE SENTENCE BELOW IS HOMONYMOUS-SCOPED, WHICH THE SECOND
+    # PATTERN MADE LOAD-BEARING.** /review round 3's blocker: adding the second pattern
+    # silently broadened "people with similar losses" and "people with this loss" to cover
+    # both, and the source studied only the first. The prose now names the same-side
+    # pattern in both places, and "the side you cannot see" became "the side or sides".
+    # **A fix's blast radius is every sentence that depended on the old scope** -- round 2
+    # changed what the section is about and checked the paragraph it edited.
+    #   "In driving simulator studies participants with similar amounts of homonymous
+    # field loss exhibited a wide range in detection rates for hazards on the affected
+    # side, from almost no detection through to performance similar to that of control
+    # drivers" -- the sentence the section turns on, and the only one that makes "two
+    # people missing the same amount can drive very differently" a measurement rather
+    # than a guess. **THE QUOTATION STARTS AT "In driving simulator studies" ON
+    # PURPOSE.** /review round 1 found it starting one word later, at "participants",
+    # and the page saying "In driving studies" -- so the trim HID the drop of
+    # "simulator", and the page was promoting simulator findings to on-road findings
+    # on its load-bearing sentence. The page says "driving simulator studies" now. The
+    # on-road evidence here is a DIFFERENT sentence (the safe-to-drive ratings), and
+    # conflating the two is what a trimmed quotation made invisible.
+    #   "These tests are helpful for diagnosis and disease monitoring but do not
+    # evaluate the ability of the patient to compensate for the field loss by
+    # scanning" -- why the map does not settle it.
+    #   "The Humphrey Field Analyzer and Goldmann perimetry are routinely used to
+    # quantify visual field defects." -- the word perimetry. The machine names are NOT
+    # published: a reader cannot ask for a brand.
+    #   "Wide interstate variability in visual field requirements exists within the
+    # United States" -- the jurisdiction claim, and it is US-scoped, which the
+    # backlog's UK source could not be.
+    #   "uncorrected double vision or diplopia may make it unsafe for a person to
+    # drive" -- the double-vision paragraph. diplopia is not taught for the
+    # quadrantanopia reason.
+    #   "The extent of the visual field loss or double vision can change over time as
+    # the patient undergoes treatment or the tumor progresses, thus regular follow-up
+    # appointments for vision testing are needed." -- both directions, and the reason
+    # to keep the eye appointments.
+    #   "patients with visual field loss may benefit from referral to an occupational
+    # therapy practitioner for training in adaptive strategies for driving" and
+    # "Individuals with visual field defects may require driving training with a
+    # certified driving rehabilitation specialist" and "Extended mirrors, which may
+    # help broaden the visual field of the affected side, are also available." -- the
+    # who-to-ask paragraph. "Extra mirrors can help" is the source's "may help",
+    # because "are also available" is not a claim that they work.
+    #   "If possible, patients with visual field loss should be given an opportunity
+    # to demonstrate their FTD through a driving evaluation in a simulator or on the
+    # road." -- being assessed at the wheel. FTD is the source's abbreviation for
+    # fitness to drive, and **that gloss is outside the quotation marks on purpose**:
+    # /review round 1 asked for the abbreviation to be expanded, the fix put
+    # "(fitness to drive)" INSIDE the marks, and an unmarked editorial insertion is a
+    # modified quotation by the same rule that puts emphasis outside them. A nit fix
+    # created the defect class the same round was fixing twice over.
+    #
+    # THREE THINGS IN THIS SOURCE REFUSED IN WRITING, each with its figure recorded so
+    # nobody re-proposes it:
+    #   (1) The review's presentation-rate range for tumors on the visual pathway. A
+    # PERCENTAGE KEYED TO A LOCATION -- the subject of that sentence is tumors
+    # "infiltrating or compressing the visual pathway" -- which is the one artifact
+    # every Wave 6 item is forbidden to publish. The page says the pattern is the
+    # common one and prints no figure. The spread is its own second argument: its low
+    # end is about half of those patients and its high end is close to nine in ten,
+    # which is 12.20's treatment of the 2.3%-100% resection range applied again.
+    # THE FIGURES ARE DESCRIBED HERE RATHER THAN QUOTED, and that is this item's own
+    # floor being applied rather than stated -- see the barred-quotation note above.
+    # /review round 1 caught the first draft quoting both this range and the
+    # threshold in (2), and BOTH were MODIFIED quotations: the source prints an EN
+    # DASH (U+2013) in the range and a DEGREE SIGN (U+00B0) in the threshold, and the
+    # note had typed a hyphen and the word "degree". The characters are NAMED rather
+    # than pasted, which is 12.20's rule for exactly this. **A modified quotation of
+    # a figure this page may not print is the same defect twice**, and the cheapest
+    # fix for both is to stop quoting it.
+    #   (2) The two named states, the horizontal-field threshold one of them sets, and
+    # the conclusion the review draws from the pair -- that the same eyes are
+    # licensable in one and not in the other. THE ARGUMENT IS PUBLISHED AND NEITHER
+    # THE STATES NOR THE FIGURE ARE.
+    #   AND THE PHRASE ITSELF IS TREATED DIFFERENTLY ON THE TWO PAGES, on purpose.
+    # This page quotes "horizontal field extent" in full, because it OWNS the subject
+    # and the term is vocabulary rather than a rule. /seizures/living-with elides it,
+    # because its reader arrives for seizures and a page that acquires vision-rule
+    # vocabulary is one edit from acquiring a vision rule. /review round 3 asked for
+    # one policy; the answer is that the bar is scoped to the page that must not grow
+    # the subject, which is the same shape as every other per-page source bar here. Naming them would hand a reader in one of them a licensing
+    # verdict from a website, which is the thing /seizures/living-with#driving exists
+    # to refuse, and the degree figure is a number a reader would measure themselves
+    # against. Unnamed, the sentence carries the whole force -- one state sets a width
+    # and its neighbor sets none -- and nobody can mistake it for their own answer.
+    #   (3) The Swiss consensus requirements for returning to the wheel. Every item in
+    # that list is a WAITING TIME or a re-scanning interval, so the list is named here
+    # and its figures are not -- the same rule as the CRUK note above, applied in the
+    # same file rather than in only one of two places. WI-560 owns waiting times and
+    # this item prints none.
+    #
+    # AND THE ROUTE'S BOUND IS MEASURED, NOT ASSUMED, which is 12.19 finding 6.
+    # /seizures/living-with#driving is SEIZURE-SCOPED throughout: "Every US state has
+    # rules about driving after a seizure", "Most states ask you to be free of
+    # seizures for a set length of time", and its lookup tool is the Epilepsy
+    # Foundation's. A reader whose problem is vision and who has never had a seizure
+    # is not served by its rules half. The route is still right -- the SHAPE is
+    # identical and the practical half is the whole point -- so the bound is written
+    # into the prose (the paragraph headed "One thing that page does not cover")
+    # rather than left for the reader to discover. **The note is deliberately not
+    # quoting that sentence:** it quoted an earlier draft of it for two rounds after a
+    # readability pass replaced the wording, and the tests assert the real string
+    # while the note was the only copy that lied. 12.20's "correcting a claim in one
+    # file does not correct its copies", inside one file. The destination got
+    # a door back for the same reason, because a vision reader who lands there and
+    # finds only seizure rules would otherwise conclude the question does not apply.
+  # ANOTHER SOURCE THE ACCEPTANCE NAMED AND THIS PAGE DOES NOT CITE, recorded
   # rather than silently dropped: NCI's PDQ for health professionals. It was named
   # in the backlog as a source for the surgery framing, on the strength of its
   # giving three locations their own treatment sections -- which is the argument for
@@ -540,7 +815,7 @@ sources:
   # nowhere. They are refused for now and glossed inline instead. The trigger
   # for adding them as a set is recorded: WI-569 and WI-570 put location
   # sections on the glioma family and will be the second user.
-reviewed: 2026-09-26
+reviewed: 2026-09-30
 review_due: 2027-03-31
 disclaimers: [medical]
 ---
@@ -683,6 +958,9 @@ everything else your brain knows.
 At the very back of your head. Your report may call this the **occipital lobe**.
 There are two, and they are where what your eyes send gets turned into seeing.
 
+**If sight is what changed for you**, that has a section of its own:
+[when what changed is your sight](#your-sight), and it covers driving.
+
 ### Low at the back, under everything else {#cerebellum}
 
 Your report may call this the **cerebellum**. It sits at the back of the brain,
@@ -750,7 +1028,11 @@ growth turns up there, and two of the ones we have written about are
 [craniopharyngioma](/tumors/craniopharyngioma). Each of those pages starts from the
 beginning, and [the tumor types](/tumors) has the rest.
 
-**This is one of the places on this page with a warning of its own**, and
+**If sight is your question**,
+[when what changed is your sight](#your-sight) covers it, including what it means
+for driving.
+
+**This region also carries a warning of its own**, and
 [when where it sits makes it urgent: the fluid](#the-fluid) is where that sits.
 Read it if this is your region.
 
@@ -891,6 +1173,83 @@ So: start from the list above, take your own type page's rule over it wherever t
 one is stronger, and if you cannot tell which is yours, tell your team what has
 changed and let them place it. All of that is easier to read today than on the day you need
 it.
+
+## When what changed is your sight, and what that means for driving {#your-sight}
+
+**If sight is the thing that changed, this is the section for it.** The pathway that
+carries sight runs a long way through the head, so where a growth sits can change
+what you see. Driving is the question people ask first, and it is the one this page
+cannot answer for you.
+
+**Get your sight checked before you drive again.** Do that first, whatever the rules
+where you live turn out to say.
+
+**Double vision matters here too.** If things appear doubled and that has not been
+corrected, it can make driving unsafe on its own.
+
+**What "visual field" means.** Your **visual field** is everything you can see at
+once while your eyes are still. Losing part of it is not the same as blurriness. A
+piece of what you would normally see is simply not there.
+
+**There is more than one pattern, and which one you have matters.** For some people
+the missing piece is on the same side in both eyes. For others it is the outer edge
+in both eyes instead. You may hear either one called **hemianopia**, and that word
+does not say which. Which one you get depends on where along that pathway the growth
+presses, so ask your team which one is yours. A smaller missing patch has its own
+word, **scotoma**.
+
+**This is not a glasses problem, and that part matters.** When the pathway itself
+is affected, new lenses cannot put back what is missing. So reading an eye chart is
+not proof that your field is whole.
+
+**The test for it is a separate test.** It maps the whole of what you can see,
+edge to edge, rather than measuring how sharp the middle is. Your team may call it a **field test**, or
+**perimetry**. Ask for a field test.
+
+**Two people missing the same amount can drive very differently.** In driving
+simulator studies, people who had lost the same side in both eyes ranged widely.
+Some spotted almost no hazards on that side. Others matched drivers who had full
+vision.
+
+**Most of what has been studied is the same-side pattern.** If yours is the outer
+edge in both eyes, or a smaller patch, that does not mean the question is settled.
+It means it has to be answered for you.
+
+**Three things matter.** How much is gone. Where in your vision it sits. And how
+well you learn to sweep your eyes and head toward the side or sides you cannot see.
+That sweeping can be taught.
+
+**So the test does not settle it by itself.** A field test says what is missing. It
+does not say how you drive. That is why being assessed at the wheel is a real
+option, in a car or in a simulator.
+
+**Whether you are allowed to drive is decided where you live, and places differ more
+than people expect.**
+One state can set a width of vision you have to have. Another state can set none at
+all. The same eyes, two answers.
+
+**Being allowed to drive is not the same as being safe to drive.** A place that sets
+no minimum has not told you that you drive safely. Some people who have lost the same
+side are assessed as safe to drive, and some are found to steer and react worse.
+
+**So your own answer has to come from where you live, and so does when you could
+drive again.**
+[Driving and seizures](/seizures/living-with#driving) is where this site puts the
+driving question. It also has the part nobody plans for: getting to work and to
+appointments without a car.
+
+**One thing that page does not cover.** It was written for seizures, and the rule
+about sight is a separate rule. The state lookup on it is about seizures too. For
+the sight rule, ask your team or whoever issues your license.
+
+**There are people whose whole job this is.** An eye doctor measures the field.
+Ask your team for a referral to an occupational therapist, or to a driving
+rehabilitation specialist. They can teach the sweeping and set up an assessment at
+the wheel. Extra mirrors can help.
+
+**And it can change in both directions.** How much is missing can shift while you
+are treated. A no now is not always a no later, and a yes gets looked at again.
+Keep the eye appointments.
 
 ## Can they just take it out? {#can-they-take-it-out}
 

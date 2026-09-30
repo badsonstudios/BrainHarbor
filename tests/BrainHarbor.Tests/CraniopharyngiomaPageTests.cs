@@ -1301,6 +1301,77 @@ public sealed class CraniopharyngiomaPageContentTests
         // reported as not carrying the block under its standard heading.
         Assert.DoesNotMatch(new Regex(@"\[[A-Z][A-Z-]+\]"), front);
     }
+
+    /// <summary>
+    /// THE VISION-AND-DRIVING SENTENCES: this page keeps its OWN fact and hands the rule
+    /// over, and the handover is WI-573's.
+    ///
+    /// <para>Before WI-573 this page carried the corpus's only sentence tying sight to
+    /// driving, and it ended by RESTATING the jurisdiction point — <i>"is decided where you
+    /// live. Your own team will know what applies to you; a website cannot"</i> — with no
+    /// route anywhere. §12.15 says an obligation may be answered, re-headed or routed and
+    /// never dropped; <b>this one was answered and then stranded</b>, which is the third
+    /// state nobody had a name for: the reader was told the answer exists somewhere and
+    /// given no door to it.</para>
+    ///
+    /// <para><b>What stays is this page's own fact</b> — the sight that goes first here is
+    /// the sight at the edges, which follows from where those nerves cross and which this
+    /// page sources. <b>What goes is the restatement.</b> WI-573's acceptance is that
+    /// driving is routed and never restated, and Cancer Research UK — the source the
+    /// backlog named for the link — is BARRED on this page for idiom (WI-538), so the
+    /// general version could never have been sourced here even if it belonged here.</para>
+    /// </summary>
+    [Fact]
+    public void TheDrivingConsequenceIsRoutedRatherThanRestated()
+    {
+        var everyday = Reader(Section("Everyday life"));
+
+        // THIS PAGE'S OWN FACT, KEPT. It is about where the nerves for sight cross,
+        // which is this tumor's own anatomy rather than a general claim about sight.
+        Assert.Contains("get it tested before you go back to driving", everyday,
+            StringComparison.Ordinal);
+        Assert.Contains("the sight you lean on at the edges of the road", everyday,
+            StringComparison.Ordinal);
+
+        // THE ROUTE, WHICH DID NOT EXIST BEFORE.
+        Assert.Contains("/where-your-tumor-is#your-sight", everyday, StringComparison.Ordinal);
+
+        // AND THE RESTATEMENT IS GONE, asserted by its own words rather than by a
+        // count. A deletion recorded only in a review report is §12.19 finding 8, and
+        // this corpus has lost the same sentence to it three times.
+        Assert.DoesNotContain("is decided where you live", Page, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("a website cannot", Page, StringComparison.OrdinalIgnoreCase);
+
+        // NO WAITING TIME EITHER, asserted as a DURATION rather than as a phrase.
+        // The clause that went with the restatement was "and from when", and
+        // /review round 1 was right that calling it "the gesture a duration arrives
+        // inside" mischaracterised it: it printed no duration, it said the TIMING is
+        // a local question, which is true. Banning those four words was therefore
+        // banning a correct sentence and dropping an obligation §12.15 says may only
+        // be answered, re-headed or routed. It is answered on the destination now, in
+        // the paragraph that hands the reader back to where they live, and that
+        // sentence is asserted there. **The quotation that used to sit here was of a
+        // sentence the destination had already stopped saying**, and it also claimed
+        // an assertion that did not exist — /review round 3. The destination's own
+        // note records stopping quoting that sentence for this exact reason, so the
+        // correction had been made in one file and not in its copy. What this page
+        // owes is the absence of a NUMBER.
+        var duration = new Regex(
+            @"\b(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|twelve|eighteen)"
+            + @"[\s-]+(?:day|week|month|year)s?\b", RegexOptions.IgnoreCase);
+
+        // Both canaries, because a scan never seen to fire has not been shown to work.
+        Assert.Matches(duration, "You cannot drive for six months after that.");
+        Assert.DoesNotMatch(duration, "Your team knows the rules where you live.");
+
+        foreach (var sentence in Regex.Split(Reader(Section("Everyday life")), @"(?<=[.!?])\s+"))
+        {
+            if (sentence.Contains("driv", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.DoesNotMatch(duration, sentence);
+            }
+        }
+    }
 }
 
 /// <summary>The page as served.</summary>

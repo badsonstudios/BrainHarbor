@@ -289,8 +289,8 @@ sources:
   #
   # NO PROGNOSIS FIGURES AND NO SURVIVAL FIGURES (§12.2 item 5, §12.5). The
   # sources are thick with them and not one reaches this page.
-reviewed: 2026-09-18
-review_due: 2027-03-18
+reviewed: 2026-09-30
+review_due: 2027-03-31
 disclaimers: [medical]
 ---
 
@@ -608,9 +608,12 @@ for the days you are sick. That written plan is the thing to keep where you can
 find it in a hurry.
 
 If your vision has altered, get it tested before you go back to driving. The
-sight you lose first is exactly the sight you lean on at the edges of the road. Whether
-you can drive, and from when, is decided where you live. Your own team will know
-what applies to you; a website cannot, and that includes this one.
+sight you lose first is exactly the sight you lean on at the edges of the
+road.
+
+[When what changed is your sight](/where-your-tumor-is#your-sight) takes the
+rest of that: what a field test shows, who decides about driving, and who can
+help you work out whether you still can.
 
 Tiredness, sleep that is out of step, and trouble holding attention are all
 common here, and they are worth saying out loud at appointments rather than

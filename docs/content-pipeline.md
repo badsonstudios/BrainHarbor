@@ -7733,3 +7733,212 @@ re-measured**, and the page shipped at grade **5.4**, below the **5.6** it start
 This is NOT the corpus-wide per-sentence check §12.17 hands to `/pm`, which needs a sweep
 first because it will not be this page alone. It is one section's ceiling, and it is the
 cheapest possible answer to a gate that averages.
+
+### 12.21 The consequence a reader can act on, and the source that did not carry it (WI-573)
+
+§12.17 built the location page. §12.18, §12.19 and §12.20 settled what a TYPE page may
+carry about location, where the obligation lives across the corpus, and what to do for
+the reader whose only word is a place. This is the other end: **the most concrete "what
+does this mean for me" answer the location axis has**, which is sight, and the thing a
+reader will act on this afternoon, which is driving.
+
+#### The backlog named a source and the source does not carry the claim
+
+WI-573's acceptance named Cancer Research UK's driving page as the source for the
+vision-and-driving link. **It was read live before a word was written, and the string
+`visual field` occurs ZERO times on it; `visual` occurs zero times as a word.** It has
+exactly two vision sentences, both pituitary-scoped UK regulation: one names a number of
+months (a waiting time, which WI-560 owns and this item is barred from) and the other is a
+driving prohibition attached to an exemption from a notification duty. Every other
+sentence on it that bears on driving is a waiting time or a UK licensing duty.
+
+So the named source is **cited nowhere**, and the claim is carried by
+`PMC11913653` — a brain-tumor fitness-to-drive review the corpus ALREADY cites on
+`/tests/neuro-exam-and-memory-testing` for one narrow claim, open access, and
+US-inclusive where the named one is UK-only.
+
+> **Read the named source before planning around it. An acceptance criterion that names a
+> source is a hypothesis about that source, and it is cheaper to falsify on day one than
+> to work around on day three.** The right answer was already in the corpus, cited once,
+> for something else.
+
+#### Five reviews, five blockers, and every one was made by the previous fix
+
+This is the shape worth copying, because it is not carelessness and it did not stop when
+it was noticed.
+
+1. Round 1 added a door from the `#pituitary` region entry, on the sound reasoning that
+   the sellar reader is the likeliest driving reader.
+2. Round 2 found that the door aimed that reader at a sentence saying the loss is *"most
+   often the same side in both eyes"* — true of brain tumor patients as a group and
+   **false for exactly that reader**, whose loss is the outer edge on both sides, which
+   `/tumors/craniopharyngioma` and `/tumors/pituitary-tumor` both say in their own words.
+   The source carves it out in its very next sentence.
+3. Round 2's fix named both patterns. Round 3 found that **every driving-evidence sentence
+   below it is HOMONYMOUS-scoped in the source** — *"participants with similar amounts of
+   homonymous field loss"*, *"Some drivers with homonymous field defects have been rated as
+   safe to drive"* — so describing a second pattern silently broadened them to a population
+   nobody studied, in the **reassuring** direction, and *"the side you cannot see"* was
+   singular for a reader who has two.
+4. Round 3 re-scoped the evidence and moved the sight paragraph on `/seizures/living-with`
+   up to sit under the state lookup. Round 4 found the clause it was rewritten with —
+   *"what you can see RATHER THAN seizures"* — is exclusive, so the reader with **both**
+   read it, concluded the paragraph was about somebody else, and used a seizure lookup.
+5. Round 4's positional guard for that move could not fail (below). Round 5 found the
+   **correction** to the permissive reading sitting AFTER the outbound link.
+
+> **A FIX'S BLAST RADIUS IS EVERY SENTENCE THAT DEPENDED ON THE OLD SCOPE.** Each round
+> changed what a passage was about and checked the passage it edited. The question to ask
+> after a content fix is not "is this paragraph right" but "what did this paragraph used
+> to mean for the ones around it".
+
+And the shape of the last one generalises past this item:
+
+> **A CORRECTION PLACED AFTER AN EXIT IS A CORRECTION THE READER CAN MISS.** Pinning a
+> safety sentence's STRING is not pinning its PLACE. Where a page states a permissive
+> fact, corrects it, and links away, the order of those three is a safety property and
+> has to be asserted as one.
+
+#### A positional assertion is only as good as its two landmarks
+
+The guard written to lock that paragraph in place was wrong **twice**, and the break
+harness caught it both times.
+
+- First it searched the whole raw file for `Epilepsy Foundation` — which begins five
+  source `title:` lines in the FRONT MATTER. So the landmark resolved to byte ~300 and the
+  assertion was true wherever the paragraph sat.
+- Then it bracketed with `## Work`, the next heading. `lookup < sight < work` is satisfied
+  anywhere in the last two thirds of the section, **including the exact place the item had
+  moved the paragraph out of**.
+- It brackets the DOOR now as well as the lead sentence, because the regression that
+  defeated version two was to split the paragraph and move only the link.
+
+> **Bracket the thing that has to be adjacent, not the section it sits in.** And the
+> reason all three versions shipped green: **a guard with no mutation aimed at it has been
+> reviewed, not tested.** No mutation moved that paragraph until round 4 asked for one.
+
+#### A floor is a constant and the thing it measures is not
+
+The sight section's per-sentence floor was raised **five times** — 45, 50, 54, 58, 62 —
+and every raise but the last was loose again within a round, because each readability pass
+SPLIT sentences and grew the section (53 → 57 → 61 → 63). The same thing happened to the
+route-count floor, which was written at eleven in the review round that created the
+twelfth.
+
+> **Run the break harness after the LAST prose edit.** A floor raised against an earlier
+> draft has been raised against nothing. This item learned it five times and the harness
+> reported it five times; what finally helped was a one-second check
+> (`check-mutations.py`) that runs the mutators alone, with no `dotnet test`, so drift is
+> found before a four-minute run is worth starting.
+
+#### A quotation is not exempt from a ban on the claim it quotes
+
+The corpus records a refused claim by pasting it verbatim into the front matter. **That
+collides with any guard that reads the whole file**, and three of this item's guards do.
+
+- `SeizureContentTests.NoCuratedPagePrintsADrivingWaitingPeriod` reads the RAW file and
+  splits per sentence on `driv`. It went red on this item's own note, which had quoted
+  CRUK's waiting-time sentence in order to record that it is barred. **The guard was not
+  touched.** The note names the shape instead.
+- The same floor then caught the item **twice more**, on two other pages, after it had been
+  written down — once on a `horizontal field extent` quotation and once on a hyphenated
+  description of the same phrase.
+
+> **A rule stated in one file is not applied in the next.** The item that writes the rule
+> is the one most likely to break it again, because it believes it has dealt with it.
+
+The barred figures are DESCRIBED rather than quoted, which also closed two **modified
+quotations** `/review` found: the source prints an EN DASH (U+2013) in its percentage
+range and a DEGREE SIGN (U+00B0) in its field threshold, and the note had typed a hyphen
+and the word *degree*. Both characters are NAMED here rather than pasted, per §12.20.
+
+#### A haystack that normalises cannot report a normalisation defect — and this time the normaliser was ours
+
+§12.20 records this about an aggregator's copy of a paper. **It is equally true of this
+item's own extractor.** `totext.py` replaces U+2019 with an ASCII apostrophe, so two
+rounds of quotation checking against `fitness.txt` could not see that *"the patient's
+ability to compensate"* had been typed with the wrong character. Round 3 found it by
+checking the raw HTML. The quotation is SPLIT either side of the apostrophe rather than
+retyped, which is §12.20's number-unit rule applied to a character boundary.
+
+**And a nit fix created the same defect class in the round that fixed two of them:**
+expanding `FTD` to `FTD (fitness to drive)` put an unmarked editorial insertion INSIDE
+quotation marks. A gloss belongs outside the marks, for the same reason emphasis does.
+
+#### The obligation was on four pages, not one, and three of them routed nowhere
+
+The backlog says `/tumors/craniopharyngioma` carries *"the one"* sentence tying vision to
+driving. **A sweep found four.** `/tumors/pituitary-tumor` carried almost word for word
+the restatement this item deleted from craniopharyngioma, and it is the page the SELLAR
+reader most likely starts on — the same reader the new `#pituitary` door sends into the
+new section. `/tumors/hemangioblastoma` and `/tumors/cns-germ-cell-tumor` carried their
+own; the third had a route that was **conditional on seizures**, so the reader whose
+problem was sight was excluded by the sentence that looked like it was helping.
+
+> §12.19: **assert the COMPLEMENT, not the includers.** No single page was individually
+> wrong, so no page-scoped test could see the gap.
+> `EverySightAndDrivingSentenceInTheCorpusCarriesARoute` is that assertion, and it carries
+> a second property the item needed three rounds to add: **a carrier owes the reader an
+> INSTRUCTION as well as a door.** Two of the four pages said sight bears on driving and
+> stopped there.
+
+**And the count is not written down anywhere.** Two docstrings each stated how many pages
+route to the driving anchor; they gave two different numbers and both were wrong by a
+factor of three. Their replacements then said *"the enumeration says eleven"* — in two
+files, about an enumeration that existed in neither. It exists now.
+
+#### A third configuration of §12.19's zero, and a guard that catches its own author
+
+§12.20 names two ways the ranking guard can be structurally silent:
+`/treatments/craniotomy` has zero ADDRESSES with twenty-one difficulty matches; WI-571's
+section has zero DIFFICULTIES with several addresses. **This section has zero of both** —
+the weakest possible silence, and the likeliest to be read as a clean bill. It is a
+property of the subject rather than an accident: the section is about a SYMPTOM and what
+to do about it, and the one sentence that could have keyed a place to it was deliberately
+not written. Both zeros are asserted and a row carrying both halves is planted.
+
+**AND NAMING A SET IS ONLY STRONGER THAN COUNTING IT IF THE NAMES COME FROM THE
+MEASUREMENT.** The carrier floor was changed from a count of five to five named slugs —
+and the first version of the list held six, the sixth added from memory. The assertion
+written to stop a count being satisfied by *any* five caught its own author on the first
+run. (Naming fixes "any five"; it does **not** fix the fact that on two of those pages the
+route sentence is a carrier by itself, because the shared route label contains *sight*.
+That residue is recorded rather than papered over.)
+
+#### Trap 5 landed four times, and never once through a heredoc
+
+The recorded form is *a heredoc eats backslashes, so `\b` arrives as a literal 0x08*.
+This item used the Write tool throughout and hit it anyway: **a plain Python
+triple-quoted string does the same thing**, because `\b` is a valid Python escape while
+`\s` and `\d` are not and survive with a warning. A duration regex was emitted into C#
+with two real backspace bytes where it needed a word boundary, and it could not match
+anything.
+
+> **What caught it was the POSITIVE CANARY.** `Assert.DoesNotMatch(duration, section)`
+> passed happily — a pattern that matches nothing never fires — and the test would have
+> reported "no waiting time in this section" on the strength of a dead regex. §12.18: a
+> guard that has never been seen to fail has not been shown to work. **Write both canaries
+> beside every scan, and write them as literals so no page mutation can silence them.**
+
+#### The needle rule, extended past smoke needles
+
+This corpus has now been bitten five times by a needle that came from somewhere other than
+the rendered artifact — WI-568 a draft, WI-570 a line break before a bolded word, WI-571
+sentence-initial CASE, and **twice in this item**: a test assertion retyped from the
+sentence it used to be in, and an instruction needle broken by a hard wrap.
+
+> **The rule is not about smoke. Any string a check looks for must be copied out of the
+> artifact the check will read.** WI-573 puts its needles in one file that both the
+> rendered read and the smoke import, and that file asserts every needle against the local
+> capture before either tool may use it — so a typo fails against a file on disk instead of
+> against production.
+
+#### Two smaller things worth carrying
+
+- **`open(path, "wb")` truncates before the arguments are evaluated.** A line-ending
+  detector inlined into the write call read a file that had just become empty and reported
+  LF for every CRLF file. Compute the ending first. Invisible in `git diff` under
+  `text=auto`, which is why it survived.
+- **A refusal can be too broad.** A smoke refusal on `Either way` fired on pre-existing
+  innocent prose three hundred lines from the edit. Refuse the CLAUSE that was removed, not
+  the connective it happened to start with — §12.18's qualify-do-not-ban, in a scratch tool.

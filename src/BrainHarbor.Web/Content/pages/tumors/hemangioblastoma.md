@@ -459,8 +459,8 @@ sources:
     title: "VHL Disease Info and Support | VHL UK/Ireland"
     accessed: 2026-09-22
     # Verbatim: "private Facebook group".
-reviewed: 2026-09-22
-review_due: 2027-03-22
+reviewed: 2026-09-30
+review_due: 2027-03-31
 disclaimers: [medical]
 ---
 
@@ -765,7 +765,11 @@ usual is a different thing. That one can mean fluid backing up, so it is a
 same-day call, and a right-away call for anyone with a shunt.
 
 **Driving** turns on two things: the law where you live, and how well you see
-and move. Ask your own team which of those affects you.
+and move. Ask your own team which of those affects you, and have your sight looked
+at before going back to the wheel.
+[When what changed is your sight](/where-your-tumor-is#your-sight) covers the kind
+of sight change that comes from pressure on the pathway for sight. If your tumor is
+at the back of the eye instead, your eye team is the one to ask about that.
 
 **With VHL, checkups become part of life.** It helps to keep your scan and test
 dates in one place, and to bring the list to each visit.
