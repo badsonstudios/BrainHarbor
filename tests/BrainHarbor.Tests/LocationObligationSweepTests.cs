@@ -80,26 +80,17 @@ public sealed class LocationObligationSweepTests
     private static string PlainOfPage(params string[] pathUnderPages)
     {
         var raw = CuratedPage.Read(pathUnderPages);
-        var front = CuratedPage.FrontMatter(raw);
-        var title = Regex.Match(front, @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
-        var description = Regex.Match(front, @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
         var where = string.Join("/", pathUnderPages);
 
-        // BOTH asserted, not just the title. The description is in here because it
-        // renders as the first paragraph a reader meets and nothing else grades it
-        // (WI-575) — so a description the regex cannot read (a folded YAML scalar,
-        // say) would silently shrink every guard below while the title kept them
-        // green. /review: assert the thing you added the field for.
-        Assert.False(string.IsNullOrWhiteSpace(title),
-            $"{where}: the title could not be read, so every guard below ran on less "
-            + "text than it claims to");
-        Assert.False(string.IsNullOrWhiteSpace(description),
-            $"{where}: the description could not be read as a single quoted line, so the "
-            + "one piece of reader-facing prose no other guard can see is not in scope here "
-            + "either");
+        // THE PROMOTED HELPER, and this call site is why it takes `describedAs`:
+        // its per-field asserts naming the page were the best of the twenty
+        // implementations WI-575 found, so the promotion took them rather than the
+        // nineteen-times-repeated weaker pair. The front-matter parsing, the
+        // `\s*$` CRLF anchor and both asserts now live in one place.
+        var headline = CuratedPage.Headline(raw, where);
 
         var body = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Composed(raw)));
-        return Regex.Replace($"{title} {description} {body}", @"[*_]", "");
+        return Regex.Replace($"{headline} {body}", @"[*_]", "");
     }
 
     /// <summary>
@@ -1162,11 +1153,18 @@ public sealed class LocationObligationSweepTests
             // (WI-575's hole). /where-your-tumor-is's description carries a
             // sight-and-driving sentence today, so stripping the whole block was
             // hiding a live carrier.
-            var description = Regex.Match(raw, @"(?m)^description: ""(.+)""\s*$")
-                .Groups[1].Value;
+            // THE PROMOTED HELPER, and it takes the TITLE as well now. WI-573
+            // read the `description:` line itself, for exactly the reason WI-575
+            // exists; a sweep that reads the first paragraph and skips the
+            // heading above it has drawn the line in an odd place, since
+            // ContentPage.cshtml renders both and a reader reads both.
+            // RAW BYTES for the headline, so this sweep exercises the `\s*$` anchor
+            // instead of normalising it away — /review round 2 found both
+            // whole-corpus callers immune to the trap the promotion exists for.
+            var headline = CuratedPage.Headline(File.ReadAllText(file), slug);
             var composedFront = Regex.Match(composed, @"\A---\n.*?\n---\n",
                 RegexOptions.Singleline);
-            var body = description + "\n\n"
+            var body = headline + "\n\n"
                 + (composedFront.Success ? composed[composedFront.Length..] : composed);
 
             // Link LABELS kept, targets dropped, because a label is text a reader

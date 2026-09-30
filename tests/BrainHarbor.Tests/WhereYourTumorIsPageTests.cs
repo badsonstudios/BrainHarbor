@@ -152,27 +152,15 @@ public sealed class WhereYourTumorIsPageContentTests
         Regex.Replace(Regex.Replace(fragment, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
     /// <summary>
-    /// The title and description, which <c>ContentPage.cshtml</c> renders as the
-    /// heading and the first paragraph under it.
-    ///
-    /// Round 2 added this because every prose guard on this page was body-scoped and
-    /// the description carried one of round 1's blockers in it: the page said "the
-    /// one time where it sits makes it urgent" in the first sentence a reader meets,
-    /// after that claim had been rescoped everywhere a test could see. §12.8,
-    /// WI-524 and WI-528, and the CtScanPageTests convention.
+    /// The title and description a reader meets before the body — <b>promoted to
+    /// <see cref="CuratedPage.Headline"/> by WI-575</b>, which found this property
+    /// duplicated in NINETEEN files with one implementation and five different
+    /// narrations of the same CRLF lesson. The lesson, the <c>\s*$</c> anchor and the
+    /// non-empty assertion now live in one place; see
+    /// <see cref="CuratedPage.EverythingAReaderMeets"/> for the widened reader text a
+    /// prose rule should usually be written against.
     /// </summary>
-    private static string Headline
-    {
-        get
-        {
-            var front = CuratedPage.FrontMatter(Page);
-            var title = Regex.Match(front, @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
-            var description = Regex.Match(front, @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
-            Assert.False(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description),
-                "the title or description could not be read, so the guards over them prove nothing");
-            return title + " " + description;
-        }
-    }
+    private static string Headline => CuratedPage.Headline(Page);
 
     /// <summary>Everything a reader meets: the headline and the body.</summary>
     private static string Flat =>

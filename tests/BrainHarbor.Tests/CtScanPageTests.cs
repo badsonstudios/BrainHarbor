@@ -69,25 +69,15 @@ public sealed class CtScanPageContentTests
         Regex.Replace(Regex.Replace(section, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
     /// <summary>
-    /// Title and description. <c>ReaderText</c> strips the front matter, and
-    /// <c>ContentPage.cshtml</c> renders the description as the first paragraph
-    /// under the heading, so a body-scoped guard is blind to the first thing a
-    /// reader meets (§12.8, WI-524 and WI-528).
+    /// The title and description a reader meets before the body — <b>promoted to
+    /// <see cref="CuratedPage.Headline"/> by WI-575</b>, which found this property
+    /// duplicated in NINETEEN files with one implementation and five different
+    /// narrations of the same CRLF lesson. The lesson, the <c>\s*$</c> anchor and the
+    /// non-empty assertion now live in one place; see
+    /// <see cref="CuratedPage.EverythingAReaderMeets"/> for the widened reader text a
+    /// prose rule should usually be written against.
     /// </summary>
-    private static string Headline
-    {
-        get
-        {
-            var front = CuratedPage.FrontMatter(Page);
-            // `\s*$`, not `"$`: on a CRLF checkout the line ends `"\r\n`, the
-            // match fails, and every headline guard runs on an empty string.
-            var title = Regex.Match(front, @"(?m)^title: ""(.+)""\s*$").Groups[1].Value;
-            var description = Regex.Match(front, @"(?m)^description: ""(.+)""\s*$").Groups[1].Value;
-            Assert.False(string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description),
-                "the title or description could not be read, so the guards over them prove nothing");
-            return title + " " + description;
-        }
-    }
+    private static string Headline => CuratedPage.Headline(Page);
 
     private static string Body => CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 

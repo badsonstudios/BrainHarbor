@@ -185,15 +185,36 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
         string[] shellPages =
             ["about.md", "how-we-write.md", "start.md", "digest.md", "privacy.md", "terms.md"];
 
-        // Scoped to page files. WI-505 made ContentCheck report a reading
-        // grade for glossary definitions too (ungated — see CheckGlossaryTerm),
-        // so "every finding that mentions a grade" is no longer the same set
-        // as "every page". The assertion below is about pages, and counting 42
-        // glossary terms into it made it fail while nothing was wrong.
+        // DEFINED POSITIVELY, AFTER BREAKING TWICE THE OTHER WAY. WI-505 made
+        // ContentCheck grade glossary definitions, so "every finding that mentions
+        // a grade" stopped being the same set as "every page" and `glossary/` had
+        // to be excluded. WI-575 then added a `<page>.md [description]` finding per
+        // page and the set doubled, 55 to 104, while nothing was wrong.
+        //
+        // A set defined by "every finding that looks like a grade" is redefined by
+        // every new kind of grade. So it is defined by what it IS: a finding whose
+        // File is exactly a page path, with no qualifier appended. A third kind of
+        // grade cannot join it by accident.
         var graded = findings
             .Where(f => f.Message.StartsWith("reading grade"))
             .Where(f => !f.File.StartsWith("glossary/", StringComparison.OrdinalIgnoreCase))
+            .Where(f => !f.File.Contains(" [", StringComparison.Ordinal))
             .Select(f => f.File)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // AND THE DESCRIPTIONS ARE PINNED, not merely excluded. WI-575 made the
+        // front-matter `description` graded for the first time — it is the first
+        // paragraph a reader meets and four items tripped over nothing being able
+        // to see it. Excluding the new findings from the count above without
+        // asserting them anywhere would leave that work unguarded, which is the
+        // shape §12.21 is written about — a rule stated in one file and not applied in
+        // the next. (The first version put that in quotation marks as §12.21's own
+        // wording; it is not, and /review round 2 grepped it. §12.19: a quotation in a
+        // ruling is a claim.) Every page reports EITHER a grade or a too-short note; a page
+        // with no description at all reports neither, and that is the hole.
+        var describedPages = findings
+            .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal))
+            .Select(f => f.File[..^ContentChecker.DescriptionMarker.Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var page in shellPages)
@@ -203,12 +224,51 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
 
         // And nothing shipped ungraded: every .md under the pages root got a
         // grade, so a new folder cannot quietly escape the gate.
+        var pagesRoot = Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages");
         var onDisk = Directory
-            .EnumerateFiles(
-                Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages"),
-                "*.md", SearchOption.AllDirectories)
-            .Count();
-        Assert.Equal(onDisk, graded.Count);
+            .EnumerateFiles(pagesRoot, "*.md", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(pagesRoot, f).Replace('\\', '/'))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // COMPARED AGAINST THE PATH SET, not against its count — which is /review
+        // round 1's correction and it matters. Two 55-element subsets of a
+        // 55-element universe ARE that universe, so asserting both counts and then
+        // asserting the sets are equal proved nothing: the third assertion was
+        // implied by the first two and could never fail. The comment claimed the
+        // opposite ("two sets of 55 can be 55 different things twice"), which is
+        // false for sets keyed by paths from one walk.
+        //
+        // Set difference against the DIRECTORY is load-bearing: it names the page
+        // that is missing instead of reporting that a number moved.
+        Assert.Empty(onDisk.Except(graded, StringComparer.OrdinalIgnoreCase));
+        Assert.Empty(graded.Except(onDisk, StringComparer.OrdinalIgnoreCase));
+
+        // And the same for the descriptions, which is the property WI-575 added: a
+        // page whose first paragraph is ungraded is the hole this item closed.
+        Assert.Empty(onDisk.Except(describedPages, StringComparer.OrdinalIgnoreCase));
+        Assert.Empty(describedPages.Except(onDisk, StringComparer.OrdinalIgnoreCase));
+
+        // AND NOT ONE OF THEM IS THE BLANK-DESCRIPTION WARNING. /review round 4 asked
+        // ContentCheck to warn when a `description` is empty, which closed a false
+        // positive in the ratchet — and made a page with NO description still produce a
+        // description finding, so the set-difference above was satisfied by the warning
+        // and two break mutations that delete a description walked straight through.
+        //
+        // **A fix that makes a defect reportable can make it unasserted.** The
+        // property is that every page HAS an opening paragraph, not merely that every
+        // page produced some finding about one.
+        var blank = findings
+            .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal)
+                        && f.Message.StartsWith(
+                            ContentChecker.NoDescriptionPrefix, StringComparison.Ordinal))
+            .Select(f => f.File)
+            .ToList();
+
+        Assert.True(blank.Count == 0,
+            "a shipped page has no front-matter `description`. ContentPage.cshtml renders "
+            + "it as the first paragraph a reader meets and SearchPages renders it again "
+            + "as the blurb under every hit, so a page without one opens on nothing:\n  "
+            + string.Join("\n  ", blank));
     }
 
     private static string FindRepoRoot()
