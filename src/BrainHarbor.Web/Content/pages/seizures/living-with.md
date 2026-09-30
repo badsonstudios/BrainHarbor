@@ -40,8 +40,44 @@ sources:
   - url: https://www.ncbi.nlm.nih.gov/books/NBK559184/
     title: "Oligodendroglioma (StatPearls)"
     accessed: 2026-08-30
-reviewed: 2026-08-30
-review_due: 2027-02-28
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC11913653/
+    title: "Brain tumors and fitness to drive: A review and multi-disciplinary approach (Neuro-Oncology Practice)"
+    accessed: 2026-09-30
+    # WI-573, and it is here for ONE sentence: that sight is a separate licensing
+    # requirement from seizures, set by the same authority. This page's other sources
+    # are about seizures, epilepsy and living with a brain tumor, and none of them was
+    # read for anything about vision -- so the sentence WI-573 added was an unsourced
+    # licensing claim until /review round 1 asked what carried it. (This said "the
+    # Epilepsy Foundation set and two seizure papers" until /review round 2, which is
+    # a description of a list the file already contains, and it was wrong about the
+    # list: it also holds a National Brain Tumor Society page and a StatPearls tumor
+    # monograph. Describe why a source set does not cover a subject; do not recount
+    # the set.) Verbatim, ELIDED past the
+    # two things it names because one of them is a phrase this page is barred from
+    # printing (see NOT USED below): "Vision requirements for driver licensing
+    # primarily consider ... and vary by country and region". What it names are
+    # sharpness of vision and how wide a field the driver has -- two separate things,
+    # which is the whole point: sight is not one requirement. Also verbatim, and
+    # carrying no barred phrase: "Wide interstate variability in visual field
+    # requirements exists within the United States".
+    #
+    # THE ELISION IS THIS ITEM'S OWN FLOOR APPLIED A SECOND TIME, and the guard that
+    # caught it is the one /review round 1 asked to have deleted as unfireable. The
+    # first draft of this note quoted the sentence in full, and
+    # SeizureContentTests.TheDrivingSectionSaysSightIsASeparateRequirementAndRoutesToIt
+    # turned RED on the front matter. **A rule stated in one file is not applied in
+    # the next**: /where-your-tumor-is records this exact finding for CRUK's waiting
+    # time, and this item broke the same rule one page over, one round later.
+    # NOT USED, and barred here for the same reason it is barred on
+    # /where-your-tumor-is: the two named states and the width-of-vision threshold one
+    # of them sets. (The phrase naming that threshold is not written here either:
+    # this page's own guard bans it, and a note describing a refusal is not exempt
+    # from the refusal -- the same floor this item applied twice already, on two
+    # other pages. The guard caught it the round it was widened to catch hyphens.)
+    # This page's whole argument is that it does not print the reader's own rule, and
+    # a vision threshold would be that defect wearing a different requirement.
+reviewed: 2026-09-30
+review_due: 2027-03-31
 disclaimers: [medical]
 ---
 
@@ -184,8 +220,15 @@ instead:
 - Ask your care team directly. They deal with this constantly, and they know
   what your state expects.
 
-Outside the US, the same shape applies: there are rules, they are set by whoever
-issues your license, and your team can tell you where to look.
+**Sight is a separate requirement, set by whoever issues your license.** If what
+changed for you is what you can see, that lookup does not cover it. That stays true
+whether or not you also have seizures.
+[When what changed is your sight](/where-your-tumor-is#your-sight) is written for
+that. The practical part of this section, getting around without a car, is still
+for you.
+
+Outside the US, the seizure rules have the same shape: there are rules, your
+licensing office sets them, and your team can tell you where to look.
 
 Losing your license is a real loss. It is not fussiness to be upset about it. It
 takes away independence, sometimes work, and it lands on the person who was

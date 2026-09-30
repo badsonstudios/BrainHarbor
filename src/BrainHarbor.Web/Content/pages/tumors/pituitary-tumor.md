@@ -386,8 +386,8 @@ sources:
   # NO PROGNOSIS FIGURES AND NO SURVIVAL FIGURES (§12.2 item 5, §12.5). The
   # sources are thick with percentages -- vision-recovery rates, CSF-leak rates,
   # AVP-D incidence, prevalence, survey preferences. None reaches this page.
-reviewed: 2026-09-16
-review_due: 2027-03-16
+reviewed: 2026-09-30
+review_due: 2027-03-31
 disclaimers: [medical]
 ---
 
@@ -687,8 +687,9 @@ routine for it and a plan for days when you are ill. And if your sight changed,
 have it checked properly before you drive, because the part that goes first is
 the part you use at intersections.
 
-What you are allowed to drive, and when, is set locally. Your team knows the
-rules where you live; a website does not, including this one.
+[When what changed is your sight](/where-your-tumor-is#your-sight) sets out what a
+field test can and cannot settle. Your own team is who to ask for the rule where you
+live.
 
 ## Follow-up scans, and what to do while you wait
 

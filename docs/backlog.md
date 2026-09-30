@@ -4427,7 +4427,11 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   2026 `10.1007/s00401-026-03066-7` (not read) before writing classification.
   Depends on: WI-567.
 
-  **Shipped 2026-09-26.** The ruling is `docs/content-pipeline.md` **§12.20**.
+  **Implemented 2026-09-26; SHIPPED AND DEPLOYED 2026-09-29** (PR #175 -> `develop`
+  squashed as `9958973`, release PR #176 -> `main` merge `5e74cf6`, deploy run
+  `36631012520` success first attempt; post-deploy smoke clean, +5,092 bytes on the one
+  page and four control pages byte-identical). The ruling is
+  `docs/content-pipeline.md` **§12.20**.
   **THE DOI WAS CHASED AND IT CANNOT BE READ**, which is the item's most consequential
   non-result: it resolves to a real paper (Tauziede-Espariat et al, *"Tectal glioma
   versus pilocytic astrocytoma: revisiting tumor classification in light of molecular
@@ -4509,7 +4513,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   - A slot added to WI-562's inventory for it.
   Depends on: WI-561, WI-567.
 
-- [ ] **WI-573 Visual field loss, and the driving consequence**
+- [x] **WI-573 Visual field loss, and the driving consequence**
   Goal: say the most concrete "what does this mean for me" answer in the whole
   location topic.
   Today `visual field` appears in the corpus **only inside front-matter
@@ -4520,6 +4524,66 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   **no waiting time anywhere** (jurisdictional — WI-560 owns it). CRUK's driving
   page (reviewed 2026-05-08) is the source for the vision-and-driving link.
   Depends on: WI-567.
+
+  **Shipped 2026-09-30.** The ruling is `docs/content-pipeline.md` **§12.21**.
+  **THE NAMED SOURCE DOES NOT CARRY THE CLAIM, and that is the first finding.**
+  CRUK's driving page was read live before a word was written: `visual field`
+  occurs **zero** times on it and `visual` zero times as a word. Its only two
+  vision sentences are pituitary-scoped UK regulation -- one names a number of
+  months (a waiting time, which WI-560 owns and this item is barred from) and the
+  other is a driving prohibition attached to an exemption from a notification
+  duty. It is **cited nowhere**. The claim is carried by **PMC11913653**
+  (*Brain tumors and fitness to drive*, Neuro-Oncology Practice), which the corpus
+  **already cited** on `/tests/neuro-exam-and-memory-testing` for one narrow claim
+  -- brain-tumor scoped, open access, and US-inclusive where the named one is
+  UK-only. **Read the named source before planning around it.**
+  **THE ITEM GREW FROM THREE FILES TO SIX, because the acceptance's other premise
+  was wrong too.** This entry says `/tumors/craniopharyngioma` carries "the one"
+  sentence tying vision to driving. A sweep found **four**, and three of them
+  routed nowhere -- `/tumors/pituitary-tumor` (carrying almost word for word the
+  restatement this item deleted from craniopharyngioma, on the page the SELLAR
+  reader most likely starts from), `/tumors/hemangioblastoma`, and
+  `/tumors/cns-germ-cell-tumor` (whose only route was **conditional on seizures**,
+  so the sight reader was excluded by the sentence that looked like it was
+  helping). All four route now, and the claim is an ASSERTION over the corpus
+  rather than a sentence -- §12.19's *assert the complement, not the includers*.
+  That test carries a second property the item needed three rounds to add: **a
+  carrier owes the reader an INSTRUCTION as well as a door.**
+  **THE ACCEPTANCE HELD IN FULL.** The general version is said once, in
+  `## When what changed is your sight, and what that means for driving` on
+  `/where-your-tumor-is`; driving is ROUTED to `/seizures/living-with#driving`
+  and never restated; and **no waiting time appears anywhere**, front matter
+  included -- which the corpus's own whole-file guard enforced against this item's
+  notes three times.
+  **THE ROUTE'S BOUND IS MEASURED, NOT ASSUMED.** `/seizures/living-with#driving`
+  is SEIZURE-SCOPED throughout and its lookup tool is the Epilepsy Foundation's,
+  so a reader whose problem is vision is not served by its rules half. The bound is
+  written into the prose, the destination got a door back, and that door says the
+  state lookup is about seizures too -- because a vision reader told "the practical
+  half is the whole point" could otherwise read a seizure-free interval as their
+  answer.
+  **FIVE `/review` ROUNDS, AND EVERY BLOCKER WAS MADE BY THE PREVIOUS ROUND'S
+  FIX.** Round 1's `#pituitary` door aimed the sellar reader at a sentence that was
+  false for them; round 2's fix for that silently broadened HOMONYMOUS-scoped
+  driving evidence to a population nobody studied, in the reassuring direction;
+  round 3's fix for that was written with an exclusive clause that dropped the
+  reader who has seizures AND a sight change; round 4's positional guard for the
+  paragraph it moved could not fail. **Round 5 found no blocker.** §12.21 records
+  the shape: *a fix's blast radius is every sentence that depended on the old
+  scope.*
+  **Proof:** suite **2,609 / 2,609**; **50 break mutations red on LF AND on CRLF**
+  (100 of 100, no known survivors) over a **verified-green unmutated tree** -- a
+  full-suite baseline added to the harness after it reported "all 38 breaks fail
+  correctly" over a red tree; the plain suite green on a fully-LF corpus AND a
+  fully-CRLF corpus with the corpus restored byte-for-byte; ContentCheck **283/0**
+  with `/where-your-tumor-is` at grade **5.2**, below the 5.4 it started at;
+  **eight rendered pages captured, with TWO CONTROLS** (`/tumors/meningioma` and
+  `/treatments/anti-seizure-medicines`, the latter having its own `## Can I drive?`
+  routing to the same destination, so it is the page that would look edited if
+  anything had reached a shared surface).
+  **For `/pm`:** the per-sentence reading-grade check is still wanted and still
+  needs a corpus sweep; WI-574, WI-575 (which this item tripped over twice),
+  WI-576 and WI-577 remain open.
 
 - [ ] **WI-574 Block sources render on every including page, and nobody owns the
   cost** *(raised by WI-568, 2026-09-24)*

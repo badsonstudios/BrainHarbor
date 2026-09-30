@@ -476,8 +476,8 @@ sources:
     # The Pediatric Brain Tumor Foundation. Verbatim: groups "meet every other week
     # through Zoom", led by a "licensed mental health professional". No US support group specific to THIS tumor was found, and the
     # page says so rather than implying one exists.
-reviewed: 2026-09-21
-review_due: 2027-03-21
+reviewed: 2026-09-30
+review_due: 2027-03-31
 disclaimers: [medical]
 ---
 
@@ -944,8 +944,12 @@ signs in the symptoms section. For most people that means calling your team the
 same day. With a shunt or an ETV, it means getting help right away.
 
 **Driving, for those old enough,** depends on the rules where you live and on
-your own sight and health. Your team can say what applies to you. If seizures
-are part of it, [living with seizures](/seizures/living-with) covers driving.
+your own sight and health. Your team can say what applies to you, and sight is worth
+getting checked before you drive again. If seizures
+are part of it, [living with seizures](/seizures/living-with#driving) covers
+driving. If what changed is your sight,
+[when what changed is your sight](/where-your-tumor-is#your-sight) is written for
+that.
 
 ## Follow-up scans, and what to do while you wait
 

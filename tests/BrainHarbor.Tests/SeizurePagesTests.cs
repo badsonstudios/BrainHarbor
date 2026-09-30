@@ -195,6 +195,152 @@ public sealed class SeizureContentTests
         Assert.Contains("told to do less than they need to", text);
         Assert.Contains("you are not imagining it", text);
     }
+
+    /// <summary>
+    /// THE DOOR BACK, so a vision reader who lands on this section is not told by omission
+    /// that the question does not apply to them.
+    ///
+    /// <para><b>This section is seizure-scoped throughout</b> — <i>"rules about driving
+    /// after a seizure"</i>, <i>"free of seizures for a set length of time"</i> — and its
+    /// lookup tool is the Epilepsy Foundation's, which does not answer a vision question.
+    /// Much of the corpus routes here, and WI-573 added a route for a reader whose licence
+    /// problem is what they can SEE — §12.19 finding 6 is that a route can be word-perfect
+    /// and still be addressed to the wrong reader. <b>An earlier version of this paragraph
+    /// said "Four pages route here", and the copy of the same count in
+    /// <c>WhereYourTumorIsPageTests</c> said three. Both were wrong — and their
+    /// replacements both said "the enumeration says eleven" about an enumeration that did
+    /// not exist.</b> §12.20: a count in prose about something the code can enumerate can be
+    /// falsified by the sentence that states it, and two homes gave two answers twice over.
+    /// <c>LocationObligationSweepTests</c> enumerates it now, which is the only form of
+    /// this claim that maintains itself.</para>
+    ///
+    /// <para>So the bound is stated on both sides. The outbound half is asserted on
+    /// <c>/where-your-tumor-is</c>; this is the inbound half. <b>The direction that
+    /// matters is the omission one:</b> a reader with field loss and no seizures who reads
+    /// only this section concludes there is no rule for them, and there is.</para>
+    /// </summary>
+    [Fact]
+    public void TheDrivingSectionSaysSightIsASeparateRequirementAndRoutesToIt()
+    {
+        var text = Regex.Replace(Read("seizures/living-with"), @"\s+", " ");
+
+        Assert.Contains("Sight is a separate requirement, set by whoever issues your license.", text);
+
+        // AND IT DOES NOT NARROW ITS OWN AUDIENCE. /review round 4: the clause read
+        // "what you can see RATHER THAN seizures", which is exclusive — so a reader
+        // with both (common with an occipital or a large hemispheric tumor) read it,
+        // decided the paragraph was about somebody else, used the seizure lookup,
+        // cleared the seizure-free interval and drove. This is the only sight signal
+        // on the corpus's driving destination, and it excluded the readers likeliest
+        // to need it. **A route that narrows its own audience drops the overlap, and
+        // the overlap is where the risk is.**
+        Assert.Contains("That stays true whether or not you also have seizures", text,
+            StringComparison.Ordinal);
+
+        // NOT "it makes no difference whether you also have seizures". /review
+        // round 5: the dummy `it` has no stated complement, so a tired reader can
+        // land on "whether you also have seizures makes no difference" — which
+        // cancels the seizure rule, in the under-triage direction, for the exact
+        // overlap reader the clause was written to rescue.
+        Assert.DoesNotContain("makes no difference whether you also have seizures", text,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("what you can see rather than seizures", text,
+            StringComparison.OrdinalIgnoreCase);
+
+        // AND IT SITS IN THE GAP AFTER THE STATE LOOKUP, which is where round 3 found
+        // NOT. The paragraph was the last in `## Driving`, and its own closing clause
+        // promised the reader that "everything below" was about getting around
+        // without a car — while everything below it was employer disclosure and the
+        // ADA. The transport material it meant is ABOVE it. It is now immediately
+        // after the Epilepsy Foundation state lookup, which is the sentence that
+        // would mislead a vision reader, rather than six paragraphs downstream of it.
+        // THE BODY, NOT THE WHOLE FILE. The first version of this searched `text`,
+        // which includes the front matter — and "Epilepsy Foundation" is the start of
+        // FIVE source `title:` lines up there. So `lookupAt` resolved to the source
+        // list, `lookupAt < sightAt` was trivially true wherever the paragraph sat,
+        // and this assertion was insensitive to the exact regression it was written
+        // for. /review round 4 proved it by moving the paragraph back and watching it
+        // pass. **A positional assertion is only as good as its two landmarks.**
+        var body = CuratedPage.ReaderText(Read("seizures/living-with").Replace("\r\n", "\n"));
+
+        var sightAt = body.IndexOf("Sight is a separate requirement",
+            StringComparison.Ordinal);
+        var lookupAt = body.IndexOf("Epilepsy Foundation's driving laws tool",
+            StringComparison.Ordinal);
+        // THE CLOSING LANDMARK IS THE NEXT PARAGRAPH, NOT THE NEXT HEADING. Round 4
+        // used "## Work", and `lookup < sight < work` is satisfied anywhere in the last
+        // two thirds of this section — including the exact place round 3 moved the
+        // paragraph OUT of. The harness caught it a second time. **A positional
+        // assertion needs landmarks that BRACKET the position.**
+        var outsideAt = body.IndexOf("Outside the US", StringComparison.Ordinal);
+
+        // AND THE LINK IS A LANDMARK OF ITS OWN. /review round 5 built the regression
+        // the previous bracket missed: leave the lead sentence where it is and move
+        // only the DOOR to the end of the section. Every landmark stays ordered, the
+        // string assertion searches the whole file and stays green, and the reader
+        // meets the misleading lookup six paragraphs before the way out — which is the
+        // round-3 defect, reproduced. **Bracket the thing that has to be adjacent.**
+        var linkAt = body.IndexOf("/where-your-tumor-is#your-sight", StringComparison.Ordinal);
+
+        Assert.True(sightAt > 0 && lookupAt > 0 && outsideAt > 0 && linkAt > 0,
+            $"a landmark was not found in the body (sight {sightAt}, lookup {lookupAt}, "
+            + $"link {linkAt}, outside {outsideAt}), so the ordering assertion below "
+            + "would compare "
+            + "positions that do not mean what they say");
+
+        Assert.True(lookupAt < sightAt && sightAt < linkAt && linkAt < outsideAt,
+            $"the sight paragraph (at {sightAt}) has to sit in the gap between the state "
+            + $"lookup ({lookupAt}) and the \"Outside the US\" paragraph ({outsideAt}). "
+            + "It is the only sight signal on this page: a vision reader who meets the "
+            + "seizure-free lookup first has been handed somebody else's answer, and one "
+            + "who meets this six paragraphs downstream has already acted on it.");
+        // THE TARGET EXACTLY, THE LABEL CASE-INSENSITIVELY. The label begins a
+        // sentence here and did not in the paragraph this assertion was carried over
+        // from, so the first version looked for a lowercase "[when" and found "[When".
+        // §12.20's rule — copy the string out of the artifact rather than retyping it
+        // — was written for smoke needles and is just as true of an assertion. The
+        // TARGET is an interface and is matched exactly; the LABEL is prose a rewrap
+        // may legitimately recase.
+        Assert.Contains("(/where-your-tumor-is#your-sight)", text, StringComparison.Ordinal);
+        Assert.Contains("[when what changed is your sight]", text,
+            StringComparison.OrdinalIgnoreCase);
+
+        // AND IT ADDS NO RULE OF ITS OWN -- asserted as the PROPERTY rather than as
+        // two strings. /review round 1: the first draft banned "Massachusetts" and
+        // "horizontal field" here, and this page has never contained either and does
+        // not cite the source they come from, so neither assertion could have fired.
+        // §12.19: a guard measured on a page it cannot fire on has been measured on
+        // nothing. What the page actually owes is that the new paragraph states no
+        // duration, which is the same bar the section two paragraphs up sets for
+        // itself in its own words.
+        var newParagraph = text[text.IndexOf(
+            "Sight is a separate requirement", StringComparison.Ordinal)..];
+        newParagraph = newParagraph[..newParagraph.IndexOf("## ", StringComparison.Ordinal)];
+
+        var duration = new Regex(
+            @"\b(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|twelve|eighteen)"
+            + @"[\s-]+(?:day|week|month|year)s?\b", RegexOptions.IgnoreCase);
+
+        Assert.Matches(duration, "You must not drive for twelve months.");
+        Assert.DoesNotMatch(duration, "The rule about sight is a separate rule.");
+        Assert.DoesNotMatch(duration, newParagraph);
+
+        // AND THE TWO STRING BANS ARE BACK, because /review's reason for dropping
+        // them stopped being true inside the same review round. The argument was that
+        // this page could not contain "Massachusetts" or "horizontal field" since it
+        // does not cite the source they come from — and the fix for a DIFFERENT
+        // finding in that round added PMC11913653 to this page's sources, for the
+        // sight-requirement sentence above. The paste is plausible now, and the break
+        // harness proved it: a planted threshold walked straight through the duration
+        // scan, which by construction cannot see a number that is not a duration.
+        //
+        // TWO FINDINGS IN ONE REVIEW ROUND CAN INVALIDATE EACH OTHER. The duration
+        // scan is the property; these two are the specific figures this page's own
+        // new source hands over, and this page's whole argument is that it does not
+        // print the reader's own rule.
+        Assert.DoesNotContain("Massachusetts", text);
+        Assert.DoesNotMatch(new Regex("horizontal[ -]field", RegexOptions.IgnoreCase), text);
+    }
 }
 
 /// <summary>The same pages as served, plus the links other pages now make to them.</summary>
