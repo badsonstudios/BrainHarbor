@@ -8093,3 +8093,196 @@ does not correct its copies* in a file the correction had touched. **Zero remain
   fired on innocent pre-existing prose three hundred lines from the edit; a bare Roman
   numeral fires on `IV` meaning **intravenous**, which is live on
   `/treatments/chemotherapy`. Refuse the clause, not the word it happens to start with.
+
+### 12.23 Splitting a sentence is not shortening it, and a sliced item needs a third number (WI-578, slice 1)
+
+§12.22 made the front-matter `description` graded for the first time and found 41 of 49
+gradeable ones above the 6.0 limit, median 8.4, max 19.7. It raised **WI-578** with the
+measurement attached. This is WI-578's **first slice**: all thirteen descriptions under
+`treatments/`.
+
+#### The diagnosis held exactly, and that is worth recording because it was a prediction
+
+§12.22 claimed the cause was **sentence length and not vocabulary**. Slice 1 is the test
+of that claim, and it passed without a single word of vocabulary work:
+
+| | before | after |
+|---|---|---|
+| descriptions over 6.0 in `treatments/` | 12 of 13 | **0 of 13** |
+| worst grade in the directory | **19.7** | **5.3** |
+| median longest sentence | 33 words | **17 words** |
+| words removed | — | **none** |
+
+> **Every word count stayed equal or ROSE.** The only edits were a comma or a colon
+> becoming a full stop, plus the connective word a new sentence needs — *and*, *And*,
+> *That*, *it*. Flesch-Kincaid's words-per-sentence term was doing all of it, and
+> dividing it by four was the whole fix.
+
+And the corpus-wide too-short tally **never moved off 6**, which is the number that makes
+the gain legible: §12.22 put it beside the down-count precisely so that *"29, down from
+41"* and *"29, because twelve got shorter"* cannot read the same. It is the difference
+between a rewrite and a truncation, printed.
+
+#### THE GUARD THAT REFUSED A SHORTENING WAS THE SCRIPT'S OWN, and it fired
+
+The edit script asserts `len(new.split()) >= len(old.split())` per description. On the
+first run it **rejected `/treatments/proton-therapy`** at 50 → 49 words: turning
+*"…your tumor, and the harder question…"* into *"…your tumor. The harder question…"* had
+eaten the word *and*.
+
+> **A sentence boundary that swallows a word is a shortening wearing a split's clothes,**
+> and it is invisible by inspection — the prose reads better, the grade improves, and the
+> description is one word closer to the floor where grading stops. The fix was to keep the
+> word: *"And the harder question…"*. **Twelve of thirteen passed the guard; writing it
+> was worth it for the thirteenth.**
+
+#### A SLICED ITEM NEEDS A THIRD NUMBER, because the other two are blind to a swap
+
+§12.22's ratchet is a **count** over the limit and a **ceiling** on the worst grade, and
+it argues correctly that each catches what the other cannot. Slicing the item opens a
+third hole that neither sees:
+
+> **Fix a `tumors/` description in the same commit that lets a `treatments/` one regress
+> to 9.0, and the count still reads 29 while the worst still reads 13.0.** Both halves of
+> the ratchet green, and the shipped slice silently unwound. **A count locks in a TOTAL;
+> it cannot lock in a SLICE.**
+
+So `DescriptionsCleanDirectories` lists the directories a slice has finished, and every
+description under one is gated at **Fail** — §12.22's promised Warn-to-Fail promotion
+applied one slice at a time instead of all at once at the end. It is reported **per
+page**, because when the news is which page broke, *“29 is still 29”* is not something
+anybody can act on.
+
+#### AND THE FIRST VERSION OF THAT GATE COULD BE UNWOUND BY TRUNCATION, SILENTLY
+
+This is the part to copy, because it is the third item running in which a gate was green
+while switched off, and this time the hole was **the one the code's own comment had been
+warning about since WI-575.**
+
+The gate was built inside `DescriptionRatchet`, over the ratchet's `graded` list — the
+findings whose `Grade` is not null. **A description under the 25-word floor is not
+graded.** So:
+
+| what a truncation does | what the gate saw |
+|---|---|
+| description drops to 20 words | leaves `graded`, so the slice gate **cannot see it** |
+| `DescriptionsOverTheLimit` | 29 → 28, which reads as **progress** |
+| `WorstDescriptionGrade` | untouched |
+| too-short tally | 6 → 7, inside an **Info** that `Program.cs` renders as `ok` |
+| exit code | **0** |
+
+> **The slice was unwindable by shortening, with every gate green.** And
+> `GradeDescription`'s own comment has said since WI-575 that *scoring it as progress
+> would let a page buy its way out of grading by getting shorter*. The sentence was
+> right, it was three lines above the floor check, and **the new gate was built on the
+> wrong side of it.** Writing a hazard down does not guard it.
+
+Worse, the only thing that actually caught a shortening during slice 1 was the
+`len(new) >= len(old)` assertion in the item's own **git-ignored scratch script** — which
+this section spends a whole heading praising, and which will not exist for slice 2.
+
+The fix moves the whole decision **out of the corpus-level ratchet and into
+`GradeDescription`**, per page, where it can see all three ways a description leaves the
+graded set: over the limit, under the floor, and blank. Three further things fell out of
+that move, and each was its own defect:
+
+- **The log had been printing both verdicts for the same page.** The grade finding said
+  `(not gated — WI-578)` and the ratchet's Fail two lines later said it was gated.
+  That is §12.22's round-4 two-opposite-stories defect, recreated between a different
+  pair of findings by the fix for a different hole. A message must never contradict its
+  own level: `(not gated)` is now printed only where it is true.
+- **The gate had been sitting behind two corpus-size early returns it does not depend
+  on.** *“Is this page over the limit?”* needs no calibration against
+  `CorpusWhenMeasured`, but the ratchet `yield break`s on a corpus smaller than 55 — so
+  **deleting one page switched the slice gate off.** Per page, no corpus-level condition
+  can suppress it.
+- **Suppressing the parity Info threw away the instrument for diagnosing the very
+  failure.** `tooShort` is how a truncation is recognised, and it was reported only in
+  the two Infos that a regression suppresses. The totals are printed either way now, as
+  a **verdict-free Warn**: facts with no "unchanged" or "lower the constant" framing
+  cannot contradict a Fail.
+
+> **ASK WHICH SET A GATE IS BUILT OVER, AND WHAT LEAVING THAT SET LOOKS LIKE.** A
+> ratchet over graded findings cannot see a page that stops being graded, and "stops
+> being graded" was the cheapest way to break the thing it guards. §12.22 said the same
+> about `descriptions.Count` vs `graded.Count` one item earlier, for the whole-corpus
+> instrument; this is the identical question asked of a per-directory one, and it was
+> not asked.
+
+Two things about it generalise:
+
+- **A clean-directory list is a claim about the corpus that lives in a constant**, so the
+  corpus is what checks it. `EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus` runs the
+  real `CheckAll` and asserts both halves: every description under a listed directory
+  passes, **and the directory is non-empty**. A typo like `treatment/` would otherwise
+  leave the test iterating an empty list and passing — §12.19's *a guard measured on a
+  page it cannot fire on has been measured on nothing*, in the form a `foreach` makes easy
+  to ship.
+- **The passing line had to be suppressed too.** A swap holds the count at parity, so
+  without gating the Infos on the regression list the run would print *"both unchanged
+  since this ratchet was last lowered"* directly beside a Fail naming the page that just
+  broke. That is §12.22's round-4 defect — two findings telling opposite stories —
+  recreated between a different pair of branches by the fix for a different hole.
+
+#### AND A MUTATION AIMED AT A TEST THAT BUILDS ITS OWN INPUT TESTS NOTHING
+
+The break harness earned its run twice in this item. The second time it reported the
+truncation mutation as a **survivor on both line endings** — which read as a hole in the
+gate that had just been built to close exactly that hole.
+
+It was not. The mutation named
+`TruncatingADescriptionInsideAFinishedSliceFailsInsteadOfGoingUngraded`, which drives a
+**synthetic page through `CheckPage`**. Editing a shipped page cannot reach it. The guard
+that actually sees a truncated page on disk is
+`EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus`, whose
+`onDisk == inDirectory.Count` assertion exists for precisely this case: thirteen pages in
+`treatments/` must produce thirteen GRADED descriptions, and a truncated one produces
+none.
+
+> **This is the MIRROR of §12.22's builder/producer lesson.** There the input was wrong
+> for the producer, so seven tests passed over a dead gate. Here the target was wrong for
+> the input, so one live gate reported as dead. Both are the same question asked from
+> opposite ends: **does this test actually see the thing this mutation changes?**
+
+A unit test that constructs its own page is not a defect — it is how the in-slice and
+out-of-slice branches get compared with the PATH as the only difference. What is a defect
+is pointing a content mutation at one and reading the result as evidence about the
+corpus. Every such test is now listed in the mutation table's header with its real-corpus
+counterpart named beside it, which is the same discipline §12.22 applied to the guards no
+page mutation can reach.
+
+#### A PROBE FOR "THE NUMBER THE OTHERS CANNOT SEE" MUST LAND INSIDE THE BAND THEY ACCEPT
+
+The script that proves the new gate on the real corpus failed its own check first. Its
+regression un-split the whole description into one sentence, which grades **17.6** — above
+the 13.0 ceiling — so the run failed twice and proved nothing about the directory gate.
+Merging only two of the four sentences grades **8.3**: above 6.0, below the ceiling, and
+paid for by a fix elsewhere so the count holds at 29.
+
+> **A mutation aimed at the gap between two guards has to fit in the gap.** One that also
+> trips a guard either side of it demonstrates the guard either side of it. The run is
+> only evidence for the new number when it is the *only* thing that fired — which is why
+> the prove script asserts the count did NOT fire and the ceiling did NOT fire, rather
+> than just asserting a non-zero exit.
+
+#### The messages stopped naming the item that measured them
+
+Three of the ratchet's messages said *"when WI-575 measured them"*. That was true for one
+item and goes stale on **every slice** — and a message a reader of the log acts on is the
+worst place to keep a fact with an expiry date. They say *"when this ratchet was last
+lowered"* now, and the WI attribution lives in the constants' docstrings, where lowering
+the number and updating the provenance are the same edit.
+
+#### What is left, and what the next slice should take
+
+**29 remain: 8 in `tests/`, 21 in `tumors/`.** Slice 1 was `treatments/` on purpose — it
+held the top *two* grades (19.7 and 18.5), so one slice moved **both** halves of the
+ratchet, 41 → 29 and 19.7 → 13.0.
+
+> **Pick the next slice by which number it moves.** `tests/` holds the new worst
+> (13.0, `/tests/getting-ready-for-surgery`) and is 8 pages; `tumors/` is 21 pages whose
+> worst is 11.1. A slice that moves only the count leaves `WorstDescriptionGrade`
+> measuring a page nobody touched, and §12.19 is the reason that matters.
+
+The full Warn-to-Fail promotion in `GradeDescription`, and deleting the `(not gated)`
+marker, happen when the last of the 29 lands — not before.

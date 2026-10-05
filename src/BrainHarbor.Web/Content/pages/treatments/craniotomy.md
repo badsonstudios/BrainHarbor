@@ -1,7 +1,7 @@
 ---
 title: "Brain surgery (craniotomy): what happens, and what comes after"
 slug: treatments/craniotomy
-description: "The operation to take out a brain tumor, from the day you arrive to being back at home. What is done, what it feels like, what the words about how much came out really mean, and what the person looking after you is being asked to do."
+description: "The operation to take out a brain tumor, from the day you arrive to being back at home. What is done, and what it feels like. What the words about how much came out really mean. And what the person looking after you is being asked to do."
 tags: [treatments, surgery, craniotomy, newly-diagnosed]
 sources:
   # WI-569 (2026-09-25) CHANGED ONE CLAUSE IN "How much did you get out?", and

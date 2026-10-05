@@ -1,7 +1,7 @@
 ---
 title: "Proton therapy: a different beam, and how people get to one"
 slug: treatments/proton-therapy
-description: "Protons are not a stronger kind of radiation. They stop at the tumor instead of carrying on through, which spares the tissue behind it. Whether that helps you depends on your tumor, and the harder question is usually how far away the nearest center is and what your insurance says."
+description: "Protons are not a stronger kind of radiation. They stop at the tumor instead of carrying on through. That spares the tissue behind it. Whether that helps you depends on your tumor. And the harder question is usually how far away the nearest center is, and what your insurance says."
 tags: [treatments, radiation, proton]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

@@ -1,7 +1,7 @@
 ---
 title: "Chemotherapy for a brain tumor: the drugs, your blood counts, and the fever rule"
 slug: treatments/chemotherapy
-description: "The small number of chemotherapy drugs used for brain tumors, one at a time. What each is for, whether it is pills or an IV, what it does to your blood counts, and the one rule that matters most: what to do if you get a fever."
+description: "The small number of chemotherapy drugs used for brain tumors, one at a time. What each is for, and whether it is pills or an IV. What it does to your blood counts. And the one rule that matters most: what to do if you get a fever."
 tags: [treatments, chemotherapy, newly-diagnosed]
 sources:
   - url: https://www.cancer.org/cancer/types/brain-spinal-cord-tumors-adults/treating/chemotherapy.html

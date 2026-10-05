@@ -178,8 +178,10 @@ public static partial class ContentChecker
 
         // WI-575, LAST: a corpus-level property, so it reads the findings every
         // per-page check produced rather than re-walking the corpus. The
-        // description's reading grade cannot be gated today (41 of 49 are above the
-        // limit, and the rewrite is WI-578), so what is gated is drift.
+        // description's reading grade cannot be gated across the whole corpus yet (29 of
+        // 49 are still above the limit, down from 41 — WI-578 is rewriting them a
+        // directory at a time), so what is gated corpus-wide is drift. The directories
+        // WI-578 has FINISHED are gated outright, per page, in GradeDescription.
         // MATERIALISED FIRST. `AddRange` mutates `findings` while the iterator holds
         // a reference to it; this is safe today only because the single enumeration
         // completes before the first `yield`, and one more `findings.Where(...)`
@@ -233,6 +235,30 @@ public static partial class ContentChecker
         var description = page.FrontMatter.Description;
         var where = relativePath + DescriptionMarker;
 
+        // IS THIS PAGE INSIDE A SLICE WI-578 HAS ALREADY FINISHED? The decision lives
+        // HERE, per page, and not in DescriptionRatchet — which is where WI-578's first
+        // round put it, and /review found three defects in that placement at once:
+        //
+        //   1. THE RATCHET ONLY SEES GRADED DESCRIPTIONS. A page could leave the graded
+        //      set by dropping under MinimumWordsToGrade, which takes `over` DOWN (it
+        //      reads as progress), leaves the ceiling untouched, and made the whole
+        //      slice unwindable by TRUNCATION with every gate green and exit 0. The
+        //      floor is the escape hatch this method's own comment warns about, and the
+        //      gate was on the wrong side of it.
+        //   2. IT PRINTED BOTH STORIES. The grade finding said "(not gated — WI-578)"
+        //      and the ratchet's Fail for the same page said it was gated, two lines
+        //      apart — the defect §12.22 round 4 removed between a different pair.
+        //   3. IT SAT BEHIND TWO CORPUS-SIZE EARLY RETURNS it does not depend on.
+        //      "Is this page over the limit?" needs no calibration against
+        //      CorpusWhenMeasured, but deleting one page (55 → 54) made the ratchet
+        //      `yield break` before the check ran — so the slice gate could be switched
+        //      off by shrinking the corpus.
+        //
+        // Per page, all three go away: there is one finding per description, it carries
+        // its own verdict, and no corpus-level condition can suppress it.
+        var finishedSlice = DescriptionsCleanDirectories
+            .Any(dir => relativePath.StartsWith(dir, StringComparison.Ordinal));
+
         // A BLANK DESCRIPTION IS REPORTED, not skipped. `FrontMatter.Description`
         // defaults to "" and nothing required it, so a page with no first paragraph was
         // legal by the tool's own rules — while ShellPagesTests asserts every page on
@@ -242,11 +268,12 @@ public static partial class ContentChecker
         // impossible, and the Fail below reduces to the genuine case. (/review round 4.)
         if (string.IsNullOrWhiteSpace(description))
         {
-            return [new(FindingLevel.Warn, where,
+            return [new(finishedSlice ? FindingLevel.Fail : FindingLevel.Warn, where,
                 NoDescriptionPrefix
                 + " — ContentPage.cshtml renders it as the first paragraph a "
                 + "reader meets and SearchPages renders it again as the blurb under every "
-                + "hit, so a page without one is a page whose opening is unwritten")];
+                + "hit, so a page without one is a page whose opening is unwritten"
+                + (finishedSlice ? FinishedSliceSuffix : ""))];
         }
 
         var text = ExtractSentences(description);
@@ -258,36 +285,83 @@ public static partial class ContentChecker
         // ratchet counts these separately: a description that falls UNDER the word
         // floor has not been improved, and scoring it as progress would let a page
         // buy its way out of grading by getting shorter (/review round 1).
+        //
+        // AND INSIDE A FINISHED SLICE THAT IS A FAILURE, not a note. Everywhere else
+        // the backlog is still outstanding and a short description is merely ungraded;
+        // in a directory that has been rewritten, going ungraded is the one move that
+        // undoes the rewrite without tripping a single corpus number.
         if (words < MinimumWordsToGrade)
         {
-            return [new(FindingLevel.Info, where, $"{words} word(s) — too little to grade")];
+            return [new(finishedSlice ? FindingLevel.Fail : FindingLevel.Info, where,
+                $"{words} word(s) — too little to grade"
+                + (finishedSlice
+                    ? $", and {MinimumWordsToGrade} are needed. This description is NO "
+                      + "LONGER GRADED, which is not an improvement: it takes the page "
+                      + "out of the count instead of under the limit"
+                      + FinishedSliceSuffix
+                    : ""))];
         }
 
-        // REPORTED, NOT GATED, and the reason is a measurement rather than a
-        // preference. 41 of 49 gradeable descriptions are above the 6.0 limit
-        // (median 8.4, max 19.7), and the cause is not vocabulary: 45 of the 55 are
-        // a contents list in one or two comma-spliced sentences, and the longest
-        // sentence runs to a median of 27 words across the corpus and a maximum of
-        // 51. The WORDS are simple; FK's words-per-sentence term is doing all of it. Failing the build on 41
-        // pages would make this gate the thing people route around, which is the
-        // failure mode this file's own comment about admin pages warns of.
+        // REPORTED, NOT GATED WHILE WI-578 IS OUTSTANDING, and the reason is a
+        // measurement rather than a preference. WI-575 found 41 of 49 gradeable
+        // descriptions above the 6.0 limit (median 8.4, max 19.7); WI-578's first
+        // slice rewrote treatments/ and 29 remain. Failing the build on what is left
+        // would make this gate the thing people route around, which is the failure
+        // mode this file's own comment about admin pages warns of.
         //
-        // The same call this file already makes for glossary definitions. The
-        // rewrite is WI-578, raised WITH the measurement. What IS gated is drift:
-        // see <see cref="DescriptionRatchet"/>.
+        // THE CAUSE IS SENTENCE LENGTH, NOT VOCABULARY, and slice 1 is the proof
+        // rather than the hypothesis: thirteen descriptions went from a median
+        // longest sentence of 33 words to 17 with NOT ONE WORD REMOVED — every word
+        // count stayed equal or rose — and the directory's worst fell from 19.7 to
+        // 5.3. FK's words-per-sentence term was doing all of it.
+        //
+        // The same call this file already makes for glossary definitions. What IS
+        // gated, beyond a finished slice, is drift: see
+        // <see cref="DescriptionRatchet"/>. When the LAST description passes,
+        // DescriptionsCleanDirectories has swallowed the whole corpus, every branch
+        // here is a Fail, and this method collapses into GradeFinding.
         var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
 
-        // WARN above the limit, Info below it. Info renders as "  ok" (Program.cs), so
-        // reporting a grade-19.7 description as Info discharged "says out loud why it
-        // does not gate" by printing `ok` next to the worst line in the corpus
-        // (/review round 1). Warn does not fail the build, so the 41 are visible
-        // without the gate becoming the thing people route around.
+        // FAIL inside a finished slice, WARN above the limit outside one, Info below
+        // it. Info renders as "  ok" (Program.cs), so reporting a grade-19.7
+        // description as Info discharged "says out loud why it does not gate" by
+        // printing `ok` next to the worst line in the corpus (/review round 1). Warn
+        // does not fail the build, so the remaining backlog is visible without the gate
+        // becoming the thing people route around.
+        //
+        // AND THE MESSAGE NEVER CLAIMS THE OPPOSITE OF ITS OWN LEVEL. "(not gated)" is
+        // true for the backlog and was printed over a Fail for a finished slice.
+        var over = grade > FailGrade;
+        var level = (over, finishedSlice) switch
+        {
+            (true, true) => FindingLevel.Fail,
+            (true, false) => FindingLevel.Warn,
+            (false, _) => FindingLevel.Info,
+        };
+
         return
         [
-            new(grade > FailGrade ? FindingLevel.Warn : FindingLevel.Info, where,
-                $"reading grade {grade:0.0} (not gated — WI-578)", grade),
+            new(level, where,
+                $"reading grade {grade:0.0}"
+                + (finishedSlice
+                    ? over
+                        ? $", above the {FailGrade:0.0} limit{FinishedSliceSuffix}"
+                        : " (gated — a finished slice)"
+                    : " (not gated — WI-578)"),
+                grade),
         ];
     }
+
+    /// <summary>
+    /// The tail every finished-slice failure carries, so the three branches of
+    /// <see cref="GradeDescription"/> that can fail inside a slice say the same thing
+    /// about why — rather than three literals that drift apart.
+    /// </summary>
+    private const string FinishedSliceSuffix =
+        ". This directory is listed in DescriptionsCleanDirectories, so WI-578 has "
+        + "already finished it and this is a REGRESSION rather than part of the "
+        + "remaining backlog. The cause is almost always sentence length: SPLIT the "
+        + "sentence rather than shortening it";
 
     /// <summary>
     /// WI-575: how many page descriptions sat above <see cref="FailGrade"/> when the
@@ -301,24 +375,40 @@ public static partial class ContentChecker
     /// number the code enumerates, not a per-page table that rots — and it ratchets
     /// down on its own as WI-578 lands, because the assertion is an upper bound.</para>
     ///
-    /// <para>Deliberately NOT a ratchet on the grade values themselves. The worst is
-    /// 19.7, so a ceiling at today's maximum would gate nothing, and §12.19's rule is
-    /// that a guard measured on a page it cannot fire on has been measured on
-    /// nothing.</para>
+    /// <para>Deliberately NOT a ratchet on the grade values themselves. A ceiling at
+    /// today's maximum would gate nothing on its own, and §12.19's rule is that a guard
+    /// measured on a page it cannot fire on has been measured on nothing. That is what
+    /// <see cref="WorstDescriptionGrade"/> is the other half of.</para>
+    ///
+    /// <para><b>LOWERED AS WI-578 LANDS, which is the whole design.</b> 41 at WI-575;
+    /// <b>29</b> after WI-578's first slice rewrote all thirteen of
+    /// <c>treatments/</c>. The remaining 29 are 8 in <c>tests/</c> and 21 in
+    /// <c>tumors/</c>. Lower it again with the next slice — it is an upper bound, so
+    /// lowering it is what locks a gain in.</para>
     /// </summary>
-    public const int DescriptionsOverTheLimit = 41;
+    public const int DescriptionsOverTheLimit = 29;
 
     /// <summary>
-    /// The worst description grade when WI-575 measured it. <b>No description may exceed
-    /// it</b>, which closes the hole a pure count leaves.
+    /// The worst description grade in the corpus as last measured. <b>No description may
+    /// exceed it</b>, which closes the hole a pure count leaves.
     ///
-    /// <para>/review round 1: a count permits unbounded worsening — push any of the 41
-    /// from 8.4 to 40.0 and the count does not move. A ceiling at today's maximum gates
-    /// that, and unlike a per-page table it is one number. It is NOT a substitute for the
-    /// count: fixing one description and adding a bad one leaves both unchanged, so the
-    /// two numbers catch different regressions and both are asserted.</para>
+    /// <para>/review round 1: a count permits unbounded worsening — push any of the
+    /// remaining descriptions from 8.4 to 40.0 and the count does not move. A ceiling at
+    /// today's maximum gates that, and unlike a per-page table it is one number. It is
+    /// NOT a substitute for the count: fixing one description and adding a bad one leaves
+    /// both unchanged, so the two numbers catch different regressions and both are
+    /// asserted.</para>
+    ///
+    /// <para><b>LOWERED WITH <see cref="DescriptionsOverTheLimit"/>, and the two do not
+    /// move together by default.</b> 19.7 at WI-575 (<c>/treatments/anti-seizure-medicines</c>);
+    /// <b>13.0</b> after WI-578's first slice, where the new worst is
+    /// <c>/tests/getting-ready-for-surgery</c> — a DIFFERENT file in a DIFFERENT
+    /// directory. Slice 1 was chosen as <c>treatments/</c> precisely because that
+    /// directory held the top two grades, so one slice moves both halves of the ratchet;
+    /// a slice that moves only the count leaves this number measuring a page nobody
+    /// touched.</para>
     /// </summary>
-    public const double WorstDescriptionGrade = 19.7;
+    public const double WorstDescriptionGrade = 13.0;
 
     /// <summary>The marker <see cref="GradeDescription"/> appends to a description
     /// finding's file path, so the four places that recognise one agree by construction
@@ -341,6 +431,42 @@ public static partial class ContentChecker
     /// instructions.</para>
     /// </summary>
     public const int CorpusWhenMeasured = 55;
+
+    /// <summary>
+    /// The directories whose descriptions ALL pass <see cref="FailGrade"/> — WI-578's
+    /// finished slices. <see cref="GradeDescription"/> gates every description under one
+    /// of these at <see cref="FindingLevel.Fail"/>, which is the promised Warn-to-Fail
+    /// promotion applied one slice at a time rather than all at once at the end.
+    ///
+    /// <para><b>A THIRD NUMBER, BECAUSE THE OTHER TWO CANNOT SEE A SWAP INSIDE A FIXED
+    /// TOTAL.</b> Fix a <c>tumors/</c> description in the same commit that lets a
+    /// <c>treatments/</c> one regress to 9.0 and <see cref="DescriptionsOverTheLimit"/>
+    /// still reads 29 while <see cref="WorstDescriptionGrade"/> still reads 13.0 — both
+    /// halves of the ratchet green, and the shipped slice silently unwound. The count
+    /// locks in a TOTAL; this locks in a SLICE, and a sliced item needs both.</para>
+    ///
+    /// <para><b>AND IT GATES THE UNGRADED CASES TOO, which is the hole /review found in
+    /// the first version.</b> The gate lived in <see cref="DescriptionRatchet"/>, which
+    /// only ever sees GRADED descriptions — so truncating one under
+    /// <c>MinimumWordsToGrade</c> took it out of the graded set, dropped
+    /// <see cref="DescriptionsOverTheLimit"/> by one (reading as PROGRESS), left the
+    /// ceiling untouched, and unwound the slice with every gate green and exit 0. The
+    /// decision is per page now, so blank and too-short fail inside a slice as well as
+    /// over-the-limit.</para>
+    ///
+    /// <para>Grows by one entry per slice, and <b>nothing may be added to it that does
+    /// not already pass</b>: a clean-directory list is otherwise a claim about the corpus
+    /// that lives only in a constant. That is what
+    /// <c>EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus</c> exists to refuse — and
+    /// it counts the <c>.md</c> files on disk, so a directory cannot half-qualify
+    /// either.</para>
+    ///
+    /// <para><see cref="IReadOnlyList{T}"/> rather than an array: this list's entire job
+    /// is that a gate cannot be switched off quietly, and a <c>string[]</c> field is
+    /// writable through by any caller that can see it.</para>
+    /// </summary>
+    public static readonly IReadOnlyList<string> DescriptionsCleanDirectories
+        = ["treatments/"];
 
     /// <summary>
     /// How a blank-description finding starts, so the tool and the test that pins it
@@ -448,11 +574,23 @@ public static partial class ContentChecker
         var over = graded.Count(f => f.Grade > FailGrade);
         var worst = graded.Max(f => f.Grade!.Value);
 
+        // HAS A FINISHED SLICE ALREADY FAILED? GradeDescription owns that verdict now —
+        // per page, where it can also see the two ungraded escape routes (blank, and
+        // under the word floor) that this corpus-level code is structurally blind to.
+        // Read off the LEVEL it set rather than re-deriving the directory test, so the
+        // two cannot disagree about which pages are in a slice.
+        //
+        // POSITIVE, not "every finding that looks like X". §12.22's last lesson is that
+        // a set defined by exclusions is redefined by every new kind of X. A description
+        // finding at Fail is, by construction, a gated description failure — all three
+        // of GradeDescription's failing branches, and any fourth one added later.
+        var regressions = descriptions.Count(f => f.Level == FindingLevel.Fail);
+
         if (worst > WorstDescriptionGrade)
         {
             yield return new(FindingLevel.Fail, "(corpus)",
-                $"a page description now grades {worst:0.0}, and the worst when WI-575 "
-                + $"measured the corpus was {WorstDescriptionGrade:0.0}. A count of "
+                $"a page description now grades {worst:0.0}, and the worst when this "
+                + $"ratchet was last lowered was {WorstDescriptionGrade:0.0}. A count of "
                 + "descriptions over the limit cannot see one getting worse, so this is "
                 + "the other half of the ratchet. The cause is always sentence length: "
                 + "split it.");
@@ -462,7 +600,7 @@ public static partial class ContentChecker
         {
             yield return new(FindingLevel.Fail, "(corpus)",
                 $"{over} page descriptions are above the {FailGrade:0.0} reading limit and "
-                + $"{DescriptionsOverTheLimit} were when WI-575 measured them. The "
+                + $"{DescriptionsOverTheLimit} were when this ratchet was last lowered. The "
                 + "description is the first paragraph a reader meets and nothing graded it "
                 + "until WI-575; the existing backlog is WI-578's, but the corpus may not "
                 + "grow it. Shorten the sentence you just added — the cause is always "
@@ -480,12 +618,39 @@ public static partial class ContentChecker
         // proved to be plugged in**, and the end-to-end test written to prove exactly
         // that was satisfied by GradeDescription alone. One Info in a 338-line run buys
         // the call site an assertion and the log a line saying the gate is alive.
-        if (over == DescriptionsOverTheLimit && worst <= WorstDescriptionGrade)
+        // AND GATED ON THE REGRESSION LIST TOO, for round 4's reason exactly. A SWAP
+        // holds `over` at parity and `worst` under the ceiling, so without this the run
+        // would print "both unchanged since this ratchet was last lowered" directly
+        // beside a Fail naming the page that just broke — two findings telling opposite
+        // stories, which is the pair round 4 removed between the ceiling and the
+        // down-count.
+        // THE CORPUS TOTALS ARE REPORTED EITHER WAY, and that is /review's finding on
+        // the first version of this suppression. Gating both Infos on `regressions`
+        // threw away `over`, `worst`, `tooShort` and `blank` on exactly the run where
+        // somebody is debugging a regression — and `tooShort` is the instrument for
+        // diagnosing the truncation case. Facts with no verdict attached cannot
+        // contradict the Fail, so they are printed without the "unchanged" or "lower
+        // the constant" framing that would.
+        if (regressions > 0)
+        {
+            yield return new(FindingLevel.Warn, "(corpus)",
+                $"{regressions} description(s) in a finished slice FAILED above, so the "
+                + "two corpus ratchets are not the news and are reported without a "
+                + $"verdict: {over} above the {FailGrade:0.0} limit (recorded "
+                + $"{DescriptionsOverTheLimit}), worst {worst:0.0} (recorded "
+                + $"{WorstDescriptionGrade:0.0}), {tooShort} under the "
+                + $"{MinimumWordsToGrade}-word floor"
+                + $"{(blank == 0 ? "" : $", {blank} with no description")}. A truncation "
+                + "shows up here as the floor count RISING while the limit count falls.");
+        }
+
+        if (regressions == 0
+            && over == DescriptionsOverTheLimit && worst <= WorstDescriptionGrade)
         {
             yield return new(FindingLevel.Info, "(corpus)",
                 $"{over} page descriptions are above the {FailGrade:0.0} reading limit and "
-                + $"the worst grades {worst:0.0} — both unchanged since WI-575 measured "
-                + $"them ({tooShort} more are under the {MinimumWordsToGrade}-word floor "
+                + $"the worst grades {worst:0.0} — both unchanged since this ratchet was "
+                + $"last lowered ({tooShort} more are under the {MinimumWordsToGrade}-word floor "
                 + $"and are not graded{(blank == 0 ? "" : $"; {blank} page(s) have NO "
                     + "description at all")}). WI-578 owns the rewrite.");
         }
@@ -494,7 +659,8 @@ public static partial class ContentChecker
         // — lower the constant to lock it in". When the ceiling has been breached the
         // Fail is the news, and an Info inviting somebody to ratchet down beside it is
         // two findings telling opposite stories (/review round 4).
-        if (over < DescriptionsOverTheLimit && worst <= WorstDescriptionGrade)
+        if (regressions == 0
+            && over < DescriptionsOverTheLimit && worst <= WorstDescriptionGrade)
         {
             yield return new(FindingLevel.Info, "(corpus)",
                 $"{over} page descriptions are above the {FailGrade:0.0} limit, down from "

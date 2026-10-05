@@ -1,7 +1,7 @@
 ---
 title: "Steroids for a brain tumor: what they do, and when it might be the drug and not the tumor"
 slug: treatments/steroids
-description: "Why you were put on a steroid, why you can feel better while the tumor is unchanged, what the drug does to sleep, appetite, mood and muscle strength, why coming off it is your team's decision and never yours alone, and how to tell them what you are seeing."
+description: "Why you were put on a steroid. Why you can feel better while the tumor is unchanged. What the drug does to sleep, appetite, mood and muscle strength. Why coming off it is your team's decision and never yours alone, and how to tell them what you are seeing."
 tags: [treatments, steroids, dexamethasone, living-with]
 sources:
   # Source discipline for this page, written down so it is not re-argued

@@ -1,7 +1,7 @@
 ---
 title: "Anti-seizure medicines for a brain tumor: what they do, and when a change in someone might be the medicine"
 slug: treatments/anti-seizure-medicines
-description: "Why you were put on one, why somebody who has never had a seizure is usually not given one, what levetiracetam can do to mood and temper and how to tell that from the tumor, why the dose is never yours to change, and what to ask about driving."
+description: "Why you were put on one. Why somebody who has never had a seizure is usually not given one. What levetiracetam can do to mood and temper, and how to tell that from the tumor. Why the dose is never yours to change, and what to ask about driving."
 tags: [treatments, seizures, levetiracetam, living-with]
 sources:
   # Source discipline for this page, written down so it is not re-argued
