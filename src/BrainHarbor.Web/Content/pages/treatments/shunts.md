@@ -1,7 +1,7 @@
 ---
 title: "Shunts and hydrocephalus: when fluid cannot drain"
 slug: treatments/shunts
-description: "A tumor can stop the fluid around the brain from draining. A shunt is a thin tube that drains it somewhere else. What the operation involves, what recovery is like, why some people need it fixed or replaced, and the signs it has stopped working, which need help right away."
+description: "A tumor can stop the fluid around the brain from draining. A shunt is a thin tube that drains it somewhere else. What the operation involves, and what recovery is like. Why some people need it fixed or replaced. And the signs it has stopped working, which need help right away."
 tags: [treatments, surgery, shunt, hydrocephalus]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

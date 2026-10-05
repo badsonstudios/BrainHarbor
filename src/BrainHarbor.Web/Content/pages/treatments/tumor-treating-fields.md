@@ -1,7 +1,7 @@
 ---
 title: "Tumor treating fields: living with the device you wear"
 slug: treatments/tumor-treating-fields
-description: "A device worn on a shaved head for at least eighteen hours a day, used for glioblastoma. What wearing it is like, what it does to your scalp, how other people react, what it asks of the person helping you, and why doctors do not all agree about it."
+description: "A device worn on a shaved head for at least eighteen hours a day, used for glioblastoma. What wearing it is like, and what it does to your scalp. How other people react, and what it asks of the person helping you. Why doctors do not all agree about it."
 tags: [treatments, device, glioblastoma, tumor-treating-fields]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

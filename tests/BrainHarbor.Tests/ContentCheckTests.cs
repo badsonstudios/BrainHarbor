@@ -247,7 +247,16 @@ public class ContentCheckTests
 
         for (var i = 0; i < overTheLimit; i++)
         {
-            var grade = i == 0 ? worst : ContentChecker.FailGrade + 1.0;
+            // DERIVED FROM `worst`, NOT A LITERAL. This was `FailGrade + 1.0` — a hard
+            // 7.0 — which works only while the recorded ceiling is above 7.0. WI-578's
+            // declared end state is every description at or under 6.0, so the ceiling
+            // ratchets down THROUGH 7.0 and every parity test in this block would then
+            // fail because the FILLER breached the ceiling, for a reason unrelated to
+            // what any of them tests. Halfway between the limit and the worst is over
+            // the limit and under the ceiling for any legal pair (/review, WI-578).
+            var grade = i == 0
+                ? worst
+                : ContentChecker.FailGrade + ((worst - ContentChecker.FailGrade) / 2);
             findings.Add(new(FindingLevel.Warn, $"p{i}.md [description]",
                 $"reading grade {grade:0.0} (not gated — WI-578)", grade));
         }
@@ -335,6 +344,206 @@ public class ContentCheckTests
         Assert.Equal(FindingLevel.Info, info.Level);
         Assert.Contains("down from", info.Message);
         Assert.Contains("3 are under", info.Message);
+    }
+
+    /// <summary>
+    /// WI-578: <b>THE SWAP BOTH CORPUS NUMBERS ARE BLIND TO.</b> A regression inside a
+    /// finished slice, paid for by a fix somewhere in the remaining backlog, holds
+    /// <see cref="ContentChecker.DescriptionsOverTheLimit"/> at parity AND stays under
+    /// <see cref="ContentChecker.WorstDescriptionGrade"/> — so before the
+    /// clean-directory gate this exact corpus was two green gates and a lost slice.
+    ///
+    /// <para>The count here is the recorded constant and the worst grade is the recorded
+    /// ceiling, which is what makes this a swap rather than a growth: the only thing
+    /// that moved is WHICH page is bad.</para>
+    /// </summary>
+    /// <summary>The first finished slice, used to build probe paths. Index rather than
+    /// <c>Assert.Single</c>: the list GROWS by one entry per slice, and a single-element
+    /// assertion would fail the moment <c>tests/</c> lands — reading like the gate broke
+    /// rather than like a test helper was too clever (/review, WI-578). The non-empty
+    /// claim is asserted where it belongs, in
+    /// <see cref="EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus"/>.</summary>
+    private static string FinishedSlice => ContentChecker.DescriptionsCleanDirectories[0];
+
+    /// <summary>A description that grades well above 6.0 for the one reason WI-578 is
+    /// about — a single comma-spliced sentence — built once so the in-slice and
+    /// out-of-slice probes differ by their PATH and nothing else.</summary>
+    private const string OverTheLimitDescription =
+        "description: \"Why you were put on one, why somebody who has never had a "
+        + "seizure is usually not given one, what the drug can do to mood and temper and "
+        + "how to tell that from the tumor, why the dose is never yours to change, and "
+        + "what to ask about driving.\"";
+
+    /// <summary>
+    /// WI-578: <b>A DESCRIPTION OVER THE LIMIT INSIDE A FINISHED SLICE FAILS THE BUILD.</b>
+    /// Everywhere else it is the known backlog and warns; in a directory WI-578 has
+    /// rewritten, it is a regression.
+    ///
+    /// <para>Driven through the REAL <c>CheckPage</c> rather than a synthetic findings
+    /// list, which is WI-575's round-2 lesson obeyed: seven tests stayed green over a
+    /// dead ratchet because each built an input shape the producer never emits. The only
+    /// thing this test hand-builds is a page.</para>
+    /// </summary>
+    [Fact]
+    public void ADescriptionOverTheLimitInsideAFinishedSliceFails()
+    {
+        var findings = ContentChecker.CheckPage(
+            PageWith("A short, simple body. It says a little and no more.",
+                     OverTheLimitDescription),
+            FinishedSlice + "probe.md", Today);
+
+        var fail = Assert.Single(findings, f =>
+            f.Level == FindingLevel.Fail
+            && f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal));
+        Assert.Contains("REGRESSION", fail.Message, StringComparison.Ordinal);
+
+        // AND IT NEVER CLAIMS THE OPPOSITE OF ITS OWN LEVEL. The first version left
+        // "(not gated — WI-578)" on the message while raising the level to Fail, so the
+        // log carried both stories about the same page (/review, WI-578).
+        Assert.DoesNotContain("not gated", fail.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// And the SAME page under <c>tumors/</c> only warns — so the test above pins the
+    /// DIRECTORY and not merely the presence of an over-the-limit description. §12.19: a
+    /// guard proved only by the case that fires has not been shown to discriminate.
+    ///
+    /// <para>A real sibling directory, not a path with no directory at all: that is what
+    /// makes this a control. A matcher written with <c>Contains</c>, or one comparing
+    /// case-insensitively, would pass a directory-less probe and fail this one.</para>
+    /// </summary>
+    [Fact]
+    public void TheSameDescriptionOutsideAFinishedSliceIsOnlyTheKnownBacklog()
+    {
+        Assert.DoesNotContain("tumors/", ContentChecker.DescriptionsCleanDirectories);
+
+        var findings = ContentChecker.CheckPage(
+            PageWith("A short, simple body. It says a little and no more.",
+                     OverTheLimitDescription),
+            "tumors/probe.md", Today);
+
+        var description = Assert.Single(findings, f =>
+            f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal));
+        Assert.Equal(FindingLevel.Warn, description.Level);
+        Assert.Contains("not gated", description.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// WI-578, and <b>THE HOLE /review FOUND IN THE FIRST VERSION OF THE SLICE GATE.</b>
+    ///
+    /// <para>The gate lived in <see cref="ContentChecker.DescriptionRatchet"/>, which
+    /// only ever sees GRADED descriptions. Truncating one under the 25-word floor takes
+    /// it out of the graded set entirely: the slice gate cannot see it,
+    /// <c>DescriptionsOverTheLimit</c> goes DOWN by one and reads as progress, the
+    /// ceiling is untouched, and the too-short tally rises inside an Info that
+    /// <c>Program.cs</c> renders as <c>ok</c>. <b>The whole slice was unwindable by
+    /// truncation with every gate green and the tool exiting 0.</b></para>
+    ///
+    /// <para>Which is the escape hatch <see cref="ContentChecker.GradeDescription"/>'s
+    /// own comment had warned about since WI-575 — <i>scoring it as progress would let a
+    /// page buy its way out of grading by getting shorter</i> — while the gate sat on the
+    /// wrong side of it. SPLIT, DO NOT SHORTEN is a rule the tool enforces now.</para>
+    /// </summary>
+    [Fact]
+    public void TruncatingADescriptionInsideAFinishedSliceFailsInsteadOfGoingUngraded()
+    {
+        var findings = ContentChecker.CheckPage(
+            PageWith("A short, simple body. It says a little and no more.",
+                     "description: \"Why you were put on one.\""),
+            FinishedSlice + "probe.md", Today);
+
+        var fail = Assert.Single(findings, f =>
+            f.Level == FindingLevel.Fail
+            && f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal));
+        Assert.Contains("too little to grade", fail.Message, StringComparison.Ordinal);
+        Assert.Contains("NO LONGER GRADED", fail.Message, StringComparison.Ordinal);
+
+        // IT IS STILL UNGRADED, which is the point: the Fail does not come from a grade.
+        Assert.Null(fail.Grade);
+    }
+
+    /// <summary>The same truncation OUTSIDE a finished slice stays an Info, because
+    /// nothing has claimed that directory yet and the remaining backlog is not gated.
+    /// Without this the test above would pass over a gate that failed every short
+    /// description in the corpus.</summary>
+    [Fact]
+    public void TheSameTruncationOutsideAFinishedSliceIsStillOnlyUngraded()
+    {
+        var findings = ContentChecker.CheckPage(
+            PageWith("A short, simple body. It says a little and no more.",
+                     "description: \"Why you were put on one.\""),
+            "tumors/probe.md", Today);
+
+        var description = Assert.Single(findings, f =>
+            f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal));
+        Assert.Equal(FindingLevel.Info, description.Level);
+        Assert.DoesNotContain("NO LONGER GRADED", description.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>And the third ungraded escape route: deleting the description outright
+    /// inside a finished slice. A blank one warns elsewhere (WI-575 /review round 4) and
+    /// must fail here, for the same reason a truncated one does.</summary>
+    [Fact]
+    public void ABlankDescriptionInsideAFinishedSliceFails()
+    {
+        var findings = ContentChecker.CheckPage(
+            PageWith("A short, simple body. It says a little and no more."),
+            FinishedSlice + "probe.md", Today);
+
+        var fail = Assert.Single(findings, f =>
+            f.Level == FindingLevel.Fail
+            && f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal));
+        Assert.StartsWith(ContentChecker.NoDescriptionPrefix, fail.Message,
+            StringComparison.Ordinal);
+        Assert.Contains("REGRESSION", fail.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// WI-578: when a finished slice has failed, the ratchet reports the corpus totals
+    /// <b>WITHOUT A VERDICT</b> rather than suppressing them.
+    ///
+    /// <para>Two things are being pinned at once. The parity Info must NOT print beside a
+    /// regression — a swap holds the count at parity, so "both unchanged" would sit next
+    /// to a Fail naming the page that just broke, which is §12.22 round 4's
+    /// two-opposite-stories defect. But suppressing it outright threw away
+    /// <c>tooShort</c> on exactly the run where somebody is diagnosing a truncation
+    /// (/review, WI-578), and <c>tooShort</c> is the instrument for that. Facts with no
+    /// verdict attached cannot contradict the Fail.</para>
+    /// </summary>
+    [Fact]
+    public void WhenAFinishedSliceHasFailedTheCorpusTotalsAreReportedWithoutAVerdict()
+    {
+        // A FAILING description finding, shaped exactly as GradeDescription now emits
+        // one for a page inside a finished slice: Fail level, marker suffix, no grade
+        // (the truncation case). The ratchet reads the LEVEL, so this is the shape it
+        // actually keys on rather than one invented for the test.
+        var findings = Corpus(ContentChecker.DescriptionsOverTheLimit, 8,
+                              ContentChecker.WorstDescriptionGrade, tooShort: 3);
+        findings.Add(new(FindingLevel.Fail,
+            FinishedSlice + "regressed.md" + ContentChecker.DescriptionMarker,
+            "12 word(s) — too little to grade, and 25 are needed."));
+
+        var result = ContentChecker.DescriptionRatchet(
+            findings, ContentChecker.CorpusWhenMeasured).ToList();
+
+        var corpus = Assert.Single(result);
+        Assert.Equal(FindingLevel.Warn, corpus.Level);
+        Assert.Equal("(corpus)", corpus.File);
+
+        // THE VERDICTS ARE GONE...
+        Assert.DoesNotContain("both unchanged", corpus.Message);
+        Assert.DoesNotContain("down from", corpus.Message);
+
+        // ...AND THE FACTS ARE NOT, including the one that diagnoses a truncation.
+        //
+        // FOUR, NOT THREE, and getting that wrong first time is the reason it is worth
+        // asserting exactly: the regressed page added above IS a too-short description
+        // (ungraded, not blank), so it is counted among the facts as well as named in
+        // the failure. 3 from the builder + itself. A tally that silently omitted the
+        // page that just broke would be the wrong number in the one message somebody
+        // reads while diagnosing it.
+        Assert.Contains("4 under the", corpus.Message);
+        Assert.Contains("floor count RISING", corpus.Message);
     }
 
     /// <summary>
@@ -538,6 +747,78 @@ public class ContentCheckTests
         // AND NOTHING THE RATCHET PRODUCES IS A FAILURE TODAY, which is what makes the
         // assertions above meaningful rather than a restatement of the corpus.
         Assert.DoesNotContain(findings, f => f.Level == FindingLevel.Fail);
+    }
+
+    /// <summary>
+    /// WI-578: <b>A FINISHED SLICE IS A CLAIM ABOUT THE CORPUS, so the corpus is what
+    /// checks it.</b> <see cref="ContentChecker.DescriptionsCleanDirectories"/> is a
+    /// constant, and a constant can name a directory that does not pass, or one that
+    /// does not exist — in which case the gate it drives fires on nothing and §12.19
+    /// applies: a guard measured on a page it cannot fire on has been measured on
+    /// nothing.
+    ///
+    /// <para>This is the assertion a synthetic findings list cannot make, and it is the
+    /// round-2 lesson from WI-575 obeyed rather than re-narrated: the two tests above
+    /// build their own inputs, so they prove the branch and say nothing about whether
+    /// <c>treatments/</c> actually reads at sixth grade. Only the shipped corpus can say
+    /// that.</para>
+    /// </summary>
+    [Fact]
+    public void EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus()
+    {
+        var root = FindRepoRoot();
+        var pagesRoot = Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages");
+        var findings = ContentChecker.CheckAll(
+            pagesRoot,
+            Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
+            Today);
+
+        var graded = findings
+            .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal)
+                        && f.Grade is not null)
+            .ToList();
+
+        Assert.NotEmpty(ContentChecker.DescriptionsCleanDirectories);
+
+        foreach (var dir in ContentChecker.DescriptionsCleanDirectories)
+        {
+            var inDirectory = graded
+                .Where(f => f.File.StartsWith(dir, StringComparison.Ordinal))
+                .ToList();
+
+            // NOT VACUOUS, AND NOT PARTIAL. A typo in the constant ("treatment/") would
+            // leave every assertion below iterating an empty list and passing; a count
+            // of ">0" would also accept a directory where only SOME descriptions are
+            // graded, and an ungraded one is precisely how a page escapes this gate.
+            // Counted off disk so the number cannot rot (/review, WI-578).
+            var onDisk = Directory
+                .EnumerateFiles(Path.Combine(pagesRoot, dir.TrimEnd('/')),
+                                "*.md", SearchOption.AllDirectories)
+                .Count();
+
+            Assert.True(onDisk > 0,
+                $"'{dir}' is listed as a finished slice but there is no such directory "
+                + $"under {pagesRoot} — check the spelling against the paths "
+                + $"{nameof(ContentChecker)} emits, because a misspelled entry gates "
+                + "nothing while looking like it gates a directory");
+
+            Assert.True(onDisk == inDirectory.Count,
+                $"'{dir}' holds {onDisk} page(s) on disk but only {inDirectory.Count} "
+                + "produced a GRADED description. A page in a finished slice that is not "
+                + "graded has left the gate's reach — blank, or under the "
+                + $"{25}-word floor — which is the escape hatch this slice gate exists "
+                + "to close");
+
+            var bad = inDirectory
+                .Where(f => f.Grade > ContentChecker.FailGrade)
+                .Select(f => $"{f.File} grades {f.Grade:0.0}")
+                .ToList();
+
+            Assert.True(bad.Count == 0,
+                $"'{dir}' is listed as a finished slice, so every description under it "
+                + $"must grade at or under {ContentChecker.FailGrade:0.0}: "
+                + string.Join("; ", bad));
+        }
     }
 
     // ---------- WI-414: reader-facing Razor prose ----------

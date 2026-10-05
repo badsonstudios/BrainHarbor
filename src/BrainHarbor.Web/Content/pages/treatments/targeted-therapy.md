@@ -1,7 +1,7 @@
 ---
 title: "Targeted drugs: why your tumor's report decides this one"
 slug: treatments/targeted-therapy
-description: "Most of these drugs need something to aim at, and the gene results from your tumor say whether there is one. One of them works differently. What each of these drugs is for, what it asks of you, and the question worth asking about every one of them: what would it mean to say this worked?"
+description: "Most of these drugs need something to aim at. The gene results from your tumor say whether there is one. One of them works differently. What each of these drugs is for, and what it asks of you. And the question worth asking about every one of them: what would it mean to say this worked?"
 tags: [treatments, drugs, targeted, molecular]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

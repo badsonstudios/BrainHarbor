@@ -42,17 +42,21 @@ public static class Cli
         // WI-575: A TALLY, AND THE ACTIONABLE WARNS AGAIN AT THE END.
         //
         // Making the description grade visible took the WARN count from 20 to 61, and
-        // 41 of those are a known, booked backlog (WI-578). CI reads only the exit
-        // code, so this output is for a human reading a long log — and a gate that
-        // prints forty-one expected warnings trains people to skip it, which is the
-        // failure this file's own reasoning about admin pages warns of.
+        // the description grades among those are a known, booked backlog (WI-578) —
+        // 41 of them when WI-575 measured it, 29 after WI-578's first slice, and the
+        // number falls with every slice, which is why this comment no longer names it
+        // twice. CI reads only the exit code, so this output is for a human reading a
+        // long log — and a gate that prints dozens of expected warnings trains people
+        // to skip it, which is the failure this file's own reasoning about admin pages
+        // warns of.
         //
-        // Nothing is hidden and nothing is downgraded: all 61 print in place above.
+        // Nothing is hidden and nothing is downgraded: every warning prints in place
+        // above.
         // What changes is that the ones needing a person are the last thing on screen.
         var warns = findings.Count(f => f.Level == FindingLevel.Warn);
         // PARTITIONED ON THE GRADE, NOT ON THE MARKER. Both the grade warnings and the
         // blank-description warning carry the `[description]` marker, so splitting on
-        // the marker alone filed a page with NO opening paragraph under "41 of them
+        // the marker alone filed a page with NO opening paragraph under "N of them
         // page descriptions above the reading limit — a known backlog" (false of it) and
         // dropped it from the list this block exists to put in front of a person
         // (/review round 5). A warning added to make a defect visible landing in the

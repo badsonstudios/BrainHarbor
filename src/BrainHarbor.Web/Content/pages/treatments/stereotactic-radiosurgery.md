@@ -1,7 +1,7 @@
 ---
 title: "Stereotactic radiosurgery: it is not surgery, and it is usually one day"
 slug: treatments/stereotactic-radiosurgery
-description: "Gamma Knife and CyberKnife sound like operations and are not. Nothing is cut and you stay awake. What the day is really like, including the long wait while your plan is built, and why success is often a tumor that simply stays the same size."
+description: "Gamma Knife and CyberKnife sound like operations and are not. Nothing is cut and you stay awake. What the day is really like, including the long wait while your plan is built. And why success is often a tumor that simply stays the same size."
 tags: [treatments, radiation, srs]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

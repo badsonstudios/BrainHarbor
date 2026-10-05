@@ -1,7 +1,7 @@
 ---
 title: "Radiation therapy: the mask, the daily visits, and what comes after"
 slug: treatments/radiation-therapy
-description: "What radiation for a brain tumor is actually like. The planning visit where a mesh mask is molded to your face, what a treatment day feels like, why it runs Monday through Friday for weeks, the tiredness that does not stop on the last day, and the effects that can turn up much later."
+description: "What radiation for a brain tumor is actually like. The planning visit where a mesh mask is molded to your face. What a treatment day feels like, and why it runs Monday through Friday for weeks. The tiredness that does not stop on the last day, and the effects that can turn up much later."
 tags: [treatments, radiation, newly-diagnosed]
 sources:
   - url: https://www.cancer.org/cancer/types/brain-spinal-cord-tumors-adults/treating/radiation-therapy.html
