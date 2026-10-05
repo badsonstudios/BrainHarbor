@@ -1,7 +1,7 @@
 ---
 title: "Biopsy: how tissue is taken"
 slug: tests/biopsy
-description: "How a piece of a brain tumor is taken, through a needle or during an operation, what the day is like, and what happens if the sample does not give an answer."
+description: "How a piece of a brain tumor is taken, through a needle or during an operation. What the day is like. And what happens if the sample does not give an answer."
 tags: [tests, biopsy, surgery, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued

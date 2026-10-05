@@ -1,7 +1,7 @@
 ---
 title: "Getting ready for surgery: the checks before the day"
 slug: tests/getting-ready-for-surgery
-description: "The checks before a brain operation: blood tests, a heart trace, the anesthesia visit, when to stop eating and drinking, and which of your medicines you keep taking."
+description: "The checks before a brain operation. These are blood tests, a heart trace, and the anesthesia visit. When to stop eating and drinking. And which of your medicines you keep taking."
 tags: [tests, surgery, preparation, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued

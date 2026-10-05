@@ -1,7 +1,7 @@
 ---
 title: "Waiting for your pathology results"
 slug: tests/waiting-for-results
-description: "What is happening to your tumor tissue while you wait, why it takes as long as it does, and why the name of your diagnosis can change along the way."
+description: "What is happening to your tumor tissue while you wait. Why it takes as long as it does. And why the name of your diagnosis can change along the way."
 tags: [tests, pathology, newly-diagnosed]
 sources:
   - url: https://www.cancer.org/cancer/types/brain-spinal-cord-tumors-adults/detection-diagnosis-staging/how-diagnosed.html

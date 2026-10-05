@@ -4678,7 +4678,8 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   tests, which is why its smoke asserts every rendered byte is unchanged.
 
 - [ ] **WI-578 The page descriptions that read above sixth grade** (41 at
-  WI-575; **29 remain** — `treatments/` shipped 2026-10-05, see SLICE 1 below)
+  WI-575; **21 remain, all of them in `tumors/`** — `treatments/` and `tests/`
+  both shipped 2026-10-05, see SLICES below)
   *(raised by WI-575, 2026-09-30, WITH the measurement)*
   Goal: bring the one line most readers actually read down to the level the rest
   of the page is held to.
@@ -4723,20 +4724,35 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   Refs: `docs/content-pipeline.md` §12.22, §12.8, §12.3.
 
   **SLICE 1 SHIPPED 2026-10-05 — `treatments/`. The ruling is §12.23.**
-  **STILL OPEN: 29 of the 41 remain**, 8 in `tests/` and 21 in `tumors/`.
+  **SLICE 2 SHIPPED 2026-10-05 — `tests/`. The ruling is §12.24.**
+  **STILL OPEN: 21 of the 41 remain, and ALL of them are in `tumors/`** — so the
+  next slice is the LAST one, which is what makes the Warn-to-Fail promotion and
+  the `(not gated)` deletion part of it rather than a follow-up.
   - [x] **`treatments/` — all 13 descriptions.** 12 were over the limit;
     the 13th (`stereotactic-radiosurgery`) graded exactly 6.0 with no margin
     and was split with the rest, so "the directory passes" is a claim about
     the directory and not about twelve of its thirteen files. **Worst in the
     directory 19.7 → 5.3.**
-  - [ ] **`tests/` — 8 descriptions.** Holds the corpus's new worst,
-    **13.0 (`/tests/getting-ready-for-surgery`)**, so this slice moves the
-    ceiling as well as the count. Then `ct-scan` 8.8, `follow-up-scans` 12.9,
-    `biopsy` 12.4, `waiting-for-results` 11.1, `pathology-report` 10.9,
-    `neuro-exam-and-memory-testing` 9.2, `molecular-markers` 6.5.
-  - [ ] **`tumors/` — 21 descriptions.** The biggest slice and the mildest;
-    worst is 11.1 (`hemangioblastoma`, `pediatric-brain-tumor`). Worth
-    splitting again if it does not fit one sitting.
+  - [x] **`tests/` — the directory's 10 descriptions, 8 of them over.**
+    It held the corpus's worst, **13.0 (`/tests/getting-ready-for-surgery`)**, so
+    the slice moved the ceiling as well as the count: **13.0 → 5.2 inside the
+    directory, 29 → 21 across the corpus, 13.0 → 11.1 on the ceiling.** The other
+    two (`mri` 5.0, `planning-scans` 5.2) already passed with about a grade of
+    margin and were left alone — but adding `tests/` to
+    `DescriptionsCleanDirectories` gates all ten, which is the point: the claim
+    being locked in is *this directory reads at sixth grade*, not *eight of its
+    ten files do*.
+  - [ ] **`tumors/` — 21 descriptions, THE LAST SLICE.** The biggest and the
+    mildest; worst is 11.1 (`hemangioblastoma` and `pediatric-brain-tumor`,
+    **tied** — which is why `WorstDescriptionGrade` is a ceiling and not a page
+    name). Worth splitting again if it does not fit one sitting, as long as
+    whatever lands next lowers the CEILING and not only the count. Because it is
+    the last one, three things become a single edit: the count reaches 0, the
+    ceiling goes, and `GradeDescription`'s Warn branch and the
+    `(not gated — WI-578)` marker are deleted — the full promotion §12.22
+    promised and §12.23 deferred. Both markers are named constants now
+    (`ContentChecker.GatedMarker`, `NotGatedMarker`), so deleting the second one
+    is a compile error at every site rather than a search for a parenthetical.
   **THE DIAGNOSIS WAS A PREDICTION AND IT HELD.** §12.22 said the cause was
   sentence length and not vocabulary. Slice 1 took the directory from a worst
   of 19.7 to 5.3 with **no vocabulary work and not one word removed** — every
@@ -4797,8 +4813,72 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   the worst holds under 13.0, and asserts the count did NOT fire, the ceiling
   did NOT fire, the REGRESSION finding NAMED the page, and "both unchanged"
   was absent. Probe pages restored byte-for-byte.
+
+  **SLICE 2 (`tests/`) — the ruling is §12.24.** Eight descriptions split, **no
+  vocabulary work and not one word removed** (every count equal or higher), and
+  the corpus-wide too-short tally never moved off 6. **This is the slice that made
+  "split, do not shorten" load-bearing rather than a slogan:** five of the eight
+  were a SINGLE sentence of 28 to 35 words, and
+  `/tests/getting-ready-for-surgery` started at **28 words against a 25-word
+  floor** — a fix that dropped three words would have taken the page out of
+  grading instead of under the limit.
+  **THE FINDING IS ABOUT WHICH *ENTRIES* A GUARD CAN FIRE ON, which is §12.19
+  asked one level up.** `DescriptionsCleanDirectories` went from one entry to two,
+  and every test of the slice gate built its probe path from element **[0]** — so
+  the gate was proved for `treatments/` and assumed for `tests/`. **The shipped
+  corpus could not make up the difference, because a directory that PASSES looks
+  identical gated or ungated:** narrow the matcher to the first entry and every
+  description under `tests/` still grades 5.2 or better, so every assertion in
+  `EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus` stays green with the gate
+  switched off for half the list. Fixed two ways: the three in-slice Fail probes
+  are now a `[Theory]` over every listed directory, and the one observable
+  difference on a clean corpus — the `(gated — a finished slice)` marker — is the
+  subject of its own test, `EveryFinishedSliceIsActuallyGatedOnTheShippedCorpus`.
+  **AND THE BREAK HARNESS COULD NOT SEE ITS OWN MUTATION.** That new guard cannot
+  be broken from content, only by narrowing the matcher, so the mutation targets
+  `ContentChecker.cs` — and every mutation this harness has applied in eight items
+  edited a MARKDOWN file, which `dotnet test --no-build` reads off disk at
+  runtime. A `.cs` mutation is COMPILED, not read: applied to disk and run with
+  `--no-build`, the guard **passes in 632 ms over the unmutated assembly and logs
+  as a survivor** — a hole in the harness wearing the costume of a hole in the
+  gate. Measured by doing it, not argued. `rebuild()` now runs whenever a mutated
+  path ends in `.cs`, and a mutation that fails to compile exits rather than
+  scoring.
+  **AND THE PROBE BAND NARROWS EVERY TIME THE CEILING RATCHETS.** §12.23 ruled
+  that a probe for the gap between two guards must fit in the gap; this slice
+  lowered the ceiling to 11.1, so the band is `(6.0, 11.1]`. The harness's
+  regression mutation was first aimed at `follow-up-scans` with a hand-written
+  comment claiming grade 9.3 — it graded **6.2**, and that page cannot do better
+  (every consecutive merge of its sentences grades 2.7, 3.8, 6.2 or 13.2: too
+  mild, barely over, or over the ceiling).
+  Retargeted at `ct-scan`, whose **pre-slice text grades 8.8**, mid-band — and
+  that is the general rule: **the cheapest in-band probe is the text the slice
+  replaced.**
+  **Proof:** suite **2,637 / 2,637**; ContentCheck **339 checks, 0 failures**
+  (41 warnings, 21 of them the remaining backlog), count **21** and ceiling
+  **11.1** both at parity, too-short still **6**; **7 break mutations red on LF
+  AND CRLF** over a verified-green unmutated tree — **three of them SOURCE
+  mutations**, which is new for this harness and is why `rebuild()` had to exist;
+  and `prove-slice-gate.py`
+  retargeted to `tests/` proves both halves on the real corpus — a swap
+  (`/tests/pathology-report` back to its 10.9 pre-slice sentence, paid for by
+  splitting `/tumors/ependymoma` 6.1 → 3.6) fails ONLY on the directory gate and
+  names the page, and the truncation probe prints `21 above the 6.0 limit
+  (recorded 21) … 7 under the 25-word floor`.
+  **AND THAT LAST NUMBER IS A /review CORRECTION WORTH THE ROUND.** The first
+  version printed `20 above …` and called the falling count the signature of a
+  truncation — but the fall was the ependymoma FIX, still applied from phase 1,
+  and not the truncation at all. **Inside a finished slice the count CANNOT
+  fall**, because every description there is already under the limit; the
+  "reads as progress" half of §12.23's table belongs to the un-sliced backlog,
+  where a shortening is still read as a gain and still is not gated. In a gated
+  directory the floor count is the entire instrument. The tool's own guidance
+  sentence carried the same false causality, in the Warn that prints ONLY when a
+  finished slice has failed — the exact run where somebody is diagnosing one —
+  and now names the floor count alone. **A probe that changes two things cannot
+  attribute what it measures to either.**
   **The full promotion in `GradeDescription` and deleting the `(not gated)`
-  marker happen when the last of the 29 lands — not before.**
+  marker happen when the last of the 21 lands — not before.**
 
 - [ ] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
   *(raised by WI-567, 2026-09-24)*

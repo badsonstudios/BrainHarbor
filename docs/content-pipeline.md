@@ -8171,6 +8171,14 @@ graded.** So:
 | too-short tally | 6 → 7, inside an **Info** that `Program.cs` renders as `ok` |
 | exit code | **0** |
 
+> **ROW 2 IS CORRECTED BY §12.24, and read that before using this table.** The
+> down-count is only available to a page OUTSIDE a finished slice. Inside one
+> every description is already under the limit, so shortening one cannot lower
+> `DescriptionsOverTheLimit` — it moves the floor tally and nothing else. This
+> table ran the un-sliced case and the in-slice case together, and the prove
+> scripts for BOTH slices then credited a truncation with a fall that the paying
+> fix beside it had produced.
+
 > **The slice was unwindable by shortening, with every gate green.** And
 > `GradeDescription`'s own comment has said since WI-575 that *scoring it as progress
 > would let a page buy its way out of grading by getting shorter*. The sentence was
@@ -8286,3 +8294,221 @@ ratchet, 41 → 29 and 19.7 → 13.0.
 
 The full Warn-to-Fail promotion in `GradeDescription`, and deleting the `(not gated)`
 marker, happen when the last of the 29 lands — not before.
+
+### 12.24 Which entries a guard can fire on, and the harness that could not see its own mutation (WI-578, slice 2)
+
+WI-578's **second slice**: the eight over-limit descriptions under `tests/`, chosen
+over the 21-page `tumors/` because `tests/` held the corpus's worst (13.0,
+`/tests/getting-ready-for-surgery`) and so moves **both** halves of the ratchet.
+
+| | before | after |
+|---|---|---|
+| descriptions over 6.0 in `tests/` | 8 of 10 | **0 of 10** |
+| worst grade in the directory | **13.0** | **5.2** |
+| corpus count over 6.0 | 29 | **21** |
+| corpus ceiling | 13.0 | **11.1** |
+| corpus too-short tally | 6 | **6** |
+| words removed | — | **none** |
+
+The diagnosis §12.22 made and §12.23 confirmed held a second time, and more
+sharply: **five of the eight were a SINGLE sentence** of 28 to 35 words. Nothing
+but the sentence boundaries changed, every word count stayed equal or rose, and
+the too-short tally never moved off 6 — which is the number that distinguishes a
+rewrite from a truncation, printed beside the gain for exactly this purpose.
+
+#### THE SLICE THAT MADE "SPLIT, DO NOT SHORTEN" LOAD-BEARING RATHER THAN A SLOGAN
+
+Slice 1's descriptions ran 38 to 56 words, so a careless split had room to lose a
+word without approaching ContentCheck's 25-word floor. Slice 2's did not:
+
+> `/tests/getting-ready-for-surgery` started at **28 words against a floor of
+> 25**, and `/tests/waiting-for-results` at 30. A "fix" that dropped three words
+> would not have improved the page — it would have taken it **out of the graded
+> set entirely**, which since §12.23 is a Fail inside a finished slice and was a
+> silent down-count before it.
+
+The guard that refuses a shortening fired zero times here, and that is the right
+outcome to record beside §12.23's one rejection: the constraint was known going
+in, so the drafting aid printed the floor word count next to the grade on every
+candidate.
+
+#### ASK WHICH *ENTRIES* A GUARD CAN FIRE ON, NOT JUST WHICH PAGES
+
+This is the slice's real finding, and it is §12.19 asked one level up.
+
+`DescriptionsCleanDirectories` went from one entry to two. Every test of the
+finished-slice gate built its probe path from `DescriptionsCleanDirectories[0]`,
+so on the day `tests/` was added, *"an over-limit description inside a finished
+slice fails"* was **proved for `treatments/` and assumed for `tests/`**.
+
+And the shipped-corpus test could not make up the difference:
+
+> **A directory that PASSES looks identical gated or ungated.** The grades are
+> the grades. Narrow the matcher to the first entry and every description under
+> `tests/` still grades 5.2 or better, so every assertion in
+> `EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus` — including its
+> `onDisk == inDirectory.Count` non-vacuity check — stays **green with the gate
+> switched off for half the list**.
+
+Two changes close it. The three in-slice Fail probes became `[Theory]` over
+`FinishedSlices`, so each listed directory is proved rather than the first one.
+And the one observable difference on a clean corpus — the `(gated — a finished
+slice)` marker — became the subject of its own test,
+`EveryFinishedSliceIsActuallyGatedOnTheShippedCorpus`. It is a separate test
+because it is a separate claim: *these directories read at sixth grade* and
+*these directories are gated* fail for different reasons and should not share a
+name. Both markers are named constants now, for the reason `DescriptionMarker`
+is: a test that types the message tests its own typing — and the new test asserts
+the two do not overlap, because its whole claim is *the marker is the only
+observable difference* and that claim dies quietly if one marker contains the
+other.
+
+> **AND ONE MUTATION AIMED AT THE NEW CORPUS TEST PROVES THE NEW CORPUS TEST.**
+> /review: the `[Fact]` → `[Theory]` conversion is the change this section is
+> named after, and the first version of the mutation table pointed the narrowing
+> mutation only at `…IsActuallyGated…`. The same narrowing is aimed at
+> `ADescriptionOverTheLimitInsideAFinishedSliceFails` as well now, where the
+> `tests/` case gets a Warn where it asserts a Fail **while the `treatments/`
+> case still passes** — which is exactly the half-proof the conversion exists to
+> remove, made visible.
+
+And a third branch had the same shape of hole, found in the same pass. Of
+`GradeDescription`'s three failing branches — over the limit, under the floor,
+blank — the first two each had an out-of-slice control pinning the *un*-gated
+level. **The blank one had none**, so promoting its out-of-slice `Warn` to `Fail`
+left the entire suite green: §12.19's rule broken in the one place three sibling
+branches made it easy to miss, because two thirds of the pattern was there.
+`TheSameBlankDescriptionOutsideAFinishedSliceOnlyWarns` is the control, and that
+promotion is a mutation in the table now.
+
+Writing it turned up a fourth thing. The shared failure suffix ended *"the cause
+is almost always sentence length: SPLIT the sentence rather than shortening it"*
+and was appended to the **blank**-description failure — advice about a sentence
+that does not exist, on a page that has no description at all. The shared part is
+now only what is true of all three branches, and the advice is added by the two
+that have a sentence in them. `NotGatedMarker` is also
+the thing WI-578's acceptance criteria say to delete at the end, and as a
+constant that deletion is a compile error at every site rather than a search for
+a parenthetical.
+
+#### AND THE BREAK HARNESS COULD NOT SEE ITS OWN MUTATION, measured rather than argued
+
+The gate reaching the second entry cannot be broken by editing a page — only by
+narrowing the matcher — so the mutation had to target `ContentChecker.cs`. The
+harness takes an arbitrary path and restores it byte-for-byte, so that looked
+free. It was not:
+
+> Every mutation this harness has applied in eight items edited a **markdown**
+> file, which `dotnet test --no-build` reads off disk at runtime. A **.cs**
+> mutation is *compiled*, not read. Applied to disk and run with `--no-build`,
+> the binary under test is the **unmutated** one — the named guard passes in
+> 632 ms and the harness logs a **survivor**.
+
+That is a hole in the harness wearing the costume of a hole in the gate, and it
+is the third consecutive item in which the instrument, not the subject, was the
+defect. `rebuild()` now runs whenever a mutated path ends in `.cs` — after
+applying, after restoring, after each line-ending flip, and once in the `finally`
+so a mutated assembly is never left in `bin/`. A mutation that fails to compile
+exits rather than scoring, because a broken mutation is not a caught one.
+
+> **The number proving this was obtained by doing it**: mutate on disk, skip the
+> build, run the one test, watch it pass. §12.23's lesson was that writing a
+> hazard down does not guard it; this one's is that a harness inherited across
+> eight items carries assumptions about its *targets* that nobody restated when
+> the target class changed.
+
+#### Two of the eight needed a second pass, and both were about the reader
+
+The split is mechanical; what a split *does to a pronoun* is not.
+
+- `/tests/molecular-markers` first read *"What each gene test on a brain tumor
+  report measures. What your team uses **it** for…"*. The new full stop put a
+  sentence boundary between that *it* and *each gene test*, leaving *a brain
+  tumor report* as the nearest noun. **This is the same defect /review caught in
+  `/treatments/proton-therapy` one slice earlier**, created the same way — by a
+  boundary, not by a word choice — which is worth recording because it means the
+  hazard is a property of splitting rather than of either page. *"what your team
+  uses **each one** for"* carries the antecedent inside the sentence and costs a
+  word rather than saving one.
+- `/tests/getting-ready-for-surgery` first read *"The checks before a brain
+  operation. Blood tests, a heart trace, and the anesthesia visit."* The colon
+  that used to attach the list to the sentence before it was gone, and the
+  attachment went with it. *"These are blood tests…"* puts it back for one word.
+
+> **A split can lose something that is not a word.** The script's guard counts
+> words, and both of these passed it: the clause survived, the count rose, the
+> grade fell. What went missing was the *link* a colon or a nearby antecedent was
+> carrying — invisible to any count, and exactly the kind of thing an audience
+> reading sentence by sentence pays for.
+
+#### THE PROBE BAND NARROWS EVERY TIME THE CEILING RATCHETS
+
+§12.23 ruled that a probe for the gap between two guards must fit in the gap.
+Slice 2 is the demonstration that the gap **moves**: the ceiling fell 13.0 → 11.1
+with this slice, so the band is `(6.0, 11.1]` and strictly narrower than the band
+slice 1's probes were drawn in.
+
+Two things followed, both caught by measuring instead of eyeballing:
+
+- The harness's regression mutation was first aimed at `follow-up-scans` with a
+  hand-written comment claiming grade 9.3. It graded **6.2** — in band by 0.2.
+  Worse, that page *cannot* do better: its words are short, so its grade is
+  carried almost entirely by sentence length, and every consecutive merge of its
+  sentences grades 2.7, 3.8, **6.2** or 13.2 — too mild, barely over, or over the
+  ceiling. (12.9 is its original *colon* text, which is not a comma merge of the
+  shipped one.) Retargeted at `ct-scan`, whose **pre-slice text grades 8.8**,
+  mid-band.
+- **The cheapest in-band probe is the text the slice replaced.** Both the harness
+  mutation and `prove-slice-gate.py`'s regression are now simply the description
+  as it shipped the day before, which needs no invention and is in band by
+  construction for any page whose old grade was under the new ceiling.
+
+`prove-slice-gate.py`, retargeted to `tests/`, still proves both halves on the
+real corpus: a swap (`/tests/pathology-report` back to its 10.9 pre-slice
+sentence, paid for by splitting `/tumors/ependymoma` 6.1 → 3.6) holds the count
+at 21 and the ceiling at 11.1, and the run fails **only** on the directory gate,
+naming the page.
+
+#### AND THE TRUNCATION SIGNATURE §12.23 DESCRIBED IS NOT AVAILABLE INSIDE A FINISHED SLICE
+
+The first version of this slice's prove script printed
+`20 above the 6.0 limit (recorded 21) … 7 under the 25-word floor` and called it
+the signature of a truncation: the limit count falling while the floor count
+rises. **/review found that the fall was the ependymoma FIX, still applied from
+phase 1, and not the truncation at all.** Measured with nothing else changed, a
+truncated page reads `21 above … 7 under`. The count does not move.
+
+> **It cannot move.** Inside a finished slice every description is ALREADY under
+> the limit, so shortening one cannot lower the over-the-limit count. The
+> "reads as progress" half of §12.23's table belongs to the **un-sliced
+> backlog** — where a shortening still lowers the count, still reads as a gain,
+> and still is not gated. §12.23 printed both halves as one table and so told a
+> story about a page in a finished slice using a number only an un-gated page can
+> produce. **In a gated directory the floor count is the entire instrument**,
+> which is the real reason the totals print on a failing run.
+
+The tool's own guidance sentence carried the same error — *"a truncation shows up
+here as the floor count RISING while the limit count falls"*, in the Warn that
+prints **only** when a finished slice has failed, which is exactly the run where
+somebody is diagnosing one. A message a reader of the log acts on is the worst
+place for a causality nobody checked. It names the floor count alone now and says
+why the limit count will not move.
+
+> **This is the third item running in which the instrument, not the subject, was
+> the defect** — and the second time in two slices that a number read as proof of
+> one thing and was produced by another. §12.23's lesson was that writing a hazard
+> down does not guard it. This one's is narrower and meaner: **a probe that
+> changes two things cannot attribute what it measures to either.** One edit at a
+> time, or say which edit the number belongs to.
+
+#### What is left
+
+**21 remain, and all 21 are in `tumors/`.** The next slice is the last one, which
+makes three things one edit rather than three: the count reaches 0, the ceiling
+goes, and `GradeDescription`'s Warn branch and the `(not gated — WI-578)` marker
+are deleted — the full promotion to Fail that §12.22 promised and §12.23 deferred.
+`tumors/` is 21 pages and its worst is 11.1 (`hemangioblastoma` and
+`pediatric-brain-tumor`, **tied** — which is why `WorstDescriptionGrade` is a
+ceiling and not a page name). It is worth splitting again if it does not fit one
+sitting; the ratchet supports that, as long as whatever lands next lowers the
+ceiling rather than only the count.
