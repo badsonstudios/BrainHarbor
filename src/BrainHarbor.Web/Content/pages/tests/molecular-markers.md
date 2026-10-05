@@ -1,7 +1,7 @@
 ---
 title: "The words on your gene results, one by one"
 slug: tests/molecular-markers
-description: "What each gene test on a brain tumor report measures, what your team uses it for, and what it does not tell you. Includes whether these results are passed on to children."
+description: "What each gene test on a brain tumor report measures. What your team uses each one for, and what it does not tell you. Includes whether these results are passed on to children."
 tags: [tests, pathology, newly-diagnosed]
 sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10547522/

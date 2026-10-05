@@ -1,7 +1,7 @@
 ---
 title: "Your CT scan, and the one that started all this"
 slug: tests/ct-scan
-description: "The fast scan hospitals reach for when they need an answer now. What it is, why you had one instead of an MRI, what the dye and the x-rays actually mean, and why being sent for an MRI afterward is not somebody correcting a mistake."
+description: "The fast scan hospitals reach for when they need an answer now. What it is, and why you had one instead of an MRI. What the dye and the x-rays actually mean. And why being sent for an MRI afterward is not somebody correcting a mistake."
 tags: [tests, ct, scans, newly-diagnosed]
 sources:
   # SOURCE DISCIPLINE FOR THIS PAGE, written down so it is not re-argued

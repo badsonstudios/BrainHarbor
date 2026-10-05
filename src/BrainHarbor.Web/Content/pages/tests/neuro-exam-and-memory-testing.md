@@ -1,7 +1,7 @@
 ---
 title: "The exam in the room, and the thinking and memory tests"
 slug: tests/neuro-exam-and-memory-testing
-description: "Two different things that get talked about in the same breath: the short exam your team does at every visit, and the longer day of thinking and memory tests. What each one is, how long each takes, and why neither is something you can fail."
+description: "Two different things get talked about in the same breath. One is the short exam your team does at every visit. The other is the longer day of thinking and memory tests. What each one is, and how long each takes. And why neither is something you can fail."
 tags: [tests, neurological-exam, thinking-and-memory, newly-diagnosed]
 sources:
   # WI-549. Every quote below was re-fetched and read LIVE on 2026-09-23 with

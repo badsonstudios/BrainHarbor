@@ -1,7 +1,7 @@
 ---
 title: "Follow-up scans, and what the results mean"
 slug: tests/follow-up-scans
-description: "The scans that carry on after treatment: how often they happen, what your team compares them with, what the words on the report mean, and why a scan that looks worse is not always worse."
+description: "The scans that carry on after treatment. How often they happen, and what your team compares them with. What the words on the report mean. And why a scan that looks worse is not always worse."
 tags: [tests, follow-up, scans, living-with]
 sources:
   # Source discipline for this page, written down so it is not re-argued
