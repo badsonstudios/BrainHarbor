@@ -298,22 +298,26 @@ public static partial class ContentChecker
                     ? $", and {MinimumWordsToGrade} are needed. This description is NO "
                       + "LONGER GRADED, which is not an improvement: it takes the page "
                       + "out of the count instead of under the limit"
-                      + FinishedSliceSuffix
+                      + FinishedSliceSuffix + SplitItSuffix
                     : ""))];
         }
 
         // REPORTED, NOT GATED WHILE WI-578 IS OUTSTANDING, and the reason is a
         // measurement rather than a preference. WI-575 found 41 of 49 gradeable
-        // descriptions above the 6.0 limit (median 8.4, max 19.7); WI-578's first
-        // slice rewrote treatments/ and 29 remain. Failing the build on what is left
-        // would make this gate the thing people route around, which is the failure
-        // mode this file's own comment about admin pages warns of.
+        // descriptions above the 6.0 limit (median 8.4, max 19.7); slice 1 rewrote
+        // treatments/ and slice 2 rewrote tests/, so 21 remain and all of them are in
+        // tumors/. Failing the build on what is left would make this gate the thing
+        // people route around, which is the failure mode this file's own comment about
+        // admin pages warns of. ONE SLICE FROM NOW THIS BRANCH IS DEAD CODE: when
+        // tumors/ lands there is no "outside a finished slice" left.
         //
-        // THE CAUSE IS SENTENCE LENGTH, NOT VOCABULARY, and slice 1 is the proof
-        // rather than the hypothesis: thirteen descriptions went from a median
-        // longest sentence of 33 words to 17 with NOT ONE WORD REMOVED — every word
-        // count stayed equal or rose — and the directory's worst fell from 19.7 to
-        // 5.3. FK's words-per-sentence term was doing all of it.
+        // THE CAUSE IS SENTENCE LENGTH, NOT VOCABULARY, and two slices have now proved
+        // it rather than hypothesised it: twenty-one descriptions rewritten, NOT ONE
+        // WORD REMOVED from any of them (every word count equal or higher), worst
+        // 19.7 → 5.3 in treatments/ and 13.0 → 5.2 in tests/. FK's words-per-sentence
+        // term was doing all of it. Slice 2 is the sharper demonstration, because five
+        // of its eight were a SINGLE sentence of 28 to 35 words and nothing but the
+        // sentence boundaries changed.
         //
         // The same call this file already makes for glossary definitions. What IS
         // gated, beyond a finished slice, is drift: see
@@ -346,22 +350,67 @@ public static partial class ContentChecker
                 + (finishedSlice
                     ? over
                         ? $", above the {FailGrade:0.0} limit{FinishedSliceSuffix}"
-                        : " (gated — a finished slice)"
-                    : " (not gated — WI-578)"),
+                          + SplitItSuffix
+                        : GatedMarker
+                    : NotGatedMarker),
                 grade),
         ];
     }
 
     /// <summary>
+    /// What a PASSING description inside a finished slice says, and the only thing on the
+    /// real corpus that distinguishes a gated directory from an ungated one.
+    ///
+    /// <para><b>A directory that passes looks identical either way</b> — the grades are
+    /// the grades. So narrowing the matcher (to the first entry of
+    /// <see cref="DescriptionsCleanDirectories"/>, say) would switch the gate off for a
+    /// whole slice while every grade assertion over the shipped corpus stayed green. This
+    /// marker is what <c>EveryFinishedSliceIsActuallyGatedOnTheShippedCorpus</c> asserts
+    /// instead — the <c>…IsActuallyClean…</c> test beside it is entirely about GRADES and
+    /// never reads a message, which is why they are two tests rather than one.</para>
+    ///
+    /// <para>(/review, slice 2: this sentence named the <c>Clean</c> test, in the comment
+    /// whose whole job is to name the right one. <c>&lt;c&gt;</c> rather than
+    /// <c>&lt;see cref&gt;</c> because the test assembly references this project and not
+    /// the other way round, so there is nothing here for the compiler to check.)</para>
+    ///
+    /// <para>A constant rather than a literal for the reason
+    /// <see cref="DescriptionMarker"/> is: a test that types the message tests its own
+    /// typing (WI-578 slice 2).</para>
+    /// </summary>
+    public const string GatedMarker = " (gated — a finished slice)";
+
+    /// <summary>
+    /// The counterpart for the remaining backlog, where the grade is reported and not
+    /// gated. <b>Deleted when the last slice lands</b> — WI-578's acceptance criteria say
+    /// so, and keeping it as a named constant is what makes that deletion a compile error
+    /// at every site rather than a search for a parenthetical.
+    /// </summary>
+    public const string NotGatedMarker = " (not gated — WI-578)";
+
+    /// <summary>
     /// The tail every finished-slice failure carries, so the three branches of
     /// <see cref="GradeDescription"/> that can fail inside a slice say the same thing
     /// about why — rather than three literals that drift apart.
+    ///
+    /// <para><b>The advice is NOT part of it, and /review found out why (slice 2).</b>
+    /// This read "…the cause is almost always sentence length: SPLIT the sentence rather
+    /// than shortening it" — appended verbatim to the BLANK-description failure, where
+    /// there is no sentence to split and nothing was shortened. The shared part is the
+    /// part that is true of all three branches; <see cref="SplitItSuffix"/> is added by
+    /// the two where a sentence actually exists.</para>
     /// </summary>
     private const string FinishedSliceSuffix =
         ". This directory is listed in DescriptionsCleanDirectories, so WI-578 has "
         + "already finished it and this is a REGRESSION rather than part of the "
-        + "remaining backlog. The cause is almost always sentence length: SPLIT the "
-        + "sentence rather than shortening it";
+        + "remaining backlog";
+
+    /// <summary>The fix, for the two failing branches that have a sentence in them —
+    /// over the limit, and shortened under the floor. See
+    /// <see cref="FinishedSliceSuffix"/> for why it is not shared with the third.</summary>
+    private const string SplitItSuffix =
+        ". The cause is almost always sentence length: SPLIT the sentence rather than "
+        + "shortening it";
 
     /// <summary>
     /// WI-575: how many page descriptions sat above <see cref="FailGrade"/> when the
@@ -381,12 +430,14 @@ public static partial class ContentChecker
     /// <see cref="WorstDescriptionGrade"/> is the other half of.</para>
     ///
     /// <para><b>LOWERED AS WI-578 LANDS, which is the whole design.</b> 41 at WI-575;
-    /// <b>29</b> after WI-578's first slice rewrote all thirteen of
-    /// <c>treatments/</c>. The remaining 29 are 8 in <c>tests/</c> and 21 in
-    /// <c>tumors/</c>. Lower it again with the next slice — it is an upper bound, so
-    /// lowering it is what locks a gain in.</para>
+    /// <b>29</b> after slice 1 rewrote all thirteen of <c>treatments/</c>; <b>21</b>
+    /// after slice 2 rewrote the eight over-limit descriptions in <c>tests/</c>. All 21
+    /// that remain are in <c>tumors/</c>, so the next slice is the last one — and when it
+    /// lands, this number reaches 0 and <see cref="GradeDescription"/>'s Warn branch goes
+    /// with it. Lower it with each slice: it is an upper bound, so lowering it is what
+    /// locks a gain in.</para>
     /// </summary>
-    public const int DescriptionsOverTheLimit = 29;
+    public const int DescriptionsOverTheLimit = 21;
 
     /// <summary>
     /// The worst description grade in the corpus as last measured. <b>No description may
@@ -401,14 +452,22 @@ public static partial class ContentChecker
     ///
     /// <para><b>LOWERED WITH <see cref="DescriptionsOverTheLimit"/>, and the two do not
     /// move together by default.</b> 19.7 at WI-575 (<c>/treatments/anti-seizure-medicines</c>);
-    /// <b>13.0</b> after WI-578's first slice, where the new worst is
+    /// <b>13.0</b> after slice 1, where the new worst was
     /// <c>/tests/getting-ready-for-surgery</c> — a DIFFERENT file in a DIFFERENT
-    /// directory. Slice 1 was chosen as <c>treatments/</c> precisely because that
-    /// directory held the top two grades, so one slice moves both halves of the ratchet;
-    /// a slice that moves only the count leaves this number measuring a page nobody
-    /// touched.</para>
+    /// directory; <b>11.1</b> after slice 2, where it is <c>/tumors/hemangioblastoma</c>
+    /// and <c>/tumors/pediatric-brain-tumor</c>, TIED. Each slice was chosen by which
+    /// number it moves: <c>treatments/</c> held the top two grades and <c>tests/</c> held
+    /// the next one, so both slices moved this ceiling as well as the count. Taking the
+    /// 21-page <c>tumors/</c> slice first would have left this number measuring a page
+    /// nobody touched, which is §12.19's rule about a guard measured where it cannot
+    /// fire.</para>
+    ///
+    /// <para><b>A TIE AT THE TOP IS WHY THIS IS A CEILING AND NOT A NAME.</b> Two pages
+    /// grade 11.1, so there is no single "worst page" to pin — and a ceiling is
+    /// indifferent to that, while any guard phrased as "the worst page is X" would have
+    /// to pick one of them and would go stale when the other moved.</para>
     /// </summary>
-    public const double WorstDescriptionGrade = 13.0;
+    public const double WorstDescriptionGrade = 11.1;
 
     /// <summary>The marker <see cref="GradeDescription"/> appends to a description
     /// finding's file path, so the four places that recognise one agree by construction
@@ -461,12 +520,22 @@ public static partial class ContentChecker
     /// it counts the <c>.md</c> files on disk, so a directory cannot half-qualify
     /// either.</para>
     ///
+    /// <para><b>A SLICE IS A DIRECTORY, NOT THE FILES THE SLICE EDITED.</b> Slice 2
+    /// rewrote 8 descriptions in <c>tests/</c> but the directory holds 10, and the other
+    /// two (<c>mri</c> at 5.0, <c>planning-scans</c> at 5.2) already passed with margin
+    /// and were left alone. Adding <c>tests/</c> gates all ten, so those two are now
+    /// gated by a slice that did not touch them — which is the point: the claim being
+    /// locked in is <i>this directory reads at sixth grade</i>, and a claim about eight
+    /// of ten files is not one anybody can act on. Slice 1 reached the same place from
+    /// the other side by splitting <c>stereotactic-radiosurgery</c>, which graded exactly
+    /// 6.0 with no margin at all.</para>
+    ///
     /// <para><see cref="IReadOnlyList{T}"/> rather than an array: this list's entire job
     /// is that a gate cannot be switched off quietly, and a <c>string[]</c> field is
     /// writable through by any caller that can see it.</para>
     /// </summary>
     public static readonly IReadOnlyList<string> DescriptionsCleanDirectories
-        = ["treatments/"];
+        = ["treatments/", "tests/"];
 
     /// <summary>
     /// How a blank-description finding starts, so the tool and the test that pins it
@@ -631,6 +700,16 @@ public static partial class ContentChecker
         // diagnosing the truncation case. Facts with no verdict attached cannot
         // contradict the Fail, so they are printed without the "unchanged" or "lower
         // the constant" framing that would.
+        //
+        // AND THE GUIDANCE SENTENCE USED TO BE FALSE WHEREVER IT PRINTED (/review, slice
+        // 2). It read "a truncation shows up here as the floor count RISING while the
+        // limit count FALLS", which is the story §12.23's table told — and this Warn only
+        // ever prints when a FINISHED SLICE has failed, where every description is
+        // already under the limit, so shortening one CANNOT lower `over`. The falling
+        // count belongs to the un-sliced backlog, where a shortening is still read as
+        // progress and is still not gated; it is not available here. Measured by
+        // truncating one page of the shipped corpus with nothing else changed: 21 → 21
+        // over the limit, 6 → 7 under the floor. The floor count is the whole instrument.
         if (regressions > 0)
         {
             yield return new(FindingLevel.Warn, "(corpus)",
@@ -641,7 +720,9 @@ public static partial class ContentChecker
                 + $"{WorstDescriptionGrade:0.0}), {tooShort} under the "
                 + $"{MinimumWordsToGrade}-word floor"
                 + $"{(blank == 0 ? "" : $", {blank} with no description")}. A truncation "
-                + "shows up here as the floor count RISING while the limit count falls.");
+                + $"shows up here as the {MinimumWordsToGrade}-word floor count RISING; "
+                + "the limit count will NOT move, because the page was already under the "
+                + "limit before it was shortened.");
         }
 
         if (regressions == 0

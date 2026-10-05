@@ -1,7 +1,7 @@
 ---
 title: "Your pathology report, part by part"
 slug: tests/pathology-report
-description: "What each part of a brain tumor pathology report is for, why gene results can change the name at the top, and what the grade and the words NOS and NEC mean."
+description: "What each part of a brain tumor pathology report is for. Why gene results can change the name at the top. And what the grade and the words NOS and NEC mean."
 tags: [tests, pathology, newly-diagnosed]
 sources:
   - url: https://www.cancer.gov/about-cancer/diagnosis-staging/diagnosis/pathology-reports-fact-sheet
