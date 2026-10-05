@@ -4677,7 +4677,8 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   to fire there. **NO CONTENT FILE CHANGED** -- the item touches only tools and
   tests, which is why its smoke asserts every rendered byte is unchanged.
 
-- [ ] **WI-578 The 41 page descriptions that read above sixth grade**
+- [ ] **WI-578 The page descriptions that read above sixth grade** (41 at
+  WI-575; **29 remain** — `treatments/` shipped 2026-10-05, see SLICE 1 below)
   *(raised by WI-575, 2026-09-30, WITH the measurement)*
   Goal: bring the one line most readers actually read down to the level the rest
   of the page is held to.
@@ -4687,7 +4688,8 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   as the blurb under every search hit, and nothing graded it until WI-575.
   **THE MEASUREMENT, so this is sized rather than guessed** (all of it from
   ContentCheck's own instrument, not a reimplementation):
-  - **41 of 49 gradeable descriptions are above the 6.0 limit.** Median **8.4**,
+  - **41 of 49 gradeable descriptions WERE above the 6.0 limit** (29 now).
+    Median **8.4**,
     max **19.7** (`/treatments/anti-seizure-medicines`). One is in the 5.5-6.0
     warn band; 6 of the 55 are under the 25-word floor and are not graded.
   - **THE CAUSE IS NOT VOCABULARY.** The words are simple -- *"Why you were put
@@ -4715,10 +4717,88 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     boundaries, not deletion.
   - When every description passes, promote the grade from Warn to **Fail** in
     `ContentChecker.GradeDescription` and delete the not-gated note.
-  **Scope warning:** 41 medical page descriptions, each needing the page's own
+  **Scope warning:** 41 medical page descriptions as raised, each needing the page's own
   sourcing discipline. This is not one evening. Split it by directory
   (`tumors/`, `treatments/`, `tests/`) if it needs splitting.
   Refs: `docs/content-pipeline.md` §12.22, §12.8, §12.3.
+
+  **SLICE 1 SHIPPED 2026-10-05 — `treatments/`. The ruling is §12.23.**
+  **STILL OPEN: 29 of the 41 remain**, 8 in `tests/` and 21 in `tumors/`.
+  - [x] **`treatments/` — all 13 descriptions.** 12 were over the limit;
+    the 13th (`stereotactic-radiosurgery`) graded exactly 6.0 with no margin
+    and was split with the rest, so "the directory passes" is a claim about
+    the directory and not about twelve of its thirteen files. **Worst in the
+    directory 19.7 → 5.3.**
+  - [ ] **`tests/` — 8 descriptions.** Holds the corpus's new worst,
+    **13.0 (`/tests/getting-ready-for-surgery`)**, so this slice moves the
+    ceiling as well as the count. Then `ct-scan` 8.8, `follow-up-scans` 12.9,
+    `biopsy` 12.4, `waiting-for-results` 11.1, `pathology-report` 10.9,
+    `neuro-exam-and-memory-testing` 9.2, `molecular-markers` 6.5.
+  - [ ] **`tumors/` — 21 descriptions.** The biggest slice and the mildest;
+    worst is 11.1 (`hemangioblastoma`, `pediatric-brain-tumor`). Worth
+    splitting again if it does not fit one sitting.
+  **THE DIAGNOSIS WAS A PREDICTION AND IT HELD.** §12.22 said the cause was
+  sentence length and not vocabulary. Slice 1 took the directory from a worst
+  of 19.7 to 5.3 with **no vocabulary work and not one word removed** — every
+  word count stayed equal or rose, median longest sentence 33 → 17 words, and
+  the corpus-wide too-short tally never moved off 6, which is the number that
+  proves the gain is a rewrite rather than a truncation.
+  **AND THE SHORTENING GUARD FIRED ONCE, which is why it was worth writing.**
+  The edit script refuses any rewrite with fewer words than the original, and
+  it rejected `/treatments/proton-therapy` at 50 → 49: a new sentence boundary
+  had eaten the word *and*. A boundary that swallows a word is a shortening
+  wearing a split's clothes, and it is invisible by inspection.
+  **A SLICED ITEM NEEDED A THIRD NUMBER.** Lowering
+  `DescriptionsOverTheLimit` (41 → **29**) and `WorstDescriptionGrade`
+  (19.7 → **13.0**) locks in the TOTAL and cannot lock in a SLICE: fix a
+  `tumors/` description in the same commit that lets a `treatments/` one
+  regress to 9.0 and both numbers stay green while the slice unwinds. So
+  `ContentChecker.DescriptionsCleanDirectories` gates every description under
+  a finished directory at **Fail** — the promised Warn-to-Fail promotion, one
+  slice at a time — reported per page, with the parity/down-count Infos
+  suppressed beside it so the run cannot tell two opposite stories (§12.22's
+  round-4 defect, recreated by a different pair of branches).
+  **AND /review FOUND THE SLICE GATE UNWINDABLE BY TRUNCATION, which is the
+  round worth reading.** Built in `DescriptionRatchet`, the gate ran over the
+  ratchet's GRADED findings -- and a description under the 25-word floor is not
+  graded. So shortening one took it out of the graded set, dropped
+  `DescriptionsOverTheLimit` by one (reading as PROGRESS), left the ceiling
+  untouched, raised the too-short tally inside an Info that renders as `ok`, and
+  **exited 0**. The hazard was the one `GradeDescription`'s own comment had
+  warned about since WI-575, three lines above the floor check: *scoring it as
+  progress would let a page buy its way out of grading by getting shorter*.
+  **Writing a hazard down does not guard it.** The decision moved out of the
+  corpus-level ratchet into `GradeDescription`, per page, where it sees all three
+  ways a description leaves the graded set (over the limit, under the floor,
+  blank) -- and that move fixed three more defects at once: the log had been
+  printing `(not gated)` over a Fail for the same page (§12.22 round 4's
+  two-opposite-stories defect, recreated); the gate had been sitting behind two
+  corpus-size early returns, so **deleting one page switched it off**; and
+  suppressing the parity Info had thrown away `tooShort`, the one instrument that
+  diagnoses a truncation, so the totals now print as a verdict-free Warn.
+  /review also corrected the median longest sentence (**33** → 17, not 29 → 17
+  -- re-measured mechanically), two stale "41 of 49" comments, a filler grade in
+  the test builder that would have broken every parity test once the ceiling
+  ratchets below 7.0, and an ambiguous *it* in `/treatments/proton-therapy`.
+  **Proof:** suite **2,632 / 2,632**; ContentCheck **339 checks, 0 failures**
+  (49 warnings, 29 of them the remaining backlog); **4 break mutations red on
+  LF AND CRLF** over a verified-green unmutated tree -- and the harness earned
+  its run, reporting the truncation mutation a SURVIVOR on both endings because
+  it had been aimed at a test that builds its OWN page through `CheckPage`.
+  **A mutation aimed at a test that builds its own input tests nothing**, the
+  mirror of WI-575's builder/producer lesson: there the input was wrong for the
+  producer, here the target was wrong for the input. Retargeted at
+  `EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus`, whose
+  `onDisk == inDirectory.Count` assertion exists for exactly that case.
+  All 16 of WI-575's mutations re-checked against the edited prose and re-run
+  RED on both endings; and `prove-slice-gate.py`
+  plants a **TRUE SWAP** on the shipped corpus — one `treatments/` page
+  regressed to 8.3, one `tumors/` page fixed — so the count holds at 29 and
+  the worst holds under 13.0, and asserts the count did NOT fire, the ceiling
+  did NOT fire, the REGRESSION finding NAMED the page, and "both unchanged"
+  was absent. Probe pages restored byte-for-byte.
+  **The full promotion in `GradeDescription` and deleting the `(not gated)`
+  marker happen when the last of the 29 lands — not before.**
 
 - [ ] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
   *(raised by WI-567, 2026-09-24)*

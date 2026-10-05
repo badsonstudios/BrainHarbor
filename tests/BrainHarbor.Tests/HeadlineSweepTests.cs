@@ -27,13 +27,27 @@ namespace BrainHarbor.Tests;
 ///
 /// <para><b>THE ONE RULE THAT WAS NEVER APPLIED IS THE ONE THAT FINDS SOMETHING.</b>
 /// Nothing graded the description until WI-575, and <b>41 of 49 gradeable descriptions
-/// are above the 6.0 reading limit</b> (median 8.4, max 19.7). The cause is not
-/// vocabulary — <b>45 of the 55</b> are a contents list in one or two comma-spliced
-/// sentences, and the longest sentence runs to a median of 27 words across the corpus
+/// were above the 6.0 reading limit</b> (median 8.4, max 19.7). The cause was not
+/// vocabulary — <b>45 of the 55</b> were a contents list in one or two comma-spliced
+/// sentences, and the longest sentence ran to a median of 27 words across the corpus
 /// (28 across the gradeable 49) and a maximum of 51. That is <b>WI-578</b>, raised with
 /// the measurement attached; <c>ContentChecker</c> reports the grade ungated and
 /// ratchets both the count and the worst grade, so the corpus can neither grow the
 /// backlog nor make one worse.</para>
+///
+/// <para><b>WI-578's first slice rewrote <c>treatments/</c> and the sentence-length
+/// diagnosis held exactly.</b> All thirteen descriptions there now pass — the
+/// directory's worst fell 19.7 → 5.3, median longest sentence 33 → 17 words — <b>with
+/// not one word removed</b>: every word count stayed equal or rose, and the too-short
+/// tally beside the ratchet's gain never moved off 6. The edits were a comma or colon
+/// becoming a full stop, <i>plus the connective word a new sentence needs</i> — and
+/// that second half is not a quibble: two of the thirteen traded a word rather than
+/// only gaining one (<c>targeted-therapy</c> dropped an <i>and</i> mid-clause and
+/// regained it opening the next sentence), so the claim that holds is the AGGREGATE
+/// one about word counts, not a claim that nothing but punctuation moved.
+/// <b>29</b> remain, 8 in <c>tests/</c> and 21 in <c>tumors/</c>, and this sweep's
+/// clean-text finding above is unaffected: splitting a sentence introduces no
+/// typography.</para>
 ///
 /// <para><b>EVERY RULE HERE HAS A CANARY.</b> A sweep that is green over new text and has
 /// never been seen to fire has not been shown to work (§12.18), and a sweep whose subject

@@ -1,7 +1,7 @@
 ---
 title: "Clinical trials: how to think about one, and when to ask"
 slug: treatments/clinical-trials
-description: "What a clinical trial is, why the time to ask about one is earlier than people expect, what taking part actually costs you in visits and travel, what the phases mean, and what to ask your own team."
+description: "What a clinical trial is. Why the time to ask about one is earlier than people expect. What taking part actually costs you in visits and travel. What the phases mean, and what to ask your own team."
 tags: [treatments, trials, newly-diagnosed, living-with]
 sources:
   # Source discipline for this page, written down so it is not re-argued

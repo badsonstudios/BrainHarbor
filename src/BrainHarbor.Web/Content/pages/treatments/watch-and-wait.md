@@ -1,7 +1,7 @@
 ---
 title: "Watch and wait: when the plan is to keep an eye on it"
 slug: treatments/watch-and-wait
-description: "What it means when your team suggests watching a tumor with scans instead of treating it now: why it is a real plan, what gets checked, what would change it, and the worry that can come with it."
+description: "What it means when your team suggests watching a tumor with scans instead of treating it now. Why it is a real plan, and what gets checked. What would change it, and the worry that can come with it."
 tags: [treatments, watch-and-wait, living-with]
 sources:
   # Source discipline for this page, written down so it is not re-argued

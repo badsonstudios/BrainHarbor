@@ -1,7 +1,7 @@
 ---
 title: "Awake brain surgery (awake craniotomy): what you do, and why"
 slug: treatments/awake-craniotomy
-description: "Why some brain operations are done with you awake for part of the time, what you are asked to do, what it feels like, and why losing a word for a moment during the test is the test working."
+description: "Why some brain operations are done with you awake for part of the time. What you are asked to do, and what it feels like. Why losing a word for a moment during the test is the test working."
 tags: [treatments, surgery, craniotomy, awake-craniotomy]
 sources:
   # Source discipline for this page, written down so it is not re-argued
