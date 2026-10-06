@@ -133,8 +133,8 @@ asking your team to confirm which tumor you have.
 Because a gene result can now set the grade on its own, even when the cells look
 lower grade.
 
-An IDH-mutant astrocytoma is called grade 4 if both copies of a gene called
-CDKN2A/B are missing, whatever the cells look like. A tumor without an IDH
+An IDH-mutant astrocytoma is called grade 4 if both copies of CDKN2A/B are
+missing, whatever the cells look like. A tumor without an IDH
 change can be called glioblastoma, grade 4, on gene results alone.
 
 It is not a mistake and nobody was hiding anything. The gene results took longer

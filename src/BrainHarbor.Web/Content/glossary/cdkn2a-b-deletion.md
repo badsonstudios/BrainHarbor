@@ -7,6 +7,5 @@ sources:
     accessed: 2026-08-30
 ---
 
-Both copies of two genes that put the brakes on cell division are missing. In
-some gliomas this finding sets the grade on its own, even when the cells look
-quieter under the microscope.
+Both copies of two genes that put the brakes on cell division are missing. The
+two are CDKN2A and CDKN2B.

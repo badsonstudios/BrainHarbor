@@ -127,7 +127,7 @@ gene tests say. For an IDH-mutant astrocytoma there are three:
 - **Grade 2.** Low cellularity, little or no sign of the cells dividing.
 - **Grade 3.** More crowded, and clearly dividing.
 - **Grade 4.** Dead tissue inside the tumor, or new abnormal blood vessels, **or**
-  both copies of a gene called CDKN2A/B missing.
+  both copies of CDKN2A/B missing.
 
 **That last one catches people out.** A tumor can be graded 4 on the gene result
 alone, even when the cells did not look that way. It is not a mistake and nobody
