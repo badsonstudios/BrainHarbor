@@ -4975,8 +4975,42 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     suppresses its tooltip is the legitimate shape, and the rule must not fail it.
   Refs: `docs/content-pipeline.md` §12.17, §12.10.
 
-- [ ] **WI-579 The 2021 grading rule has four wordings on four files that link
-  each other** *(raised by WI-576, 2026-10-06)*
+- [x] **WI-579 The 2021 grading rule has four wordings on four files that link
+  each other** *(raised by WI-576, 2026-10-06; **DONE 2026-10-06** — ruling at
+  `docs/content-pipeline.md` §12.27)*
+  **IT IS EIGHT FILES, NOT FOUR, AND THE ITEM'S OWN SCOPE WAS THE DEFECT.**
+  WI-576 found the set with the shingle `the grade on its own`; that phrase finds
+  five (it had already missed `/tumors/low-grade-glioma`) and the four it cannot
+  see state the rule best — `/tumors/glioma` ("Gene results can now set the
+  grade"), `/tumors/astrocytoma` ("graded 4 on the gene result alone"),
+  `/tumors/glioblastoma` ("called a glioblastoma on its gene results alone") and
+  `/tumors/meningioma` ("whatever the cells look like"). WI-569's "a lexicon is a
+  floor, not a fence" arriving as **a work item's own scope**, which is a place it
+  had not been seen before. **THE RULING: a rule and its instances are different
+  facts, and only the rule has one owner.** The rule is a fact about GRADING and
+  its home is `/tests/pathology-report#what-the-grade-means`; an instance (grade 4
+  astrocytoma, grade 3 meningioma, the glioblastoma naming rule) belongs to the
+  page whose reader is holding that report (§12.10's own split, applied to a fact
+  with no block); and three pages may restate the general rule because each does
+  it under a heading in the reader's own words — **an answer to the question a
+  section is headed with cannot be a link.** **`/tests/molecular-markers` IS NOT
+  THE OWNER** and the acceptance criterion invited the reversal: it states the
+  same shape four times for four markers, it already routes here, and the reader
+  who needs the rule is holding a grade rather than a gene panel. **§12.10's ROUTE
+  HALF WAS NEVER THE HOLE** — all eight already link to `/tests/pathology-report`
+  in their own prose, so nothing needed a route added; what was missing was a
+  written owner and **a gate on a premise nothing asserted: that the owner still
+  states the rule.** Four sentences edited in total. `glossary/cdkn2a-b-deletion`
+  was the one real double-exposure (its second sentence WAS the rule, on a tooltip
+  firing on the hub that answers its own headed question) — trimmed to what no
+  page says, **grade 7.7 → 3.7**, and WI-576's `DeliberatelyShared` record deleted
+  deliberately rather than by test failure. **THE GENE COUNT WAS WRONG ON THREE
+  PAGES, NOT ONE:** scanning for the shape rather than the sentence found
+  `/tumors/astrocytoma` with the same "a gene called CDKN2A/B" and
+  `/tumors/meningioma` with "a gene called CDKN2A or CDKN2B" — a singular article
+  in front of two gene names, the same error wearing the plural's clothes.
+  Raised: **WI-582** (35 of the 101 glossary definitions ContentCheck grades are
+  over 6.0 and it prints the number without gating it).
   Goal: one owner for the rule that a gene result can set the grade on its own.
   WI-576's glossary sweep reported `tumors/high-grade-glioma` against
   `glossary/cdkn2a-b-deletion` and could not resolve it either way, so it is
@@ -5087,6 +5121,45 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     is superseded or absorbed, not left beside a wider gate saying the same thing
     about two of them.
   Refs: `docs/content-pipeline.md` §12.26; WI-519, WI-567's ruling.
+
+- [ ] **WI-582 A glossary definition is reader-facing prose that is graded and
+  not gated** *(raised by WI-579, 2026-10-06)*
+  Goal: decide what the reading-level standard IS for a definition, then gate it
+  — the WI-578 shape, which took the page `description` from 41 over the limit to
+  0 and deleted its own ratchet.
+  **Measured with the repo's own grader during WI-579: of the 101 definitions
+  ContentCheck grades, 35 are over 6.0**, worst **9.3**, median 5.5. ContentCheck
+  prints every one of them as `reading grade N.N (not gated)` and fails on none,
+  which is the `(not gated — WI-578)` marker in a third surface: a definition
+  fires as a tooltip on every page that says the term, so it is prose a reader
+  meets without ever visiting `/glossary`, and §12.26 established it has a
+  block's blast radius. WI-579 found one at **7.7** and trimmed it to 3.7 as a
+  side effect of a different rule; nothing would have reported it.
+  **THE FLOOR IS ALREADY THERE AND IS THE FIRST THING TO READ, not to re-derive.**
+  `CheckGlossaryTerm` grades only definitions of **20 words or more**, with the
+  reason beside it — *"Flesch-Kincaid on a 25-word definition is too noisy to fail
+  a build on"*, the same threshold `CheckRazorPage` uses. That is why a naive
+  sweep of all 105 reports 38 and a worst of 16.1: the extra three are short
+  entries where FK is noise (`pcv` is three drug names). **The tool's number is
+  the number** (WI-416 is about exactly this).
+  Acceptance:
+  - A ruling on the standard for a definition whose subject is a drug name or a
+    gene symbol, written down BEFORE any entry is edited. `pcv`, `lomustine`,
+    `procarbazine` and `carmustine-wafer` cannot be written under 6.0 while still
+    naming their subject, and rewriting them to game a syllable count would make
+    them worse. Either the standard excludes them with a reason, or the word floor
+    does, or they are exempted individually with a reason — not silently.
+  - Whatever gate follows says which SET it is built over (§12.19) and which
+    entries it can fire on (§12.24): the 20-word floor means a gate over
+    "definitions" is really a gate over 101 of 105, and the four it cannot see
+    should be named rather than subtracted (§12.25).
+  - The count is NOT the gate (§12.25, and WI-575 round 4's conflation of a corpus
+    size with a defect count). Gate the property; report the count.
+  - The `(not gated)` string is deleted when the gate lands, the way WI-578
+    deleted `DescriptionsOverTheLimit`, `WorstDescriptionGrade` and the
+    `(not gated — WI-578)` marker together with its ratchet.
+  Refs: `docs/content-pipeline.md` §12.27, §12.22 (WI-575's ungraded line),
+  §12.23/§12.25 (WI-578's slices); WI-416, WI-414/415.
 
 - [ ] **WI-577 The sellar seam: two pages that do not point back at each
   other, and one that contradicted its own link** *(raised by WI-569,
