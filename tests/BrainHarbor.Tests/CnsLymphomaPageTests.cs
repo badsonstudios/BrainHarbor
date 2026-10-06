@@ -1522,7 +1522,16 @@ public sealed class CnsLymphomaPageRenderTests : IClassFixture<WebApplicationFac
         // The description renders as the first paragraph a reader meets, so it
         // is pinned in its SOURCED form: an operation is not the treatment, and
         // a steroid can take the answer away.
-        Assert.Contains("why a steroid can take the answer away", html);
+        //
+        // THE NEEDLE LOST ITS LEADING "why" IN WI-578 SLICE 3, and that is the only
+        // test in the suite the 21 splits touched. The clause used to run on from a
+        // comma — "…is not the treatment, why a steroid can take the answer away…" —
+        // and the split made it the start of a sentence, so the word that moved is a
+        // capital W and nothing else. The needle is the CLAIM now rather than the
+        // claim plus the punctuation it happened to follow: a needle that includes a
+        // sentence's first word is a needle that breaks every time a sentence boundary
+        // moves, which on this corpus is three slices in a row.
+        Assert.Contains("a steroid can take the answer away", html);
     }
 
     [Fact]

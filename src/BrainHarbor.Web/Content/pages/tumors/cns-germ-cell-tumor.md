@@ -1,6 +1,6 @@
 ---
 title: "CNS germ cell tumor"
-description: "A rare tumor, found mostly in older children, teens and young adults, that grows deep in the middle of the brain. What the two main kinds are, why blood and spinal fluid tests matter so much, which signs mean getting help fast, and the decision to make before treatment starts."
+description: "A rare tumor that grows deep in the middle of the brain. It is found mostly in older children, teens and young adults. What the two main kinds are. Why blood and spinal fluid tests matter so much. Which signs mean getting help fast, and the decision to make before treatment starts."
 tags: [tumor-type]
 sources:
   # WI-546. A TUMOR HUB, so the seventeen sections of §12.3 and the proved

@@ -1,7 +1,7 @@
 ---
 title: "Something showed up on your scan, and it has no name yet"
 slug: tumors/all-brain-tumors
-description: "For the days between being told there is something on your scan and being told what it is. The seven steps, why a scan often cannot say on its own, why benign is the wrong comfort word in the brain, and what you can ask for this week."
+description: "For the days between being told there is something on your scan and being told what it is. The seven steps, and why a scan often cannot say on its own. Why benign is the wrong comfort word in the brain. And what you can ask for this week."
 tags: [tumor-type, all-brain-tumors, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued

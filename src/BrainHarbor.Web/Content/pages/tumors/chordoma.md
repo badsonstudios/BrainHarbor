@@ -1,6 +1,6 @@
 ---
 title: "Chordoma"
-description: "A rare, slow-growing bone cancer that starts in the skull base, the spine, or the tailbone. What the name means, why the first operation matters more than most, which signs mean getting help now, and what treatment actually involves."
+description: "A rare, slow-growing bone cancer. It starts in the skull base, the spine, or the tailbone. What the name means, and why the first operation matters more than most. Which signs mean getting help now, and what treatment actually involves."
 tags: [tumor-type]
 sources:
   # WI-545. A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved

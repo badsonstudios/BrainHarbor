@@ -1,7 +1,7 @@
 ---
 title: "DIPG (pontine)"
 slug: tumors/dipg
-description: "A diffuse midline glioma in the pons, a part of the brain stem, most often found in children. How it is found, why surgery cannot remove it, what radiation does, and what to ask about dordaviprone for a tumor in the pons."
+description: "A diffuse midline glioma in the pons, a part of the brain stem. It is most often found in children. How it is found, and why surgery cannot remove it. What radiation does. And what to ask about dordaviprone for a tumor in the pons."
 tags: [tumor-type, glioma]
 sources:
   # §12.1: names and grades from CNS5-aligned sources only. Together by St. Jude

@@ -1,7 +1,7 @@
 ---
 title: "Brain metastases: your cancer in a new place, not a new cancer"
 slug: tumors/brain-metastases
-description: "A brain metastasis is the cancer you already have, growing in the brain. It keeps the name of where it started, and that name decides the treatment. What the number of spots changes, which medicines reach the brain, and the question to ask about the covering of the brain."
+description: "A brain metastasis is the cancer you already have, growing in the brain. It keeps the name of where it started, and that name decides the treatment. What the number of spots changes. Which medicines reach the brain. And the question to ask about the covering of the brain."
 tags: [tumor-type, brain-metastases, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued

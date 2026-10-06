@@ -1,7 +1,7 @@
 ---
 title: "Pituitary tumor"
 slug: tumors/pituitary-tumor
-description: "A growth in the small gland under the brain that controls hormones. Why sight and hormones are the two things to watch, what the names on your report mean, and the two emergencies this page carries rules for."
+description: "A growth in the small gland under the brain that controls hormones. Why sight and hormones are the two things to watch. What the names on your report mean. And the two emergencies this page carries rules for."
 tags: [tumor-type]
 sources:
   # WI-539. THIS IS A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved

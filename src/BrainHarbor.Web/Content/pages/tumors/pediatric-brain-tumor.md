@@ -1,7 +1,7 @@
 ---
 title: "When your child has a brain tumor"
 slug: tumors/pediatric-brain-tumor
-description: "Written for a parent. What is different when the person with the brain tumor is a child: why the types are not the same, why scans and radiation may need medicine to sleep, what follow-up covers for years afterwards, how school support works, and how to talk to your child and their brothers and sisters."
+description: "Written for a parent. What is different when the person with the brain tumor is a child. Why the types are not the same. Why your child may need medicine to sleep for scans and radiation. What follow-up covers for years afterwards, and how school support works. And how to talk to your child and their brothers and sisters."
 tags: [tumor-type]
 sources:
   # WI-538. THIS PAGE IS A CROSS-CUTTING PAGE, NOT A TUMOR HUB (§12.11). It is an

@@ -1,7 +1,7 @@
 ---
 title: "Ependymoma"
 slug: tumors/ependymoma
-description: "A tumor that starts in the lining of the fluid spaces of the brain and spine. Where it grows, what the grade and the gene result mean, why surgery matters so much, and why the scans go on for years."
+description: "A tumor that starts in the lining of the fluid spaces of the brain and spine. Where it grows, and what the grade and the gene result mean. Why surgery matters so much. And why the scans go on for years."
 tags: [tumor-type]
 sources:
   # Naming and grading from CNS5-aligned sources ONLY (§12.1). The trap sources are

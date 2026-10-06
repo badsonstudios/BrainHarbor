@@ -4677,9 +4677,9 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   to fire there. **NO CONTENT FILE CHANGED** -- the item touches only tools and
   tests, which is why its smoke asserts every rendered byte is unchanged.
 
-- [ ] **WI-578 The page descriptions that read above sixth grade** (41 at
-  WI-575; **21 remain, all of them in `tumors/`** — `treatments/` and `tests/`
-  both shipped 2026-10-05, see SLICES below)
+- [x] **WI-578 The page descriptions that read above sixth grade** (41 at
+  WI-575; **0 remain — DONE 2026-10-06.** `treatments/` and `tests/` shipped
+  2026-10-05 and `tumors/` on 2026-10-06; see SLICES below)
   *(raised by WI-575, 2026-09-30, WITH the measurement)*
   Goal: bring the one line most readers actually read down to the level the rest
   of the page is held to.
@@ -4725,9 +4725,24 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
 
   **SLICE 1 SHIPPED 2026-10-05 — `treatments/`. The ruling is §12.23.**
   **SLICE 2 SHIPPED 2026-10-05 — `tests/`. The ruling is §12.24.**
-  **STILL OPEN: 21 of the 41 remain, and ALL of them are in `tumors/`** — so the
-  next slice is the LAST one, which is what makes the Warn-to-Fail promotion and
-  the `(not gated)` deletion part of it rather than a follow-up.
+  **SLICE 3 SHIPPED 2026-10-06 — `tumors/`. The ruling is §12.25.**
+  **CLOSED. All 55 descriptions read at or under 6.0, worst 5.6**, the grade is
+  gated at `Fail` corpus-wide, and `DescriptionsOverTheLimit` (41 → 29 → 21 → 0)
+  and `WorstDescriptionGrade` (19.7 → 13.0 → 11.1) are both DELETED, along with
+  the `(not gated — WI-578)` marker. **Forty-two descriptions rewritten and not
+  one word removed from any of them** — the corpus-wide too-short tally read 6
+  before the first slice and reads 6 after the last, which is the number that
+  separates a rewrite from a truncation.
+  **THE PROMOTION WAS PER BRANCH, NOT WHOLESALE, and this item's own plan was
+  wrong about that** (§12.25): `DescriptionsCleanDirectories` never swallows the
+  corpus. With all three slices listed it covers **46 of 55** descriptions — the
+  other nine are the seven root-level pages and the two under `seizures/`, and
+  **six of those nine are legitimately under the 25-word floor** (`terms.md` 7
+  words, `about.md` 8, `digest.md` 12, `privacy.md` 12, `how-we-write.md` 20,
+  `seizures/what-to-do.md` 20). Only the GRADE went corpus-wide; the two branches
+  that gate a description LEAVING the graded set keep their out-of-slice level,
+  because deleting them would have failed the build on six pages this item was
+  never about. *Ask what a branch is ABOUT, not what level it emits.*
   - [x] **`treatments/` — all 13 descriptions.** 12 were over the limit;
     the 13th (`stereotactic-radiosurgery`) graded exactly 6.0 with no margin
     and was split with the rest, so "the directory passes" is a claim about
@@ -4742,10 +4757,50 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     `DescriptionsCleanDirectories` gates all ten, which is the point: the claim
     being locked in is *this directory reads at sixth grade*, not *eight of its
     ten files do*.
-  - [ ] **`tumors/` — 21 descriptions, THE LAST SLICE.** The biggest and the
+  - [x] **`tumors/` — 21 descriptions, THE LAST SLICE.** The biggest and the
     mildest; worst is 11.1 (`hemangioblastoma` and `pediatric-brain-tumor`,
     **tied** — which is why `WorstDescriptionGrade` is a ceiling and not a page
-    name). Worth splitting again if it does not fit one sitting, as long as
+    name).
+    **SHIPPED: 21 of 23 rewritten, worst in the directory 11.1 → 5.6.** The two
+    left alone (`high-grade-glioma` 4.6, `spinal-cord-tumor` 5.4) already passed
+    with margin, exactly as `mri`/`planning-scans` were in slice 2 — adding
+    `tumors/` gates all 23, which is the point of gating the DIRECTORY.
+    **/review FOUND THE ONE WAY LEFT TO UN-GATE A SHIPPED SLICE IN SILENCE, and
+    it is the finding worth most.** Every test of
+    `DescriptionsCleanDirectories` derived its expectation FROM the list, so
+    **deleting `"tumors/"` un-gated 23 pages with the suite green and
+    ContentCheck exiting 0** — the theories lose a row rather than failing one,
+    the `foreach`es iterate two directories that both still pass, and the
+    marker's negative control accepts the 23 now-unmarked lines as legitimately
+    unlisted. *A list that is both subject and oracle cannot be tested by
+    itself.* Closed by asserting the CONVERSE from the corpus: a directory whose
+    descriptions already all pass must be listed. Exactly satisfied today, and
+    self-maintaining — the only thing a new slice changes is which side of the
+    test a directory falls on.
+    **AND THE PROMOTION CREATED A CLIFF /review caught:** a hard Fail at 6.0 with
+    nothing below it meant a description at 5.9 printed `ok` and a one-word edit
+    broke the build. `GradeDescription` has the three-level shape the BODY gate
+    has had since WI-414 now, over the same `WarnGrade` — and it fires on the
+    shipped corpus, because /review's own prose round moved `/tumors/glioblastoma`
+    from 5.4 to 5.6 while fixing a pronoun.
+    **FIVE OF THE 21 SPLITS LOST SOMETHING A WORD COUNT CANNOT SEE** — three
+    pronouns stranded across a new boundary (the 3rd, 4th and 5th instance of
+    the `/treatments/proton-therapy` defect), one list that lost the frame its
+    colon was carrying, and **a new shape: a RATIO that lost its denominator.**
+    `/tumors/hemangioblastoma`'s *"linked to about 1 in 4"* became its own
+    sentence — 1 in 4 of WHAT — and *"of these tumors"* was refused as the fix
+    because it is a different denominator from the page's sourced *1 in 4
+    people*. Every fix ADDED words.
+    **THE SWAP PROBE RETIRED.** Both earlier slices proved the gate with a swap
+    paid for by a fix in the un-sliced backlog; at a count of 0 there is nothing
+    left to pay with and no count to hold at parity. Replaced by FOUR phases,
+    ONE EDIT EACH, each naming which guard it is evidence for — including the
+    one that must exit **0** (the same truncation outside every entry), which is
+    what keeps `terms.md` alive.
+    **Proof:** suite **2,645 / 2,645** on a fully-LF corpus AND a fully-CRLF
+    corpus; ContentCheck **339 checks, 0 failures**; **16 break mutations red on
+    LF AND CRLF, no known survivors**; the four-phase prove script green against
+    the real tool's exit code; two `/review` rounds. Worth splitting again if it does not fit one sitting, as long as
     whatever lands next lowers the CEILING and not only the count. Because it is
     the last one, three things become a single edit: the count reaches 0, the
     ceiling goes, and `GradeDescription`'s Warn branch and the

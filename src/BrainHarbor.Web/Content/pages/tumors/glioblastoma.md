@@ -1,7 +1,7 @@
 ---
 title: "Glioblastoma"
 slug: tumors/glioblastoma
-description: "One growth story explains the necrosis, the ring on the scan, the swelling and why it keeps coming back. Plus why a tumor that did not look grade 4 is still called this, and what happened to secondary glioblastoma."
+description: "One growth story explains the necrosis, the ring on the scan, and the swelling. And it explains why the tumor keeps coming back. Plus why a tumor that did not look grade 4 is still called this. And what happened to secondary glioblastoma."
 tags: [tumor-type, glioma, glioblastoma]
 sources:
   # Naming and grading come from the CNS5-aligned sources ONLY (§12.1, §12.13).
