@@ -1034,8 +1034,8 @@ public sealed class CnsGermCellTumorPageRenderTests : IClassFixture<WebApplicati
 
         foreach (var (file, glossaryOnly) in new[]
                  {
-                     (board, "You do not attend"),
-                     (board, "advice for your own doctor to talk through with you"),
+                     (board, "You are not there"),
+                     (board, "advice your own doctor goes through with you"),
                      (hydro, HydroDefinition),
                  })
         {

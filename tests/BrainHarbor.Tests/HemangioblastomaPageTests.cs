@@ -1222,7 +1222,7 @@ public sealed class HemangioblastomaPageRenderTests : IClassFixture<WebApplicati
         var glossary = Path.Combine(CuratedPage.BlocksRoot, "..", "glossary");
 
         var board = CuratedPage.Flatten(File.ReadAllText(Path.Combine(glossary, "tumor-board.md")));
-        const string BoardOnly = "You do not attend";
+        const string BoardOnly = "You are not there";
 
         Assert.Contains(BoardOnly, board, StringComparison.Ordinal);
         Assert.DoesNotContain(BoardOnly, html, StringComparison.Ordinal);

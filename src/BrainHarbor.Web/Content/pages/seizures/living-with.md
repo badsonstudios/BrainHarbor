@@ -280,9 +280,10 @@ you, and every [tumor page](/tumors) has a section for you as well.
 
 ## Words your team may use
 
-A tonic-clonic seizure is the kind most people picture: stiffening, then
+!%focal seizure%A tonic-clonic seizure is the kind most people picture: stiffening, then
 jerking, and no memory of it. A focal seizure starts in one part of the brain:
-some people stay aware right through one, and some do not. Status
+some people stay aware right through one, and some do not. Older notes may call
+that a complex partial seizure. Status
 epilepticus means a seizure that will not stop on its own, and it is an
 emergency. A rescue medicine is what some people keep at home for that.
 

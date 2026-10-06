@@ -1448,7 +1448,19 @@ public sealed class AtrtPageContentTests
         // collisions you do not have is worse than none, because it hides the ones you
         // do. Three of the five rewriting passes CREATED new collisions, which is §12.8's
         // "a fix is where the next defect comes from" arriving three times in one item.
-        CuratedPage.AssertDoesNotRestateTheCorpus(Page, Slug);
+        //
+        // THE ONE ENTRY, AND IT IS NOT A RESTATEMENT (WI-576, §12.26). The probe saw
+        // `glossary/` for the first time and reported an eight-word window against
+        // `glossary/nec`: the entry closes "Ask your team what it means for your plan",
+        // this page says it about an M number on a staging line, and NEC is not in that
+        // paragraph at all -- the tooltip fires from [CROSSWALK] much further down the
+        // composed page. "Ask your team what it means for your X" is the instruction
+        // §12.2 item 7 puts on every page, which is why Shingles() already strips the
+        // "What to ask your team" section; this is the same phrase outside it. Rewording
+        // a correct sentence to settle a coincidence is how a guard starts shaping the
+        // content instead of checking it -- WI-511's "not automatically bad news" call.
+        CuratedPage.AssertDoesNotRestateTheCorpus(Page, Slug,
+            "ask your team what it means for your child");
 
     // -------------------------------------------------------------- the front matter
 
@@ -1661,7 +1673,8 @@ public sealed class AtrtPageRenderTests : IClassFixture<WebApplicationFactory<Pr
         // must still reach the reader.
         var syndrome = CuratedPage.Flatten(File.ReadAllText(
             Path.Combine(glossary, "posterior-fossa-syndrome.md")));
-        const string SyndromeDefinition = "A change that can follow surgery low at the back of the brain";
+        const string SyndromeDefinition =
+            "Something that can happen after an operation on the lower back of the brain";
         Assert.Contains(SyndromeDefinition, syndrome, StringComparison.Ordinal);
         Assert.Contains(SyndromeDefinition, CuratedPage.Flatten(html), StringComparison.Ordinal);
 
