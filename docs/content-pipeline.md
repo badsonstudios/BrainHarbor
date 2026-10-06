@@ -8989,6 +8989,12 @@ direction — **four remain** after this item's rewrites fixed two
 deliberately parallel pairs, and whether a parallel pair *should* be parallel is a
 content ruling, not a gate).
 
+#### And it recurred during this item's own deploy
+
+The post-deploy smoke returned one failure and **the site was right.** `/tumors/dipg` was reported as missing the new `pons` definition; the live tooltip panel contains it, carrying the source's hard wrap: `...hearing, speaking,\nswallowing and balance...`. **The needle had been typed from the glossary FILE rather than lifted from the rendered capture, and it spanned the wrap.** The other two definition needles passed only because they happened to sit on a first line, so that was luck rather than method.
+
+`GlossaryTerm.Definition` keeps the source newline and `TermTooltipRenderer` escapes but does not re-wrap, so **any** multi-word needle into a definition can cross one. Flatten whitespace on both sides — the general fix, not a patch for one needle. This is WI-571's recorded defect in a third costume: there a needle included a sentence's first word, here it crossed a wrap inside a tooltip. **"I copied it from the source file" is not "I took it from the rendered artifact".**
+
 > **The question to carry forward is the one that changed this item's design.** Three
 > sections asked which pages a guard can fire on (§12.19), which entries (§12.24), and
 > which pages are in no entry at all (§12.25). WI-576 asked the third one and got an
