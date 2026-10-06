@@ -387,7 +387,7 @@ people, watching comes after an operation, as a way of putting off radiation
 and chemotherapy. In one trial, starting
 radiation right after surgery held the tumor back for longer and meant fewer
 seizures. But it has not been shown to change how long people live, which is why
-some teams wait and keep radiation's cost for later. For some
+some teams wait and keep radiation's cost for later. !%vorasidenib%For some
 people with a grade 2 glioma that has an IDH change, there is now also a
 medicine taken by mouth, vorasidenib. It was tested against a placebo in people
 who would otherwise have been watched after surgery, and a biopsy counted as

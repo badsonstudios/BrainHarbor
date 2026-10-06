@@ -7,6 +7,6 @@ sources:
     accessed: 2026-08-31
 ---
 
-A meeting where specialists look at one person's case together: surgeons, cancer
-doctors, the lab, and the people who read scans. You do not attend. What they
-decide is advice for your own doctor to talk through with you.
+A meeting where specialists talk through one person's case together: the surgeon,
+the cancer doctor, the lab, and whoever read the scans. You are not there. What
+they decide is advice your own doctor goes through with you.

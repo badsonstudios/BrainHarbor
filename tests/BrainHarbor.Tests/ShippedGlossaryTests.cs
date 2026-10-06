@@ -407,4 +407,346 @@ public sealed class ShippedGlossaryTests
             + "suppresses nothing and prints its own characters to the reader:\n  "
             + string.Join("\n  ", offenders));
     }
+
+    // ------------------------------------------------------------------ §12.26
+    // WI-576. THE RESTATEMENT RULE, OVER THE DIRECTORY IT COULD NOT SEE — AND
+    // OVER THE PAGES THAT WERE IN NO ENTRY AT ALL.
+    //
+    // `CuratedPage.AssertDoesNotRestateTheCorpus` walked `pages/` + `blocks/`
+    // and never `glossary/`. Widening that set was the obvious fix and was NOT
+    // the fix: only 19 of the 55 pages call the probe, so 36 pages are in no
+    // entry at all, and when the corpus was measured ALL EIGHT real
+    // restatements turned out to be on pages in that silent 36. Widening the
+    // set alone would have found zero of them.
+    //
+    // So the gate lives here instead, keyed on nothing but the corpus: every
+    // page, composed and rendered, against every definition whose tooltip
+    // actually fires on it. There is no list of pages to forget to add to.
+
+    /// <summary>
+    /// A page and a glossary entry that share a window ON PURPOSE, with the
+    /// reason, and with the SIZE of the overlap pinned (§12.8's WI-509 pattern,
+    /// which is a reasoned record and never a bare allowlist).
+    ///
+    /// <paramref name="Shingles"/> is pinned because a pair-level exemption
+    /// would otherwise hide the NEXT collision between the same two files.
+    ///
+    /// <paramref name="Shared"/> is the WINDOWS THEMSELVES, not a count of them,
+    /// and /review found why that distinction is the whole value of the field: a
+    /// count only notices an overlap that GROWS OR SHRINKS. Reword
+    /// <c>tumors/atrt</c>'s coincidental sentence away and let a genuine
+    /// one-window restatement of <c>glossary/nec</c> arrive in its place, and the
+    /// count is still 1 — the gate stays silent forever, beside a recorded reason
+    /// describing text that no longer exists. The count bought nothing the text
+    /// does not.
+    /// </summary>
+    private sealed record SharedWithTheGlossary(
+        string Page, string Entry, string[] Shared, string Why);
+
+    /// <summary>
+    /// The two collisions WI-576 swept up that are NOT restated definitions, and
+    /// where both available fixes would make the site worse.
+    ///
+    /// Suppressing the tooltip is wrong in both: neither page glosses the term
+    /// the entry defines, so the tooltip is the only place that reader learns
+    /// what the word means. Rewording the page is wrong too — both sentences are
+    /// correct, plain and doing a job — and editing correct prose to settle a
+    /// shingle is how a guard starts shaping the content instead of checking it.
+    /// </summary>
+    private static readonly SharedWithTheGlossary[] DeliberatelyShared =
+    [
+        new("tumors/atrt", "glossary/nec",
+            ["ask your team what it means for your"],
+            "COINCIDENCE, not a restatement. The entry closes 'Ask your team what it "
+            + "means for your plan'; the page says 'ask your team what it means for your "
+            + "child' about an M number on a staging line, and NEC is not mentioned "
+            + "anywhere near it — the tooltip fires from the [CROSSWALK] block further "
+            + "down the composed page. 'Ask your team what it means for your X' is the "
+            + "instruction §12.2 item 7 requires everywhere, which is why Shingles() "
+            + "already strips the 'What to ask your team' section; this is the same "
+            + "phrase leaking outside that section. Same family as WI-511 keeping "
+            + "/seizures/what-to-do's correct 'not automatically bad news'."),
+
+        new("tumors/high-grade-glioma", "glossary/cdkn2a-b-deletion",
+            [
+                "grade on its own even when the cells",
+                "on its own even when the cells look",
+                "the grade on its own even when the",
+            ],
+            "A SHARED FACT WITH FOUR WORDINGS, and deciding who owns it is bigger than "
+            + "this item. The 2021 rule that a gene result can set the grade on its own "
+            + "is stated by /tests/molecular-markers, /tests/pathology-report, this hub "
+            + "and the entry. The page does gloss the marker ('both copies of a gene "
+            + "called CDKN2A/B are missing') but the entry's unique content is what the "
+            + "genes DO ('put the brakes on cell division'), so suppressing loses the "
+            + "definition. Raised as its own item rather than recorded a second time — "
+            + "the shape WI-569 used for the planned-subtotal three wordings it handed "
+            + "to WI-577."),
+    ];
+
+    /// <summary>Every curated page, as (slug relative to `pages/`, raw file text).</summary>
+    private static List<(string Slug, string Text)> EveryPage() =>
+        [.. CuratedPage.AllPages()
+            .Where(p => p.Slug.StartsWith("pages/", StringComparison.Ordinal))
+            .Select(p => (Slug: p.Slug["pages/".Length..], p.Text))
+            .OrderBy(p => p.Slug, StringComparer.Ordinal)];
+
+    /// <summary>
+    /// No page's prose restates a glossary definition that the same page's own
+    /// reader can open as a tooltip.
+    ///
+    /// The reader is the subject, which is why the tooltip has to actually fire:
+    /// a page that defines a term inline and writes <c>!%term%</c> shows the
+    /// reader ONE sentence, and that is the sanctioned shape (§12.8, WI-509) —
+    /// thirteen pages were already relying on it before anything checked.
+    /// A page that leaves the tooltip on and then writes the definition out
+    /// again shows the same reader the same sentence twice, in two places that
+    /// can drift apart, which is what §12.10 is about.
+    ///
+    /// COMPOSED, so a block that restates a definition is caught on every page
+    /// that includes it rather than in a fragment no reader meets alone.
+    /// </summary>
+    [Fact]
+    public void NoPageRestatesAGlossaryDefinitionItsReaderAlsoMeetsAsATooltip()
+    {
+        // ONE RECORD PER PAIR, asserted before anything reads the list. Two
+        // records for the same (page, entry) is the natural mistake when an
+        // overlap is re-measured and APPENDED rather than edited, and without
+        // this the lookup below throws a bare InvalidOperationException that says
+        // nothing about what to do (/review).
+        var pairs = DeliberatelyShared.Select(e => (e.Page, e.Entry)).ToList();
+        Assert.Equal(pairs.Count, pairs.Distinct().Count());
+
+        var offenders = new List<string>();
+        var scanned = 0;
+        var tooltipsSeen = 0;
+        var exemptionsUsed = new List<SharedWithTheGlossary>();
+
+        foreach (var (slug, text) in EveryPage())
+        {
+            scanned++;
+            tooltipsSeen += CuratedPage.GlossaryTooltipsFiringOn(
+                CuratedPage.Rendered(slug, text)).Count;
+
+            foreach (var (entry, shared) in CuratedPage.GlossaryRestatements(slug, text))
+            {
+                var recorded = DeliberatelyShared.SingleOrDefault(
+                    e => e.Page == slug && e.Entry == entry);
+
+                if (recorded is not null)
+                {
+                    // USED means the recorded WINDOWS are the ones found, not
+                    // merely that this pair collides somehow.
+                    exemptionsUsed.Add(recorded);
+
+                    if (recorded.Shared.OrderBy(s => s, StringComparer.Ordinal)
+                        .SequenceEqual(shared.OrderBy(s => s, StringComparer.Ordinal),
+                            StringComparer.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    offenders.Add($"{slug} <-> {entry}: the overlap is not the one "
+                        + "recorded, so the reason beside it is about text that has moved. "
+                        + $"found [{string.Join(" | ", shared)}], "
+                        + $"recorded [{string.Join(" | ", recorded.Shared)}]");
+                    continue;
+                }
+
+                offenders.Add($"{slug} <-> {entry} ({shared.Count}): "
+                    + string.Join(" | ", shared.Take(3)));
+            }
+        }
+
+        // THE POSITIVE HALF, and it is not decoration. §12.18: a property guard
+        // that has never been seen to fail has not been shown to work — and this
+        // one is three mechanisms deep (the real composer, the real marker, the
+        // real renderer), every one of which could go quiet without a word.
+        //
+        // The page floor is COMPUTED, not a round number near the real one: 50 was
+        // a four-page margin against an actual 55, which is the thinnest canary in
+        // this file (/review).
+        var pagesOnDisk = Directory
+            .GetFiles(Path.Combine(CuratedPage.RepoRoot(), "src", "BrainHarbor.Web",
+                "Content", "pages"), "*.md", SearchOption.AllDirectories).Length;
+        Assert.Equal(pagesOnDisk, scanned);
+        Assert.True(tooltipsSeen > 100,
+            $"only {tooltipsSeen} tooltips fired across the whole corpus, so this scan is "
+            + "looking at pages where the glossary reaches nobody and cannot be evidence "
+            + "of anything");
+
+        // OFFENDERS BEFORE STALENESS, because the other order tells the author to do
+        // the wrong thing (/review). A pair whose overlap has MOVED is both an
+        // offender and — on the old ordering — the first thing reported, as "stale,
+        // delete it", which is false and sends them away from the finding they never
+        // get to read.
+        Assert.True(offenders.Count == 0,
+            "a page states a glossary definition in its own prose AND leaves that "
+            + "definition's tooltip firing on the same page, so the reader meets it twice "
+            + "and the two can drift apart (§12.26). Either the page owns the definition "
+            + "and suppresses the tooltip with !%term%, or the prose stops restating it:\n  "
+            + string.Join("\n  ", offenders));
+
+        // THE CONVERSE, computed from the corpus rather than from the list — the
+        // shape WI-578 left standing for DescriptionsCleanDirectories, for the
+        // same reason. A list that is only ever read as "skip these" cannot tell
+        // you that one of them stopped being true: fix the prose on one of these
+        // two pages and the record becomes a lie that silently exempts nothing.
+        var stale = DeliberatelyShared.Except(exemptionsUsed).ToList();
+        Assert.True(stale.Count == 0,
+            "a DeliberatelyShared record no longer matches any collision, so it is stale "
+            + "and should be deleted rather than left to exempt something later:\n  "
+            + string.Join("\n  ", stale.Select(s => $"{s.Page} <-> {s.Entry}")));
+    }
+
+    /// <summary>
+    /// Two of the suppressions WI-576 added take their entry's tooltip from one
+    /// firing page to NONE, and that is deliberate — but it is also the kind of
+    /// side effect that should not be discovered later by accident, so it is
+    /// pinned here with the reason.
+    ///
+    /// WI-567 already ruled on this shape for <c>frontal-lobe</c> and the ruling
+    /// is quoted rather than re-reasoned: the entry is KEPT, because "the
+    /// suppression is a per-page decision that can be reversed by an edit, while
+    /// a missing entry is a gap every future page inherits". Two things make that
+    /// safe. <c>/glossary</c> renders <c>GetTerms()</c> unconditionally, so every
+    /// entry is still a page a reader can reach — a suppressed tooltip is not a
+    /// deleted definition. And each of these three pages DEFINES the term in its
+    /// own prose, so the reader of the page that says the word is not left
+    /// without it.
+    ///
+    /// NOT a gate over the whole corpus, and the measurement says why: 26 of the
+    /// 105 shipped entries fire no tooltip anywhere, and 24 of those were already
+    /// in that state before this item. Pinning all 26 would mean inventing
+    /// twenty-four reasons this item cannot source. The number is recorded in
+    /// §12.26 and raised as its own item instead.
+    /// </summary>
+    [Fact]
+    public void TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable()
+    {
+        var firing = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var (slug, text) in EveryPage())
+        {
+            firing.UnionWith(
+                CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered(slug, text)));
+        }
+
+        var shipped = LoadAll();
+
+        // The TWO this item took to zero, the page that now owns each definition in
+        // prose, and THE SENTENCE THAT MAKES IT THE OWNER.
+        //
+        // That third column is the half /review found missing, and the hole it
+        // leaves is the only edit in this area that really hurts a reader: delete
+        // the defining sentence from the owning page and leave `!%term%` in place,
+        // and EVERY guard in the repo goes quiet. The restatement gate has no
+        // overlap left to report, this test still sees an entry that exists, and
+        // the reader of the page that says the word has no definition anywhere on
+        // it. "The page defines it inline" is this whole decision's premise, so it
+        // is asserted rather than asserted ABOUT.
+        // Each needle sits WHOLLY ON ONE SOURCE LINE and starts mid-sentence, so a
+        // re-wrap does not break it (§12.24) — and the haystack is LF-normalised
+        // rather than the needle being written twice.
+        foreach (var (entry, dir, file, definesIt) in new[]
+        {
+            ("focal-seizure", "seizures", "living-with",
+                "A focal seizure starts in one part of the brain"),
+            ("transformation", "tumors", "astrocytoma",
+                "called transformation, and it can go to grade"),
+        })
+        {
+            Assert.DoesNotContain(entry, firing);
+            Assert.Contains(entry, shipped.Select(t => t.Slug));
+            Assert.False(string.IsNullOrWhiteSpace(
+                    shipped.Single(t => t.Slug == entry).Definition),
+                $"{entry} fires no tooltip and now has no definition either, so "
+                + $"{dir}/{file} is the only place this word is explained and "
+                + "/glossary lists an empty row");
+
+            var page = CuratedPage.Read(dir, file + ".md")
+                .Replace("\r\n", "\n", StringComparison.Ordinal);
+            Assert.Contains(definesIt, page, StringComparison.Ordinal);
+        }
+
+        // The positive half: most of the glossary DOES still fire, so this test is
+        // not passing because tooltips stopped working everywhere.
+        Assert.True(firing.Count > 70,
+            $"only {firing.Count} of {shipped.Count} entries fire anywhere, so the three "
+            + "absences above are not evidence of a decision");
+    }
+
+    /// <summary>
+    /// The guard above, shown failing and shown discriminating — on text built
+    /// here rather than on the corpus, so it keeps proving this after the corpus
+    /// is clean.
+    ///
+    /// Four probes, ONE EDIT APART each, because a probe that changes two things
+    /// cannot attribute what it measures to either:
+    /// <list type="number">
+    /// <item>the definition copied verbatim into the page, tooltip left on — MUST fire;</item>
+    /// <item>the same page with <c>!%term%</c> added and nothing else — MUST NOT fire,
+    ///   which is the legitimate shape proven rather than asserted;</item>
+    /// <item>the definition paraphrased, tooltip left on — MUST NOT fire, or a zero
+    ///   anywhere above would mean nothing;</item>
+    /// <item>the term never said at all, definition copied in — MUST NOT fire, because
+    ///   with no occurrence there is no tooltip and so nothing is met twice.</item>
+    /// </list>
+    /// </summary>
+    [Fact]
+    public void TheGlossaryRestatementGuardFiresAndCanTellARestatementFromAParaphrase()
+    {
+        // A real entry, so the definition under test is the one the site ships.
+        var frozen = LoadAll().Single(t => t.Slug == "frozen-section");
+
+        static string PageSaying(string prose) =>
+            "---\ntitle: Probe\ndescription: A probe page.\n---\n\n## A heading\n\n"
+            + prose + "\n";
+
+        var verbatim = PageSaying(
+            "A frozen section is one step in the operation. " + frozen.Definition);
+        var suppressed = PageSaying(
+            "A frozen section is one step in the operation. " + frozen.Definition
+            + " !%frozen section%");
+        var paraphrased = PageSaying(
+            "A frozen section is one step in the operation. While the operation is still "
+            + "going on, the lab takes a fast look at a sliver of tissue and phones the "
+            + "surgeon back with a first impression that is not the final word.");
+        var neverSaysIt = PageSaying(
+            "This page is about something else entirely. " + frozen.Definition);
+
+        var hits = CuratedPage.GlossaryRestatements("probe", verbatim);
+        Assert.Contains("glossary/frozen-section", hits.Select(h => h.EntrySlug));
+
+        Assert.DoesNotContain("glossary/frozen-section",
+            CuratedPage.GlossaryRestatements("probe", suppressed).Select(h => h.EntrySlug));
+
+        Assert.DoesNotContain("glossary/frozen-section",
+            CuratedPage.GlossaryRestatements("probe", paraphrased).Select(h => h.EntrySlug));
+
+        Assert.DoesNotContain("glossary/frozen-section",
+            CuratedPage.GlossaryRestatements("probe", neverSaysIt).Select(h => h.EntrySlug));
+
+        // AND THE MECHANISM BENEATH IT, separately, because all four probes above
+        // would also pass if the tooltip never fired on any of them — which is
+        // exactly how a three-deep guard goes quiet.
+        Assert.Contains("frozen-section",
+            CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered("probe", verbatim)));
+        Assert.DoesNotContain("frozen-section",
+            CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered("probe", suppressed)));
+
+        // THE PARAPHRASE PROBE NEEDS IT TOO, and /review found why: it is the one
+        // probe whose silence has two possible causes. "The paraphrase does not
+        // collide" and "the tooltip never fired on that page at all" look
+        // identical from the outside. It fires today because the lead-in sentence
+        // says the term — which is an accident of that sentence, not a property
+        // anyone asserted, so it is asserted now.
+        Assert.Contains("frozen-section",
+            CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered("probe", paraphrased)));
+
+        // `neverSaysIt` needs none: the definition is copied in VERBATIM there, so
+        // the only thing that can keep it quiet is the tooltip not firing, which is
+        // the very thing that probe is about.
+        Assert.DoesNotContain("frozen-section",
+            CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered("probe", neverSaysIt)));
+    }
 }

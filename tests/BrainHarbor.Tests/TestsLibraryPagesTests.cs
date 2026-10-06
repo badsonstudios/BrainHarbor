@@ -39,6 +39,9 @@ internal static class CuratedPage
     /// <summary>Where the shared blocks live (§3a), for tests that compare a page against one.</summary>
     public static string BlocksRoot => Path.Combine(ContentRoot, "blocks");
 
+    /// <summary>Where the glossary entries live; their definitions fire as tooltips site-wide.</summary>
+    public static string GlossaryRoot => Path.Combine(ContentRoot, "glossary");
+
     /// <summary>
     /// The files whose content reaches MORE than one page: the shared blocks
     /// (composed into every including page, §3a) and the glossary entries
@@ -46,7 +49,7 @@ internal static class CuratedPage
     /// widest blast radius on the site, and neither lives under `pages/`.
     /// </summary>
     public static IEnumerable<(string Slug, string Text)> SharedSources() =>
-        new[] { BlocksRoot, Path.Combine(ContentRoot, "glossary") }
+        new[] { BlocksRoot, GlossaryRoot }
             .Where(Directory.Exists)
             .SelectMany(root => Directory.EnumerateFiles(root, "*.md", SearchOption.AllDirectories)
                 .Select(f => (
@@ -642,8 +645,23 @@ internal static class CuratedPage
     /// see. A prose rule asserted against raw source is asserting against
     /// something that is not the prose.
     /// </summary>
-    public static string ReaderText(string page) =>
-        Regex.Replace(Regex.Replace(Body(page), @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
+    public static string ReaderText(string page) => ReaderTextOfBody(Body(page));
+
+    /// <summary>
+    /// The marker-stripping half of <see cref="ReaderText"/>, for a caller that
+    /// already holds a BODY rather than a whole page — notably a COMPOSED page
+    /// out of <see cref="ContentStore.Parse"/>, whose front matter is already
+    /// gone.
+    ///
+    /// WI-576 needed this and the reason is a trap, not a tidy-up:
+    /// <see cref="Body"/> is <c>page[(page.IndexOf("\n---", 3) + 4)..]</c>, so on
+    /// a string with no front matter it finds nothing, adds 4 to -1, and
+    /// silently returns the body with THREE CHARACTERS CHOPPED OFF rather than
+    /// failing. A shingle set built on that is wrong in a way no assertion
+    /// would show.
+    /// </summary>
+    public static string ReaderTextOfBody(string body) =>
+        Regex.Replace(Regex.Replace(body, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
 
     /// <summary>
     /// The page with its shared blocks resolved, through the REAL composer
@@ -1272,9 +1290,17 @@ internal static class CuratedPage
     /// because the same item's second page needed it — §12.8's own threshold is
     /// the second use, not the fifth.
     /// </summary>
-    public static HashSet<string> Shingles(string page)
+    public static HashSet<string> Shingles(string page) =>
+        ShinglesOfReaderText(ReaderText(page));
+
+    /// <summary>
+    /// <see cref="Shingles"/> over reader text that has already been extracted —
+    /// a composed page's body, or a glossary entry's parsed <c>Definition</c>,
+    /// neither of which is a whole page file (WI-576).
+    /// </summary>
+    public static HashSet<string> ShinglesOfReaderText(string readerText)
     {
-        var text = ReaderText(page);
+        var text = readerText;
 
         text = Regex.Replace(
             text, @"(?ms)^## Where to go next.*?(?=^## |\z)", " ", RegexOptions.Multiline);
@@ -1453,6 +1479,38 @@ internal static class CuratedPage
         var mine = Shingles(page);
         var offenders = new List<string>();
 
+        // THE DIRECTORY THIS PROBE WAS BLIND TO (WI-576). `AllPages()` is
+        // `pages/` + `blocks/`; a glossary definition fires as a tooltip on
+        // every page that says the term, so it has a block's blast radius and
+        // §12.10's whole argument for including blocks applies to it unchanged.
+        //
+        // It is NOT folded into `AllPages()`, and that was the item's first
+        // decision: `AllPages()` is read by nine call sites in seven files and
+        // only this one is the restatement probe, so widening it would have
+        // moved eight other guards' subject sets with nothing saying so. The
+        // glossary half is a separate question with a separate answer (§12.26),
+        // and it is asked through the SAME helper the corpus-wide gate uses, so
+        // there is one implementation of the property rather than two.
+        //
+        // THE TWO HALVES RUN OVER DIFFERENT SUBJECTS, deliberately. The page half
+        // below reads this page's OWN raw prose; the glossary half reads the
+        // COMPOSED page, because that is where a reader meets a block's words and
+        // it is how `blocks/tumor-board` was found at all. The consequence to know
+        // before chasing one: a block that restates a definition is reported under
+        // the name of every page that INCLUDES it, not under the block's.
+        foreach (var (entrySlug, shared) in GlossaryRestatements(slug, page))
+        {
+            var kept = shared
+                .Where(s => !deliberatelyShared.Any(a => a.Contains(s, StringComparison.Ordinal)))
+                .Take(4)
+                .ToList();
+
+            if (kept.Count > 0)
+            {
+                offenders.Add($"{entrySlug}: {string.Join(" | ", kept)}");
+            }
+        }
+
         foreach (var (otherSlug, text) in AllPages())
         {
             if (otherSlug.Equals("pages/" + slug, StringComparison.Ordinal))
@@ -1474,6 +1532,104 @@ internal static class CuratedPage
         Assert.True(offenders.Count == 0,
             $"{slug} restates prose that already lives somewhere else in the corpus:\n  "
             + string.Join("\n  ", offenders));
+    }
+
+    // ------------------------------------------------------------------ §12.26
+    // THE GLOSSARY HALF OF THE RESTATEMENT RULE (WI-576).
+    //
+    // A glossary definition is not prose on a page; it is prose in a TOOLTIP,
+    // and whether a reader meets it at all is a property of the page, not of
+    // the entry. GlossaryMarker fires an entry on the FIRST occurrence of its
+    // term or an alias, in paragraphs only, never inside a link, and not at all
+    // if `!%name%` appears anywhere on the page.
+    //
+    // So the rule is not "a page must not share eight words with a glossary
+    // entry". It is "a page must not restate a definition ITS OWN READER also
+    // meets as a tooltip" — and the difference is the whole item. Measured over
+    // the corpus before this was written: 31 raw collisions, of which 23 are
+    // the legitimate shape (13 of them with the suppression already written by
+    // hand, by authors with no guard telling them to) and 8 are restatements a
+    // reader really does meet twice.
+    //
+    // THAT PROPERTY IS COMPUTED, NOT ALLOWLISTED. §12.8's WI-509 pattern asks
+    // for a reason beside every exemption; here the reason is derivable, so
+    // there is no exemption list to rot. A page that defines a term inline and
+    // suppresses its tooltip passes because the reader meets one sentence —
+    // which is WI-576's third acceptance criterion, and which
+    // `/where-your-tumor-is` (`!%frontal lobe%`) has been relying on since
+    // WI-567.
+
+    private static readonly Lazy<IReadOnlyList<GlossaryTerm>> ShippedTerms = new(() =>
+        Directory.EnumerateFiles(GlossaryRoot, "*.md")
+            .OrderBy(f => f, StringComparer.Ordinal)
+            .Select(f => GlossaryStore.ParseTerm(
+                File.ReadAllText(f), Path.GetFileNameWithoutExtension(f)))
+            .ToList());
+
+    private static readonly Lazy<ContentBlockSet> ShippedBlocks =
+        new(() => ContentBlockStore.Load(BlocksRoot));
+
+    /// <summary>Every glossary entry as the site parses it — term, aliases, definition.</summary>
+    public static IReadOnlyList<GlossaryTerm> GlossaryTerms => ShippedTerms.Value;
+
+    /// <summary>
+    /// This page, through the REAL pipeline: blocks composed, glossary tooltips
+    /// marked, HTML rendered — <see cref="ContentStore.Parse"/>, the same call
+    /// the site serves from.
+    ///
+    /// Not a reimplementation, deliberately and for a recorded reason: §12.10
+    /// says a rule about a block's prose has to run on the COMPOSED page, and a
+    /// private copy of the marker's rules (first occurrence only, paragraphs
+    /// only, links excluded, aliases, `!%name%`) would drift from the one that
+    /// actually decides what a reader sees.
+    /// </summary>
+    public static ContentPage Rendered(string slug, string page) =>
+        ContentStore.Parse(page, "/" + slug, ShippedTerms.Value, ShippedBlocks.Value);
+
+    /// <summary>
+    /// The glossary slugs whose tooltip actually FIRES on this rendered page,
+    /// read off the rendered HTML rather than inferred from the source.
+    ///
+    /// <c>TermTooltipRenderer</c> writes the definition panel as
+    /// <c>&lt;span id="def-{slug}" popover&gt;</c>, so its presence is the only
+    /// thing that means "this reader can open this definition here".
+    /// </summary>
+    public static HashSet<string> GlossaryTooltipsFiringOn(ContentPage rendered) =>
+        [.. ShippedTerms.Value
+            .Where(t => rendered.Html.Contains($"id=\"def-{t.Slug}\"", StringComparison.Ordinal))
+            .Select(t => t.Slug)];
+
+    /// <summary>
+    /// Where this page's prose repeats a glossary definition the same reader can
+    /// open as a tooltip on the same page: <c>(glossary/slug, shared shingles)</c>,
+    /// empty when there is nothing to answer for.
+    ///
+    /// Run on the COMPOSED page, so a block that restates a definition is caught
+    /// through every page that includes it — which is where a reader meets it,
+    /// and which is how `blocks/tumor-board` was found.
+    /// </summary>
+    public static List<(string EntrySlug, List<string> Shared)> GlossaryRestatements(
+        string slug, string page)
+    {
+        var rendered = Rendered(slug, page);
+        var firing = GlossaryTooltipsFiringOn(rendered);
+        var mine = ShinglesOfReaderText(ReaderTextOfBody(rendered.Markdown));
+
+        var found = new List<(string, List<string>)>();
+        foreach (var term in ShippedTerms.Value.Where(t => firing.Contains(t.Slug)))
+        {
+            var shared = mine
+                .Intersect(ShinglesOfReaderText(term.Definition), StringComparer.Ordinal)
+                .OrderBy(s => s, StringComparer.Ordinal)
+                .ToList();
+
+            if (shared.Count > 0)
+            {
+                found.Add(($"glossary/{term.Slug}", shared));
+            }
+        }
+
+        return found;
     }
 
     // ------------------------------------------------------------ §12.18/§12.19

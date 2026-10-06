@@ -4935,8 +4935,26 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   **The full promotion in `GradeDescription` and deleting the `(not gated)`
   marker happen when the last of the 21 lands — not before.**
 
-- [ ] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
-  *(raised by WI-567, 2026-09-24)*
+- [x] **WI-576 `AssertDoesNotRestateTheCorpus` does not walk `glossary/`**
+  *(raised by WI-567, 2026-09-24; **DONE 2026-10-06** — ruling at
+  `docs/content-pipeline.md` §12.26)*
+  **Shipped as a CORPUS-WIDE gate rather than as a wider set, because the
+  measurement said the set was not the hole.** `AllPages()` is read by nine call
+  sites in seven files and only one is the probe, so widening it would have moved
+  eight other guards' subject sets silently; and only 19 of 55 pages call the
+  probe, so **all eight real restatements were on pages in the silent 36** and
+  widening the set alone would have found none of them. The rule is the READER's:
+  a page must not restate a definition its own reader can also open as a tooltip,
+  computed through the real composer/marker/renderer, no allowlist. 31 raw
+  collisions → 23 legitimate (13 already hand-suppressed) and 8 real. Resolved by
+  **three glossary entries rewritten** (the entry was the copy of a block's or two
+  pages' sentence — fixed 17 of 22 rows, removed no tooltip, and all three now read
+  EASIER: 5.5→4.1, 5.5→4.7, ungraded→3.7) and **three per-page suppressions** where
+  the page defines the term inline. Two recorded as deliberately shared with the
+  overlap size pinned and the converse computed from the corpus. Also fixed a
+  pre-existing silent failure in `WatchAndWaitPageContentTests` (needle built from
+  the raw page, haystack from reader text, so one marker disabled a section
+  exclusion). Raised: **WI-579, WI-580, WI-581**.
   Goal: let the restatement probe see the one content directory it is blind to.
   `CuratedPage.AllPages()` walks `pages/` and `blocks/`. A glossary entry's
   definition fires as a **tooltip on every page that says the term**, so it has
@@ -4956,6 +4974,119 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   - The known case is checked first: a page that defines a term inline and
     suppresses its tooltip is the legitimate shape, and the rule must not fail it.
   Refs: `docs/content-pipeline.md` §12.17, §12.10.
+
+- [ ] **WI-579 The 2021 grading rule has four wordings on four files that link
+  each other** *(raised by WI-576, 2026-10-06)*
+  Goal: one owner for the rule that a gene result can set the grade on its own.
+  WI-576's glossary sweep reported `tumors/high-grade-glioma` against
+  `glossary/cdkn2a-b-deletion` and could not resolve it either way, so it is
+  recorded as deliberately shared with its reason and handed here. The claim —
+  *a gene result can now set the grade on its own, even when the cells look lower
+  grade* — is stated by **four** files that link each other:
+  `/tests/molecular-markers` (*"In some gliomas this finding sets the grade on its
+  own, even when the cells look like a lower grade"*), `/tests/pathology-report`
+  (*"Now a gene result can set the grade on its own, even when the cells under the
+  microscope look lower grade"*), `/tumors/high-grade-glioma` (*"Because a gene
+  result can now set the grade on its own, even when the cells look lower
+  grade"*) and `glossary/cdkn2a-b-deletion`.
+  **Suppressing the tooltip is NOT the fix and that is the whole difficulty** —
+  the entry's unique content is what the genes *do* (*"put the brakes on cell
+  division"*), which no page says, so suppressing it loses the definition. This is
+  the shape WI-569 handed to WI-577 for the planned-subtotal three wordings: no
+  shingle check can see a paraphrase, and §12.10 wants one owner and the rest
+  routing.
+  Acceptance:
+  - The four wordings are read together and one file owns the claim while the
+    others route — or the split is recorded with its reason, per file.
+  - `/tests/molecular-markers` is the obvious owner (it is the marker page and it
+    already suppresses `!%CDKN2A/B homozygous deletion%`); if it is not, say why.
+  - The `DeliberatelyShared` record for
+    `tumors/high-grade-glioma` × `glossary/cdkn2a-b-deletion` in
+    `ShippedGlossaryTests` is DELETED when this lands. Its converse check already
+    reds on a stale record, so leaving it would fail loudly rather than quietly —
+    but it is this item's job to remove it.
+  - **Check the page's own imprecision while there:** `/tumors/high-grade-glioma`
+    says *"both copies of a gene called CDKN2A/B"* where the entry says *"two
+    genes"*. CDKN2A and CDKN2B are two genes. Decide which is right for a reader
+    and make them agree, or record why they differ.
+  Refs: `docs/content-pipeline.md` §12.26, §12.10, §12.18.
+
+- [ ] **WI-580 The glossary is never the restatement probe's SUBJECT**
+  *(raised by WI-576, 2026-10-06)*
+  Goal: close the direction WI-576 opened one half of.
+  WI-576 made every page's prose checkable against every glossary definition. The
+  other direction is still in no entry at all: **nothing ever passes a glossary
+  entry as the subject**, so an entry that restates another entry, or a block, is
+  invisible. Measured at WI-576 (both canaries beside the scan): **four remain**
+  after that item's rewrites fixed two.
+  - `glossary/adult-type` × `glossary/pediatric-type` — **7 windows**
+  - `glossary/h3-g34` × `glossary/h3-k27-altered` — **10 windows**
+  - `glossary/astrocyte` × `glossary/oligodendrocyte` — 2 windows
+  - `glossary/status-epilepticus` × `blocks/escalation` — 2 windows
+  **The first two are deliberately parallel pairs and that is the hard part**: a
+  pair of definitions that exist to be compared *should* read in parallel, so a
+  bare shingle gate over `glossary/` would demand that correct writing be made
+  worse. A reader CAN meet two of them at once — a page that says both
+  `adult-type` and `pediatric-type` fires both tooltips — so this is not purely
+  cosmetic.
+  Acceptance:
+  - A ruling on whether a parallel pair may share its frame, written down before
+    any entry is edited. (§12.10's hedge-is-scope reasoning is the nearest
+    precedent.)
+  - Whatever gate follows is built over `SharedSources()`, not `AllPages()`, and
+    says which set it is built over in its own docstring (§12.19).
+  - The `blocks/escalation` collision is checked first and separately: the block
+    composes onto 19 hubs, so it is the one with a blast radius.
+  - **AND THE RESIDUAL DUPLICATION WI-576 LEFT**, which is this subject one step
+    over. That item resolved three collisions by rewriting the glossary entry so it
+    no longer shared eight words with a block or a page — which changed the WORDS,
+    not the OWNER. `/tumors/dipg` and `/tumors/diffuse-midline-glioma` still ship
+    *"The pons carries the nerves for vision, hearing, speech, swallowing and
+    movement"* with the `pons` tooltip still firing, and that pair had ALREADY
+    diverged (*vision* vs *eye movement*). Same for `tumor-board` and
+    `posterior-fossa-syndrome` against their blocks. **A paraphrase does not reduce
+    drift risk; it starts it.** Decide per pair: give the entry only what no page
+    says, or suppress on the owning page and accept what that costs.
+  Refs: `docs/content-pipeline.md` §12.26, §12.10.
+
+- [ ] **WI-581 Twenty-six glossary entries whose tooltip fires nowhere**
+  *(raised by WI-576, 2026-10-06)*
+  Goal: decide whether an entry that reaches no reader through a tooltip should
+  exist, once, instead of per item.
+  Measured through the real renderer at WI-576, and **re-measured after /review
+  caught the first figure being taken while that item's reverted first attempt was
+  still on disk** — it said 27 and included `posterior-fossa-syndrome`, which fires
+  on two pages: **26 of the 105 shipped entries fire no tooltip on any of the 55
+  pages, and 24 of those were already in that state before that item** (`5-ala`, `astrocyte`, `bone-flap`, `carmustine-wafer`,
+  `chemoradiation`, `craniectomy`, `debulking`, `embryonal-tumor`, `flair`,
+  `fractionation`, `gross-total-resection`, `h3-g34`, `laser-ablation`, `nadir`,
+  `neutropenia`, `oligodendrocyte`, `pediatric-type`, `procarbazine`,
+  `radiation-mask`, `rano`, `simulation`, `sma-syndrome`, `somnolence-syndrome`,
+  `subtotal-resection`, plus `focal-seizure` and `transformation`, the two WI-576
+  suppressed).
+  **This is NOT automatically a defect**, and WI-567's recorded ruling is the
+  starting point rather than something to re-derive: an entry is kept when every
+  page that says the term defines it inline, because a suppression is a per-page
+  decision an edit can reverse while a missing entry is a gap every future page
+  inherits — and `/glossary` renders `GetTerms()` unconditionally, so the entry is
+  still a page a reader can reach. But the 27 have **at least three different
+  causes** and they want different answers:
+  (a) suppressed on every page that says the term (the sanctioned shape);
+  (b) the term appears nowhere in the corpus at all (WI-519's *"an entry defined
+  and used in one place fires nowhere"* — and `neutropenia` is already recorded as
+  exactly this, in `ChemotherapyPageTests`);
+  (c) the term appears only inside a link or a heading, where no tooltip can fire,
+  which is a page-level accident rather than a decision.
+  Acceptance:
+  - The 27 are partitioned by CAUSE, counted positively, and the partition is
+    asserted (§12.24: a set defined by subtraction is redefined by every new kind
+    of X).
+  - A rule per cause, not a rule for the number.
+  - Case (c) is treated as a finding about the PAGE, not the entry.
+  - WI-576's `TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable`
+    is superseded or absorbed, not left beside a wider gate saying the same thing
+    about two of them.
+  Refs: `docs/content-pipeline.md` §12.26; WI-519, WI-567's ruling.
 
 - [ ] **WI-577 The sellar seam: two pages that do not point back at each
   other, and one that contradicted its own link** *(raised by WI-569,

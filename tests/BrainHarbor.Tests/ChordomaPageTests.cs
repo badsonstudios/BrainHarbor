@@ -1064,7 +1064,7 @@ public sealed class ChordomaPageRenderTests : IClassFixture<WebApplicationFactor
         // person's case together: surgeons, cancer doctors, the lab, and the people who
         // read scans" -- so asserting the glossary's opening clause is ABSENT would go
         // red on correct composition, and the natural next move would be to weaken or
-        // delete the guard. "You do not attend" appears in the glossary entry and
+        // delete the guard. "You are not there" appears in the glossary entry and
         // nowhere in the block, which says "You do not go to the meeting."
         //
         // BOTH DIRECTIONS, AND THE POSITIVE HALF IS WHAT MAKES IT BIND. Suppression is
@@ -1079,8 +1079,8 @@ public sealed class ChordomaPageRenderTests : IClassFixture<WebApplicationFactor
         var board = CuratedPage.Flatten(File.ReadAllText(Path.Combine(glossary, "tumor-board.md")));
         foreach (var glossaryOnly in new[]
                  {
-                     "You do not attend",
-                     "advice for your own doctor to talk through with you",
+                     "You are not there",
+                     "advice your own doctor goes through with you",
                  })
         {
             Assert.Contains(glossaryOnly, board, StringComparison.Ordinal);

@@ -431,7 +431,30 @@ public sealed class WatchAndWaitPageContentTests
         // all" in the why-section and "for some it never turns into treatment
         // at all" in the how-long section — both unscoped, both read by the
         // glioma reader before they reach the paragraph that is about them.
-        var outside = Body.Replace(CuratedPage.Flatten(Section(GrowthHeading)), " ", StringComparison.Ordinal);
+        // THE NEEDLE AND THE HAYSTACK WERE DERIVED DIFFERENTLY, and WI-576 found it
+        // by putting the first `!%term%` marker into this section. `Body` is
+        // ReaderText, so authoring markers are stripped out of it; `Section()` reads
+        // the RAW page, so they are still in it. One marker anywhere in the growth
+        // section therefore made this needle unmatchable — and a `Replace` that
+        // matches nothing fails SILENTLY, leaving the whole section inside
+        // `outside`, where its named-tumor paragraphs are then judged by the rule
+        // that exists to exclude them. Strip the markers from the needle too.
+        var growth = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(Section(GrowthHeading)));
+        var outside = Body.Replace(growth, " ", StringComparison.Ordinal);
+
+        // And say so out loud, because that is the half that keeps this true: a
+        // removal nobody checks is a removal that can stop happening.
+        //
+        // PROVED BY CONTENT, NOT BY LENGTH. A length test moves its own bar with
+        // the needle: a `growth` that is a FRAGMENT of the section passes it while
+        // leaving most of the section behind (/review). This sentence is in the
+        // growth section and nowhere else on the page, so its absence is the
+        // removal itself rather than a measurement of it.
+        Assert.DoesNotContain("usually keeps growing slowly", outside, StringComparison.Ordinal);
+        Assert.True(outside.Length < Body.Length - growth.Length / 2,
+            "the growth section was not removed from the text this rule runs over, so the "
+            + "rule is about to run on the very paragraphs it exists to exclude");
+
         foreach (var sentence in CuratedPage.SentencesOf(outside))
         {
             if (!reassurance.IsMatch(sentence))
