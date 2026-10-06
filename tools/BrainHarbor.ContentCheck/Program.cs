@@ -41,48 +41,53 @@ public static class Cli
 
         // WI-575: A TALLY, AND THE ACTIONABLE WARNS AGAIN AT THE END.
         //
-        // Making the description grade visible took the WARN count from 20 to 61, and
-        // the description grades among those are a known, booked backlog (WI-578) —
-        // 41 of them when WI-575 measured it, 29 after WI-578's first slice, and the
-        // number falls with every slice, which is why this comment no longer names it
-        // twice. CI reads only the exit code, so this output is for a human reading a
-        // long log — and a gate that prints dozens of expected warnings trains people
-        // to skip it, which is the failure this file's own reasoning about admin pages
-        // warns of.
+        // CI reads only the exit code, so this output is for a human reading a long
+        // log — and a gate that prints dozens of expected warnings trains people to
+        // skip it, which is the failure this file's own reasoning about admin pages
+        // warns of. Nothing is hidden and nothing is downgraded: every warning prints
+        // in place above. What changes is that the ones needing a person are the last
+        // thing on screen.
         //
-        // Nothing is hidden and nothing is downgraded: every warning prints in place
-        // above.
-        // What changes is that the ones needing a person are the last thing on screen.
-        var warns = findings.Count(f => f.Level == FindingLevel.Warn);
-        // PARTITIONED ON THE GRADE, NOT ON THE MARKER. Both the grade warnings and the
-        // blank-description warning carry the `[description]` marker, so splitting on
-        // the marker alone filed a page with NO opening paragraph under "N of them
-        // page descriptions above the reading limit — a known backlog" (false of it) and
-        // dropped it from the list this block exists to put in front of a person
-        // (/review round 5). A warning added to make a defect visible landing in the
-        // skip-it bucket is the same shape as reporting a grade-19.7 description as
-        // `ok`, which this item already did once.
-        static bool IsBacklogWarn(Finding f) =>
-            f.Level == FindingLevel.Warn
-            && f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal)
-            && f.Grade is not null;
-
-        var descriptionWarns = findings.Count(IsBacklogWarn);
-        var otherWarns = findings
-            .Where(f => f.Level == FindingLevel.Warn && !IsBacklogWarn(f))
-            .ToList();
+        // AND THE BACKLOG PARTITION IS GONE (WI-578 slice 3), because the backlog is.
+        // Making the description grade visible took the WARN count from 20 to 61, and
+        // 41 of those were one booked item: a known backlog printed as a warning
+        // because it could not yet be gated. That number went 41 → 29 → 21 → 0 across
+        // three slices and the grade is a Fail everywhere now, so there is no bucket of
+        // expected warnings left to keep out of a reader's way — which is the whole
+        // thing the partition existed for.
+        //
+        // NOT BECAUSE A DESCRIPTION WARNING IS UNREACHABLE, which is what the first
+        // version of this comment claimed and what /review caught: slice 3 also gave
+        // `GradeDescription` the three-level shape the body gate has had since WI-414,
+        // so a description in the 5.5-6.0 approach band warns — /tumors/glioblastoma
+        // reads 5.6 today. `IsBacklogWarn` would still MATCH it. The point is that such
+        // a warning is now ACTIONABLE: it means one line is drifting toward the gate,
+        // which is exactly the kind of thing this block exists to put in front of a
+        // person rather than file under "expected".
+        //
+        // (It was partitioned on the GRADE and not on the marker, for a reason worth
+        // keeping even as the code goes: the blank-description warning carries the
+        // `[description]` marker too, so splitting on the marker alone filed a page
+        // with NO opening paragraph under "above the reading limit — a known backlog",
+        // which was false of it, and dropped it from the list this block exists to put
+        // in front of a person. /review round 5. A warning added to make a defect
+        // visible landing in the skip-it bucket is the same shape as reporting a
+        // grade-19.7 description as `ok`, which this item already did once.)
+        //
+        // ONE ENUMERATION, AND THE RECAP SAYS WHAT IT IS (/review). This was `warns`
+        // and `actionable` — the identical predicate counted twice — under a heading
+        // that still implied a filtered list.
+        var warns = findings.Where(f => f.Level == FindingLevel.Warn).ToList();
 
         Console.WriteLine();
         Console.WriteLine(
-            $"{findings.Count} checks: {failures} failure(s), {warns} warning(s) "
-            + $"({descriptionWarns} of them page descriptions above the reading limit — "
-            + "a known backlog, WI-578).");
+            $"{findings.Count} checks: {failures} failure(s), {warns.Count} warning(s).");
 
-        if (otherWarns.Count > 0)
+        if (warns.Count > 0)
         {
             Console.WriteLine();
-            Console.WriteLine($"Warnings that are not the WI-578 backlog ({otherWarns.Count}):");
-            foreach (var finding in otherWarns)
+            Console.WriteLine($"All {warns.Count} warning(s) again, in one place:");
+            foreach (var finding in warns)
             {
                 Console.WriteLine($"  {finding.File}: {finding.Message}");
             }

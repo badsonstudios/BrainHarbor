@@ -1,7 +1,7 @@
 ---
 title: "Oligodendroglioma"
 slug: tumors/oligodendroglioma
-description: "Both halves of the name are gene results. The same chromosome loss that names this tumor is the reason one chemotherapy works better on it, which is why the test is worth waiting for."
+description: "Both halves of the name are gene results. The same chromosome loss that names this tumor is the reason one chemotherapy works better on it. And that is why the test is worth waiting for."
 tags: [tumor-type, glioma, oligodendroglioma]
 sources:
   # Naming and grading come from CNS5-aligned sources ONLY (§12.1). The

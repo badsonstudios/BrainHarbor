@@ -1,6 +1,6 @@
 ---
 title: "CNS lymphoma"
-description: "A cancer of white blood cells that starts in the brain, the spinal cord, or the eyes. Why an operation to remove it is not the treatment, why a steroid can take the answer away before anyone has it, and what the medicine that reaches the brain is actually like."
+description: "A cancer of white blood cells that starts in the brain, the spinal cord, or the eyes. Why an operation to remove it is not the treatment. Why a steroid can take the answer away before anyone has it. And what the medicine that reaches the brain is actually like."
 tags: [tumor-type]
 sources:
   # WI-542. A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved

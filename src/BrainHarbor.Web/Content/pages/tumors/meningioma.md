@@ -1,7 +1,7 @@
 ---
 title: "Meningioma: what it is, where it sits, and why size is not the headline"
 slug: tumors/meningioma
-description: "A meningioma starts on the covering of the brain rather than inside it, and there is often a visible gap on the scan that shows it. What the grade means, why location matters more than size, what the words on your report mean, and the hormone medicines worth asking about."
+description: "A meningioma starts on the covering of the brain rather than inside it. And there is often a visible gap on the scan that shows the difference. What the grade means, and why location matters more than size. What the words on your report mean. And the hormone medicines worth asking about."
 tags: [tumor-type, meningioma, newly-diagnosed]
 sources:
   # Source discipline for this page, written down so it is not re-argued

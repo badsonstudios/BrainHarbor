@@ -1,7 +1,7 @@
 ---
 title: "Medulloblastoma"
 slug: tumors/medulloblastoma
-description: "A fast-growing tumor that starts at the back of the brain, most often in children. What grade 4 does and does not mean here, why the whole spine is checked, what craniospinal radiation is, and what posterior fossa syndrome is."
+description: "A fast-growing tumor that starts at the back of the brain. It is most often found in children. What grade 4 does and does not mean here. Why the whole spine is checked, and what craniospinal radiation is. And what posterior fossa syndrome is."
 tags: [tumor-type]
 sources:
   # Naming and grading from CNS5-aligned sources ONLY (§12.1). Traps catalogued in
