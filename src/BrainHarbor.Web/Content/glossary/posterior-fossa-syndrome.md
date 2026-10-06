@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-15
 ---
 
-A change that can follow surgery low at the back of the brain. Some children lose
-the ability to speak for a time, and swallowing, walking and mood can change too.
-It starts within a week of the operation.
+Something that can happen after an operation on the lower back of the brain. Some
+children cannot speak for a while. Swallowing, walking and mood can change too.
+It always starts in the first week after surgery.

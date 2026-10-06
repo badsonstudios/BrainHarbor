@@ -376,7 +376,7 @@ mean.
 
 ## If it comes back, or changes
 
-**Some grade 2 astrocytomas change into a higher grade over time.** That is
+!%transformation%**Some grade 2 astrocytomas change into a higher grade over time.** That is
 called transformation, and it can go to grade 3 or straight to grade 4. It is a
 known behavior of these tumors rather than a sign something went wrong, and it
 is one of the things each scan is looking for. If it happens, the treatment

@@ -8797,3 +8797,200 @@ corpus, and the dead-instrument Fail.
 A per-sentence reading-grade check for BODY text still needs a corpus sweep before
 it can be gated; a single unreadable sentence moved a page 5.6 → 5.7 in WI-567 and a
 whole-page average cannot see it. That is unrelated to this item and still open.
+
+### 12.26 A definition the reader meets twice, and the fix that was copied instead of shared (WI-576)
+
+`CuratedPage.AssertDoesNotRestateTheCorpus` is §12.10's restatement probe. It walked
+`pages/` and `blocks/` and never `glossary/` — raised by WI-567, which had just
+shipped `glossary/frontal-lobe.md` whose definition was all but word-for-word the
+page's own region entry. A glossary definition fires as a tooltip on every page that
+says the term, so it has a block's blast radius, and §12.10's whole argument for
+including blocks applies to it unchanged.
+
+**The obvious fix was to widen the set, and the measurement said the set was not the
+hole.** Asked in the order §12.19/§12.24/§12.25 ask it:
+
+- **Which set is this gate built over?** `AllPages()` — and it is read by **nine
+  call sites in seven files**, of which exactly one is the restatement probe.
+  Widening it would have moved eight other guards' subject sets with nothing
+  saying so. It was left alone.
+- **Which entries can it fire on?** Nineteen. Only 19 of the 55 pages call the
+  probe, so **36 pages are in no entry at all** — §12.25's third question, and this
+  time it decided the whole design.
+- **And the answer that followed:** of the eight real restatements in the corpus,
+  **all eight were on pages in the silent 36.** Widening only the set would have
+  found none of them. So the gate is corpus-wide and keyed on nothing but the
+  corpus, in `ShippedGlossaryTests`; the probe gains the glossary half too, through
+  the same helper, because that is the file a page author reads.
+
+#### The rule: the reader, not the file
+
+A page sharing eight words with a glossary entry is not the defect. **A page
+restating a definition its own reader can also open as a tooltip** is.
+`GlossaryMarker` fires an entry on the first occurrence of its term or an alias, in
+paragraphs only, never inside a link, and not at all if `!%name%` appears anywhere on
+the page — so whether the reader meets a definition at all is a property of the page,
+and it is **computed** rather than allowlisted. The numbers, swept once:
+
+| | |
+|---|---|
+| raw page/block × glossary collisions | **31** |
+| the reader meets the definition **once** (legitimate) | **23** — and **13** already carried the suppression, written by hand, by authors with no guard asking for it |
+| the reader meets it **twice** (real restatements) | **8** |
+| of those 8, on pages the probe could fire on | **0** |
+
+The thirteen hand-written suppressions are the strongest evidence the property is
+real: it is what careful authors were already doing. And the two collisions the probe
+*could* see were both legitimate — `tumors/atrt`×`nec` never says the term, and
+`where-your-tumor-is`×`frontal-lobe` carries `!%frontal lobe%`. **WI-576's third
+acceptance criterion is a page that defines a term inline and suppresses its tooltip,
+and it passes through the real renderer rather than through an exemption.**
+
+#### Two shapes, two different fixes — and telling them apart is the ruling
+
+The eight split cleanly, and the split is the part to carry forward:
+
+- **If the overlapping sentence lives on more than one page, or in a block, the
+  ENTRY is the copy — rewrite the entry.** `glossary/tumor-board`'s definition *was*
+  `blocks/tumor-board`'s opening sentence; `glossary/pons` was a sentence
+  `/tumors/dipg` and `/tumors/diffuse-midline-glioma` both ship verbatim. That is
+  §12.10's own subject — one fact, several homes, one owner — and the block is the
+  owner. **Three entries rewritten fixed seventeen of the twenty-two reported rows,
+  took no tooltip away from any reader, and left every existing test that asserts
+  those tooltips fire still asserting it.** All three read easier than before
+  (tumor board 5.5 → 5.2, posterior fossa syndrome 5.5 → 5.2, pons ungraded at 17
+  words → 4.2 at 20) — **after /review, which caught the first drafts going the
+  other way.** Two of them had risen (5.8 and 6.1, the second over the corpus line)
+  while the item's own notes claimed all three had fallen. **Rewriting prose to
+  break a shingle is still rewriting prose, and it is graded like any other.**
+- **If one page defines the term inline and the tooltip would echo that very
+  sentence, suppress on that page.** This is WI-535's rule already in the corpus,
+  quoted in `EpendymomaPageTests`: *"defined inline where it first appears; its
+  tooltip would read the sentence twice"*. Three suppressions (`!%focal seizure%`,
+  `!%transformation%`, `!%vorasidenib%`), and each had an in-corpus precedent —
+  both glioma siblings already suppress `transformation`, `/tumors/low-grade-glioma`
+  already suppresses `vorasidenib`.
+
+**THE FIRST ATTEMPT GOT THIS WRONG, AND IT GOT IT WRONG BY REACHING FOR THE
+SUPPRESSION EVERY TIME.** It put `!%tumor board%` and `!%posterior fossa syndrome%`
+on fifteen pages, and seven tests across seven files went red — every one of them a
+deliberate, reasoned assertion that **those tooltips should fire**.
+`EpendymomaPageTests` fires `posterior-fossa-syndrome` on purpose, because the page
+*names* the term before the subsection that describes it, so the tooltip is a gloss at
+first mention rather than an echo. **A guard going red on seven files that each wrote
+down why is the guard being wrong, not seven files.** Read them before overriding them.
+
+#### Three things the item found on the way, each one somebody else's trap
+
+**A FIX CAN BE COPIED, AND THEN IT HAS THE HOLE A COPY HAS.** Five pages already
+wrote `!%tumor board%` by hand, one line above their `[TUMOR-BOARD]` include. Five
+authors reached the right answer independently and **twelve including pages never got
+it** — the suppression was copied instead of shared. The temptation is to move the
+marker into the block, and that is refused: three test files assert
+`DoesNotContain("!%")` over `SharedSources()`, because a marker in a block
+*"suppresses that term on every including page at once, silently"* (WI-510's review).
+That rule stays. **What changes is that hand-copying is now safe, because this item
+ships the gate that reds on the omission** — which is the only honest reason to keep
+doing something that has already failed once.
+
+**A NEEDLE AND A HAYSTACK DERIVED DIFFERENTLY, AND THE REPLACE THAT FAILED
+SILENTLY.** `WatchAndWaitPageContentTests.TheMeningiomaReassuranceNeverReachesAGliomaReader`
+excluded the growth section by `Body.Replace(Flatten(Section(GrowthHeading)), " ")`.
+`Body` is `ReaderText` — authoring markers stripped. `Section()` reads the **raw**
+page — markers present. **One `!%term%` anywhere in that section made the needle
+unmatchable, and a `Replace` that matches nothing fails silently**, leaving the whole
+section in the text a rule written to *exclude* it then ran over. It had been correct
+only because no marker had ever sat there; this item put the first one in and found it.
+Fixed by deriving the needle the same way as the haystack **and** by asserting the
+removal happened, because a removal nobody checks is a removal that can stop
+happening. §12.24's "both canaries beside every scan", arriving as a `Replace`.
+
+**"FIRES NOWHERE" IS NOT "WAS DELETED", AND IT IS MOSTLY NOT NEW.** Two of the three
+suppressions take their entry's tooltip from one firing page to none. WI-567 already
+ruled on that shape for `frontal-lobe` and the ruling is reused rather than
+re-reasoned: the entry is **kept**, because a suppression is a per-page decision an
+edit can reverse while a missing entry is a gap every future page inherits — and
+because `/glossary` renders `GetTerms()` unconditionally, so a suppressed tooltip is
+not a deleted definition. The decision is pinned in a test that asserts the tooltip is
+gone, the definition still exists, **and the owning page still carries the sentence
+that makes it the owner** — the third one added at /review, which found the one edit
+in this area that really hurts a reader: delete the defining sentence and leave
+`!%term%` in place, and every guard in the repo goes quiet at once (the restatement
+gate has no overlap left to report, and the reader of the page that says the word has
+no definition anywhere on it). **A premise a decision rests on has to be asserted,
+not asserted about.**
+
+It is deliberately **not** a corpus-wide gate: **26 of the 105 shipped entries fire
+no tooltip anywhere, and 24 of those were already in that state before this item.**
+Gating all 26 would have meant inventing twenty-four reasons this item cannot source.
+Raised as its own item instead.
+
+**AND THAT NUMBER WAS 27 UNTIL /review CHECKED IT, WHICH IS ITS OWN LESSON.** The
+sweep was run while the item's first attempt — the fifteen block-driven suppressions
+— was still on disk. Those were reverted; the measurement was not re-run, and it went
+into this section and into a new backlog item whose whole scope was built on it.
+`posterior-fossa-syndrome` was in the list and fires on two pages. **A measurement is
+only true of the tree it was taken on.** Re-measure after a revert, not just after an
+edit — a revert changes the corpus exactly as much as an edit does, and it is the one
+that feels like it changed nothing.
+
+#### What is recorded as shared, with the reason, and what was raised
+
+Two collisions are neither restated definitions nor fixable without making the site
+worse, so they are recorded the WI-509 way — a reason beside each, and the **size of
+the overlap pinned**, so a pair-level exemption cannot absorb the next collision
+between the same two files. **And the converse is asserted from the corpus**: every
+record must still match a real collision, or it is reported stale and deleted. That is
+the shape WI-578 left standing for `DescriptionsCleanDirectories`, for the same
+reason — a list only ever read as *"skip these"* cannot tell you one of them stopped
+being true.
+
+- `tumors/atrt` × `glossary/nec` — a **coincidence**. The entry closes *"Ask your
+  team what it means for your plan"*; the page says it about an M number on a staging
+  line, and NEC is not in that paragraph at all (the tooltip fires from `[CROSSWALK]`
+  much further down the composed page). *"Ask your team what it means for your X"* is
+  the instruction §12.2 item 7 puts on every page, which is why `Shingles()` already
+  strips the "What to ask your team" section; this is the same phrase outside it.
+  Rewording a correct sentence to settle a coincidence is how a guard starts shaping
+  the content instead of checking it — WI-511's *"not automatically bad news"* call.
+- `tumors/high-grade-glioma` × `glossary/cdkn2a-b-deletion` — **a shared fact with
+  four wordings**, and deciding who owns it is bigger than this item. The 2021 rule
+  that a gene result can set the grade on its own is stated by
+  `/tests/molecular-markers`, `/tests/pathology-report`, this hub and the entry.
+  Suppressing would lose the entry's unique content (what the genes *do*), so it is
+  **raised as its own item** — the shape WI-569 used for the planned-subtotal three
+  wordings it handed to WI-577.
+
+#### What this gate does NOT catch, said plainly
+
+**For the three rewritten entries the remedy changed the WORDS, not the OWNER, and
+/review was right to press on it.** `/tumors/dipg` still ships *"The pons carries the
+nerves for vision, hearing, speech, swallowing and movement"* and the `pons` tooltip
+still fires there, so that reader still meets the same fact twice — the two copies
+merely no longer share eight consecutive words. The same is true of `tumor-board` and
+`posterior-fossa-syndrome` against their blocks.
+
+**So be clear about what the gate is.** It catches a *verbatim* restatement that a
+reader meets twice, which is the form that reads as a glitch and the form a shingle
+can see. It does **not** catch the same fact in two voices, and **a paraphrase does
+not reduce drift risk — it is the beginning of drift.** The pons pair had already
+diverged on two points before anyone looked (*vision* vs *eye movement*, *a part of*
+vs *the middle part of*), which is §12.10's hazard arriving inside this item's own fix.
+The principled remedy is to give each entry only what no page says, or to suppress on
+the owning page; both were out of scope here, the first because it needs a source per
+entry and the second because seven tests say those tooltips must fire. **The residual
+duplication is real and is handed to WI-580, not written off.**
+
+**Also raised rather than recorded a second time:** the glossary as the probe's
+*subject*. Nothing ever passes a glossary entry as the subject, so
+glossary-vs-glossary and glossary-vs-block collisions are in no entry in either
+direction — **four remain** after this item's rewrites fixed two
+(`adult-type`/`pediatric-type` at 7 windows and `h3-g34`/`h3-k27-altered` at 10 are
+deliberately parallel pairs, and whether a parallel pair *should* be parallel is a
+content ruling, not a gate).
+
+> **The question to carry forward is the one that changed this item's design.** Three
+> sections asked which pages a guard can fire on (§12.19), which entries (§12.24), and
+> which pages are in no entry at all (§12.25). WI-576 asked the third one and got an
+> answer that moved the gate to a different file: **every real defect was outside the
+> set the obvious fix would have widened.** Ask it before writing the fix, not after.

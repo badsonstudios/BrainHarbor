@@ -6,5 +6,5 @@ sources:
     accessed: 2026-09-15
 ---
 
-A part of the brain stem. It carries the nerves for vision, hearing, speech,
-swallowing and movement.
+A part of the brain stem. The nerve paths for eye movement, hearing, speaking,
+swallowing and balance pass through it.
