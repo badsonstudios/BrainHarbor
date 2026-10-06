@@ -1,6 +1,6 @@
 ---
 title: "Hemangioblastoma"
-description: "A slow-growing tumor that is not cancer, full of tiny blood vessels, usually found low at the back of the brain or in the spinal cord. What it is, why a fluid pocket often causes the symptoms, the inherited condition linked to about 1 in 4, and how it is treated and watched."
+description: "A slow-growing tumor that is not cancer, full of tiny blood vessels. The tumor is usually found low at the back of the brain or in the spinal cord. What it is, and why a fluid pocket often causes the symptoms. The inherited condition that about 1 in 4 people with one of these have. And how it is treated and watched."
 tags: [tumor-type]
 sources:
   # WI-547. A TUMOR HUB, so the seventeen sections of §12.3 and the proved

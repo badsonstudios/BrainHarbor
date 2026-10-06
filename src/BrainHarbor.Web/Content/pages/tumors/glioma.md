@@ -1,7 +1,7 @@
 ---
 title: "Glioma"
 slug: tumors/glioma
-description: "Glioma is a family of brain tumors, not one diagnosis. What the family tree looks like, which page is yours, and what the words on your report mean."
+description: "Glioma is a family of brain tumors, not one diagnosis. What the family tree looks like. Which page is yours, and what the words on your report mean."
 tags: [tumor-type]
 sources:
   - url: https://www.ncbi.nlm.nih.gov/books/NBK441874/

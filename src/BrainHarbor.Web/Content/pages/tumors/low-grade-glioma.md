@@ -1,7 +1,7 @@
 ---
 title: "Low-grade glioma"
 slug: tumors/low-grade-glioma
-description: "What people mean by low-grade glioma, why it is not one diagnosis, and why grade 1 and grade 2 are not the same thing at all. Watch and wait, what changes over time, and the questions worth asking about your own result."
+description: "What people mean by low-grade glioma, and why it is not one diagnosis. Why grade 1 and grade 2 are not the same thing at all. Watch and wait, and what changes over time. And the questions worth asking about your own result."
 tags: [tumor-type, glioma, low-grade-glioma]
 sources:
   - url: https://www.cancernetwork.com/view/grade-ii-gliomasnot-so-low-grade

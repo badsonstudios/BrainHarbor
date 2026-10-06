@@ -8503,6 +8503,15 @@ why the limit count will not move.
 
 #### What is left
 
+> **"THREE THINGS" WAS THE WRONG COUNT AND ONE OF THE THREE WAS WRONG AS WRITTEN —
+> see §12.25 before acting on the paragraph below.** `GradeDescription`'s Warn
+> branch did not go: only the GRADE's did. The directory list covers 46 of the 55
+> descriptions, not all of them, and the two branches that gate a description
+> LEAVING the graded set still need their out-of-slice level — six descriptions are
+> legitimately under the word floor and every one is outside every listed
+> directory. Deleting all three branches, as this paragraph reads, fails the build
+> on six pages WI-578 was never about.
+
 **21 remain, and all 21 are in `tumors/`.** The next slice is the last one, which
 makes three things one edit rather than three: the count reaches 0, the ceiling
 goes, and `GradeDescription`'s Warn branch and the `(not gated — WI-578)` marker
@@ -8512,3 +8521,279 @@ are deleted — the full promotion to Fail that §12.22 promised and §12.23 def
 ceiling and not a page name). It is worth splitting again if it does not fit one
 sitting; the ratchet supports that, as long as whatever lands next lowers the
 ceiling rather than only the count.
+
+### 12.25 The set a gate was never built over, and a list that was its own oracle (WI-578, slice 3)
+
+WI-578's **third and last slice**: the 21 over-limit descriptions under `tumors/`,
+and with them the promotion §12.22 promised, §12.23 deferred and §12.24 scheduled.
+
+| | before | after |
+|---|---|---|
+| descriptions over 6.0 in `tumors/` | 21 of 23 | **0 of 23** |
+| worst grade in the directory | **11.1** | **5.6** |
+| corpus count over 6.0 | 21 | **0** |
+| corpus ceiling | 11.1 | — (constant deleted) |
+| corpus too-short tally | 6 | **6** |
+| words removed | — | **none** |
+
+The diagnosis §12.22 made as a prediction has now held three times for three
+different directories. Forty-two descriptions rewritten across the item, **not one
+word removed from any of them**, and the corpus-wide too-short tally read **6**
+before the first slice and reads 6 after the last — which is the number that
+separates a rewrite from a truncation, printed beside the gain for exactly this
+purpose. The grade is gated at `Fail` corpus-wide, `DescriptionsOverTheLimit` and
+`WorstDescriptionGrade` are deleted, and `DescriptionRatchet` is
+`DescriptionCorpusReport` because nothing in it ratchets any more.
+
+#### THE SET THE GATE WAS NEVER BUILT OVER, found before a line was written
+
+§12.19 asked which **pages** a guard can fire on. §12.24 asked which **entries**.
+This slice is the same question asked of the **complement**: *which pages are in no
+entry at all?*
+
+`GradeDescription`'s own comment said that when `tumors/` landed,
+`DescriptionsCleanDirectories` would have "swallowed the whole corpus" and every
+branch would be a Fail. It never swallows the corpus:
+
+> With all three slices listed the list covers **46 of the 55** descriptions. The
+> other **nine** are the seven root-level pages and the two under `seizures/` — and
+> **six of those nine are under the 25-word grading floor today**: `terms.md` at 7
+> words, `about.md` 8, `digest.md` 12, `privacy.md` 12, `how-we-write.md` 20,
+> `seizures/what-to-do.md` 20.
+
+So the promotion had to be **per branch, not wholesale**. Of
+`GradeDescription`'s three failing branches:
+
+- **over the limit** → `Fail` **corpus-wide**. This is the acceptance criterion, and
+  it is safe because the count is 0 everywhere, not merely inside the listed
+  directories.
+- **under the word floor** → unchanged: `Fail` inside a listed directory, `Info`
+  outside. Six live pages are legitimately short and all six are outside.
+- **blank** → unchanged, for the same reason and for its control's sake.
+
+**Deleting all three, as the plan read, would have failed the build on six pages
+WI-578 was never about.** It is an item about descriptions that read ABOVE sixth
+grade; `terms.md` being seven words long was never its subject. And the tally those
+six produce is not a backlog — it is the stability signal the whole item's claim
+rests on.
+
+> **THE REASON THE PLAN WAS WRONG IS THAT IT NAMED A BRANCH BY ITS LEVEL.** "Delete
+> the Warn branch" sounds like one thing. `Warn` was the out-of-slice level of two
+> different branches with two different subjects, and only one of them was about the
+> grade. **Ask what a branch is ABOUT, not what level it currently emits** — a level
+> is shared by every branch that happens to be equally serious today.
+
+`DescriptionsCleanDirectories` therefore survives the item, with its meaning
+narrowed: it no longer gates the grade, it gates the two ways a description can
+**leave the graded set**. That is the escape §12.23 found and it is invisible to any
+grade gate, so it outlives the one that replaced the count.
+
+#### AND THE LIST WAS ITS OWN ORACLE, which is the fifth silent-off in this item
+
+`/review` found this, and it is the finding worth most. Every test of
+`DescriptionsCleanDirectories` derived its expectation **from the list**: the
+theories iterate it, both shipped-corpus tests `foreach` over it, `Assert.NotEmpty`
+is satisfied at two entries, and the marker's negative control treats whatever is
+unlisted as legitimately unmarked.
+
+> **So deleting `"tumors/"` un-gated 23 pages with the whole suite green and
+> ContentCheck exiting 0.** The theories lose a row rather than failing one. The
+> `foreach`es iterate two directories, both of which still pass. And the 23 now
+> unmarked `tumors/` lines move into the set the negative control expects to be
+> unmarked. **A list that is both the subject and the oracle cannot be tested by
+> itself.**
+
+It matters more after this slice than before it. While the grade was gated per
+directory, dropping an entry at least changed an over-limit page's **level**; now
+that the grade is corpus-wide, this list's only job is a thing that is invisible on
+a corpus where nothing has gone ungraded.
+
+The fix is to assert the **converse**, computed from the corpus rather than from the
+constant: *a directory whose descriptions already all pass must be listed.* It reds
+on deleting an entry, and on finishing a directory and forgetting to add it — the
+same omission from the other end — and it needs no maintenance when a slice lands,
+because the only thing a new slice changes is which side of the test a directory
+falls on. Exactly satisfied today: `treatments/`, `tests/` and `tumors/` qualify;
+`seizures/` does not, because `what-to-do.md` is 20 words and therefore ungraded.
+
+> **The mutation that proves it is a mutation the harness did not have.** Narrowing
+> the matcher (§12.24's mutation) is caught because production output changes while
+> the list does not. **Deleting the entry changes both**, which is why nothing
+> derived from the list could see it.
+
+#### THE SWAP PROBE RETIRED, and four single-edit phases replaced it
+
+Both earlier slices proved the directory gate on the real corpus with a **true
+swap**: a regression inside the finished slice **paid for** by a fix in the
+un-sliced backlog, so the corpus count held at parity and only the directory gate
+could fire. The last slice removes both halves of what made that work:
+
+- **There is no backlog left to pay with.** The count is 0, so every regression
+  raises it and no edit anywhere holds it at parity. (Both earlier slices used
+  `/tumors/ependymoma` as the payer, and that page is inside this slice.)
+- **And there is no count to hold at parity**, because the count constant is
+  deleted.
+
+So the isolation the swap bought — *only the directory gate fired* — is bought a
+different way: **four phases, one edit each, and each says which guard its
+assertions are evidence for.** §12.24's rule is then satisfied by construction
+rather than by a paying fix, because no probe changes two things.
+
+| phase | one edit | evidence for |
+|---|---|---|
+| 1 | `/where-your-tumor-is` merged to 10.8 — in **no** listed directory | **the promotion.** Before this slice the same run exited 0 with a Warn |
+| 2 | `/tumors/hemangioblastoma` back to its pre-slice 11.1 | **the 21 splits.** *Not* the directory list — it fails on its grade and would fail identically unlisted |
+| 3 | the same page **truncated** under the word floor | **the third entry.** The only phase whose verdict the list produces |
+| 4 | the same truncation on `/where-your-tumor-is` — **outside** every entry | **the third entry discriminating.** Must exit **0** |
+
+Phases 1 and 2 get the **identical** verdict on pages either side of the directory
+boundary, which is what "corpus-wide" means and is not something a single phase can
+show. Phases 3 and 4 are the **same edit in two places expecting different
+verdicts**, which is §12.19 met per page on the real corpus rather than on a
+synthetic one — and phase 4 is the one that keeps `terms.md` alive.
+
+> **Phase 2 is the one worth naming out loud, because it is the phase that proves
+> least.** It is the obvious probe — regress a page in the slice you just finished —
+> and with the grade gated corpus-wide it is evidence about the *rewrite*, not about
+> the directory list at all. A probe aimed at the thing you just built will tend to
+> fire; what it fires *through* is the question.
+
+#### THE PROBE BAND STOPPED NARROWING, because its upper edge was deleted
+
+§12.24 ruled that the band a probe must land in **narrows every time the ceiling
+ratchets**: 19.7, then 13.0, then 11.1. The ceiling **was** the upper edge, and this
+slice deletes it — every value it could have gated is above 6.0 and fails on sight
+now. So the band is `(6.0, ∞)` and only the lower edge is checkable.
+
+Which leaves exactly one of §12.24's two failure modes live, and it is the one that
+nearly shipped: **too mild.** Slice 2's first probe graded 6.2 against a 6.0 limit —
+in band by 0.2 and by accident. The tooling still prints the number.
+
+#### THE PROMOTION CREATED A CLIFF, and /review's own prose fix gave the fix a subject
+
+A hard `Fail` at 6.0 with nothing below it meant a description at **5.9 printed
+`  ok`** — and a one-word edit took it to a broken build with nothing in between.
+The **body** gate has had a three-level shape over the same `WarnGrade` since
+WI-414; the two gates now agree about what "close to the limit" means instead of
+disagreeing by a whole level.
+
+> **And it has a live subject on the day it lands, which §12.19 requires.**
+> `/tumors/glioblastoma` reads **5.6** — because /review's second round moved it
+> from 5.4 while fixing a pronoun. **A guard whose first subject is produced by the
+> review round that asked for the guard** is a better outcome than one shipped at a
+> threshold nothing reaches.
+
+Its probe and its control are **the same 29 words with one comma made a full stop**:
+5.9 and 4.0, no word added or removed. The pair is the item's own thesis used as a
+fixture, so neither vocabulary nor length can be what moved the level.
+
+#### A COUNT DEFINED BY SUBTRACTION, three lines under the comment forbidding it
+
+The floor tally was `descriptions.Count - graded.Count - blank` — a set defined by
+what it is **not** — and the paragraph immediately below it states §12.22's rule
+against exactly that, for the *blank* count, which had been fixed for the same
+reason one slice earlier.
+
+> **And the number it produced is the one this file calls "the entire instrument"**
+> for telling a truncation from a rewrite inside a gated directory (§12.24). A
+> fourth ungraded branch would have inflated it in silence. It is matched positively
+> now, against a shared constant, **and the three counts are asserted to
+> partition** — which moves the failure mode from "one number is quietly wrong" to
+> "the numbers do not add up", and only a check can say which.
+
+The general form: **fixing one set defined by exclusion does not fix its siblings**,
+even when they sit three lines apart and the fix's own comment is the rule.
+
+#### A MESSAGE GOES STALE WHEN THE THING IT CONTRASTS ITSELF WITH REACHES ZERO
+
+Three messages survived the promotion saying things that stopped being true, and
+each is a different way for that to happen:
+
+- **A contrast with an empty set.** `"…a REGRESSION rather than part of the
+  remaining backlog"` was right for 41, 29 and 21 descriptions. At 0 it sends a
+  reader looking for a list that does not exist.
+- **A tense.** `"Every description in the corpus HAS READ at or under this limit
+  since WI-578"` is a present-perfect claim printed on a finding that proves one
+  does not, so it was false at the moment it appeared — and false a second way about
+  the six that are not graded at all. The fact that is true on that run is the one
+  about **when WI-578 finished**.
+- **A `because` that outlived its guard.** §12.24 corrected the truncation-signature
+  sentence and the corrected version was still conditional on *where it printed*: it
+  printed only when a finished slice had failed, where every description really was
+  under the limit. This slice made the totals print on **every** run — so
+  `"the limit count will NOT move, because a page has to be under the limit before it
+  can be shortened out of grading"` became a universal claim, and the clause after
+  `because` is simply false. §12.23's "reads as progress" half was available again,
+  inside the message written to deny it.
+
+> **§12.24's lesson was that a message a reader acts on is the worst place for a
+> causality nobody checked. This slice's is one turn further on: a causality that was
+> checked is only checked FOR THE RUNS IT PRINTED ON.** Widen where a message prints
+> and you have made a new claim. The sentence is conditional on `over == 0` now.
+
+#### FIVE OF THE 21 SPLITS LOST SOMETHING A WORD COUNT CANNOT SEE
+
+§12.24 recorded two shapes, from two pages, and predicted that 23 descriptions was
+23 chances at them. `/review` found **five**, and they were the same two shapes plus
+one that is new:
+
+- **A pronoun whose antecedent moved to the previous sentence** — the third, fourth
+  and fifth instance of the defect first caught on `/treatments/proton-therapy`.
+  `/tumors/glioblastoma` was the sharpest: *"And **it** explains why **it** keeps
+  coming back"* put two `it`s with two different referents in one short sentence,
+  where the original had one. `/tumors/meningioma`'s second `it` was left with *the
+  brain* as its nearest noun, so it read as a gap that shows the brain.
+  `/tumors/hemangioblastoma`'s *"**It** is usually found low at the back of the
+  brain"* followed *"full of tiny blood vessels"*.
+- **A frame the colon was carrying** — `/tumors/pediatric-brain-tumor`'s list hung
+  off *"when the person with the brain tumor is a child:"*, and one item standing
+  alone became *"Why scans and radiation may need medicine to sleep"*, which says the
+  scans need the medicine.
+- **AND THE NEW ONE: A RATIO CAN LOSE ITS DENOMINATOR.**
+  `/tumors/hemangioblastoma`'s *"the inherited condition linked to about 1 in 4"* was
+  a clause inside a list; as its own sentence, **1 in 4 of what?** The page's own
+  front matter says 1 in 4 **people with one of these tumors** have von
+  Hippel-Lindau. *"1 in 4 of these tumors"* was refused as a fix because it is a
+  **different denominator** — VHL patients often have more than one tumor — which is
+  the kind of number a split can quietly re-base.
+
+> **A split moves a clause out of the reach of everything that was qualifying it**,
+> and a word count sees none of it: the clause survives, the count rises, the grade
+> falls. Three slices in, the inventory is a pronoun, an attachment, a subject, and
+> now a denominator. The common factor is that **the sentence a clause used to live
+> in was doing work for it.**
+
+Every one of the five fixes **added** words, and the split script's refusal of a
+shortening was applied to them too — which matters because these are the corpus's
+lowest-margin descriptions and a fix is exactly when a word goes missing.
+
+#### A NEEDLE THAT INCLUDES A SENTENCE'S FIRST WORD BREAKS EVERY TIME A BOUNDARY MOVES
+
+One test in the whole suite broke on the 21 rewrites, and the way it broke is worth
+keeping. `CnsLymphomaPageRenderTests` asserted the rendered page contained *"**why** a
+steroid can take the answer away"* — a clause that ran on from a comma. The split
+made it the start of a sentence, so the only thing that changed was a capital W.
+
+> The needle was the claim **plus the punctuation it happened to follow**. On a
+> corpus where sentence boundaries are the thing being edited — three slices
+> running — that is a needle that breaks for a reason unrelated to what it is
+> guarding. It is the clause alone now.
+
+#### What is left: NOTHING. WI-578 IS CLOSED.
+
+All 55 descriptions read at or under 6.0, the worst is 5.6, the grade is gated at
+`Fail` corpus-wide, and both upper-bound constants are deleted. What remains of the
+machinery is the part no grade gate can replace: `DescriptionsCleanDirectories`
+gating the two ways a description leaves the graded set, the floor tally that tells
+a rewrite from a truncation, `CorpusWhenMeasured` asserting the sweep saw the whole
+corpus, and the dead-instrument Fail.
+
+> **The one thing to carry forward is the question this slice is named after.** Three
+> sections have now asked a version of it and each found something: which **pages**
+> can this guard fire on (§12.19), which **entries** (§12.24), and which pages are in
+> **no entry at all** (§12.25). The third one is the one that catches a plan written
+> as "and then delete the branch".
+
+A per-sentence reading-grade check for BODY text still needs a corpus sweep before
+it can be gated; a single unreadable sentence moved a page 5.6 → 5.7 in WI-567 and a
+whole-page average cannot see it. That is unrelated to this item and still open.

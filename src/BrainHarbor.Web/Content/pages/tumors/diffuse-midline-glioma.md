@@ -1,7 +1,7 @@
 ---
 title: "Diffuse midline glioma"
 slug: tumors/diffuse-midline-glioma
-description: "A fast-growing glioma in the middle of the brain or in the spinal cord, named after a change written H3 K27. What the name means, why it is always grade 4, how DIPG fits in, and what treatment is for."
+description: "A fast-growing glioma in the middle of the brain or in the spinal cord. It is named after a change written H3 K27. What the name means, and why it is always grade 4. How DIPG fits in, and what treatment is for."
 tags: [tumor-type, glioma]
 sources:
   # Naming and grading from CNS5-aligned sources ONLY (§12.1). NCI-CONNECT is

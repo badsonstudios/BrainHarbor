@@ -1,6 +1,6 @@
 ---
 title: "Acoustic neuroma"
-description: "A slow-growing growth on the nerve between the inner ear and the brain. Why it has two names, why your hearing counts in the decision alongside the size, what the three choices are, and the one sign that should be looked at fast."
+description: "A slow-growing growth on the nerve between the inner ear and the brain. Why it has two names. Why your hearing counts in the decision alongside the size. What the three choices are, and the one sign that should be looked at fast."
 tags: [tumor-type]
 sources:
   # WI-541. A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved

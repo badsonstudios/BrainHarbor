@@ -1,7 +1,7 @@
 ---
 title: "ATRT (atypical teratoid/rhabdoid tumor)"
 slug: tumors/atrt
-description: "A rare, fast-growing brain and spine tumor, usually in very young children. Written for a parent: what the name means, the signs that mean going in now, why treatment is planned around your child's age, and what the months ahead actually involve."
+description: "A rare, fast-growing brain and spine tumor, usually in very young children. Written for a parent. What the name means, and the signs that mean going in now. Why treatment is planned around your child's age. And what the months ahead actually involve."
 tags: [tumor-type]
 sources:
   # WI-544. A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved template

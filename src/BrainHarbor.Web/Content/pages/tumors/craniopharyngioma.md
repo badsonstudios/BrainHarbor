@@ -1,6 +1,6 @@
 ---
 title: "Craniopharyngioma"
-description: "A growth that sits next to the pituitary gland, the nerves for sight, and the space the brain's fluid drains through. Why sight, hormones and fluid are the three things a team watches, what the two type names on your report mean, and the warning signs this page carries rules for."
+description: "A growth that sits next to the pituitary gland, the nerves for sight, and the space the brain's fluid drains through. Why sight, hormones and fluid are the three things a team watches. What the two type names on your report mean. And the warning signs this page carries rules for."
 tags: [tumor-type]
 sources:
   # WI-540. A TUMOR HUB, so §12.3's seventeen sections and §12.9's proved

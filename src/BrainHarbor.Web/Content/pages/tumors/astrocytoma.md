@@ -1,7 +1,7 @@
 ---
 title: "Astrocytoma"
 slug: tumors/astrocytoma
-description: "Three different groups of tumors share the name astrocytoma. Which one is yours, what the gene results on your report mean, and both directions of the glioblastoma rename."
+description: "Three different groups of tumors share the name astrocytoma. Which one of the three is yours. What the gene results on your report mean. And both directions of the glioblastoma rename."
 tags: [tumor-type, glioma, astrocytoma]
 sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC9723092/
