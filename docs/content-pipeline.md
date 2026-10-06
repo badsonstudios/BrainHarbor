@@ -9000,3 +9000,267 @@ The post-deploy smoke returned one failure and **the site was right.** `/tumors/
 > which pages are in no entry at all (§12.25). WI-576 asked the third one and got an
 > answer that moved the gate to a different file: **every real defect was outside the
 > set the obvious fix would have widened.** Ask it before writing the fix, not after.
+
+### 12.27 A rule, its instances, and the measurement that set the item's scope wrong (WI-579)
+
+WI-576's glossary sweep reported `tumors/high-grade-glioma` against
+`glossary/cdkn2a-b-deletion`, could not resolve it either way, recorded it as
+deliberately shared and handed it here as **"the 2021 grading rule has four wordings
+on four files that link each other"**. The claim is that since CNS5 a gene result can
+set a tumor's grade on its own, even when the cells look lower grade.
+
+**IT IS NOT FOUR FILES AND THE FIRST MEASUREMENT OF THIS ITEM SAID SO.** WI-576 found
+the set with the shingle `the grade on its own`. That phrase finds **five** — it had
+already missed `/tumors/low-grade-glioma` — and the ones it cannot see state the rule
+best:
+
+| | |
+|---|---|
+| `/tests/pathology-report` | "A grade used to come only from what the cells looked like. **Now a gene result can set the grade on its own**, even when the cells under the microscope look lower grade." |
+| `/tests/molecular-markers` | "In some gliomas this finding **sets the grade on its own**, even when the cells look like a lower grade." |
+| `/tumors/high-grade-glioma` | "Because a gene result can now **set the grade on its own**, even when the cells look lower grade." |
+| `/tumors/low-grade-glioma` | "For some tumors, a gene result now **sets the grade on its own**." |
+| `/tumors/glioma` | "Grade is no longer only about how the cells look. **Gene results can now set the grade.**" |
+| `/tumors/astrocytoma` | "A tumor can be **graded 4 on the gene result alone**, even when the cells did not look that way." |
+| `/tumors/glioblastoma` | "Since 2021, a tumor can be called a glioblastoma **on its gene results alone**." |
+| `/tumors/meningioma` | "Either of those two changes makes it grade 3, **whatever the cells look like**." |
+
+**Eight, and not one of the last four carries the phrase the item was scoped with.**
+This is WI-569's §12.18 finding — *a lexicon is a floor, not a fence; two of a
+hundred planted sentences carried no banned word at all* — arriving as **a work
+item's own scope**, which is a place it had not been seen before. A measurement
+taken with a phrase sets the size of the work, and nobody re-measures a number that
+came with the assignment. Re-measure it.
+
+#### The ruling: a rule and its instances are different facts, and only the rule has one owner
+
+The eight are not eight copies of one sentence, and the reason the item did not
+delete seven of them is the ruling:
+
+- **The RULE** — *a grade used to come from the cells alone; since 2021 a gene result
+  can set it on its own* — is one fact about **grading**, and it has one home:
+  **`/tests/pathology-report#what-the-grade-means`**.
+- **An INSTANCE** — *an IDH-mutant astrocytoma is grade 4 if both copies of CDKN2A/B
+  are missing; a meningioma is grade 3 on a TERT promoter change or a CDKN2A/B loss;
+  a tumor with no IDH change and one of three findings is a glioblastoma* — is a fact
+  about **that tumor**, and it belongs to the page whose reader is holding that
+  report. This is §12.10's own split ("the block carries what is universal, the page
+  carries its own slice, **repeated only where it differs**") applied to a fact that
+  has no block.
+- **An ANSWER** is the third reason and the one that keeps three general restatements.
+  `/tumors/low-grade-glioma`, `/tumors/high-grade-glioma` and `/tumors/glioblastoma`
+  each state the general rule under a heading written in the reader's own words about
+  a grade that surprised them — *"Why does my report say grade 4 when the scan looked
+  low grade?"*, *"…when the scan looked milder?"*, *"But my tumor did not look grade
+  4"*. **An answer to the question a section is headed with cannot be a link.**
+  Replacing the answer with the route the page already carries leaves a headed
+  question unanswered, which is worse for that reader than a duplicated sentence.
+
+`/tumors/glioma` is recorded as an instance even though its sentence *is* the general
+rule, because the glioma family spans grades 1 to 4: on the umbrella, "what this
+applies to here" and "in general" are the same sentence (§12.11).
+
+#### Why `/tests/molecular-markers` is NOT the owner
+
+The backlog called the marker page "the obvious owner" and said to explain it if not.
+It is not, on three counts:
+
+1. **The rule is about grading, not about a marker.** The marker page states the same
+   shape of thing **four separate times** — CDKN2A/B, TERT, EGFR, chromosome 7/10 —
+   and means a different fact each time. A page that states a rule once per marker is
+   stating the markers.
+2. **It already routes here.** The sentence after its CDKN2A/B instance is
+   *"[What the grade means](/tests/pathology-report#what-the-grade-means) explains how
+   grades are worked out and why the numbering changed in 2021."* The marker page had
+   already decided who owned the rule.
+3. **The reader who needs the rule is holding a grade, not a gene panel.** Putting it
+   on the marker page puts it behind a document many readers never receive.
+
+And `/tests/pathology-report` is the only one of the eight that states the rule **as a
+change**, with the before-half. *"A gene result can set the grade"* alone is a true
+fact about grading that leaves the reader's actual question — *so why does my report
+disagree with what I was told about the cells?* — unanswered. **The before-half is
+what makes it the rule**, and it is what the other seven are allowed to omit.
+
+#### §12.10's route half was never the hole, and the hole was a premise nobody asserted
+
+Measured before anything was edited: **all eight already link to
+`/tests/pathology-report` in their own prose.** Two reach the grading section by
+fragment. So no page needed a route added, and the item that looked like "nine pages
+to rewrite" was nothing of the kind.
+
+What was missing was a **written owner** and a gate on the premise. **Nothing in the
+repo asserted that the owner still states the rule.** Delete those two sentences and
+seven pages go on linking to a section that no longer answers, the whole ruling
+becomes false, and not one test changes colour. That is WI-576's finding in a second
+costume — there, *"the page defines the term inline"* lived in a message string — and
+it is the same instruction: **assert the premise a decision rests on, not facts about
+it.**
+
+#### What was actually edited, which is four sentences
+
+- **`glossary/cdkn2a-b-deletion`** was the one real double-exposure: its second
+  sentence was the rule, and it fires as a tooltip on every page that says the term,
+  including the hub that answers its own headed question with the same words. Per
+  §12.26's first shape — *if the sentence lives on more than one page, the ENTRY is
+  the copy* — the sentence went and the first one stayed, because *"two genes that put
+  the brakes on cell division"* is the only place in the corpus that says what the
+  genes **do**, which is why suppressing the tooltip was refused. **The entry went
+  from grade 7.7 to 3.7.** With the overlap gone, WI-576's `DeliberatelyShared`
+  record was deleted — deliberately, not by test failure, though its converse check
+  would have reded on it.
+- **THE GENE COUNT WAS WRONG ON THREE PAGES, NOT ONE.** The backlog named
+  `/tumors/high-grade-glioma`. Scanning for the **shape** rather than the sentence
+  found `/tumors/astrocytoma` saying the same *"a gene called CDKN2A/B"*, and
+  `/tumors/meningioma` saying *"a gene called CDKN2A or CDKN2B"* — **a singular
+  article in front of two gene names, which is the same error wearing the plural's
+  clothes** and is the one a sentence-shaped search cannot see. The meningioma fix
+  also repaired that sentence's pronoun: *"Either one"* sat between two gene names
+  and two "things" and could attach to either pair.
+- **AND THE FIRST FIX FOR THE TWO GLIOMA HUBS WAS ITSELF A CLAIM THE SOURCES DO NOT
+  CARRY.** They were corrected to *"both copies of two genes, CDKN2A/B, are
+  missing"* — which asserts both copies of **both** genes, where the criterion is
+  homozygous deletion of CDKN2A **and/or** CDKN2B, and where `/tumors/meningioma`
+  now correctly said *"or"*. So the corpus contradicted itself about one criterion.
+  Rewriting the hubs to say *"or"* was **also** refused, because §12.1 governs: the
+  repo's own cited quotes carry the report label (*"homozygous CDKN2A/B deletion…
+  diagnostic of a CNS WHO grade 4 tumor"*) and not the and/or semantics, so
+  spelling it out would outrun the citation. **What shipped is that the two hubs
+  carry the label the reader's report carries and make NO count claim at all**
+  — *"both copies of CDKN2A/B missing"* — while the count and what the genes do stay
+  with `glossary/cdkn2a-b-deletion` and `/tests/molecular-markers`. Which is this
+  section's own ruling applied to its own defect: the hub carries its instance, the
+  detail has an owner. The singular-gene ban keeps its teeth either way, and the
+  converse canary (*something, near the term, says there are two*) fell from five
+  files to three — the three that own the fact.
+
+  > The and/or nuance is now the only thing in this area with no home: no cited
+  > source in the repo states it, and three files word it three ways
+  > (*"two neighboring genes are gone"*, *"CDKN2A or CDKN2B"*, *"two genes"*).
+  > Raised for `/pm` rather than settled here on an uncited claim.
+
+#### One defect, three times, in one item — and it is the lesson worth carrying
+
+**A POSITIVE CONTROL THAT DOES NOT DISCRIMINATE BETWEEN THE PATTERNS IT IS EVIDENCE
+FOR PINS NOTHING.** WI-579 shipped that mistake three separate times and each one was
+caught by a different instrument, which is the only reason all three are known:
+
+| | found by | what it cost |
+|---|---|---|
+| the floor scan's single caught control | **the break harness** | a survivor: 34 of 36 |
+| `saysTwo` counting per *(file, pattern)* | **reading the code** | a canary whose message named the wrong unit |
+| `ThePairAsOneGene`'s two controls, both matching only its first pattern | **`/review`** | three of four patterns pinned by nothing; deleting two left the suite green |
+
+The fix is the same in all three and it is cheap: **one control per pattern, each
+measured to match exactly one, plus an assertion that the control table is in the
+vocabulary's order** — a reorder leaves every per-row match intact and only the order
+can see it. The expensive part is never writing the control; it is discovering, later,
+which pattern a control actually pinned.
+
+**AND A VOCABULARY DERIVED FROM THE CORPUS HAS TO BE MATCHED THE WAY THE CORPUS
+WRITES IT.** `/review` found that `grade is no longer only` matched **zero of 168
+files**: the corpus's only occurrence is sentence-initial and bolded — *"**Grade is no
+longer only about how the cells look.**"* — and the pattern had been typed from a
+mid-sentence paraphrase. A dead pattern in a list of eight is invisible behind a
+**summed** floor, because any seven of them still reach the total. Two fixes, and the
+second is the general one:
+
+- the scan ignores case, which also closes the same hole in
+  `(?:whatever|however) the cells look` and `the grade does not come only`;
+- **the summed floor is replaced by eight per-file counts.** `hits >= 16` could not
+  see a pattern die, and — because it skipped every match on a recorded page — could
+  not see a **ninth statement added to a page that already had one** either. Eight
+  exact numbers catch an addition, a removal and a dead pattern, and name the file.
+
+**A WHOLE-FILE READ IS NOT A READ OF THE PROSE.** The route check used `Raw()`, which
+includes front matter — hundreds of lines of source notes on these pages. A
+`# cross-ref: /tests/pathology-report` comment up there would have satisfied it while
+the reader had no link at all. It reads `ReaderText(Raw())` now, still uncomposed so
+WI-570's inherited-route finding stays covered.
+
+**AND A CANARY CAN BE VACUOUS IN THE EXACT WAY IT EXISTS TO PREVENT.** "No file
+contains `zzqqxnotinthecorpusxqqzz`" passes just as happily when the helper returns
+`""` for all 168 files — which is the failure the canary pair was written to catch. It
+is a round-trip now: the literal is absent from a real file and **present** when
+appended to one, which proves the helper preserves text rather than proving nothing.
+
+**WHAT WAS REFUSED, and why it belongs here rather than in the code.** `/review`
+proposed making the `AnAnswer` reason mechanical by asserting the heading contains
+" my " — true of all three answers and of none of the other five. Declined: that is
+the question-mark test wearing a different word. A heading can be in the reader's
+voice without "my" (*"Is it cancer? What does its grade mean?"*), so the assertion
+would eventually red on correct writing, which is WI-509's rule about a guard that
+fails a correct page. The honest alternative is the one taken: the **failure message**
+now says that updating the heading string is not the fix and that a renamed heading
+means the reason has to be re-decided.
+
+#### Two more things this item got wrong on the way
+
+**A POSITIVE CONTROL SATISFIED BY A DIFFERENT PATTERN THAN THE ONE UNDER TEST PINS
+NOTHING, AND THE BREAK HARNESS IS WHAT SAID SO.** The floor scan shipped with one
+caught control — *"In a few tumor types a gene result sets the grade on its own,
+whatever the cells look like"* — asserted as `Assert.Contains(vocabulary, p =>
+IsMatch(control, p))`. Blanking the pattern `sets? the grade on its own` left the
+sentence caught by `(?:whatever|however) the cells look`, the assertion passed, and
+**the mutation survived on both endings**: 34 of 36 caught, and the two misses were
+one defect in the guard rather than anything about the corpus. §12.18 says a guard
+never seen to fail has not been shown to work; this is one turn further on — **a
+guard seen to fail for the wrong reason has not been shown to work either.** Now one
+control per pattern, each *measured* to match exactly one, plus an assertion that the
+control table is in the vocabulary's order, because a reorder leaves every per-row
+match intact and only the order can see it.
+
+**A CHARACTER TEST IS NOT A PROPERTY, AND THE PREMISE WAS GOING TO BE ASSERTED
+WRONG.** The reason three pages may restate the rule is that the section is headed
+with the reader's own question — so the obvious gate is "the heading above the
+sentence ends with `?`". Measured before it was written: **four of the eight sit under
+statement headings**, including `/tumors/glioma`, whose `##` *is* a question while the
+`###` the sentence lives under is not, and `/tumors/glioblastoma`, whose heading is an
+objection with no question mark at all. "Ends with a question mark" is a test about a
+character; "is written in the reader's own words" is a judgement. **The record names
+the heading per statement instead**, and the gate asserts the sentence is still under
+*that* heading — mechanical, and it reds when either half moves. §12.24's "refuse the
+clause, not the word it starts with", arriving as punctuation.
+
+**TWO GRADERS DISAGREED AND THE REPO'S WAS RIGHT.** Grading all 105 glossary
+definitions with `ReadabilityAnalyzer` reported **38 over 6.0, worst 16.1**;
+ContentCheck reported **35 of 101, worst 9.3**. The difference is not a bug: ContentCheck
+grades a definition only at **20 words or more**, with the reason written beside it —
+*"Flesch-Kincaid on a 25-word definition is too noisy to fail a build on"*. The three
+extra were short entries where FK is noise (`pcv` is three drug names). **The figure
+to carry is the tool's.** WI-416 ("one reading-level grader, not two") is about
+exactly this, and the cost of the second grader here was a wrong number that nearly
+reached a doc.
+
+#### WI-571's needle defect in a fourth costume, and this one passed instead of failing
+
+The pre-deploy smoke reported two of this item's OLD sentences as **already absent
+from production** — a site that certainly still shipped them. The cause is
+`GlossaryMarker`: `CDKN2A/B` is an alias of the entry, so on a page where the tooltip
+fires the first occurrence is replaced with button markup **in the middle of the
+sentence**:
+
+```
+both copies of a gene called <button ... popovertarget="def-cdkn2a-b-deletion">CDKN2A/B</button><span id="def-cdkn2a-b-deletion" popover>…
+```
+
+A needle spanning the term cannot match the rendered page. The first two costumes
+were WI-571's (a needle including a sentence's first word) and WI-576's (a needle
+crossing the source's hard wrap *inside* a tooltip panel); **the new half is that it
+failed in the safe-looking direction.** An absence check that cannot see the thing it
+is looking for prints `ok`, and a pre-deploy run whose job is to FAIL reads as
+if those two needles discriminated when they could not have. The post-deploy run
+would then have printed `ok` for the same two needles whatever shipped.
+
+So: **a needle must stop short of any term the glossary can fire on**, and the fix
+that generalises is not a shorter needle but a **counted** one — the smoke now
+asserts each prose needle appears **exactly once**, which is what turns "present
+somewhere" into "this sentence changed". Case and punctuation did the
+discriminating here: the short needle `both copies of two genes,` does not match the
+panel's own `Both copies of two genes that put the brakes…` on the same page.
+
+> **And the finding that is somebody else's item:** a glossary definition is
+> reader-facing prose that ContentCheck **prints a grade for and does not gate** —
+> `(not gated)` — and **35 of the 101 it grades are over 6.0**. That is WI-575's hole
+> in a third surface and WI-578's shape exactly, which took page `description` from 41
+> over the limit to 0 and gated it. Raised, not fixed here.

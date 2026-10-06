@@ -428,8 +428,8 @@ situation.
 
 **Two things can change a grade without anything looking different under the
 microscope.** One is a change in something called the TERT promoter. The other is losing
-both copies of a gene called CDKN2A or CDKN2B. Either one makes it grade 3,
-whatever the cells look like.
+both copies of CDKN2A or CDKN2B, which are two different genes. Either of those
+two changes makes it grade 3, whatever the cells look like.
 [What the markers mean](/tests/molecular-markers) explains those words.
 
 **Why "benign" is a poor word for this.** It means "not cancer", and people

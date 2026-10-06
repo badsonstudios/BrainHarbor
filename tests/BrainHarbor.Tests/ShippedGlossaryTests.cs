@@ -444,14 +444,24 @@ public sealed class ShippedGlossaryTests
         string Page, string Entry, string[] Shared, string Why);
 
     /// <summary>
-    /// The two collisions WI-576 swept up that are NOT restated definitions, and
-    /// where both available fixes would make the site worse.
+    /// The collisions WI-576 swept up that are NOT restated definitions, and
+    /// where every available fix would make the site worse.
     ///
-    /// Suppressing the tooltip is wrong in both: neither page glosses the term
+    /// Suppressing the tooltip is wrong here: the page does not gloss the term
     /// the entry defines, so the tooltip is the only place that reader learns
-    /// what the word means. Rewording the page is wrong too — both sentences are
+    /// what the word means. Rewording the page is wrong too — the sentence is
     /// correct, plain and doing a job — and editing correct prose to settle a
     /// shingle is how a guard starts shaping the content instead of checking it.
+    ///
+    /// <para><b>WI-576 recorded TWO and WI-579 took the second away</b>, which is
+    /// what a handed-on record is for. <c>tumors/high-grade-glioma</c> ×
+    /// <c>glossary/cdkn2a-b-deletion</c> was the 2021 grading rule, stated by the
+    /// hub and restated by the entry; §12.27 settled that the rule's owner is
+    /// <c>/tests/pathology-report#what-the-grade-means</c> and that the entry's job
+    /// is what no page says, so the entry's second sentence went and the overlap
+    /// went with it. <b>Deleted deliberately rather than by test failure</b> — the
+    /// converse check below reds on a stale record, so this would have failed
+    /// loudly, and being told by a guard is not the same as having decided.</para>
     /// </summary>
     private static readonly SharedWithTheGlossary[] DeliberatelyShared =
     [
@@ -466,22 +476,6 @@ public sealed class ShippedGlossaryTests
             + "already strips the 'What to ask your team' section; this is the same "
             + "phrase leaking outside that section. Same family as WI-511 keeping "
             + "/seizures/what-to-do's correct 'not automatically bad news'."),
-
-        new("tumors/high-grade-glioma", "glossary/cdkn2a-b-deletion",
-            [
-                "grade on its own even when the cells",
-                "on its own even when the cells look",
-                "the grade on its own even when the",
-            ],
-            "A SHARED FACT WITH FOUR WORDINGS, and deciding who owns it is bigger than "
-            + "this item. The 2021 rule that a gene result can set the grade on its own "
-            + "is stated by /tests/molecular-markers, /tests/pathology-report, this hub "
-            + "and the entry. The page does gloss the marker ('both copies of a gene "
-            + "called CDKN2A/B are missing') but the entry's unique content is what the "
-            + "genes DO ('put the brakes on cell division'), so suppressing loses the "
-            + "definition. Raised as its own item rather than recorded a second time — "
-            + "the shape WI-569 used for the planned-subtotal three wordings it handed "
-            + "to WI-577."),
     ];
 
     /// <summary>Every curated page, as (slug relative to `pages/`, raw file text).</summary>
