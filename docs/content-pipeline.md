@@ -9264,3 +9264,302 @@ panel's own `Both copies of two genes that put the brakes…` on the same page.
 > `(not gated)` — and **35 of the 101 it grades are over 6.0**. That is WI-575's hole
 > in a third surface and WI-578's shape exactly, which took page `description` from 41
 > over the limit to 0 and gated it. Raised, not fixed here.
+
+### 12.28 The glossary as the probe's SUBJECT, and the two reader surfaces it has (WI-580)
+
+§12.26 made every page's prose checkable against every glossary definition and
+said plainly what it had not done: **nothing ever passes a glossary entry as the
+subject**, so an entry that restates another entry, or a block, is in no entry in
+either direction. It handed four collisions here, and closed by handing over the
+residual duplication its own fix had left — `/tumors/dipg` still shipping a
+sentence the `pons` tooltip restated, with the two copies no longer sharing eight
+words because the entry had been rewritten.
+
+**The four re-measure unchanged on today's tree**, which was worth checking and
+not worth assuming: WI-579 edited `glossary/cdkn2a-b-deletion` in between, and
+§12.26's own closing lesson is that a measurement is only true of the tree it was
+taken on.
+
+| | | |
+|---|---|---|
+| `glossary/adult-type` × `glossary/pediatric-type` | 7 windows | entry × entry |
+| `glossary/h3-g34` × `glossary/h3-k27-altered` | 10 windows | entry × entry |
+| `glossary/astrocyte` × `glossary/oligodendrocyte` | 2 windows | entry × entry |
+| `glossary/status-epilepticus` × `blocks/escalation` | 2 windows | entry × block |
+
+#### The ruling has two halves because an entry has two reader surfaces
+
+§12.26's rule is **the reader, not the file**, and it worked because a page's
+prose and a tooltip panel are one screen: whether the reader meets a definition
+at all is a property of the page, and it is computed rather than allowlisted. Ask
+the same question of an entry as the SUBJECT and it splits, because an entry
+reaches a reader two different ways.
+
+- **`/glossary` renders `GetTerms()` UNCONDITIONALLY** — every entry, every
+  definition in full, grouped A–Z (`Pages/Glossary.cshtml`). So for an
+  **entry × entry** collision the answer to *"does a reader meet both?"* is
+  **always yes**, and it cannot be computed away. `h3-g34` and `h3-k27-altered`
+  are not merely both on that page; they are **adjacent on it**, both under "H".
+- **A tooltip fires per page**, which is the surface §12.26 already governs. So
+  for an **entry × block** collision the question is whether a page that
+  INCLUDES the block also fires the entry's tooltip — and that is computable.
+
+**The measurement is what forces the split, and it is counter-intuitive in both
+directions.** Of the seven entries in the four collisions, **five fire no tooltip
+on any of the 55 pages** (they are in WI-581's set of 26). Ask only the tooltip
+question and all four collisions return *"a reader meets both on zero pages"* and
+the item is closed having found nothing. That answer is **wrong for the three
+entry × entry pairs** — `/glossary` is the surface — and it is **right for the
+entry × block one**, for a reason nobody predicted:
+
+> **`blocks/escalation` has the blast radius and ZERO reader exposure.** The block
+> composes onto **25 pages** and *status epilepticus* is said on **none of them**.
+> The one page that fires the tooltip, `/seizures/living-with`, does not include
+> the block. The backlog asked for this collision to be checked first and
+> separately *because* of the blast radius; checking it first is what found that
+> the blast radius is the reason there is nothing there. **A block's reach is a
+> reason to look, not a finding.**
+
+#### Half one: a parallel pair MAY share its frame, and must share it verbatim
+
+A pair of definitions that exists to be told apart *should* read in parallel. If
+`adult-type` says *"sorted by their biology, not by the age of the person who has
+them"* and `pediatric-type` says the same thing in different words, a reader
+holding both — and on `/glossary` every reader holds both — **cannot tell whether
+the difference in wording is a difference in meaning.** The shared frame is what
+makes the difference legible; it is the control variable.
+
+So a bare shingle gate over `glossary/` is refused, and refused on the merits
+rather than as an exemption: it would demand that correct writing be made worse,
+and the only way to satisfy it is to paraphrase one side — which is the move
+§12.26 closed by naming. **A paraphrase does not reduce drift risk; it is the
+beginning of drift.** The pons pair is the proof, in this corpus, inside §12.26's
+own remedy.
+
+What is gated instead is the **conditions**, not the overlap:
+
+1. **The overlap size is PINNED, exactly.** A record says these two share exactly
+   *n* windows. Reword either side and *n* moves and the test reds. **That is the
+   drift detector a shingle allowlist cannot be** — `AllowedShingles` sets
+   forgive an overlap, and forgiving it is the same as not seeing it.
+2. **The converse is asserted from the corpus.** Every record must still match a
+   real collision at exactly its recorded size, or it is reported stale. The shape
+   WI-578 left standing for `DescriptionsCleanDirectories` and §12.26 for
+   `DeliberatelyShared`, for the identical reason: *a list only ever read as "skip
+   these" cannot tell you one of them stopped being true.*
+3. **Each side must say something the other does not.** The premise the licence
+   rests on is that the pair HAS a distinguishing half; a pair that does not is
+   one entry with two names. §12.27: **assert the premise a decision rests on, not
+   facts about it.**
+
+All three pairs are licensed under that rule, and the frame each shares is the
+right one: the biology-not-age frame for the two type labels, the histone frame
+for the two H3 findings, the helper-cell-in-the-brain-and-spinal-cord frame for
+the two glial cells. Each already carries its distinguishing half, and `h3-g34`
+carries an explicit cross-reference to its partner, which is the pair doing its
+job out loud.
+
+#### Half two: for an entry × block pair the discriminator is POSITION, and it is computable
+
+§12.26 refused a suppression on `/tumors/ependymoma` and wrote the reason in a
+comment: the page *"NAMES the term before the subsection that describes it, so the
+tooltip is a gloss at first mention rather than an echo."* **That is not a fact
+about one page. It is the rule**, it is positional, and `GlossaryMarker` fires on
+the FIRST occurrence only, so it is decidable:
+
+> For a page that includes the block which owns a fact — **if the first occurrence
+> a tooltip could fire on comes BEFORE the block, the tooltip is a gloss at first
+> mention and must fire. If it comes at or after the block, the tooltip echoes
+> prose the reader has just read, and the term is suppressed on that page.**
+
+Measured over the composed pages, the split is bimodal and not close. The echo
+cases put the term **2 characters** past the block's start — it is the block's own
+second word, `A tumor board is a meeting…`. The gloss cases put it **13 or 28
+characters** before — the sentence immediately above the include — or thousands of
+characters earlier, in a different section.
+
+| | includers | gloss (keep) | echo (suppress) | already suppressed by hand | term never said |
+|---|---|---|---|---|---|
+| `blocks/tumor-board` | 17 | 3 | **9** | 5 | 0 |
+| `blocks/posterior-fossa-syndrome` | 4 | 3 | 0 | 0 | 1 |
+| `blocks/escalation` | 25 | 0 | 0 | 0 | 25 |
+
+**The rule agrees with every file that wrote down a reason, and that is the test
+it had to pass.** §12.26: *a guard going red on seven files that each wrote down
+why is the guard being wrong, not seven files.* All three
+`posterior-fossa-syndrome` includers assert that tooltip fires on purpose
+(`EpendymomaPageTests`, `MedulloblastomaPageTests`), and the position rule says
+gloss on all three — **zero suppressions, arrived at by measurement rather than by
+exempting the tests.** `/tests/mri` asserts `def-tumor-board` fires as contract
+item 9, and it is one of the three glosses. Not one reasoned file reds.
+
+**And it corrects §12.26's own number.** That section recorded *"five authors
+reached the right answer independently and twelve including pages never got it."*
+Three of the twelve are the ependymoma shape — a decision, not an omission. The
+figure was a subtraction (17 − 5) and §12.24's warning applies to it unchanged:
+**a set defined by subtraction is redefined by every new kind of X.** Nine pages
+got the suppression here, not twelve.
+
+**The gate is a COMPOSITION rule, not a shingle rule, and that is the point of
+it.** *No shingle check can see a paraphrase* — `glossary/tumor-board` and
+`blocks/tumor-board` state the same three facts in two voices and collide on zero
+windows. The position rule never looks at the words. It asks where the reader's
+first meeting with the term is, which is the question §12.26's rule was always
+asking, one level up. **A paraphrase is gated by gating the composition.**
+
+The marker stays hand-written on each page: three test files assert
+`DoesNotContain("!%")` over `SharedSources()`, because a marker in a block
+suppresses that term on every including page at once, silently (WI-510). §12.26
+kept that rule and said hand-copying was now safe *"because this item ships the
+gate that reds on the omission"* — and for `tumor-board` it did not, because the
+entry had been paraphrased out of the shingle gate's view. **This is the gate that
+actually reds on the omission.**
+
+#### The residual duplication, decided per pair — and the live medical error in it
+
+§12.26 handed over three pairs where the remedy had changed the WORDS and not the
+OWNER. All three are entry-vs-page or entry-vs-block duplications of a FACT, which
+is why no gate had reported them since.
+
+**`glossary/pons` × `/tumors/dipg` × `/tumors/diffuse-midline-glioma` — and the
+two pages were WRONG.** The entry, corrected at WI-576's /review, reads *"The nerve
+paths for **eye movement**, hearing, speaking, swallowing and **balance** pass
+through it."* Both pages still ship *"The pons carries the nerves for **vision**,
+hearing, speech, swallowing and **movement**."* The visual pathway does not pass
+through the pons; CN VI and the pontine gaze centre move the eye, and CN VIII
+carries hearing **and balance**.
+
+**The pages refute themselves, which is the evidence that settles it without an
+appeal to anatomy.** Each page's own symptom list — sourced, and three sections
+below the claim — says *"Double vision, or eyes that do not move together"* and
+*"Trouble with balance or walking."* So the page already tells the reader the
+symptom is eye MOVEMENT and already names balance as a consequence **with nothing
+in its cause sentence to explain it**. The cited source is the same on both pages
+and on the entry, and its own symptom list is *"Eye problems such as blurred
+vision, double vision, drooping eyelids, uncontrolled eye movements"* and *"Loss of
+balance"*. Its anatomy sentence does say *vision* — **so this is §12.1 with the
+source on the wrong side of the correction**, and the resolution is that *vision*
+is the source's loose label for the symptom a parent sees, while the source's own
+symptom list names the mechanism. Publishing *vision* invites a reader to expect
+sight loss, which is not this tumor's story and which the page's own list
+contradicts.
+
+**AND `movement` WAS DROPPED, WHICH WAS THIS ITEM'S OWN ARGUMENT RUN IN REVERSE.**
+The first fix replaced *vision* with *eye movement* (right) and also dropped
+*movement* (wrong), on the reasoning that the entry /review shipped at WI-576 does
+not carry it and each page's symptom list covers weakness anyway. **/review refused
+that and was right.** Both pages still list *"Weakness in an arm and a leg"*, so a
+cause sentence without *movement* cannot explain a symptom the same page names --
+which is **precisely the self-refutation that settled *vision*,** pointed the other
+way. And unlike *vision*, the source's *movement* is not loose labelling: the
+corticospinal tract runs through the basis pontis, and long-tract weakness is part
+of this tumor's classic triad. So restoring it does not outrun the citation, **it
+is the citation** -- and it is undoing this item's own deletion rather than adding
+a sixth claim, because the pre-item pages already said *movement*.
+
+> **The lesson is narrower and more useful than "check the sources".** The symptom
+> list is what refuted *vision* and it is what refuted dropping *movement*, in the
+> same two pages, in the same session, to opposite conclusions. **A page's own
+> downstream list is a two-sided test**: it convicts a cause the page does not
+> support, and it convicts a cause list that cannot explain what the page goes on to
+> name. Only one side of it was used the first time.
+
+It ships as a **second sentence** rather than a sixth list item: *"So do the paths
+for movement in your arms and legs."* Two reasons, both this corpus's own rules --
+*"eye movement ... and movement"* in one list is a comprehension risk at a
+6th-grade reading level, and both clauses say **paths**, so no nerve-versus-tract
+distinction is asserted that the source does not draw (§12.1, WI-579's finding one
+section up). The entry takes the same sentence, because the three copies have to
+agree or the set gate reds -- and its grade **fell from 4.2 to 3.7**.
+
+**The owner is the PAGE on those two, and the entry keeps firing elsewhere.** Both
+pages define the term inline at its very first mention — *"a tumor in the pons,
+part of the brain stem"* — which is §12.26's second shape exactly, and both answer
+the anatomy under a heading that asks for it: *"Where does it grow, and why does it
+cause these symptoms?"* §12.27's third reason governs: **an answer to the question
+a section is headed with cannot be a link**, and it cannot be a tooltip either. So
+`!%pons%` is suppressed on both, and the entry still fires on
+`/where-your-tumor-is`, where it names the pons as one of three parts of the brain
+stem and explains none of them — **there the entry is the only explanation that
+reader gets**, which is why trimming the entry instead was refused.
+
+**And the suppression takes the pair out of the shingle gate's view, so the premise
+is asserted instead.** §12.26 named this exact hazard: delete the defining sentence
+and leave `!%term%` in place and every guard goes quiet at once. The gate here is
+not a shingle — **it is the SET of functions each copy names**, extracted from the
+page and from the entry and asserted equal. That is what catches *vision* against
+*eye movement* and a missing *balance*; a shingle cannot, a word ban is a floor and
+not a fence (§12.18), and set equality is the one form that sees a paraphrase of a
+list.
+
+**`glossary/tumor-board` × `blocks/tumor-board`** — the block is the owner on the
+nine echo pages, by the position rule above. The entry is unchanged and keeps
+firing on the three gloss pages and on the two pages that fire it without including
+the block (`/tests/follow-up-scans`, `/tests/pathology-report`), where it is the
+only copy.
+
+**`glossary/posterior-fossa-syndrome` × `blocks/posterior-fossa-syndrome`** — no
+change, and the reason is the rule rather than an exemption: all three includers
+name the term before the block, so all three tooltips are glosses.
+
+**`glossary/status-epilepticus` × `blocks/escalation`** — recorded with its two
+windows pinned and no edit, because **no reader meets both** and the two copies
+each have a reader who needs them whole. An entry defining *status epilepticus*
+without the five-minute rule defines nothing, and an ambulance tier without it is
+not a tier. The hazard here is **disagreement, not repetition**, and the pinned
+count is the instrument for disagreement: change the block's threshold without
+changing the entry's and the count moves and the test reds. Putting 25 suppression
+markers on the corpus to protect no reader was the alternative, and it is refused.
+
+#### What /review found, and four of the six were assertions that could not fail
+
+Six findings, every one confirmed by measurement before anything was edited, and
+**four of them are the same defect class WI-579 shipped three times** (§12.27): an
+assertion that reads as proof and cannot fail. It is now five items running, so it
+is worth stating as a checklist rather than as a story.
+
+| what it was | why it could not fail |
+|---|---|
+| `Frame.Except(Frame).Count() == 0`, the control for the parallel-pair premise check | `X.Except(X)` is empty for **every** `X`, including the empty set. The premise check had still never been seen to fire. The fix is an **asymmetric** probe: `Frame` against `Frame + " Adults usually have one of these."`, so one side has nothing of its own and the other does. |
+| `markersSeen <= markersOnDisk`, the suppression gate's "floor" | A **ceiling**. Measured 109 against 111, and a scan degraded to one marker on one page satisfies both `1 > 0` and `1 <= 111`. A *derived* number cannot replace it either, because a degraded scan degrades both sides. It has to be a **literal**: 109 markers on 35 pages. |
+| the per-direction collision counts | Counted over the **record array**, which is a fact about a literal 200 lines up and can only move when somebody edits that literal — while the comment called it the collision count. Tallied from the measured pairs now. |
+| `Assert.Contains("brain stem", firstMention)` | Two splitting defects: headings were not stripped, and `(?<=[.!?]) ` does not split after a **bold-terminated** sentence, because the `.` is followed by `*`. So `firstMention` was a heading plus two sentences. **This version was itself the fix for a weaker one** — and the attack still walked through it: *"\*\*DIPG is a fast-growing tumor in the pons.\*\* It is a part of the brain stem, and …"* leaves the reader who meets the word with no gloss in that sentence, and the assertion returned true. §12.10's phrase-versus-position shape, surviving the fix written to remove it. |
+
+**AND THE DELETION OF THREE GUARDS TOOK A COVERAGE NOBODY NOTICED.** Each of the
+three page-local copies carried `Assert.NotEmpty(suppressed)`. The corpus-wide gate
+that replaced them is conditional on a marker **existing**, so it cannot see one
+**deleted** — and `ShippedGlossaryTests` cannot either, because /review measured
+**five markers whose entry overlaps its page by zero shingles**
+(`!%transformation%`, `!%chemoradiation%`, `!%pseudoprogression%` on
+`/tumors/high-grade-glioma`, `!%astrocyte%` on `/tumors/astrocytoma`,
+`!%diffuse glioma%` on `/tumors/glioma`). Delete any of them and every guard in the
+repo stays green. **That is this section's own argument — a shingle cannot see a
+paraphrase — arriving inside this item's own supersession**, and it is the strongest
+case for the one line that fixes it: an exact count closes it corpus-wide, for all
+109 markers rather than for the three pages that happened to have a copy.
+
+> **The rule to carry: when a wider gate supersedes a narrower one, enumerate what
+> the narrow one ASSERTED, not what it was for.** §12.26 asked for WI-576's
+> entry-reachability test to be *"superseded or absorbed, not left beside a wider
+> gate saying the same thing"*, and this item did that for three copies — correctly,
+> and while silently dropping a fourth assertion none of them was named for. A
+> supersession is a merge, and the thing to diff is the assertion list.
+
+Two smaller ones, both measured and both the same shape as each other: the
+function-set extractor used `IndexOf` (so *"under supervision"* reported **Vision**
+and *"causing imbalance"* reported **Balance**) and consumed only the **first**
+occurrence (so *"Eye movement and eye movement"* reported a spurious **Movement**,
+which reds the gate on correct writing — §12.8's worse-than-no-rule direction).
+**A set comparison is only evidence if the extractor does set MEMBERSHIP**, which
+means whole-word matching and every occurrence consumed. The lookarounds are
+`GlossaryMarker.BuildMatchers`' own, and all three shipped sentences were measured
+before and after to confirm the fix moved no set.
+
+> **The question to carry forward.** §12.26 asked which pages are in no entry at
+> all and the answer moved its gate to a different file. This item asked **which
+> reader SURFACE the subject reaches**, and the answer split one gate into two:
+> a tooltip is per-page and computable, `/glossary` is unconditional and is not.
+> **Before writing a gate over a set, ask how many ways a member of that set
+> reaches a reader** — because a property that is computable on one surface can be
+> vacuous on the other, and five of the seven entries here reach no reader through
+> a tooltip at all.

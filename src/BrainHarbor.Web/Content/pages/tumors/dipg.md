@@ -115,7 +115,7 @@ disclaimers: [medical]
 
 ## The short version
 
-**DIPG is a fast-growing tumor in the pons, part of the brain stem.** It is most
+!%pons%**DIPG is a fast-growing tumor in the pons, part of the brain stem.** It is most
 often found in children. Most tumors called DIPG are now called [diffuse midline
 glioma](/tumors/diffuse-midline-glioma), H3 K27-altered, and are grade 4. Surgery
 cannot safely remove it. **Radiation is the main treatment.** Ask about clinical
@@ -165,9 +165,10 @@ For a DIPG with the H3 K27 change, it does not change the grade.
 
 ## Where does it grow, and why does it cause these symptoms?
 
-**It grows in the pons**, in the brain stem. The pons carries the nerves for
-vision, hearing, speech, swallowing and movement. It also helps control things
-the body cannot do without, such as breathing and heartbeat.
+**It grows in the pons**, in the brain stem. The nerve paths for eye movement,
+hearing, speech, swallowing and balance pass through it. So do the paths for
+movement in your arms and legs. It also helps control things the body cannot do
+without, such as breathing and heartbeat.
 
 So a tumor there shows up in the eyes, the face, swallowing, speech and balance.
 As the pons swells, it can also stop fluid draining from around the brain. The
@@ -229,7 +230,7 @@ gene result on paper.
 
 - **Brain stem glioma.** An older, broader name. It can include low-grade tumors
   that are not DIPG, so it is worth asking which one yours is.
-- **Diffuse midline glioma, H3 K27M-mutant.** The 2016 name for the same tumor.
+- **Diffuse midline glioma, H3 K27M-mutant.** The 2016 name for the same tumor.!%tumor board%
 
 ## How is it usually treated?
 

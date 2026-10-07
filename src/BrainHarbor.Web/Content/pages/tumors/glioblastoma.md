@@ -249,7 +249,7 @@ this page is yours whatever the older paperwork called it.
 
 That is not just filing. The names were separated because IDH-mutant tumors
 behave differently, and the treatment conversation is not the same. It is worth
-asking your team to confirm which one applies to you.
+asking your team to confirm which one applies to you.!%tumor board%
 
 ## How is it usually treated?
 

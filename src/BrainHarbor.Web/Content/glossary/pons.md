@@ -7,4 +7,5 @@ sources:
 ---
 
 A part of the brain stem. The nerve paths for eye movement, hearing, speaking,
-swallowing and balance pass through it.
+swallowing and balance pass through it. So do the paths for movement in your
+arms and legs.

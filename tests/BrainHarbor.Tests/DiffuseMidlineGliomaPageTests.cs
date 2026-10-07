@@ -674,10 +674,23 @@ public sealed class DiffuseMidlineGliomaPageRenderTests : IClassFixture<WebAppli
     {
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
-        foreach (var slug in new[] { "pons", "thalamus", "palliative-care" })
+        foreach (var slug in new[] { "thalamus", "palliative-care" })
         {
             Assert.Contains($"def-{slug}", html, StringComparison.Ordinal);
         }
+
+        // AND `pons` DELIBERATELY DOES NOT, since WI-580 (§12.28) -- the same decision
+        // as /tumors/dipg and for the same reason. This page defines the term inline
+        // at its first mention ("when it sits in the pons, a part of the brain stem")
+        // and answers what the pons carries in its own "where does it grow, and why
+        // does it cause these symptoms" bullet, beside the thalamus and spinal-cord
+        // bullets.
+        //
+        // `thalamus` above is NOT the same shape, which is why it stays: that bullet
+        // names the part and deliberately explains nothing ("what you notice depends
+        // on the exact spot, so ask your team"), so its tooltip is the only
+        // explanation that reader gets.
+        Assert.DoesNotContain("def-pons", html, StringComparison.Ordinal);
 
         // The H3 K27 entry's tooltip says "called a diffuse midline glioma". On
         // this page that is the page defining itself in a popover (WI-533).
