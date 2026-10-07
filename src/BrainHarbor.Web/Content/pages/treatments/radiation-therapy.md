@@ -140,7 +140,8 @@ Here is what happens, in order.
    warm washcloth on your face.** You can see through it and breathe through it
    the whole time, and it does not hurt.
 4. Over a few minutes the mesh cools, hardens and holds that shape. That is
-   your mask. It is yours, and it stays at the center between visits.
+   your mask. It is yours, and it stays at the center between visits. You may
+   see it called a radiation mask.
 5. You have a CT scan lying in the mask, in the exact position you will be
    treated in. You may have a dye through an IV line in your arm to make the
    pictures clearer.

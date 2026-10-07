@@ -479,11 +479,10 @@ public sealed class ShippedGlossaryTests
     ];
 
     /// <summary>Every curated page, as (slug relative to `pages/`, raw file text).</summary>
-    private static List<(string Slug, string Text)> EveryPage() =>
-        [.. CuratedPage.AllPages()
-            .Where(p => p.Slug.StartsWith("pages/", StringComparison.Ordinal))
-            .Select(p => (Slug: p.Slug["pages/".Length..], p.Text))
-            .OrderBy(p => p.Slug, StringComparer.Ordinal)];
+    // PROMOTED AT WI-581 to `CuratedPage.ReaderPages()`: this filter existed three
+    // times in two files, which is §12.8's factor-at-the-second-use rule, and the
+    // set a gate is built over is the first thing §12.19 asks of it.
+    private static List<(string Slug, string Text)> EveryPage() => CuratedPage.ReaderPages();
 
     /// <summary>
     /// No page's prose restates a glossary definition that the same page's own
@@ -593,86 +592,34 @@ public sealed class ShippedGlossaryTests
             + string.Join("\n  ", stale.Select(s => $"{s.Page} <-> {s.Entry}")));
     }
 
-    /// <summary>
-    /// Two of the suppressions WI-576 added take their entry's tooltip from one
-    /// firing page to NONE, and that is deliberate — but it is also the kind of
-    /// side effect that should not be discovered later by accident, so it is
-    /// pinned here with the reason.
-    ///
-    /// WI-567 already ruled on this shape for <c>frontal-lobe</c> and the ruling
-    /// is quoted rather than re-reasoned: the entry is KEPT, because "the
-    /// suppression is a per-page decision that can be reversed by an edit, while
-    /// a missing entry is a gap every future page inherits". Two things make that
-    /// safe. <c>/glossary</c> renders <c>GetTerms()</c> unconditionally, so every
-    /// entry is still a page a reader can reach — a suppressed tooltip is not a
-    /// deleted definition. And each of these three pages DEFINES the term in its
-    /// own prose, so the reader of the page that says the word is not left
-    /// without it.
-    ///
-    /// NOT a gate over the whole corpus, and the measurement says why: 26 of the
-    /// 105 shipped entries fire no tooltip anywhere, and 24 of those were already
-    /// in that state before this item. Pinning all 26 would mean inventing
-    /// twenty-four reasons this item cannot source. The number is recorded in
-    /// §12.26 and raised as its own item instead.
-    /// </summary>
-    [Fact]
-    public void TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable()
-    {
-        var firing = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var (slug, text) in EveryPage())
-        {
-            firing.UnionWith(
-                CuratedPage.GlossaryTooltipsFiringOn(CuratedPage.Rendered(slug, text)));
-        }
-
-        var shipped = LoadAll();
-
-        // The TWO this item took to zero, the page that now owns each definition in
-        // prose, and THE SENTENCE THAT MAKES IT THE OWNER.
-        //
-        // That third column is the half /review found missing, and the hole it
-        // leaves is the only edit in this area that really hurts a reader: delete
-        // the defining sentence from the owning page and leave `!%term%` in place,
-        // and EVERY guard in the repo goes quiet. The restatement gate has no
-        // overlap left to report, this test still sees an entry that exists, and
-        // the reader of the page that says the word has no definition anywhere on
-        // it. "The page defines it inline" is this whole decision's premise, so it
-        // is asserted rather than asserted ABOUT.
-        // Each needle sits WHOLLY ON ONE SOURCE LINE and starts mid-sentence, so a
-        // re-wrap does not break it (§12.24) — and the haystack is LF-normalised
-        // rather than the needle being written twice.
-        foreach (var (entry, dir, file, definesIt) in new[]
-        {
-            ("focal-seizure", "seizures", "living-with",
-                "A focal seizure starts in one part of the brain"),
-            ("transformation", "tumors", "astrocytoma",
-                "called transformation, and it can go to grade"),
-        })
-        {
-            Assert.DoesNotContain(entry, firing);
-            Assert.Contains(entry, shipped.Select(t => t.Slug));
-            Assert.False(string.IsNullOrWhiteSpace(
-                    shipped.Single(t => t.Slug == entry).Definition),
-                $"{entry} fires no tooltip and now has no definition either, so "
-                + $"{dir}/{file} is the only place this word is explained and "
-                + "/glossary lists an empty row");
-
-            var page = CuratedPage.Read(dir, file + ".md")
-                .Replace("\r\n", "\n", StringComparison.Ordinal);
-            Assert.Contains(definesIt, page, StringComparison.Ordinal);
-        }
-
-        // The positive half: most of the glossary DOES still fire, so this test is
-        // not passing because tooltips stopped working everywhere.
-        Assert.True(firing.Count > 70,
-            $"only {firing.Count} of {shipped.Count} entries fire anywhere, so the three "
-            + "absences above are not evidence of a decision");
-    }
+    // ------------------------------------------------------------------------ §12.29
+    //
+    // SUPERSEDED AND DELETED AT WI-581: `TheEntriesWhoseTooltipThisItemSuppressed-
+    // EverywhereAreStillReachable`. It pinned the TWO entries WI-576 took from one
+    // firing page to none, with the sentence that made each owning page the owner —
+    // deliberately not a gate over the whole corpus, because "pinning all 26 would
+    // mean inventing twenty-four reasons this item cannot source".
+    //
+    // WI-581 is the item that sourced them, so the narrow test is gone rather than
+    // left beside the wider one saying the same thing about two of 26 (§12.26's own
+    // fourth acceptance criterion, and §12.28's worked precedent for three page-local
+    // copies). Its home is `GlossaryOnlyEntriesTests`, and §12.28's rule is that a
+    // supersession is a merge whose diff is the ASSERTION LIST: all five assertions
+    // moved, widened from 2 entries to 26 and from 2 hand-written needles to 30
+    // derived ones. That file's class comment carries the item-by-item diff.
+    //
+    // WI-567's ruling is the one both files rest on and neither re-derives: the entry
+    // is KEPT, because "the suppression is a per-page decision that can be reversed by
+    // an edit, while a missing entry is a gap every future page inherits".
 
     /// <summary>
-    /// The guard above, shown failing and shown discriminating — on text built
-    /// here rather than on the corpus, so it keeps proving this after the corpus
-    /// is clean.
+    /// <see cref="NoPageRestatesAGlossaryDefinitionItsReaderAlsoMeetsAsATooltip"/>,
+    /// shown failing and shown discriminating — on text built here rather than on
+    /// the corpus, so it keeps proving this after the corpus is clean.
+    ///
+    /// <para>Named rather than called "the guard above": WI-581 deleted the test
+    /// that used to sit between the two, so a relative pointer now points at a
+    /// comment.</para>
     ///
     /// Four probes, ONE EDIT APART each, because a probe that changes two things
     /// cannot attribute what it measures to either:

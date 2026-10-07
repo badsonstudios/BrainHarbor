@@ -682,7 +682,6 @@ public sealed class SharedSourceRestatementTests
         }
 
         var offenders = new List<string>();
-        var recordsUsed = new List<NoOpSuppression>();
         var markersSeen = 0;
         var pagesWithMarkers = 0;
 
@@ -732,15 +731,6 @@ public sealed class SharedSourceRestatementTests
                     continue;
                 }
 
-                var recorded = KnownNoOps.SingleOrDefault(
-                    r => r.Page == slug && r.Marker.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-                if (recorded is not null)
-                {
-                    recordsUsed.Add(recorded);
-                    continue;
-                }
-
                 offenders.Add($"{slug}: !%{name}% suppresses nothing — with the marker "
                     + $"removed, glossary/{entry} still does not fire on this page. The "
                     + "word is absent from the composed prose, or it appears only in a "
@@ -777,74 +767,24 @@ public sealed class SharedSourceRestatementTests
         Assert.Equal(109, markersSeen);
         Assert.Equal(35, pagesWithMarkers);
 
+        // NO EXEMPTION LIST, AND THAT IS WI-581's DOING. This gate shipped with a
+        // `KnownNoOps` table of six markers that suppressed nothing, each recorded
+        // with its measured cause and handed to WI-581 rather than fixed here. That
+        // item resolved all six — five sections of `/tests/molecular-markers` and one
+        // paragraph of `/treatments/radiation-therapy` now say the term their marker
+        // names — so the converse check this list carried has fired its last time and
+        // the list is deleted rather than kept at zero entries (§12.26, WI-578: a list
+        // only ever read as "skip these" cannot tell you one of them stopped being
+        // true, and an empty one cannot tell you anything at all).
+        //
+        // The gate is now UNCONDITIONAL over all 109 markers, which is what makes it
+        // the thing that reds when a page stops saying a word it suppresses — the
+        // hazard §12.26 named and §12.29's rule for cause (a) depends on.
         Assert.True(offenders.Count == 0,
             "a suppression marker suppresses nothing. WI-512, WI-514 and WI-515 each "
             + "shipped one, and a no-op marker is worse than no marker: it reads as a "
             + "decision somebody made:\n  " + string.Join("\n  ", offenders));
-
-        // THE CONVERSE, computed from the corpus. WI-581 is the item that will act
-        // on these six, and when it fixes one the record must say so rather than go
-        // on exempting something that stopped being true (§12.26, WI-578).
-        var stale = KnownNoOps.Except(recordsUsed).ToList();
-        Assert.True(stale.Count == 0,
-            "a KnownNoOps record no longer matches a no-op suppression, so it has been "
-            + "fixed and the record should be deleted:\n  "
-            + string.Join("\n  ", stale.Select(r => $"{r.Page}: !%{r.Marker}%")));
-
-        Assert.Equal(KnownNoOps.Length, recordsUsed.Count);
     }
-
-    /// <summary>
-    /// A suppression marker that suppresses nothing TODAY, recorded with its
-    /// MEASURED cause rather than a guessed one, and handed to WI-581.
-    /// </summary>
-    private sealed record NoOpSuppression(string Page, string Marker, string Why);
-
-    /// <summary>
-    /// The six no-op suppressions already in the corpus when WI-580 first pointed
-    /// this gate at all 55 pages. <b>All six are pre-existing and all six are
-    /// WI-581's subject</b> — that item's whole job is to partition the entries
-    /// whose tooltip fires nowhere BY CAUSE, and these are three of its causes
-    /// showing up from the page's side. Two of the entries involved
-    /// (<c>h3-g34</c>, <c>radiation-mask</c>) are already named in its list.
-    ///
-    /// <para>Recorded rather than fixed here, for §12.26's reason for the 26:
-    /// fixing them would mean inventing six per-page editorial decisions this item
-    /// cannot source, on pages it is not otherwise touching. Recorded rather than
-    /// ignored because a gate that quietly skips what it cannot explain is not a
-    /// gate — and the converse check above reds when WI-581 resolves one.</para>
-    /// </summary>
-    private static readonly NoOpSuppression[] KnownNoOps =
-    [
-        new("tests/molecular-markers", "CDKN2A/B homozygous deletion",
-            "A DELIBERATE BLANKET WITH SLACK IN IT. Line 86 of this page carries "
-            + "fifteen markers in one run: it is the page that DEFINES every marker "
-            + "term, so none of them is glossed here. Ten of the fifteen fire without "
-            + "their marker and five do not, and the five are not strays — they are the "
-            + "blanket being written as the complete set rather than as the subset that "
-            + "happens to appear in prose today. Measured: neither this entry's term "
-            + "nor its aliases occur in this page's composed prose at all."),
-        new("tests/molecular-markers", "EGFR amplification",
-            "Same blanket. Measured: zero occurrences in this page's prose."),
-        new("tests/molecular-markers", "H3 G34",
-            "Same blanket, and WI-581's cause (c) exactly: the two occurrences are the "
-            + "index list's LINK TEXT and the `### H3 G34` HEADING, neither of which a "
-            + "tooltip can fire on (§12.11). glossary/h3-g34 is already on WI-581's list."),
-        new("tests/molecular-markers", "gene panel",
-            "Same blanket, same cause (c): link text in the index list, and the "
-            + "`### Gene panels` heading."),
-        new("tests/molecular-markers", "methylation profiling",
-            "Same blanket, same cause (c): link text in the index list, and the "
-            + "`### Methylation profiling` heading."),
-        new("treatments/radiation-therapy", "radiation mask",
-            "THE PUREST NO-OP OF THE SIX, and not a blanket. This page describes the "
-            + "mask at length — 19 occurrences of 'mask', including 'a mesh mask is "
-            + "molded to your face' — and never once writes the entry's term "
-            + "'radiation mask'. So the marker names a phrase the page does not use, "
-            + "in any form, while the thing it names is this page's own subject. "
-            + "glossary/radiation-mask is on WI-581's list of entries firing nowhere, "
-            + "and this is why."),
-    ];
 
     /// <summary>
     /// No suppression marker leaves an EMPTY PARAGRAPH in the rendered page.

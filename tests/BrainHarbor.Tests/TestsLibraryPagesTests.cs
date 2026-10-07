@@ -1600,6 +1600,44 @@ internal static class CuratedPage
             .Select(t => t.Slug)];
 
     /// <summary>
+    /// The pages a reader navigates to, as (slug, raw text): <c>pages/</c> only,
+    /// with the prefix off and in slug order.
+    ///
+    /// <para>Promoted at WI-581 under §12.8's factor-at-the-second-use rule — three
+    /// identical copies of this filter existed in two files, and the set a gate is
+    /// built over is the first question §12.19 asks of it. <b>Deliberately NOT
+    /// <see cref="AllPages"/></b>, which is <c>pages/</c> + <c>blocks/</c>: a block
+    /// is not a page a reader can reach, so a rule about what a reader meets ON a
+    /// page would count the block's own file as a 56th one.</para>
+    /// </summary>
+    public static List<(string Slug, string Text)> ReaderPages() =>
+        [.. AllPages()
+            .Where(p => p.Slug.StartsWith("pages/", StringComparison.Ordinal))
+            .Select(p => (Slug: p.Slug["pages/".Length..], p.Text))
+            .OrderBy(p => p.Slug, StringComparer.Ordinal)];
+
+    /// <summary>
+    /// The glossary slugs whose tooltip fires on AT LEAST ONE of
+    /// <see cref="ReaderPages"/> — the union, through the real renderer.
+    ///
+    /// <para>The complement of this set is the entries that reach a reader only
+    /// through <c>/glossary</c>, which is what §12.29 partitions by cause. Promoted
+    /// at WI-581 because a second copy of the union appeared in the same item: a
+    /// private re-implementation is exactly the drift
+    /// <see cref="Rendered"/>'s own doc comment warns about, one level up.</para>
+    /// </summary>
+    public static HashSet<string> GlossarySlugsFiringAnywhere()
+    {
+        var firing = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var (slug, text) in ReaderPages())
+        {
+            firing.UnionWith(GlossaryTooltipsFiringOn(Rendered(slug, text)));
+        }
+
+        return firing;
+    }
+
+    /// <summary>
     /// Where this page's prose repeats a glossary definition the same reader can
     /// open as a tooltip on the same page: <c>(glossary/slug, shared shingles)</c>,
     /// empty when there is nothing to answer for.

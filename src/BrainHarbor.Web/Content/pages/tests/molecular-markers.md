@@ -159,8 +159,8 @@ its own it does not name one.
 ### CDKN2A/B {#cdkn2a-b}
 
 **What is measured.** Whether both copies of two neighboring genes are gone.
-Everyone has two copies of most genes. Losing both is written homozygous
-deletion.
+Everyone has two copies of most genes. Losing both is written
+CDKN2A/B homozygous deletion.
 
 **What your team does with it.** In some gliomas this finding sets the grade on
 its own, even when the cells look like a lower grade.
@@ -172,7 +172,8 @@ explains how grades are worked out and why the numbering changed in 2021.
 ### EGFR {#egfr}
 
 **What is measured.** Whether the tumor cells carry extra copies of the EGFR
-gene. Extra copies are called amplification.
+gene. Extra copies are called amplification, so a report may say
+EGFR amplification.
 
 **What your team does with it.** When the IDH test shows no change, this is the
 second of three findings that can point to a glioblastoma even when the cells
@@ -210,7 +211,7 @@ tumor.
 ### H3 G34 {#h3-g34}
 
 **What is measured.** A change at a different spot on the same kind of histone
-gene, written G34.
+gene. The spot is written G34, so the finding is written H3 G34.
 
 **What your team does with it.** It names a diffuse hemispheric glioma. It is
 usually seen along with a loss of ATRX and a p53 stain that lights up.
@@ -280,8 +281,9 @@ your team would talk to you first.
 ### Gene panels {#gene-panel}
 
 **What is measured.** One test that reads many genes at once from the tumor
-sample. Panels that read DNA find small changes and missing or extra copies.
-Panels that read RNA are better at finding two genes joined together.
+sample. It is called a gene panel. Panels that read DNA find small changes and
+missing or extra copies. Panels that read RNA are better at finding two genes
+joined together.
 
 **What your team does with it.** One test instead of several, with the results
 arriving as a list.
@@ -292,9 +294,9 @@ not only the ones that had changed. A long list is a list of what was checked.
 ### Methylation profiling {#methylation-profiling}
 
 **What is measured.** The same kind of chemical tag as the one in the MGMT test,
-but read right across the tumor's DNA, at about 850,000 places at once. The
-pattern is then compared with a library of thousands of brain tumors that have
-already been named.
+but read right across the tumor's DNA, at about 850,000 places at once. Reading
+it that way is called methylation profiling. The pattern is then compared with a
+library of thousands of brain tumors that have already been named.
 
 **What your team does with it.** It helps place a tumor with a type. The report
 comes back with a score for how closely the pattern matched. The same test also

@@ -5083,7 +5083,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     says, or suppress on the owning page and accept what that costs.
   Refs: `docs/content-pipeline.md` §12.26, §12.10.
 
-- [ ] **WI-581 Twenty-six glossary entries whose tooltip fires nowhere**
+- [x] **WI-581 Twenty-six glossary entries whose tooltip fires nowhere**
   *(raised by WI-576, 2026-10-06)*
   Goal: decide whether an entry that reaches no reader through a tooltip should
   exist, once, instead of per item.
@@ -5146,6 +5146,73 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   criterion's precedent: it DELETED three page-local copies of a weaker guard and
   superseded them with one corpus-wide gate, rather than leaving them beside it.
   Refs: `docs/content-pipeline.md` §12.28, §12.26; WI-519, WI-567's ruling.
+  **SHIPPED 2026-10-07 as `docs/content-pipeline.md` §12.29, with a rule per
+  cause and the partition computed in FOUR cells rather than three.**
+  **RE-MEASURED FIRST, through the real renderer, and the figure held:** 105
+  entries, 55 pages, 79 firing, **26 nowhere**, the same 26 slugs. Markers
+  unchanged at 109 across 35 pages. **The partition, counted positively by the
+  two-render method: 23 cause (a), 2 cause (b), 1 cause (c)** before the item;
+  **25 / 1 / 0** after it.
+  - **(a), 25 of 26 — the sanctioned shape, and the clustering is the argument.**
+    `/treatments/craniotomy` owns eight, `/treatments/chemotherapy` four,
+    `/treatments/radiation-therapy` four: a library page that teaches a
+    vocabulary suppresses that vocabulary. WI-567's ruling is quoted, and the
+    PREMISE it rests on is asserted for the first time — **30 (entry, page) pairs
+    each pinning the sentence of the reader's FIRST MEETING with the term**,
+    derived from the rendered artifact rather than transcribed, with the converse
+    computed from the corpus and a second independent derivation of the cause-(a)
+    membership from the table.
+  - **(b), one — `flair`, and nothing to fix.** No page of this site writes the
+    word, which is what a glossary is FOR: a reader arrives with it off their own
+    MRI report. What is gated is the lie — no suppression marker may name a
+    cause-(b) term.
+  - **(c), zero, and it was one — a finding about the PAGE, fixed on the page.**
+    `h3-g34`'s only occurrences were an index link and a `### H3 G34` heading.
+    `/tests/molecular-markers` carries fifteen markers in one run and **ten of
+    the fifteen fired without their marker while five did not** — the blanket
+    written as the complete set with slack in the prose. Each of the five sections
+    now says the term its heading is, in the page's own construction. All fifteen
+    markers suppress something; `h3-g34` moved to cause (a).
+  - **(d), the fourth cell, asserted EMPTY by name.** §12.24: written as three
+    causes the third is an `else` branch and the next kind of X lands in it
+    silently. (d) is "said in PROSE, nothing suppresses it, and still silent" —
+    the matcher failing to match what the page wrote. Decided FIRST, and because
+    two cells are empty the classifier is shown filling **all four** on probe
+    pages one edit apart.
+  **AND IT CORRECTS §12.28's RECORDED CAUSE FOR ONE OF THE SIX NO-OPS.** `gene
+  panel` was recorded as cause (c), *"link text and a heading"*. That phrase is in
+  **no reader-facing position on that page**: the heading and the index link both
+  say *"Gene panels"*, plural, and `BuildMatchers` uses `(?<![\w-])…(?![\w-])`
+  rather than `\b`, so the trailing `s` rejects the match. It was cause (b) there.
+  A position is only evidence if the thing that decides it is the thing that
+  renders. **The other four records were right and /review caught this entry
+  claiming two** — §12.28's `EGFR amplification` record says *"zero occurrences in
+  this page's prose"* and makes no position claim to correct (WI-536: a
+  justification can be false of the page it cites).
+  **AND /review's BLOCKER MADE CAUSE (d) A PER-PAGE GATE, which is the one place
+  the first draft was wrong rather than incomplete.** As a cell of a partition
+  over the 26, (d) is only reachable for an entry with NO owning page — one of 26
+  — so a planted `%%transformation%%` on `/tumors/glioma`, the textbook (d)
+  condition, left the whole suite GREEN because that entry has three owners. The
+  property belongs to a **(page, entry) PAIR** and is now gated over all **5,775**
+  of them, with the one sanctioned shape COMPUTED rather than allowlisted:
+  `FindEarliestMatch` takes the LONGEST name at a position, so a term inside a
+  longer glossary name that fires there is not silent — the reader got a more
+  specific tooltip. **Two pairs, both that**, counted and named. **And the scan
+  had to learn that a link DESTINATION is not reader text**: these strings are
+  composed markdown and `/` is neither `\w` nor `-`, so `craniotomy` matched
+  inside `(/treatments/craniotomy)` — **43 false pairs**, and a page deep-linking
+  `/glossary#flair` would have been reported as a defect that was not there.
+  **`KnownNoOps` IS DELETED, NOT EMPTIED** — all six resolved, so WI-580's
+  suppression gate is now unconditional over all 109 markers, which is what reds
+  when a page stops saying a word it suppresses. WI-576's
+  `TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable` is
+  **deleted and its five assertions re-homed in `GlossaryOnlyEntriesTests`**, each
+  named in that file's class comment (§12.28: a supersession is a merge whose diff
+  is the assertion list) — plus one the old test did not have: **`/glossary` is
+  asserted to carry all 105 entries with their definitions, against the served
+  page**, which nothing in the repo did over the shipped glossary.
+  PR [#193](https://github.com/badsonstudios/BrainHarbor/pull/193).
 
 - [ ] **WI-582 A glossary definition is reader-facing prose that is graded and
   not gated** *(raised by WI-579, 2026-10-06)*

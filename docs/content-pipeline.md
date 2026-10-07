@@ -9563,3 +9563,214 @@ before and after to confirm the fix moved no set.
 > reaches a reader** — because a property that is computable on one surface can be
 > vacuous on the other, and five of the seven entries here reach no reader through
 > a tooltip at all.
+
+### 12.29 An entry that reaches no reader through a tooltip, and the three reasons why (WI-581)
+
+§12.26 measured that **26 of the 105 shipped glossary entries fire no tooltip on
+any of the 55 pages** and refused to rule on them, because the number had at
+least three causes inside it and a rule for the number would have been a rule
+for none of them. §12.28 then pointed its corpus-wide suppression gate at all 55
+pages and handed over **six markers that suppress nothing**, each with a measured
+cause. This section is the ruling, and it is **one rule per cause**.
+
+**The 26 re-measure unchanged on today's tree**, which was worth checking rather
+than assuming: §12.26's own closing lesson is that a measurement is only true of
+the tree it was taken on, and WI-576's first figure said 27. 105 entries, 55
+pages, 79 firing, 26 not, and the same 26 slugs.
+
+#### The partition is computed POSITIVELY, and it has four cells because three was a guess
+
+| | cause | before | after |
+|---|---|---|---|
+| **(a)** | at least one page says the term and **suppresses** the tooltip there | 23 | **25** |
+| **(b)** | **no page says the term**, in any name the entry matches on | 2 | **1** |
+| **(c)** | a page writes the term, but **only where no tooltip can fire** | 1 | **0** |
+| **(d)** | said in PROSE, nothing suppresses it, and still silent | 0 | **0** |
+
+Cause (d) is the one the backlog did not ask for and §12.24 did: *a set defined
+by subtraction is redefined by every new kind of X*. Written as three causes, the
+third is an `else` branch, and the next kind of X lands in it silently. So the
+classifier decides (d) **first** — the term is in a page's prose, no marker
+explains the silence, and the tooltip still fires nowhere — which is neither a
+decision nor a position but **the matcher failing to match what the page wrote**:
+a `%%term%%` escape span, a name the entry has no alias for, a **longer glossary
+name that claimed the position**, or a surface `GlossaryMarker` does not walk. It
+is asserted EMPTY by name, and because two of the four cells are empty the
+classifier is shown putting something in **all four** on probe pages one edit
+apart (§12.18: a property guard that has never been seen to fail has not been
+shown to work) — including `CauseOf` itself and not only the primitives under it,
+which is what /review found the first version of that probe leaving out.
+
+> **AND CAUSE (d) HAD TO BE ASKED PER PAGE AS WELL, WHICH IS THE ONE PLACE THIS
+> ITEM'S FIRST DRAFT WAS WRONG RATHER THAN INCOMPLETE.** As a cell of a partition
+> over the 26, (d) can only ever be non-empty for an entry with **no owning page**
+> — one of 26 today — because an entry with an owner is cause (a) whatever else is
+> true of it. /review planted `%%transformation%%` on `/tumors/glioma`, the
+> textbook (d) condition by the very mechanism the cell names first, and **the
+> whole suite stayed green**: that entry has three owners. So the property is a
+> property of a **(page, entry) PAIR**, and it is gated over all **5,775** of them:
+> no page writes a glossary term in its prose and leaves the reader with no
+> tooltip for it anywhere on that page.
+>
+> **The one sanctioned shape is COMPUTED rather than allowlisted**, which is
+> §12.28's rule about pinning conditions instead of forgiving instances.
+> `FindEarliestMatch` takes the LONGEST name at a position, so a term sitting
+> inside a longer glossary name that fires on that page is not silent — the reader
+> got a **more specific** tooltip at exactly that spot. Measured over the corpus:
+> **two pairs, and both are that**, `glioma` inside *"In a diffuse glioma"* on
+> `/treatments/craniotomy` and `posterior fossa` inside *"**posterior fossa
+> syndrome**"* on `/tumors/atrt`. They are counted and named rather than skipped,
+> so a third arrival is a decision somebody makes.
+
+**Cause (a) is measured by the two-render method, and the other three are not —
+which is worth stating rather than generalising.** Remove one `!%term%`, render
+through `ContentStore.Parse`, ask whether the tooltip appeared: that is what
+§12.28 shipped, it is the only form that sees what a scan cannot, and it is what
+decides OWNERSHIP. Causes (b), (c) and (d) are then separated by asking WHERE the
+term is, which is a scan over the composed page — and the scan has to model two
+things `GlossaryMarker` does: it walks `ParagraphBlock`s only, so a heading is
+not a place a tooltip can fire, and it skips anything under a `LinkInline`, **text
+and destination both**. /review priced the second half of that at **43 (page,
+entry) pairs**: these strings are composed MARKDOWN, `/` is neither `\w` nor `-`,
+so `craniotomy` matches inside `(/treatments/craniotomy)` while Markdig keeps a
+URL in `LinkInline.Url` where the marker can never see it. A page deep-linking
+`/glossary#flair` — which is what the tooltip's own fallback link does — would
+have been reported as a defect that was not there.
+
+#### Rule for (a), the sanctioned shape: the page that suppresses is the page that says the word
+
+**25 of the 26, and the clustering is the argument.** `/treatments/craniotomy`
+owns eight of them, `/treatments/chemotherapy` four, `/treatments/radiation-therapy`
+four. This is not an accident and it is not neglect: a library page that teaches
+a vocabulary suppresses that vocabulary, because a tooltip repeating the
+paragraph underneath it is noise — the carpet WI-505 measured its way out of.
+
+WI-567's ruling is quoted rather than re-derived: **the entry is KEPT**, because
+*"the suppression is a per-page decision that can be reversed by an edit, while a
+missing entry is a gap every future page inherits."* What this section adds is
+the **premise that ruling rests on, asserted** (§12.27): each of the 30
+(entry, page) pairs carries **the sentence in which the reader's first meeting
+with the term happens**, derived from the rendered artifact rather than
+transcribed.
+
+> **That field is not called "the definition", and the difference is the honest
+> part.** It is the sentence `GlossaryMarker` would have fired in. For 27 of the
+> 30 it names the term and explains it in one breath — *"That piece is called a
+> bone flap."*, *"The lowest point is called the nadir"*, *"You may see this
+> called neutropenia"*, *"It has a name: somnolence syndrome"*. For three it is a
+> bolded list label on `/treatments/craniotomy` (*"- **Debulking.**"*) with the
+> explanation beside it rather than inside it. Claiming the pin proves "the page
+> explains it" would be §12.28's own defect class — an assertion that reads as
+> more proof than it is — so it is written down as what it is.
+
+The hazard this closes is the one §12.26 named: **delete the defining sentence
+from the owning page, leave `!%term%` in place, and every shingle guard in the
+repo goes quiet.** Thirty pins is the direct answer, and the indirect one is
+stronger: with all six no-ops resolved, §12.28's suppression gate has **no
+exemption list left**, so a page that stops saying a word it suppresses reds
+corpus-wide, for all 109 markers.
+
+#### Rule for (b), and it is the one that says what a glossary is for
+
+**`flair` is a word no page of this site writes, and that is not a defect.** It
+is the entry that proves the glossary is a **reference work rather than an index
+of the site's own prose**: FLAIR is a word a reader arrives with, off their own
+MRI report, and deleting the entry takes the definition away from the only reader
+who was ever going to look it up. WI-519 raised this shape — *"an entry defined
+and used in one place fires nowhere"* — and the answer is that the surface it
+reaches them on is `/glossary`, not a page.
+
+So **nothing is fixed for cause (b)**. What is gated is the thing that would make
+it a lie: **no suppression marker may name a cause-(b) term.** A marker for a
+word the page never writes suppresses nothing and reads as a decision somebody
+made — which is exactly what `!%radiation mask%` was, and §12.28 called it the
+purest of the six.
+
+> **`/treatments/radiation-therapy` was cause (b) and should not have been.** The
+> page describes the mask at length — 19 occurrences of *"mask"*, including *"a
+> mesh mask is molded to your face"* — and never once wrote the entry's term. So
+> the reader who has just been told what the thing is leaves without the word
+> their appointment letter will use. It now says *"You may see it called a
+> radiation mask"*, in the corpus's own naming idiom and inside the numbered list
+> that already describes it, sourced by the citation the entry already carries
+> (Roswell Park's *"Your Radiation Mask, What to Expect"*). The marker became a
+> real suppression and the entry moved to cause (a). **The fix was on the page,
+> and the marker was right all along about what it meant.**
+
+#### Rule for (c): it is a finding about the PAGE, and the page's own standard says so
+
+**`h3-g34` was the only cause-(c) entry, and the finding is not about the
+entry.** Its two occurrences were an index link and a `### H3 G34` heading on
+`/tests/molecular-markers`, and §12.11 already rules on both positions in both
+directions: a heading is not prose, and no tooltip can fire in one. A reader who
+skims that page's prose meets the word twice in places that cannot explain it.
+
+**The page convicts itself, which is what makes this a page finding rather than
+an editorial opinion.** `/tests/molecular-markers` carries fifteen suppression
+markers in one run — it is the page that defines every marker term. Measured at
+the start of this item: **ten of the fifteen fire without their marker and five
+do not.** Ten sections say the term their `###` heading is; five did not. The
+blanket had been written as the complete set while the prose had slack in it, and
+the five are `CDKN2A/B homozygous deletion`, `EGFR amplification`, `H3 G34`,
+`gene panel` and `methylation profiling`.
+
+Each of the five now says its term in the prose it is headed with, in the page's
+own existing construction (*"is written"*, *"are called"*, *"is called"*). All
+fifteen markers now suppress something, the page's standard is met in fifteen
+places out of fifteen, and `h3-g34` moved from cause (c) to cause (a) — **the
+tooltip still fires nowhere, and that is now a decision rather than an
+accident.**
+
+> **AND IT CORRECTS §12.28's RECORDED CAUSE FOR ONE OF THE SIX.** `gene panel` was
+> recorded there as cause (c), *"link text in the index list, and the `### Gene
+> panels` heading"*. **That phrase is in no reader-facing position on that page,**
+> because the heading and the index link both say *"Gene panels"* — plural — and
+> `GlossaryMarker.BuildMatchers` uses `(?<![\w-])…(?![\w-])` rather than `\b`
+> precisely so a hyphen is a word-joiner, so the trailing `s` rejects the match.
+> It was cause (b) on that page, not cause (c). **The recorded cause was read off
+> the page by eye and the matcher disagreed**, which is the same lesson as
+> §12.28's `IndexOf` extractor one layer out: *a position is only evidence if the
+> thing that decides it is the thing that renders.*
+>
+> The other four records were right, and the correction is deliberately not
+> widened to them — /review caught this paragraph claiming TWO. §12.28's `EGFR
+> amplification` record reads *"Same blanket. Measured: zero occurrences in this
+> page's prose"* and makes **no position claim at all**, so there is nothing in it
+> to correct; `H3 G34` and `methylation profiling` both really do match their
+> heading and their index link. WI-536's rule, landing inside the ruling that
+> cites it: *a justification can be false of the page it cites.* (And both phrases
+> DO occur on that page, inside the fifteen-marker run itself — the claim that
+> matters is reader-facing prose, so that is what this says.)
+
+#### What was superseded, and the assertion list it was diffed against
+
+WI-576's `TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable` is
+**deleted**, which §12.26's fourth acceptance criterion asked for and §12.28
+worked a precedent for. §12.28's supersession rule is that **a supersession is a
+merge and the thing to diff is the ASSERTION LIST, not the purpose** — it learned
+that by silently dropping an `Assert.NotEmpty` none of three deleted guards was
+named for. So, item by item:
+
+| the old test asserted | where it is now |
+|---|---|
+| the entry fires nowhere (two named slugs) | the partition, which **computes** the set of 26 instead of taking two names for it |
+| the entry is still shipped | over all 26 |
+| its definition is not empty | over all 26, plus a floor on its LENGTH — a definition that only restates the term is an empty row with extra steps |
+| the owning page carries the sentence that defines the term (2 hand-written needles) | the 30-pair owner table, needles **derived** from the rendered artifact and each asserted UNIQUE on its page |
+| most of the glossary still fires (`> 70`) | the literal **79**, beside the literal 26 |
+
+And one assertion the old test did not have, which is the premise itself rather
+than a fact about it: **`/glossary` is asserted to carry all 105 entries with
+their definitions, against the served page.** Nothing in the repo did that over
+the shipped glossary — `GlossaryPageTests` runs on a fixture entry — so a change
+that filtered `GetTerms()` would have taken 26 definitions off the site with no
+other surface to find them on, and stayed green. §12.27: assert the premise a
+decision rests on.
+
+> **The question to carry forward.** §12.28 asked which reader SURFACE the
+> subject reaches. This item asked the next one down: **when a property is true of
+> no member of a set, is that a decision or an accident — and which object is the
+> finding about?** Twenty-five times it was a decision about the page, once it was
+> a fact about the word, and once it was an accident of where the page put it. The
+> three want three different owners, and a rule written for the count would have
+> had to pick one of them for all 26.
