@@ -310,7 +310,7 @@ grade is treated differently, so ask which applies to you.
 
 If your plan looks different from someone else's with the same grade, the
 question that gets you the answer is: which exact diagnosis is mine, and why
-this plan for it?
+this plan for it?!%tumor board%
 
 [TUMOR-BOARD]
 

@@ -295,7 +295,7 @@ at first, and that is a plan rather than an absence of one.
 Alongside all this there is supportive treatment. That means
 [medicines to stop seizures](/treatments/anti-seizure-medicines),
 [medicines to bring swelling down](/treatments/steroids), and treatment for a
-fluid blockage if you have one.
+fluid blockage if you have one.!%tumor board%
 
 [TUMOR-BOARD]
 

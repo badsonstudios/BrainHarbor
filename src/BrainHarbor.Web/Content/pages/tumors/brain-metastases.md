@@ -298,7 +298,7 @@ between two sets of notes.
 
 **So ask this, early: who is coordinating?** Ask for a name and a number, and
 ask which team to call about what. It is an ordinary question and it saves a
-great deal later.
+great deal later.!%tumor board%
 
 [TUMOR-BOARD]
 

@@ -256,7 +256,7 @@ It is a fair question, and there is a direct way to ask it: **ask whether the
 tissue already taken can be tested now.** Your team will know whether it can.
 Getting the answer can change both the name of your diagnosis and the treatment
 you are offered, which is why it is worth asking rather than waiting for it to
-come up.
+come up.!%tumor board%
 
 ## How is it usually treated?
 

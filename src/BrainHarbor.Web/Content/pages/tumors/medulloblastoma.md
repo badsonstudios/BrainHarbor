@@ -415,7 +415,7 @@ Below the four groups there are finer groupings, fourteen of them, used mostly i
 research. A report may name one.
 
 [Your pathology report](/tests/pathology-report) walks through the document
-itself.
+itself.!%tumor board%
 
 ## How is it usually treated?
 

@@ -125,7 +125,7 @@ disclaimers: [medical]
 
 ## The short version
 
-**A diffuse midline glioma is a fast-growing tumor in the middle of the brain or
+!%pons%**A diffuse midline glioma is a fast-growing tumor in the middle of the brain or
 in the spinal cord.** It is named after a change written **H3 K27**, and it is
 always grade 4. When it sits in the pons, a part of the brain stem, it is often
 called **DIPG**, and [DIPG](/tumors/dipg) is the page written for that.
@@ -185,8 +185,9 @@ look. It does not change the grade of a tumor with this name.
 It grows in the middle of the brain or in the spinal cord, and **where it sits
 decides what you notice**.
 
-- **In the pons**, part of the brain stem. The pons carries the nerves for
-  vision, hearing, speech, swallowing and movement.
+- **In the pons**, part of the brain stem. The nerve paths for eye movement,
+  hearing, speech, swallowing and balance pass through it. So do the paths for
+  movement in your arms and legs.
 - **In the thalamus**, deep in the middle of the brain. What you notice depends
   on the exact spot, so ask your team which of your symptoms it explains.
 - **In the spinal cord.** Here it can cause weakness, numbness, and trouble
@@ -256,7 +257,7 @@ itself.
 - **DIPG**, or **brain stem glioma.** Older names that said where the tumor sat.
   Brain stem glioma can also include low-grade tumors that are not this one, so
   it is worth asking which yours is. If yours is in the pons,
-  [DIPG](/tumors/dipg) is the page for you.
+  [DIPG](/tumors/dipg) is the page for you.!%tumor board%
 
 ## How is it usually treated?
 

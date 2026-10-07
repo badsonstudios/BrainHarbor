@@ -5045,7 +5045,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     and make them agree, or record why they differ.
   Refs: `docs/content-pipeline.md` §12.26, §12.10, §12.18.
 
-- [ ] **WI-580 The glossary is never the restatement probe's SUBJECT**
+- [x] **WI-580 The glossary is never the restatement probe's SUBJECT**
   *(raised by WI-576, 2026-10-06)*
   Goal: close the direction WI-576 opened one half of.
   WI-576 made every page's prose checkable against every glossary definition. The
@@ -5120,7 +5120,32 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   - WI-576's `TheEntriesWhoseTooltipThisItemSuppressedEverywhereAreStillReachable`
     is superseded or absorbed, not left beside a wider gate saying the same thing
     about two of them.
-  Refs: `docs/content-pipeline.md` §12.26; WI-519, WI-567's ruling.
+  **WI-580 HANDS THIS ITEM SIX OF ITS OWN FINDINGS, MEASURED FROM THE PAGE SIDE**
+  (§12.28). That item's corpus-wide suppression gate
+  (`SharedSourceRestatementTests.EverySuppressionInTheCorpusNamesATermThatWouldOtherwiseFire`)
+  asks the REAL marker rather than scanning reader text -- remove one `!%term%`,
+  render, and the tooltip must appear -- and over all 55 pages it found **six
+  suppression markers that suppress nothing**, recorded in `KnownNoOps` with a
+  cause each and a converse check that reds when this item resolves one. They
+  land in three of this item's causes:
+  - **cause (a), written as a deliberate blanket with slack in it:**
+    `/tests/molecular-markers` carries fifteen markers in one run, because it is
+    the page that DEFINES every marker term. Ten fire without their marker and
+    five do not (`CDKN2A/B homozygous deletion`, `EGFR amplification`, `H3 G34`,
+    `gene panel`, `methylation profiling`).
+  - **cause (c), and three of those five are it exactly:** `H3 G34`, `gene panel`
+    and `methylation profiling` appear only in the index list's LINK TEXT and in
+    a `###` HEADING, where no tooltip can fire.
+  - **cause (b) at its purest:** `/treatments/radiation-therapy` describes the
+    mask at length -- 19 occurrences of "mask", including *"a mesh mask is molded
+    to your face"* -- and never once writes the entry's term *"radiation mask"*.
+    That is why `glossary/radiation-mask` is on the list above.
+  Two of the entries named in this item's 26 (`h3-g34`, `radiation-mask`) are
+  therefore already half-partitioned. **Reuse the two-render method rather than a
+  substring scan**, and note that WI-580 already worked the fourth acceptance
+  criterion's precedent: it DELETED three page-local copies of a weaker guard and
+  superseded them with one corpus-wide gate, rather than leaving them beside it.
+  Refs: `docs/content-pipeline.md` §12.28, §12.26; WI-519, WI-567's ruling.
 
 - [ ] **WI-582 A glossary definition is reader-facing prose that is graded and
   not gated** *(raised by WI-579, 2026-10-06)*
