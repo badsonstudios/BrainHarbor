@@ -627,9 +627,26 @@ public sealed class DipgPageRenderTests : IClassFixture<WebApplicationFactory<Pr
     {
         var html = await _factory.CreateClient().GetStringAsync(Url);
 
-        foreach (var slug in new[] { "pons", "palliative-care", "h3-k27-altered" })
+        foreach (var slug in new[] { "palliative-care", "h3-k27-altered" })
         {
             Assert.Contains($"def-{slug}", html, StringComparison.Ordinal);
         }
+
+        // AND `pons` DELIBERATELY DOES NOT, since WI-580 (§12.28). This page owns the
+        // pons anatomy: it defines the term inline at its first mention ("a tumor in
+        // the pons, part of the brain stem") and answers what the pons carries under
+        // a heading that asks for it -- and §12.27's rule is that an answer to the
+        // question a section is headed with cannot be a link, nor a tooltip. Leaving
+        // the tooltip on showed this reader the same fact twice, in two copies that
+        // had ALREADY DRIFTED: the entry says "eye movement ... and balance" while
+        // this page said "vision ... and movement", and the visual pathway does not
+        // pass through the pons. The entry still fires on /where-your-tumor-is, which
+        // names the pons and explains none of it.
+        //
+        // The premise this rests on -- that the page still carries the sentence, and
+        // that all three copies name the same set of functions -- is asserted in
+        // SharedSourceRestatementTests rather than here, because it is a property of
+        // three files and not of this one.
+        Assert.DoesNotContain("def-pons", html, StringComparison.Ordinal);
     }
 }

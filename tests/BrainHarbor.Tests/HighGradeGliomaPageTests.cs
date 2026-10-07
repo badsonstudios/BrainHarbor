@@ -1339,39 +1339,19 @@ public sealed class HighGradeGliomaPageRenderTests : IClassFixture<WebApplicatio
         }
     }
 
-    [Fact]
-    public void EverySuppressedTermIsARealGlossaryEntryTheProseActuallyUses()
-    {
-        // WI-512 shipped two suppressions that suppressed nothing and WI-514
-        // shipped four. Both halves are silent no-ops, so both are checked.
-        // This page's own first draft suppressed "adult-type", which appears
-        // only in a citation TITLE — caught by exactly this check.
-        var page = CuratedPage.Read("tumors", "high-grade-glioma.md");
-        var suppressed = Regex.Matches(page, @"!%(.+?)%")
-            .Select(m => m.Groups[1].Value)
-            .ToList();
-
-        Assert.NotEmpty(suppressed);
-
-        var terms = Directory.EnumerateFiles(
-                CuratedPage.BlocksRoot.Replace("blocks", "glossary", StringComparison.Ordinal), "*.md")
-            .SelectMany(f => Regex.Matches(File.ReadAllText(f), @"^(?:term|also): *(.+)$",
-                    RegexOptions.Multiline)
-                .Select(m => m.Groups[1].Value.Trim().Trim('[', ']')))
-            .SelectMany(v => v.Split(',', StringSplitOptions.TrimEntries))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        // The BODY only. A term that appears solely in a citation title is not
-        // prose, and suppressing it suppresses nothing.
-        var reader = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(page)));
-
-        foreach (var term in suppressed)
-        {
-            Assert.True(terms.Contains(term),
-                $"'{term}' is suppressed but is not a glossary term, so the suppression is a no-op");
-            Assert.True(reader.Contains(term, StringComparison.OrdinalIgnoreCase),
-                $"'{term}' is suppressed but the page's prose never uses the word, so there was "
-                + "nothing to suppress");
-        }
-    }
+    // WI-580: `EverySuppressedTermIsARealGlossaryEntryTheProseActuallyUses` lived
+    // here and is SUPERSEDED by
+    // `SharedSourceRestatementTests.EverySuppressionInTheCorpusNamesATermThatWouldOtherwiseFire`,
+    // which runs the same rule over all 55 pages through the REAL marker: remove
+    // one `!%term%` and that entry's tooltip must appear.
+    //
+    // Three copies of this check existed and carried three defects between them
+    // (§12.28), every one of them §12.10's "when a guard is copied, its holes are
+    // copied too". They read the UNCOMPOSED page, so a term arriving from a block
+    // read as a word the page never uses -- which is the state four of the five
+    // hand-written `!%tumor board%` suppressions were already in. Two of the three
+    // called `ReaderText(Body(page))`, and `ReaderText` already applies `Body`, so
+    // the haystack was the body with three characters chopped off. And a substring
+    // scan of reader text is not the firing rule: it cannot see that a heading or a
+    // link can never fire a tooltip (§12.11).
 }

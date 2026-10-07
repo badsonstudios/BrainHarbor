@@ -508,7 +508,7 @@ itself.
 - **PF-EPN-A**, **PF-EPN-B** or **ST-EPN-RELA.** Research ways of writing the same
   names, and they turn up on gene test reports. PF-EPN-A is group PFA, PF-EPN-B is
   group PFB, and ST-EPN-RELA is the ZFTA kind. **SE** in one of these names, such as
-  PF-EPN-SE, means subependymoma.
+  PF-EPN-SE, means subependymoma.!%tumor board%
 
 ## How is it usually treated?
 

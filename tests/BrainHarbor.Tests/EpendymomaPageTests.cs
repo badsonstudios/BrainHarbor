@@ -501,7 +501,19 @@ public sealed class EpendymomaPageContentTests
 
         // Negation-aware (§12.9): every retired name is a bullet in the older-paperwork
         // slice, AND appears nowhere else on the page.
-        var retired = CuratedPage.Flatten(SubsectionRawLf("If your older paperwork says something different"));
+        //
+        // THE NEEDLE AND THE HAYSTACK WERE DERIVED DIFFERENTLY, and this is §12.26's
+        // recorded defect in a SECOND file — WI-576 found and fixed it in
+        // `WatchAndWaitPageContentTests` and the copy here was not touched, so the
+        // hole sat waiting for the first `!%term%` marker to land in this subsection.
+        // WI-580 put one there. `ReaderText(Page)` below strips authoring markers;
+        // `SubsectionRawLf` reads the RAW page, so they are still in it. One marker
+        // anywhere in this slice makes the needle unmatchable — and a `Replace` that
+        // matches nothing fails SILENTLY, leaving the whole slice inside
+        // `outsideSlice`, where its retired-name bullets are then judged by the rule
+        // that exists to exclude them. Strip the markers from the needle too (§12.28).
+        var retired = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
+            SubsectionRawLf("If your older paperwork says something different")));
         (string Term, string Bullet)[] slice =
         [
             ("anaplastic", "**Anaplastic ependymoma.** An older name for a faster-growing ependymoma. It is no longer used."),
@@ -511,7 +523,26 @@ public sealed class EpendymomaPageContentTests
             ("tanycytic", "**Papillary, clear cell** or **tanycytic ependymoma.** These now describe how the cells look."),
         ];
 
-        var outsideSlice = CuratedPage.Flatten(CuratedPage.ReaderText(Page)).Replace(retired, "", StringComparison.Ordinal);
+        var wholePage = CuratedPage.Flatten(CuratedPage.ReaderText(Page));
+        var outsideSlice = wholePage.Replace(retired, "", StringComparison.Ordinal);
+
+        // AND SAY SO OUT LOUD, because that is the half that keeps this true: a
+        // removal nobody checks is a removal that can stop happening (§12.24's "both
+        // canaries beside every scan", arriving as a `Replace`).
+        //
+        // PROVED BY CONTENT, NOT BY LENGTH: a length test moves its own bar with the
+        // needle, so a `retired` that is a FRAGMENT of the slice passes it while
+        // leaving most of the slice behind. This sentence is in the slice and nowhere
+        // else on the page, so its absence IS the removal rather than a measurement
+        // of it.
+        Assert.Contains("An older name for a faster-growing ependymoma", retired,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("An older name for a faster-growing ependymoma", outsideSlice,
+            StringComparison.Ordinal);
+        Assert.True(outsideSlice.Length < wholePage.Length - retired.Length / 2,
+            "the older-paperwork slice was not removed from the text this rule runs "
+            + "over, so the rule is about to run on the very bullets it exists to exclude");
+
         foreach (var (term, bullet) in slice)
         {
             Assert.Contains(bullet, retired, StringComparison.Ordinal);
