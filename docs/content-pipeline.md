@@ -10036,3 +10036,195 @@ passes with no margin at all, and the band's clearest subject.
 > leaving rather than at the set?** There were two ways out here and they need different
 > instruments — one is a SET equality and one is a word count — and the number 4 could not
 > see either.
+
+### 12.31 A block's citations are the block's, and a flat list says otherwise (WI-574)
+
+§12.10's last word on shared blocks is about citations: *"Block `sources` merge into every
+including page and **render in the reader's source list**. A banned or dead URL added to a
+block ships onto 24 pages while a test that reads only the page's own front matter stays
+green. Check the blocks too."* That fold is right, and this section does not undo it. What
+it rules on is where those citations then **render**, which three files recorded as wrong
+and none fixed.
+
+`/tumors/atrt` recorded it first and called it *"a corpus issue rather than one page's
+accident"*. `/tumors/pediatric-brain-tumor` recorded it second. WI-568 made it third,
+adding *"NIDCD: Vestibular Schwannoma (Acoustic Neuroma) and Neurofibromatosis"* to the
+source list of eighteen hubs — including `/tumors/dipg`, where a parent reading
+"Neurofibromatosis" in their child's source list has a question nobody asked for. The
+backlog closed the third recording with the only rule that mattered: **recording it a
+fourth time is not one of the options.**
+
+**MEASURED FIRST, and the measurement moved the item.** 711 citation entries on 39 of the
+55 pages are a block's rather than the page's own, across 8 blocks: escalation 247,
+caregiver 222, mechanism 125, causes 66, crosswalk 20, tumor-board 16,
+posterior-fossa-syndrome 9, spinal-cord 6. The worst two pages are
+`/tumors/pediatric-brain-tumor` (44 own + 32 block = 76) and `/tumors/medulloblastoma`
+(28 + 32); `/tumors/dipg` is 17 + 29.
+
+#### The defect is the attribution, NOT the citation — and the difference decides the fix
+
+The obvious reading of this defect is "an irrelevant citation on a page it has no business
+being on." **That reading is wrong, and the measurement is what kills it.**
+`blocks/mechanism.md` renders its entire location list on every including page, and one
+entry of that list is *"The floor of the skull, below and behind the ear"* — hearing,
+balance, the nerves to the face. NIDCD **is** that entry's source, and that entry **is** on
+`/tumors/dipg`. The citation is honest, it is load-bearing, and the text it supports is
+genuinely in front of the reader.
+
+So nothing here is dead, foreign or droppable. **What was false was the attribution.** One
+undifferentiated `Sources:` list makes every entry read as *what this page's subject traces
+to*, and on a tumor hub that turns a block's skull-base citation into a claim about the
+reader's own tumor.
+
+That resolves the two options the backlog left open:
+
+- **Attribute a block's sources to the block in the rendered list** — TAKEN. It is one
+  change in one renderer, it drops no citation, and it fixes the sentence the reader
+  actually mis-reads.
+- **Let a block scope a source to the claim it supports** — REJECTED, and not on effort.
+  Scoping is 711 editorial decisions that still have to render somewhere, so it does not
+  answer the rendering question; it postpones it. And it buys the reader nothing the first
+  option does not.
+
+#### The trap: the fix that would switch eight blocks' gates off
+
+The direct way to stop block citations rendering as the page's own is to stop folding them
+into `frontMatter.Sources`. **That would be the worst available outcome**, because the fold
+is what every downstream consumer and every §12.10 citation check reads. Un-folding would
+make a dead URL in a block invisible to the page checks again — the exact hole §12.10's own
+paragraph was written about — for eight blocks at once, while every test stayed green.
+
+This is WI-582's carry-forward in a new costume: **a gate's scope can be narrower than its
+name.** So the ruling is split deliberately:
+
+> **`FrontMatter.Sources` remains the UNION, byte for byte unchanged.** `ContentPage` gains
+> `OwnSources` and `BlockSources`, which **partition** that union elementwise and in order.
+> The partition exists for the RENDERER alone. No gate's input changes.
+
+`TheTwoListsPartitionTheFrontMatterExactly` asserts the partition on all 55 pages, which is
+what makes "no citation was dropped, duplicated or reordered" a measured claim rather than
+an intention.
+
+#### Ownership is decided on the DECLARED side, and the corpus has the discriminating case
+
+`/tumors/acoustic-neuroma` includes `[MECHANISM]`, so it inherits the NIDCD citation — and
+it **also declares that same URL itself**, under its own title (*"Vestibular Schwannoma
+(Acoustic Neuroma) and Neurofibromatosis"*, no `NIDCD:` prefix), because on that page the
+citation is squarely about the subject. `SameSource` matches on URL, so the page's own
+declaration wins: the citation stays in its **own** list, under its **own** wording, and is
+not repeated below.
+
+That is why the filter reads the declared list rather than the block list, and it is why the
+NIDCD title folds onto **17** pages and not 18. A filter written the other way round passes
+every other assertion in the item and reds only here. **The discriminating case occurs
+naturally in the corpus**, which is worth more than a fixture: it cannot drift out of
+relevance while the code it discriminates still ships.
+
+**"Includes a block" and "renders a block's citation" are different sets.** Forty pages
+include a block; `/tests/mri` is the fortieth and renders none, because the single source
+its block carries is one that page already declares. Pinned, so the two sets cannot quietly
+collapse into one again.
+
+#### The gate that was off, and this item turns it on
+
+`ContentPage.cshtml` carried **three words** of reader-facing prose before this item —
+`Last reviewed:` and `Sources:`. `CheckRazorPage`'s floor is 25, so the file was reported
+*"too little to grade"* and was **held to no reading level at all**. That is §12.22's and
+§12.30's defect on a third surface: a line the reader meets that nothing grades.
+
+The new label is written to cross the floor **on purpose** — 39 words, grading **4.0**,
+inside both the 6.0 limit and the 5.5 warn band. Which means shortening it back under 25
+would switch the gate off again, so the test asserts the gate's STATE and not just the
+number: the finding must be a grade rather than the "too little to grade" Info.
+
+**AND THE LABELS ARE GRADED A SECOND TIME, ON THEIR OWN — because here the gate's scope is
+WIDER than the test's name**, which is the same defect as §12.25's running backwards.
+`CheckRazorPage` grades every word of prose in the file, and today that *is* the four
+labels. Add forty words of easy prose anywhere else in `ContentPage.cshtml` and the label
+could be rewritten to grade 9 while the file average stayed Info and a test called
+`TheProvenanceLabelsAre...BelowSixthGrade` stayed green. So the labels are pinned as a
+literal array and graded alone (1.9) beside the file-level check. A gate whose subject is
+*part* of a file needs an assertion over that part.
+
+> **A COLON ENDS A SENTENCE FOR THE EXTRACTOR AND NOT FOR THE GRADER, and this item is the
+> first place it could have mattered.** `RazorTextExtractor.Flush` treats `:` as an
+> already-present terminator and appends nothing; `ReadabilityAnalyzer`'s sentence regex is
+> `[.!?]+(?=\s|$)`. So colon-ended prose blocks **fuse** into one grader-sentence.
+> **Measured before being assumed: it affects 17 of the 19 graded Razor pages, the deltas run
+> 0.1–1.6, and NO page passes or fails because of it** — on a page with many real
+> sentences, one fused pair barely moves words-per-sentence. It is therefore recorded as a
+> latent hazard and NOT fixed here: a change to the grader's sentence rule re-grades the
+> whole corpus and belongs to its own item. What this item does instead is write its label
+> as real sentences ending in periods, so it does not rely on the seam. `/pm`.
+
+#### What /review caught, and it was a FIX FOR MISATTRIBUTION THAT MISATTRIBUTED
+
+`/review` (code-reviewer, 1 round): **1 blocker, 2 should-fixes, 5 nits, and the blocker was
+reader-facing prose this item had just written.**
+
+The shared label's third sentence read *"A few of them name other illnesses."* It was put
+there to defuse exactly the alarm this section exists to remove — a DIPG parent meeting
+"Neurofibromatosis". **It is FALSE on 14 of the 39 pages that render it**, independently
+measured both ways: those fourteen (`/tests/biopsy`, `/tests/getting-ready-for-surgery`,
+`/tests/waiting-for-results` and eleven `/treatments/*` hubs) fold citations from
+`caregiver` and `tumor-board` ONLY, and all seven of those titles are about brain tumors,
+cancer and caregiving. Nothing else.
+
+**And on the other 25 it was worse than imprecise.** The only folded citations that name
+another condition are `escalation`'s — CDC Stroke, CDC Seizure First Aid, Neutropenia,
+Hydrocephalus — and that block cites them to tell the reader what to watch for **in
+themselves**. The sentence told a reader that the four most action-bearing citations on the
+page were about somebody else's illness. It also **ended the page on a mild alarm**, which
+§12.6 forbids as a review rule rather than a preference.
+
+> **THE RULING: a sentence added to explain a shared citation is itself prose asserted on
+> every including page.** It is subject to §12.10's own test — *would this be true on the
+> hub you have thought about least?* — and the label failed it on fourteen. A block's
+> citations needed ATTRIBUTION, not a characterisation of what they contain: the renderer
+> knows which list a citation is in and cannot know what the titles say. The third sentence
+> is now *"They are here so you can check any part of this page"* — true on all 39, and an
+> action rather than a warning.
+
+The two should-fixes were both real and both taken: the labels are now graded on their own
+(above), and each `<ul>` carries `aria-labelledby` pointing at its label, because a screen
+reader navigating by list met two unlabelled lists of links and lost the attribution that
+is the whole point of the item.
+
+Of the nits, two were taken as correctness rather than polish. The front-matter list is now
+replaced **unconditionally**: guarding it left `/tests/mri` — which includes a block whose
+only citation it already declares — holding the deserialized list, the one case the comment
+there claimed never happens. And the partition assertion now compares the lists by
+**reference identity** rather than through a `(url, title)` projection, which pins all three
+fields including `accessed` and reds on a swap for an equal-looking copy. The flat-list
+assertion was also made markup-free: `DoesNotContain("<p>Sources:</p>")` only reds on a
+byte-identical revert, and no `.cshtml`, page body or block body contains the bare string
+`Sources:` — measured, because that is what makes the stronger form safe.
+
+#### The residual, stated rather than glossed
+
+**One shared group, not eight.** The reader learns that a citation belongs to a shared part
+of the page, not WHICH shared part. Per-block attribution would need a reader-facing name
+for each of the eight blocks — a content decision, not a rendering one — and the block
+names (`mechanism`, `crosswalk`) are internal. The misattribution this section was
+commissioned to fix is gone either way; naming the sections is an improvement on top, and
+it is `/pm`'s to scope.
+
+**A page's citations are still unchecked for title quality, and the asymmetry is measured
+rather than asserted.** `CheckGlossaryTerm` **warns** on a glossary source whose URL has no
+title (WCAG 2.4.4 — the link would have no accessible name), and `Glossary.cshtml` falls
+back to the host so nothing ships nameless. `CheckPage` has **no** such check for a page's
+sources — it only warns when the list is empty — and the two source lists this section adds
+render `<a href="@source.Url">@source.Title</a>` with **no fallback**, so an untitled
+citation would ship as a link with no text at all.
+
+**It is LATENT, not live: measured at 0 of 1,401 page sources and 0 of the 8 blocks'
+sources missing a title.** So this item adds no fallback and no gate — a guard with no
+possible subject is the "prove it can fire" problem above, and the honest move is to record
+the asymmetry with its measurement. `/pm`.
+
+> **The question to carry forward.** §12.29 asked whether a property true of no member is a
+> decision or an accident; §12.30 asked what leaving a gated set looks like. This item
+> asked: **whose claim is this sentence, and does the surface the reader reads it on say so?**
+> A citation can be perfectly honest, perfectly live, perfectly on-topic for the text it
+> supports — and still assert something false, because the list it renders in has only one
+> heading. Five recordings described the symptom; none asked who the list belonged to.

@@ -5,12 +5,30 @@ using YamlDotNet.Serialization;
 
 namespace BrainHarbor.Web.Content;
 
-/// <summary>One parsed curated page: front matter + rendered HTML.</summary>
+/// <summary>
+/// One parsed curated page: front matter + rendered HTML.
+///
+/// <para>WI-574: <paramref name="OwnSources"/> and <paramref name="BlockSources"/>
+/// PARTITION <c>FrontMatter.Sources</c>, in that order. The front-matter list is
+/// still the union of both and is deliberately left alone — it is what every
+/// downstream consumer and every §12.10 citation gate reads, and narrowing it to
+/// fix a rendering problem would switch those checks off for eight blocks at
+/// once. The partition exists so the RENDERER can say which citations are the
+/// page's own and which belong to a section it shares with other pages.</para>
+///
+/// <para><b>The partition is a SNAPSHOT taken at parse time, not an invariant the
+/// type enforces</b> — <c>ContentFrontMatter.Sources</c> is a settable
+/// <c>List&lt;&gt;</c>, so a caller who mutated it after <c>Parse</c> would add a
+/// citation no reader ever sees, with nothing going red. Nothing does today, and
+/// callers must not: treat a parsed <c>ContentPage</c> as immutable (/review).</para>
+/// </summary>
 public sealed record ContentPage(
     ContentFrontMatter FrontMatter,
     string Html,
     string Markdown,
-    string UrlPath);
+    string UrlPath,
+    IReadOnlyList<ContentSource> OwnSources,
+    IReadOnlyList<ContentSource> BlockSources);
 
 /// <summary>
 /// WI-104: loads curated Markdown pages (content-pipeline.md §3 schema) from
@@ -235,18 +253,26 @@ public sealed partial class ContentStore(
         var (composed, blockSources) = ContentBlocks.Compose(
             body, blocks ?? ContentBlockSet.Empty, urlPath);
         body = composed;
-        if (blockSources.Count > 0)
-        {
-            // Replace the list rather than adding into the deserialized one,
-            // so the front matter this page caches is never a list some other
-            // caller is also holding.
-            var declared = frontMatter.Sources;
-            frontMatter.Sources =
-            [
-                .. declared,
-                .. blockSources.Where(s => !declared.Any(existing => SameSource(existing, s))),
-            ];
-        }
+
+        // WI-574: the page's own citations, and the ones a shared block brought
+        // with it, kept apart for the renderer. A page that declares a source a
+        // block also cites OWNS it — it stays in `ownSources` and is not
+        // repeated below, which is why this filters on the declared list rather
+        // than on the block list.
+        var ownSources = frontMatter.Sources;
+        IReadOnlyList<ContentSource> pageBlockSources = blockSources.Count == 0
+            ? []
+            : [.. blockSources.Where(s => !ownSources.Any(existing => SameSource(existing, s)))];
+
+        // UNCONDITIONAL, so the sentence below is true on every page. Guarding
+        // this on `pageBlockSources.Count > 0` left /tests/mri — which includes a
+        // block whose only source it already declares — holding the deserialized
+        // list, the one case the comment claimed never happens (/review).
+        //
+        // Replace the list rather than adding into the deserialized one, so the
+        // front matter this page caches is never a list some other caller is
+        // also holding. Content-identical either way: appending an empty tail.
+        frontMatter.Sources = [.. ownSources, .. pageBlockSources];
 
         var document = Markdig.Markdown.Parse(body, Pipeline);
 
@@ -263,6 +289,7 @@ public sealed partial class ContentStore(
         renderer.Render(document);
         writer.Flush();
 
-        return new ContentPage(frontMatter, writer.ToString(), body, urlPath);
+        return new ContentPage(
+            frontMatter, writer.ToString(), body, urlPath, [.. ownSources], pageBlockSources);
     }
 }
