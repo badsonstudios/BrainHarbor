@@ -8,5 +8,5 @@ sources:
 ---
 
 The lowest point your blood counts reach after a dose of chemotherapy. It is
-usually about a week to ten days afterwards, and it is when infection is most
-of a risk.
+usually about a week to ten days later. And it is when infection is most of a
+risk.

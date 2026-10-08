@@ -8,5 +8,6 @@ sources:
     accessed: 2026-09-04
 ---
 
-A chemotherapy taken as a capsule, only occasionally rather than every day. It
-lowers blood counts weeks after a dose, which is why the doses are spaced out.
+A chemotherapy you take as a capsule. You take it now and then, not every day.
+It lowers your blood counts weeks after a dose. That is why the doses are
+spaced out.

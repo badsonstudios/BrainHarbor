@@ -135,11 +135,36 @@ public static partial class ContentChecker
                 "no page includes this block — nothing grades its reading level"));
         }
 
+        // WI-582: COUNTED, NOT INFERRED — see GlossaryCorpusReport's precondition for
+        // what inferring the description equivalent cost (a dead ratchet, seven green
+        // tests).
+        var glossaryTermsWalked = 0;
+
         if (glossaryRoot is not null && Directory.Exists(glossaryRoot))
         {
-            foreach (var file in Directory.EnumerateFiles(glossaryRoot, "*.md")
-                         .OrderBy(f => f, StringComparer.Ordinal))
+            var glossaryFiles = Directory.EnumerateFiles(glossaryRoot, "*.md")
+                .OrderBy(f => f, StringComparer.Ordinal).ToList();
+
+            // AN EXISTING ROOT WITH NOTHING IN IT WAS SILENT UNTIL WI-582 (/review).
+            // The pages branch above has had this warning since WI-106 and the glossary
+            // branch did not, so a root that exists and matches nothing — the glossary
+            // moved under a subdirectory, the extension changed — walked zero entries,
+            // produced zero findings, and `GlossaryCorpusReport` then took its
+            // not-our-business early return. ContentCheck printed "passed, 0 failures"
+            // with the definition gate switched off wholesale, which is the exact shape
+            // GlossaryWhenMeasured's own docstring claims to guard against. Warn and not
+            // Fail, matching the pages branch; the SET equality in
+            // GlossaryDefinitionGradeTests is what gates it, against the files on disk.
+            if (glossaryFiles.Count == 0)
             {
+                findings.Add(new(FindingLevel.Warn, glossaryRoot,
+                    "glossary root exists but has no .md files — nothing checked, and "
+                    + "the definition grade gate was reached zero times"));
+            }
+
+            foreach (var file in glossaryFiles)
+            {
+                glossaryTermsWalked++;
                 findings.AddRange(CheckGlossaryTerm(
                     File.ReadAllText(file), Path.GetFileNameWithoutExtension(file)));
             }
@@ -192,6 +217,13 @@ public static partial class ContentChecker
         // completes before the first `yield`, and one more `findings.Where(...)`
         // after a yield would throw at runtime (/review round 4).
         findings.AddRange(DescriptionCorpusReport(findings, curatedPagesWalked).ToList());
+
+        // WI-582, and MATERIALISED FIRST for the same reason the line above is. It also
+        // runs AFTER that one, which costs nothing: the description report's findings
+        // carry DescriptionMarker and this one selects on DefinitionMarker, so neither
+        // can see the other's output. Two corpora, two markers, no cross-talk — the
+        // property ContentCheckTests pins rather than assumes.
+        findings.AddRange(GlossaryCorpusReport(findings, glossaryTermsWalked).ToList());
 
         return findings;
     }
@@ -665,6 +697,66 @@ public static partial class ContentChecker
     /// </summary>
     public const string TooLittleToGradePhrase = "too little to grade";
 
+    // ------------------------------------------------------------------ WI-582, §12.30
+    // THE GLOSSARY DEFINITION, GRADED AND NOW GATED. Three constants, for the three
+    // reasons the description surface needed its own: a marker so the report selects
+    // grade findings POSITIVELY rather than by sniffing a message, a NAMED word floor
+    // so the number stops being a bare literal beside a comment about a different
+    // number, and a corpus size so a shrunken glossary cannot pass for a clean one.
+
+    /// <summary>
+    /// The marker <see cref="CheckGlossaryTerm"/> appends to a definition's GRADE
+    /// finding, so <see cref="GlossaryCorpusReport"/> and the tests that pin it agree
+    /// by construction rather than by three literals — <see cref="DescriptionMarker"/>'s
+    /// reason, unchanged (/review round 2 of WI-575).
+    ///
+    /// <para>It rides only on the grade finding, not on the word-count or source
+    /// findings: those are about the file and the grade is about the prose, and the
+    /// report counts exactly one kind.</para>
+    /// </summary>
+    public const string DefinitionMarker = " [definition]";
+
+    /// <summary>
+    /// Below this many words a definition is NOT graded — the literal that used to sit
+    /// inline in <see cref="CheckGlossaryTerm"/>, named here because the gate it now
+    /// feeds makes the SET it defines the first question anybody asks of it (§12.19).
+    ///
+    /// <para><b>IT IS 20 AND <see cref="MinimumWordsToGrade"/> IS 25, and the comment
+    /// beside the old literal said "the same reason <c>CheckRazorPage</c> refuses to
+    /// grade under 25 words" — true of the REASON and not of the NUMBER.</b> A reader of
+    /// that sentence would reasonably have read 25. The reason is shared and still
+    /// stands: Flesch-Kincaid on a 25-word sample is too noisy to fail a build on. The
+    /// numbers differ because the artifacts do, and measurably: a definition is capped
+    /// at <b>40 words</b> by content-pipeline §6 while a page body and a description
+    /// have no ceiling at all, so a definition lives in a 20-to-40-word window. Raising
+    /// this to 25 would take <b>8 of the 105 shipped entries</b> out of the graded set —
+    /// <c>cdkn2a-b-deletion</c>, <c>radiation-oncologist</c>, <c>posterior-fossa</c>,
+    /// <c>temozolomide</c>, <c>extra-axial</c>, <c>linear-accelerator</c>,
+    /// <c>craniectomy</c> and <c>microvascular-proliferation</c>, grading 2.6 to 5.7 —
+    /// which is eight entries dropped out of a gate in exchange for tidiness.</para>
+    ///
+    /// <para><b>AND THIS IS THE ESCAPE HATCH, which is the whole hazard this item was
+    /// planned against.</b> A definition trimmed under this floor LEAVES the graded set,
+    /// and §12.23 records the identical hole shipping once already at the 25-word
+    /// description floor. The property is gated in the suite, not here: the ungraded set
+    /// is pinned as a SET of named slugs, so an entry joining it reds. A count would not
+    /// — four out, four in, and nothing moves.</para>
+    /// </summary>
+    public const int MinimumDefinitionWordsToGrade = 20;
+
+    /// <summary>
+    /// The number of glossary entries <see cref="GlossaryCorpusReport"/>'s totals were
+    /// measured on (WI-582). <see cref="CorpusWhenMeasured"/>'s reason, for the other
+    /// corpus: a smaller glossary is not the shipped one, and the per-entry gate is
+    /// reached once per file walked, so a glob that stops matching switches the gate off
+    /// wholesale rather than one entry at a time.
+    ///
+    /// <para><b>A corpus SIZE, never a count of anything that can be fixed</b> — which
+    /// is the conflation that re-armed two closed blockers in WI-578 (/review round 4)
+    /// just by following the instructions printed in the tool's own messages.</para>
+    /// </summary>
+    public const int GlossaryWhenMeasured = 105;
+
     /// <summary>
     /// The corpus-level description report, run once over the whole corpus rather than
     /// per page — every property below is a corpus property and a per-page check cannot
@@ -928,6 +1020,167 @@ public static partial class ContentChecker
             + howATruncationShows);
     }
 
+    /// <summary>
+    /// The corpus-level report for glossary DEFINITIONS (WI-582, §12.30) — the three
+    /// things no per-entry check can do: say the sweep saw the whole glossary, say the
+    /// instrument is alive, and print the totals with the ungraded entries NAMED.
+    ///
+    /// <para><b>The counts here are reported and never gated</b> (§12.25, and WI-575
+    /// round 4's conflation of a corpus size with a defect count). The verdict on a
+    /// definition belongs to <see cref="CheckGlossaryTerm"/>, per entry, where it can
+    /// also see the word floor. What this method adds is the two failures that are
+    /// invisible one entry at a time: a dead instrument, and a gate that measures
+    /// without gating.</para>
+    ///
+    /// <para><b>It does NOT gate the ungraded SET, and that is deliberate.</b> The set
+    /// is the escape hatch (<see cref="MinimumDefinitionWordsToGrade"/>), so it wants
+    /// pinning by NAME — and a list of four slugs in the tool would be a claim about the
+    /// corpus living in a constant, the shape §12.23 made
+    /// <c>EveryFinishedSliceIsActuallyCleanOnTheShippedCorpus</c> refuse. It is pinned
+    /// in <c>GlossaryDefinitionGradeTests</c> against the real corpus instead; this
+    /// method's job is to print the names so a human running the tool can see them.</para>
+    ///
+    /// <para><paramref name="glossaryTermsWalked"/> is passed rather than inferred, and
+    /// WI-575's /review round 2 is why: the description report inferred its walked count
+    /// from the findings, the predicate it used could never match, the count was always
+    /// zero and the ENTIRE ratchet was dead while seven tests stayed green.</para>
+    /// </summary>
+    public static IEnumerable<Finding> GlossaryCorpusReport(
+        List<Finding> findings, int glossaryTermsWalked)
+    {
+        // NOT OUR BUSINESS: no glossary in scope at all. A caller may legitimately
+        // check the pages or the razor pages alone, and ContentCheckTests does both.
+        if (glossaryTermsWalked == 0)
+        {
+            yield break;
+        }
+
+        var definitions = findings
+            .Where(f => f.File.EndsWith(DefinitionMarker, StringComparison.Ordinal))
+            .ToList();
+
+        // IN SCOPE BUT TOO SMALL TO COMPARE, AND LOUD ABOUT IT. Warn and not Info,
+        // because Program.cs renders Info as "  ok" — the mistake WI-578 made once with
+        // the description grade itself. What a shrunken glossary threatens is the
+        // per-entry gate's REACH: CheckGlossaryTerm runs once per file walked.
+        if (glossaryTermsWalked < GlossaryWhenMeasured)
+        {
+            yield return new(FindingLevel.Warn, "(glossary)",
+                $"{glossaryTermsWalked} glossary entr(ies) were walked against the "
+                + $"{GlossaryWhenMeasured} this glossary was last measured at, so the "
+                + "corpus-level definition totals below DID NOT RUN. Every entry that "
+                + "was walked is still graded and gated one entry at a time; what is "
+                + "not checked is whether the sweep reached the whole glossary. If the "
+                + "glossary legitimately shrank, re-measure and lower "
+                + $"{nameof(GlossaryWhenMeasured)} — it is a corpus SIZE and never a "
+                + "count of anything that can be fixed.");
+            yield break;
+        }
+
+        var graded = definitions.Where(f => f.Grade is not null).ToList();
+
+        // THE DEAD INSTRUMENT, and it fails on UNGRADED rather than on ABSENT because
+        // that is how this instrument actually dies. Trim every definition under the
+        // word floor and `definitions.Count` is still 105 while `graded.Count` is 0 —
+        // so "0 above the limit" reads as a total win (§12.23, row 2).
+        if (graded.Count == 0)
+        {
+            yield return new(FindingLevel.Fail, "(glossary)",
+                $"{glossaryTermsWalked} glossary entr(ies) were walked and NOT ONE "
+                + $"definition was GRADED ({definitions.Count} definition finding(s), "
+                + "all of them ungraded). Either CheckGlossaryTerm has stopped "
+                + "producing grades, or every definition has fallen under the "
+                + $"{MinimumDefinitionWordsToGrade}-word floor — both look like '0 above "
+                + "the limit' to a counter, which is why this is a failure and not a "
+                + "clean bill.");
+            yield break;
+        }
+
+        // MATCHED POSITIVELY, never as "everything left over" (§12.22's last lesson,
+        // and the line /review found three lines under the comment forbidding it).
+        var tooShort = definitions
+            .Where(f => f.Message.Contains(TooLittleToGradePhrase, StringComparison.Ordinal))
+            .ToList();
+
+        // AND THE TWO SETS MUST PARTITION THE WALK — not `definitions.Count`, which is
+        // /review's finding and makes this strictly stronger. CheckGlossaryTerm has a
+        // THIRD way out: a FormatException on bad front matter returns one Fail and no
+        // marker at all, so that entry drops out of `definitions` entirely. Compared
+        // against `definitions.Count` the two sets still partitioned perfectly and the
+        // totals line printed "104 glossary definition(s)" over a glossary of 105.
+        // Compared against the WALK it cannot: this check now sees both an unparseable
+        // entry and a fourth branch added later, and the printed totals are
+        // self-validating instead of depending on an unrelated Fail elsewhere in the run.
+        if (graded.Count + tooShort.Count != glossaryTermsWalked)
+        {
+            yield return new(FindingLevel.Fail, "(glossary)",
+                $"{glossaryTermsWalked} glossary entr(ies) were walked but the "
+                + $"definition findings do not partition them: {graded.Count} graded + "
+                + $"{tooShort.Count} under the {MinimumDefinitionWordsToGrade}-word "
+                + $"floor = {graded.Count + tooShort.Count}. Either an entry produced no "
+                + "definition finding at all (unparseable front matter, which fails "
+                + "separately above) or CheckGlossaryTerm has a branch these counts "
+                + "cannot see — and the totals printed below are then about fewer "
+                + "entries than were checked.");
+        }
+
+        var over = graded.Count(f => f.Grade > FailGrade);
+        var worst = graded.Max(f => f.Grade!.Value);
+        var band = graded.Count(f => f.Grade >= WarnGrade && f.Grade <= FailGrade);
+
+        // IS THE PER-ENTRY GRADE GATE ACTUALLY WIRED? Not a restatement of the
+        // per-entry Fail: it compares the grades this run MEASURED against the grades
+        // it FAILED. A gap means CheckGlossaryTerm still reports the grade and has
+        // stopped gating it — which is precisely how WI-578's gate died three times,
+        // green and silent, and how this one was always going to die.
+        //
+        // AND IT IS A CODE TRIPWIRE RATHER THAN A DATA DETECTOR, which the comment
+        // above read as until /review labelled it. Both numbers are derived from the
+        // same `Grade > FailGrade` comparison plus a level CheckGlossaryTerm sets from
+        // that same comparison, so NO CORPUS can red this — only an edit to the gate
+        // can. That is the identical standing the partition check above has and is
+        // stated there; the two should read the same way.
+        var overFailing = graded.Count(f => f.Grade > FailGrade && f.Level == FindingLevel.Fail);
+
+        if (over != overFailing)
+        {
+            yield return new(FindingLevel.Fail, "(glossary)",
+                $"{over} definition(s) grade above the {FailGrade:0.0} limit but only "
+                + $"{overFailing} of them were FAILED. Since WI-582 the definition grade "
+                + "is gated, so these two numbers are the same number — a gap means "
+                + "CheckGlossaryTerm still reports the grade and has stopped gating it.");
+        }
+
+        // THE TOTALS, ONCE, VERDICT-FREE, AND ON EVERY RUN — including the passing one,
+        // because a gate that is silent when it passes cannot be proved to be plugged
+        // in (§12.23, /review round 3). Facts with no "unchanged" or "lower the
+        // constant" framing cannot contradict a Fail printed beside them, so the level
+        // rises to Warn next to one and the words do not change.
+        //
+        // AND THE UNGRADED ENTRIES ARE NAMED RATHER THAN COUNTED (§12.19/§12.24/§12.25).
+        // "4 under the floor" is a number nobody can act on and is satisfied by any four
+        // entries; the names are what let a reader of the log notice that one of them is
+        // not the one that was there last week.
+        yield return new(
+            over > 0 ? FindingLevel.Warn : FindingLevel.Info, "(glossary)",
+            (over > 0
+                ? $"{over} definition(s) FAILED above, so these totals are reported "
+                  + "without a verdict: "
+                : $"{definitions.Count} glossary definition(s), {graded.Count} of them "
+                  + $"graded and every one gated at {FailGrade:0.0}: ")
+            + $"{over} above the {FailGrade:0.0} limit, worst {worst:0.0}, {band} in the "
+            + $"{WarnGrade:0.0}-{FailGrade:0.0} approach band, {tooShort.Count} under the "
+            + $"{MinimumDefinitionWordsToGrade}-word floor and not graded"
+            + (tooShort.Count == 0
+                ? ""
+                : " — " + string.Join(", ", tooShort
+                    .Select(f => f.File[..^DefinitionMarker.Length])
+                    .OrderBy(f => f, StringComparer.Ordinal)))
+            + ". A definition shortened under the word floor LEAVES the graded set, "
+            + "which takes the limit count down and reads as progress; the set of "
+            + "ungraded entries is pinned by NAME in the suite for exactly that reason.");
+    }
+
     private static Finding GradeFinding(double grade, string relativePath) => grade switch
     {
         > FailGrade => new(FindingLevel.Fail, relativePath,
@@ -1119,15 +1372,78 @@ public static partial class ContentChecker
                     $"source '{source.Url}' has no title — the link would have no readable text"));
             }
 
-            // Reported, not gated. Flesch-Kincaid on a 25-word definition is
-            // too noisy to fail a build on — the same reason CheckRazorPage
-            // refuses to grade under 25 words — but a definition drifting to
-            // grade 9 should still be visible to whoever runs this.
-            if (words >= 20)
+            // GATED SINCE WI-582 (§12.30), AT THE SAME 6.0 A PAGE IS HELD TO — and the
+            // `(not gated)` string is DELETED rather than reworded, the way WI-578
+            // deleted the `(not gated — WI-578)` marker together with its ratchet.
+            // There is no ungraded-but-reported definition left for it to be true of.
+            //
+            // WHY A DEFINITION IS HELD TO A PAGE'S STANDARD, decided before a word was
+            // edited and then proved by editing them: a definition fires as a tooltip
+            // on every page that says the term (§12.26 established it has a BLOCK's
+            // blast radius), and for 26 of the 105 entries /glossary is the reader's
+            // whole encounter with the word (§12.29). It is reader-facing prose on two
+            // surfaces, so it is prose, so it is graded. 35 of the 101 graded entries
+            // read above 6.0 when this item started, worst 9.3, median 5.5.
+            //
+            // AND THE 35 WERE WRITTEN UNDER 6.0 WITH NOT ONE WORD REMOVED, which is
+            // §12.22's sentence-length diagnosis holding for a third surface after
+            // §12.23/§12.24/§12.25 held it for three directories of descriptions.
+            // No medical term was removed, no entry is exempted, and there is no
+            // exemption list — see §12.30 for the two entries where the 40-word
+            // ceiling and the 6.0 limit bind against each other.
+            var where = $"glossary/{slug}.md{DefinitionMarker}";
+
+            if (words < MinimumDefinitionWordsToGrade)
             {
-                findings.Add(new(FindingLevel.Info, $"glossary/{slug}.md",
-                    $"reading grade {ReadabilityAnalyzer.FleschKincaidGrade(term.Definition):0.0} (not gated)"));
+                // REPORTED RATHER THAN SKIPPED, so an ungraded definition is visible
+                // instead of absent — the same reason GradeDescription reports its
+                // floor branch. Info and not Warn because FOUR entries sit here
+                // legitimately today and always have (memantine at 12 words,
+                // procarbazine 18, pcv 19, stereotactic-radiosurgery 19), so a Warn
+                // would print four expected lines on every run forever.
+                //
+                // WHAT MAKES THE FLOOR AN EXEMPTION RATHER THAN A LOOPHOLE IS NOT
+                // HERE. A per-entry check cannot see an entry ARRIVE in this branch,
+                // because arriving looks exactly like belonging. The ungraded set is
+                // pinned as a set of named slugs in the suite; this message is how the
+                // tool says which entries are in it.
+                findings.Add(new(FindingLevel.Info, where,
+                    $"{words} word(s) — {TooLittleToGradePhrase}, and "
+                    + $"{MinimumDefinitionWordsToGrade} are needed"));
+                return findings;
             }
+
+            var grade = ReadabilityAnalyzer.FleschKincaidGrade(term.Definition);
+
+            // FAIL above the limit, WARN in the approach band, Info below — the shape
+            // GradeFinding has had for page bodies since WI-414 and GradeDescription
+            // took on at WI-578 slice 3, on the same WarnGrade. A third surface
+            // disagreeing by a whole level about what "close to the limit" means is
+            // three definitions of one idea.
+            //
+            // THE BAND HAS 19 LIVE SUBJECTS ON THE DAY IT LANDS, and that is reported
+            // rather than tidied away. The counter-argument was weighed and rejected:
+            // Program.cs reasons that a gate printing dozens of expected warnings
+            // trains people to skip it, and 19 of 101 is a fifth of the glossary. But
+            // a definition at 5.7 is not a defect and not a backlog — it is correct
+            // writing near a line — and the 17 page-body warnings already in this
+            // tool's output are the same thing, treated the same way since WI-414.
+            // What WI-578 refused to print as `ok` was a grade-19.7 FAILURE.
+            var over = grade > FailGrade;
+            var level = over ? FindingLevel.Fail
+                : grade >= WarnGrade ? FindingLevel.Warn
+                : FindingLevel.Info;
+
+            findings.Add(new(level, where,
+                $"reading grade {grade:0.0}"
+                + (over
+                    ? $", above the {FailGrade:0.0} limit — split a sentence before "
+                      + "simplifying a word: the cause is words-per-sentence and not "
+                      + "vocabulary, measured three times (§12.22, §12.23, §12.30)"
+                    : level == FindingLevel.Warn
+                        ? $" is close to the {FailGrade:0.0} limit"
+                        : ""),
+                grade));
 
             return findings;
         }

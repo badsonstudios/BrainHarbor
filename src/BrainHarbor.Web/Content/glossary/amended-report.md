@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-03
 ---
 
-A report in which something already written has been changed, not added to. It
-is labeled as amended. It normally says what changed and why. Most changes are
-small ones, like a typing mistake.
+A report where something already written has been changed. It was not added
+to. It is labeled as amended. It normally says what changed and why. Most
+changes are small ones, like a typing mistake.

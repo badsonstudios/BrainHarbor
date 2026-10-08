@@ -7,5 +7,6 @@ sources:
     accessed: 2026-08-30
 ---
 
-Two pieces of two chromosomes are missing from the tumor cells. When a glioma
-has this and an IDH gene change, it is called an oligodendroglioma.
+Two pieces of two chromosomes are gone. They are gone from the tumor cells. A
+glioma can have this change. If it has an IDH gene change too, it is called an
+oligodendroglioma.

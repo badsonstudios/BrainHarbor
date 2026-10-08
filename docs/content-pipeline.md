@@ -9774,3 +9774,265 @@ decision rests on.
 > a fact about the word, and once it was an accident of where the page put it. The
 > three want three different owners, and a rule written for the count would have
 > had to pick one of them for all 26.
+
+### 12.30 A definition is prose, and the surface where the two limits meet (WI-582)
+
+§12.26 established that a glossary definition has **a block's blast radius** — it fires as
+a tooltip on every page that says the term. §12.28 made it the restatement probe's
+**subject**. §12.29 found that for **26 of the 105** entries `/glossary` is the reader's
+whole encounter with the word. Three sections had therefore established that a definition
+is reader-facing prose on two surfaces, and nothing graded it: `CheckGlossaryTerm` printed
+every grade as `reading grade N.N (not gated)` and failed on none.
+
+**35 of the 101 it grades read above 6.0**, worst **9.3**, median 5.5.
+
+| | before | after |
+|---|---|---|
+| definitions over 6.0 | **35 of 101** | **0 of 101** |
+| worst grade in the glossary | **9.3** (`lomustine`) | **6.0** (`rescue-medicine`, untouched) |
+| worst grade among the 35 | **9.3** | **5.9** (`chemoradiation`) |
+| words across the 35 | 1,099 | **1,187** |
+| words removed | — | **none** |
+| entries in the 5.5–6.0 approach band | 17 | **19** |
+| entries under the 20-word grading floor | **4** | **4** (the same four) |
+
+#### The diagnosis held a fourth time, and the fourth surface has a CEILING
+
+§12.22 claimed the cause was **sentence length and not vocabulary**. §12.23, §12.24 and
+§12.25 tested it on three directories of page descriptions — 42 rewritten, not one word
+removed. This is the fourth test and the first on a different artifact:
+
+> **22 of the 35 grew, 13 held exactly level, and none fell.** `lomustine` went **9.3 →
+> 3.4** and the word *lomustine* does not appear in its definition: it was bound by
+> ***occasionally***, an ordinary five-syllable word that became *now and then*.
+> `anesthesiologist` went 6.3 → **3.0** at exactly its old word count. The edits are a
+> comma or a colon becoming a full stop, plus the connective a new sentence needs.
+
+**AND THE GATE'S TEETH ARE WEAKER THAN THAT NUMBER LOOKS, which /review priced and
+which belongs beside it.** Flesch-Kincaid rewards `", and"` → `". And"` with a large
+grade drop for close to no change in comprehension, and **six of these entries now open
+a sentence with *And*** — a pattern that appears in **zero** glossary entries before this
+item. It is not new to the corpus: shipped page prose and the page `description`s WI-578
+rewrote use it **78 times**, and §12.23 named it in writing as one of the sanctioned
+edits (*"plus the connective word a new sentence needs — and, And, That, it"*). **So it
+is house style with a ruling behind it, and the honest caveat is that "6.1–9.3 →
+2.6–5.9" overstates what moved for the reader on those six.** The entries where
+something real moved are the ones that gained a SENTENCE rather than a connective:
+`lomustine` 2 → 4 sentences, `tumor-treating-fields` 3 → 5, `circumscribed` 2 → 3.
+
+**And two hypotheses were killed by measurement before a word was written, both of which
+look obviously right.** A reader looking a word up already has it in front of them off a
+prescription or a report, so grading the definition for containing it looks like measuring
+the wrong thing. It is not what is happening: **masking each entry's own term and aliases
+to a one-syllable token moves the median by 0.1 and takes ZERO of the 35 under the limit.**
+Only the four acronym-expansion entries move at all (`rano` −2.7, `nec` −1.8,
+`radiologist` −1.8, `nos` −1.7), because **a definition mostly does not repeat its own
+term** — the term is the heading on `/glossary` and the button text in a tooltip. Masking
+every *other* glossary term a definition names takes 35 → **29** and the worst stays 9.3 —
+and the argument for it fails anyway, because **a tooltip does not nest**:
+`TermTooltipRenderer` writes the definition with `WriteEscape`, so a glossary term inside
+a definition is not clickable and the reader is not one hop from its meaning.
+
+**WHAT IS NEW ON THIS SURFACE IS THE 40-WORD CEILING** (§6). A page description had no
+upper bound, so "split and never remove a word" had unlimited room. A definition lives in
+a **20-to-40-word window**, and splitting costs words — a new sentence needs *And*, *That*,
+*It*. Three entries now sit at exactly 40 (`brain-mapping`, `h3-g34`,
+`tumor-treating-fields`) and two are where the two limits genuinely bind:
+
+- **`h3-g34` was at 40 words BEFORE**, so its fourth sentence boundary had to cost
+  **nothing at all**. Paid for by *one of the proteins that DNA wraps around* →
+  *a protein DNA wraps around*: minus three words to buy *A histone is*, with the
+  indefinite article keeping the hedge the plural carried. 6.1 → **4.3**.
+- **`chemoradiation` is the entry the ceiling pins hardest**, at 5.9 from 7.8. It is 39
+  words of *radiation*, *chemotherapy*, *glioblastoma* and *IDH-wildtype*, so its
+  syllables-per-word floor puts 6.0 at about five words per sentence — eight sentences in
+  forty words. It has six. **That is reported at Warn rather than nudged**, which is the
+  honest shape: the entry passes and is visibly close.
+
+  > **And it is the one place this item paid for a grade with a WORD, which /review
+  > caught and which is recorded rather than quietly kept.** Its last clause was
+  > *"depends on your **diagnosis**"* and now reads *"depends on your **tumor type**"* —
+  > three syllables for four. The narrowing is small (the entry's own example,
+  > *glioblastoma, IDH-wildtype*, **is** a tumor type under WHO 2021) but it is real, and
+  > it is not optional: **restoring *diagnosis* at the same 39 words grades 6.5 and fails
+  > the build.** Every other vocabulary swap across the 35 traded an ordinary word for an
+  > ordinary word; this is the single case where the 40-word ceiling and the 6.0 limit
+  > had no solution between them that kept the original noun.
+
+> **No medical term was removed from any of the 35, no entry is exempted, and there is no
+> exemption list.** The acceptance criterion worried that `pcv`, `lomustine`,
+> `procarbazine` and `carmustine-wafer` *"cannot be written under 6.0 while still naming
+> their subject"*. Two of the four are **under the word floor and not graded at all**, and
+> the other two were written with their drug names intact: `lomustine` 9.3 → 3.4,
+> `carmustine-wafer` 8.4 → 3.3 (bound by *dissolvable* and *operation*, both ordinary).
+> **The drug-name worry did not survive reading the drug-name entries.**
+
+#### The ruling, and the floor that is an exemption rather than a loophole
+
+**A definition is held to 6.0, the same as a page**, with the three-level shape
+`GradeFinding` has had for page bodies since WI-414 and `GradeDescription` took on at
+WI-578 slice 3, on the same `WarnGrade`. A third surface disagreeing by a whole level
+about what *"close to the limit"* means is three definitions of one idea.
+
+**The grading floor is 20 words and `MinimumWordsToGrade` is 25**, and the comment beside
+the old inline literal said *"the same reason `CheckRazorPage` refuses to grade under 25
+words"* — **true of the REASON and not of the NUMBER**, and a reader of that sentence would
+reasonably have read 25. The reason is shared and still stands. The numbers differ because
+the artifacts do: raising this one to 25 would take **8 of the 105 entries** (grading 2.6
+to 5.7 today) out of the graded set in exchange for tidiness. It is a named constant now,
+with those eight listed beside it by name.
+
+So **four entries are not graded** — `memantine` at 12 words, `procarbazine` 18, `pcv` 19,
+`stereotactic-radiosurgery` 19 — and they are **NAMED rather than subtracted**
+(§12.19/§12.24/§12.25). The fact that makes the floor an instrument instead of a hiding
+place is pinned beside them: **three of the four would FAIL on sight if they grew into the
+graded set** (`pcv` 16.1 — it is three drug names; `memantine` 10.4; `procarbazine` 7.6),
+and `stereotactic-radiosurgery` would pass at 4.9. Crossing the floor is a broken build,
+not an escape. **And those three are exactly the gap between the tool's number and a naive
+sweep's**: grading all 105 directly reported 38 over the limit and a worst of 16.1, and
+WI-416 is about precisely that — the second grader's cost was a wrong number that nearly
+reached a doc.
+
+#### THE HOLE THIS ITEM WAS PLANNED AGAINST, and the two places it is closed
+
+§12.23 records a gate shipping on the wrong side of a word floor **once already**, with
+`GradeDescription`'s own comment having warned since WI-575 that *scoring it as progress
+would let a page buy its way out of grading by getting shorter*. **Writing a hazard down
+does not guard it.** Here it is measured on this corpus rather than argued, by
+`prove-gate.py` phase 2:
+
+> Trim `vasogenic-edema` from 27 words to **19** and ContentCheck **exits 0**. The entry
+> leaves the graded set, the over-the-limit count stays 0, nothing fails, and the only
+> trace is one extra name in a line rendered as `  ok`.
+
+So the set is gated where a corpus claim belongs — in the suite, against the real corpus —
+and it is gated **as a SET and not as the number 4**. A count is satisfied by four out and
+four in: trim one 38-word definition under the floor while `pcv` is grown over it and the
+count never moves. `TheUngradedSetIsExactlyTheFourEntriesUnderTheWordFloor` reds in **both
+directions**, and the break harness proves both (mutations 04 and 05).
+
+**THE RESIDUAL, STATED RATHER THAN CLOSED.** The word floor covers the **35 entries this
+item rewrote**, not all 101 graded ones. Truncating one of the other **66** from 38 words
+to 21 passes everything: the grade improves, the entry stays graded, and the set gate
+fires only below 20. That is the item's planned scope — a floor is a claim about a
+measurement and there is no measurement of the other 66 to anchor one to — but it is the
+residual of the hazard and not its closure, and the next item that rewrites a definition
+should add its own rows.
+
+**And the limit is effectively 6.049.** `FleschKincaidGrade` rounds to one decimal before
+the `> FailGrade` compare, so an entry at 6.04 prints 6.0 and passes. Pre-existing for
+page bodies since WI-414 and for descriptions since WI-578; it is load-bearing on 101
+more strings now, and `rescue-medicine` sits at a measured 6.000.
+
+**And the set gate does not see the other truncation**, which is why there is a second
+instrument. A definition cut from 38 words to 24 is still graded, still under 6.0, still
+over the floor — and has stopped saying something. §12.23 calls it *a shortening wearing a
+split's clothes*, and notes that the only thing which caught one during slice 1 was a
+`len(new) >= len(old)` assertion in that item's **git-ignored scratch script**. It is in
+the suite this time: a **35-row word-floor table**, per entry, with the word count and the
+grade each one held before. The two column checksums (1,099 and 1,185) are the part that
+matters — the per-row assertions are all local, so **dropping one row's floor to let a
+truncation through passes every one of them**, and only the checksum reds. Mutation 19 is
+that exact edit, on the one row where every local assertion survives it.
+
+#### Two instruments on an overlapping set is not a supersession
+
+WI-581 floors the **26 glossary-only** definitions' **length in characters** at the term's
+length + 20, to rule out a row that is only the term restated. This item floors **35
+definitions' words**. **Ten entries carry both**, and §12.28's rule is that the thing to
+diff is the assertion list:
+
+| | WI-581's character floor | WI-582's word floor |
+|---|---|---|
+| set | the 26 that fire no tooltip anywhere | the 35 that read above 6.0 |
+| property | the definition is not an empty row | the rewrite was not a truncation |
+| unit | characters (term + 20) | words (26–40, per entry) |
+| reaches entries the other does not | **16** | **25** |
+
+On the overlapping 10 the character floor is slack by two orders of magnitude — the
+tightest margin is `subtotal-resection` at **107 characters** (145 against a floor of 38) —
+so it could not catch a truncation the word floor misses. And the 16 are why it is still
+worth keeping. **Neither subsumes the other and nothing is deleted**; the relationship is
+asserted rather than described, including the 107.
+
+#### AND THAT NUMBER IS WHY `endings.py` EARNED ITS RUN, after four items of faith
+
+The separate LF/CRLF suite run has been part of this harness since WI-569 and had never
+found anything. It found this:
+
+> The margin assertion first read `Definition.Length` straight and pinned **108**. A
+> shipped definition is **hard-wrapped**, so its character count is one higher per line on
+> a CRLF checkout than on an LF one — and **CI is Linux**. The test passed on the machine
+> that wrote it, passed the whole 23-mutation break harness on both endings (every
+> mutation in that table reds it either way, so neither pass distinguished anything), and
+> **failed the LF suite at 107**.
+
+**A WORD count is immune to this and a CHARACTER count is not**, which is the general
+form: whitespace is whitespace to a splitter, and a byte is a byte to `Length`. The
+measurement normalises line endings now and the number is 107 on both. The three loose
+`> term.Length + 20` floors either side of it cannot flip on one character and are left
+alone — the hazard is an EXACT character count, not any character count.
+
+> **And the break harness could not have found it**, which is the part worth keeping. It
+> asks whether a mutated tree FAILS a named test, and a test that already fails on an
+> ending fails for free — WI-528 wrote that lesson down and this is the first time it has
+> had a subject. Two instruments, two kinds of blindness.
+
+#### What the drift detector caught, and the one the gates sent back
+
+**§12.28's parallel-pair record earned its design on the first draft.** `adult-type` ×
+`pediatric-type` and `h3-g34` × `h3-k27-altered` are licensed to share a frame **verbatim**
+— all four read above 6.0, so all four were rewritten — and the first draft gave each pair
+**two different frames**. That is the drift the record exists to catch, arriving by the
+exact route §12.28 predicted: a fix for something else. `h3-g34`'s 10 windows are re-pinned
+at **12**.
+
+> **And the other pair was rewritten too and did not move**, which is the right behaviour
+> and worth knowing. Its shared sentence was split at a comma, and
+> `ShinglesOfReaderText` strips punctuation — so *"biology, not by the age"* and
+> *"biology. Not by the age"* are the same windows. **A sentence split is invisible to
+> this gate; a reworded frame is not.** The gate is broken from both sides anyway
+> (mutations 07 and 08), because the invisible half is also where a real reword could
+> hide.
+
+**§12.26's page-restatement gate sent one draft back, and the fix is the one §12.28 names
+as the wrong one.** `vorasidenib`'s first rewrite ended *"And it acts on the IDH change
+itself."* — the back half of `/tumors/oligodendroglioma`'s own sentence (*"It is taken by
+mouth and it acts on the IDH change itself"*), on a page that fires that tooltip. The
+overlap was **seven words and sub-threshold before this item**; the connective a split
+needs is what pushed it to eight.
+
+> **The available fix was to change one word.** *acts* → *works*, and the window stops
+> matching. That is paraphrasing to escape a shingle gate, which §12.28 calls **the
+> beginning of drift** and §12.26 closed by naming. The entry was restructured instead —
+> it names its own subject as the actor (*"The medicine acts on that change itself"*)
+> rather than echoing the page's pronoun chain. **A gate that is satisfiable by a
+> one-word dodge will be dodged; the record of refusing it once is worth more than the
+> commit.**
+
+#### The Warn band has 18 live subjects, and the counter-argument lost on the merits
+
+§12.25 added the approach band to `GradeDescription` because a hard Fail at 6.0 with
+nothing below it is a **cliff** — a description at 5.9 printed `  ok`, and one word took it
+to a broken build. The same cliff exists here, and the same band answers it. But it lands
+with **19 of 101 definitions in it** rather than §12.25's one, and `Program.cs` reasons in
+its own comments that *a gate printing dozens of expected warnings trains people to skip
+it*.
+
+> It is shipped anyway, and the number is **printed rather than tidied away**. What WI-578
+> refused to report as `ok` was a grade-**19.7 FAILURE**; a definition at 5.7 is correct
+> writing near a line. The **17 page-body warnings already in this tool's output** are the
+> same thing and have been treated the same way since WI-414. The alternative — inventing
+> a third threshold for a third surface — is how one idea gets three definitions. The
+> total went 21 warnings → **40**, with 0 failures.
+
+**And `rescue-medicine` reads exactly 6.0**, untouched by this item: the one entry that
+passes with no margin at all, and the band's clearest subject.
+
+> **The question to carry forward.** §12.19 asked which pages a guard can fire on, §12.24
+> which entries, §12.25 which are in no entry at all, §12.28 which reader surface, §12.29
+> whether a property true of no member is a decision or an accident. This item asked:
+> **what does leaving the gated set look like, and is there an instrument pointed at the
+> leaving rather than at the set?** There were two ways out here and they need different
+> instruments — one is a SET equality and one is a word count — and the number 4 could not
+> see either.

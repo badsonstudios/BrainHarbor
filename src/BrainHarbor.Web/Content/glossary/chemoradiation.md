@@ -11,6 +11,6 @@ sources:
     accessed: 2026-09-07
 ---
 
-Radiation and chemotherapy given over the same weeks. Not one after the other.
-It is the usual plan for glioblastoma, IDH-wildtype. Some other tumors are
-treated with the two given apart, so which you get depends on your diagnosis.
+Radiation and chemotherapy over the same weeks. They are given together. Not
+one after the other. It is the usual plan for glioblastoma, IDH-wildtype. Some
+other tumors get the two apart. What you get depends on your tumor type.

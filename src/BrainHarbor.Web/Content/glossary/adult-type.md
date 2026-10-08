@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-07
 ---
 
-A group of gliomas sorted by their biology, not by the age of the person who has
-them. Adults usually have one of these, but children sometimes do too. Seeing it
-on your report is not a filing mistake.
+A group of gliomas sorted by their biology. Not by the age of the person who
+has them. Adults usually have one of these. And children sometimes do too.
+Seeing it on your report is not a filing mistake.

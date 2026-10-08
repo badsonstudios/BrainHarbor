@@ -21,11 +21,20 @@ node_modules/
 Thumbs.db
 .DS_Store
 
-# The break-test harness's interrupted-run marker (.claude/work_files/*/break-tests.py).
-# It is written at the repo root before the first mutation and removed once the
-# originals are restored, so it only exists while a run is in flight or after one
-# was killed. Ignored so a killed run cannot end up staged (WI-519).
-.break-tests-running
+# The harnesses' interrupted-run markers (.claude/work_files/*/break-tests.py,
+# endings.py, prove-gate.py). Each is written at the repo root before the first
+# mutation and removed once the originals are restored, so it only exists while a
+# run is in flight or after one was killed. Ignored so a killed run cannot end up
+# staged (WI-519).
+#
+# GLOBBED SINCE WI-582, not literal: each item suffixes its own WI number so two
+# checkouts cannot silently share a lock, and the literal pattern matched none of
+# them — /review found `.endings-running-wi581` sitting untracked and committable
+# at the repo root, which is also the one file whose presence means a content file
+# may still be carrying a mutation.
+.break-tests-running*
+.endings-running*
+.prove-gate-running*
 
 # Raw Unsplash originals (heavy) — optimized versions live in wwwroot/img/cards
 /images/*.jpg

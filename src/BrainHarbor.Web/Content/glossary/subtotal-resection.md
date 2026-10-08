@@ -6,5 +6,5 @@ sources:
     accessed: 2026-08-30
 ---
 
-Some tumor is still visible on the scan taken after surgery. Surgeons stop
-short when going further would risk something you would not want to lose.
+Some tumor is still seen on the scan taken after surgery. Surgeons stop short
+when going further would risk something you would not want to lose.

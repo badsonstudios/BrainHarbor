@@ -10,6 +10,6 @@ sources:
     accessed: 2026-09-07
 ---
 
-A group of gliomas sorted by their biology, not by the age of the person who has
-them. Adults are sometimes diagnosed with one. It describes how the tumor
-behaves, not who it belongs to.
+A group of gliomas sorted by their biology. Not by the age of the person who
+has them. Adults are sometimes diagnosed with one. The name is about how the
+tumor acts, not who it belongs to.

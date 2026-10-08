@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-08
 ---
 
-A treatment that uses alternating electric fields to interfere with tumor cells
-dividing. It is given through pads worn on the scalp, connected to a portable
-device. The device is often called Optune.
+A treatment that makes it harder for tumor cells to divide. It uses electric
+fields that switch back and forth. The fields come from pads on the scalp. A
+box you carry drives them. The box is often called Optune.

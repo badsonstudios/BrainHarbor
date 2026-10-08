@@ -5214,8 +5214,8 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   page**, which nothing in the repo did over the shipped glossary.
   PR [#193](https://github.com/badsonstudios/BrainHarbor/pull/193).
 
-- [ ] **WI-582 A glossary definition is reader-facing prose that is graded and
-  not gated** *(raised by WI-579, 2026-10-06)*
+- [x] **WI-582 A glossary definition is reader-facing prose that is graded and
+  not gated** *(raised by WI-579, 2026-10-06; shipped 2026-10-08)*
   Goal: decide what the reading-level standard IS for a definition, then gate it
   — the WI-578 shape, which took the page `description` from 41 over the limit to
   0 and deleted its own ratchet.
@@ -5252,6 +5252,45 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     `(not gated — WI-578)` marker together with its ratchet.
   Refs: `docs/content-pipeline.md` §12.27, §12.22 (WI-575's ungraded line),
   §12.23/§12.25 (WI-578's slices); WI-416, WI-414/415.
+
+  **SHIPPED.** **35 of 101 over 6.0 → 0 of 101**, worst **9.3 → 5.9** among the
+  rewritten set (the glossary's worst is now `rescue-medicine` at **6.0**,
+  untouched), and **1,099 words → 1,187 with NOT ONE REMOVED**: 22 grew, 13 held
+  exactly level, none fell. That is §12.22's sentence-length diagnosis holding a
+  **fourth** time after three directories of page descriptions — and the first on a
+  surface with a **40-word CEILING** over it, which is the item's own finding.
+  `lomustine` 9.3 → 3.4 *with its drug name intact*, bound all along by
+  ***occasionally***.
+  **THE ACCEPTANCE CRITERIA, EACH ANSWERED RATHER THAN NEGOTIATED.** The drug-name
+  ruling is settled by the **WORD FLOOR**: `pcv` and `procarbazine` are two of the
+  four entries under it and are not graded at all, and `lomustine` and
+  `carmustine-wafer` were simply written under the limit. **No entry is exempted
+  individually and there is no exemption list.** The gate says which SET it is
+  built over (**101 of 105**) and NAMES the four it cannot fire on. The count is
+  NOT the gate: the ungraded set is pinned as a **SET of named slugs**, which reds
+  in **both** directions — a trim that leaves the graded set and a growth that
+  joins it — where a count of 4 is satisfied by four out and four in. The
+  `(not gated)` string is **deleted**.
+  **THE HAZARD THE ITEM WAS PLANNED AGAINST IS CLOSED IN TWO PLACES AND MEASURED
+  IN A THIRD.** `prove-gate.py` phase 2 shows ContentCheck **exiting 0** on a
+  definition trimmed from 27 words to 19 — §12.23's hole, on this corpus, rather
+  than argued. So the SET equality closes the escape and a **35-row per-entry WORD
+  FLOOR** closes the truncation that stays inside the graded set, with two column
+  checksums that are the only thing a single lowered floor cannot pass.
+  **WHAT THE OTHER GATES CAUGHT, and the item is better for all three.** §12.28's
+  parallel-pair record reded on the first draft, which had given `h3-g34` ×
+  `h3-k27-altered` **two different frames** — the exact drift it was built for,
+  arriving by the route it predicted (a fix for something else); 10 windows
+  re-pinned at 12. §12.26's page-restatement gate sent `vorasidenib` back for
+  restating `/tumors/oligodendroglioma`'s own sentence, and the one-word dodge was
+  **refused** (§12.28). And `endings.py` **earned its run after four items of
+  faith**: a character-count assertion was correct on CRLF, wrong on LF, and CI is
+  Linux.
+  New gates: `GlossaryDefinitionGradeTests` (7 facts), `GlossaryCorpusReport`,
+  `DefinitionMarker`, `MinimumDefinitionWordsToGrade`, `GlossaryWhenMeasured`.
+  Suite **2,678/2,678**, ContentCheck **345/0**, break harness **25/25 on LF and
+  CRLF**. Ruling: **`docs/content-pipeline.md` §12.30**.
+  PR [#195](https://github.com/badsonstudios/BrainHarbor/pull/195).
 
 - [ ] **WI-577 The sellar seam: two pages that do not point back at each
   other, and one that contradicted its own link** *(raised by WI-569,

@@ -81,16 +81,18 @@ public sealed class SharedSourceRestatementTests
 
         new("glossary/h3-g34", "glossary/h3-k27-altered",
             [
-                "a histone one of the proteins that dna",
-                "change in a histone one of the proteins",
-                "dna wraps around when a diffuse glioma has",
-                "histone one of the proteins that dna wraps",
-                "of the proteins that dna wraps around when",
-                "one of the proteins that dna wraps around",
-                "proteins that dna wraps around when a diffuse",
-                "that dna wraps around when a diffuse glioma",
-                "the proteins that dna wraps around when a",
-                "wraps around when a diffuse glioma has it",
+                "a change in a histone a histone is",
+                "a histone a histone is a protein dna",
+                "a histone is a protein dna wraps around",
+                "a protein dna wraps around a diffuse glioma",
+                "change in a histone a histone is a",
+                "dna wraps around a diffuse glioma can have",
+                "histone a histone is a protein dna wraps",
+                "histone is a protein dna wraps around a",
+                "in a histone a histone is a protein",
+                "is a protein dna wraps around a diffuse",
+                "protein dna wraps around a diffuse glioma can",
+                "wraps around a diffuse glioma can have it",
             ],
             "A PARALLEL PAIR SHARING ITS FRAME, and the pair most in need of it "
             + "(§12.28): these two are ADJACENT on /glossary, both under 'H'. The frame "
@@ -98,8 +100,23 @@ public sealed class SharedSourceRestatementTests
             + "distinguishing half is the tumor each one names (diffuse hemispheric "
             + "glioma vs diffuse midline glioma, the latter conditioned on sitting in "
             + "the middle of the brain or spine). h3-g34 also cross-references its "
-            + "partner out loud — 'a different finding from H3 K27, on the same kind of "
-            + "gene' — which is the pair doing its job rather than colliding by accident."),
+            + "partner out loud — 'H3 K27 is a different finding, but on the same kind "
+            + "of gene' — which is the pair doing its job rather than colliding by "
+            + "accident.\n\n"
+            + "RE-PINNED AT WI-582 (§12.30), AND THIS RECORD IS WHY THAT ITEM DID NOT "
+            + "SHIP A DIVERGED PAIR. Both sides read above 6.0 and both were rewritten, "
+            + "and the first draft gave them DIFFERENT frames — 'A histone is one of the "
+            + "proteins that DNA wraps around' against 'A histone is a protein DNA wraps "
+            + "around' — which is the drift this record exists to catch, arriving by the "
+            + "exact route §12.28 predicted: a fix for something else. The 40-WORD "
+            + "CEILING (content-pipeline §6) is what forced the choice, because h3-g34 "
+            + "sits at exactly 40 words and the longer frame does not fit beside its "
+            + "cross-reference. 10 windows -> 12. "
+            + "AND adult-type <-> pediatric-type WAS REWRITTEN TOO AND DID NOT MOVE: "
+            + "its shared sentence was split at a comma, and ShinglesOfReaderText "
+            + "strips punctuation, so 'biology, not by the age' and 'biology. Not by "
+            + "the age' are the same windows. A sentence split is invisible to this "
+            + "gate; a reworded frame is not, which is the right way round."),
 
         // `blocks/` sorts before `glossary/`, which the order assertion below
         // caught in this very record on its first run — the scan walks unordered
