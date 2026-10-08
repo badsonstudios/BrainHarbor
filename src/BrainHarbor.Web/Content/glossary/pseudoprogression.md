@@ -7,5 +7,5 @@ sources:
     accessed: 2026-08-30
 ---
 
-A scan after treatment that looks worse because of the treatment itself, not
-because the tumor has grown. Telling the two apart can take another scan.
+A scan after treatment that looks worse because of the treatment itself. It is
+not because the tumor has grown. Telling the two apart can take another scan.

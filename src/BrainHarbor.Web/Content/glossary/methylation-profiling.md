@@ -7,5 +7,6 @@ sources:
     accessed: 2026-08-30
 ---
 
-A lab test that reads a chemical pattern across the tumor's DNA, a bit like a
-fingerprint. It is matched against a library to help name the tumor type.
+A lab test that reads a chemical pattern across the tumor's DNA. The pattern
+is a bit like a fingerprint. It is matched against a library to help name the
+tumor type.

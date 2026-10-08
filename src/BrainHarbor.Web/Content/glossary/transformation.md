@@ -8,4 +8,4 @@ sources:
 ---
 
 When a glioma changes into a higher grade over time. It is a known behavior of
-these tumors, and it is one of the things follow-up scans look for.
+these tumors. And it is one of the things follow-up scans look for.

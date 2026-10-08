@@ -7,6 +7,6 @@ sources:
     accessed: 2026-08-30
 ---
 
-A change in a histone, one of the proteins that DNA wraps around. When a
-diffuse glioma has it, and sits in the middle of the brain or spine, it is
+A change in a histone. A histone is a protein DNA wraps around. A diffuse
+glioma can have it. If it also sits in the middle of the brain or spine, it is
 called a diffuse midline glioma.

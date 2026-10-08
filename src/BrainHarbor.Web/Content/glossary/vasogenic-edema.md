@@ -7,5 +7,5 @@ sources:
     accessed: 2026-08-30
 ---
 
-Fluid leaking out of blood vessels into the brain around a tumor. It is the
-swelling steroid medicines are given to bring down.
+Fluid that leaks out of blood vessels. It leaks into the brain around a tumor.
+It is the swelling that steroid medicines are given to bring down.

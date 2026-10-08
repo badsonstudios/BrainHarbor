@@ -10,5 +10,6 @@ sources:
     accessed: 2026-09-04
 ---
 
-Heavy drowsiness, poor focus and tiredness in the weeks after radiation to the
-head ends. It usually clears up on its own over a few weeks, with no treatment.
+Heavy drowsiness, poor focus and tiredness. It comes in the weeks after
+radiation to the head ends. It usually clears up on its own, with no
+treatment. That takes a few weeks.

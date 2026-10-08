@@ -10,6 +10,6 @@ sources:
     accessed: 2026-09-03
 ---
 
-The tumor cells have gained a whole copy of chromosome 7 and lost a whole copy
-of chromosome 10. When the IDH test shows no change, it is one of the findings
-that can name a glioblastoma.
+The tumor cells gained a whole copy of chromosome 7. They also lost a whole
+copy of chromosome 10. The IDH test may show no change. This is then one of
+the findings that can name a glioblastoma.

@@ -9,6 +9,6 @@ sources:
     accessed: 2026-09-09
 ---
 
-The doctor who puts you to sleep for an operation and looks after you while you
-are under. They see you before the day too, to check that an anesthetic is safe
-for you.
+The doctor who puts you to sleep for an operation. They look after you while
+you are under. They see you before the day too. They check that an anesthetic
+is safe for you.

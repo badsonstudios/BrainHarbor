@@ -9,5 +9,5 @@ sources:
     accessed: 2026-09-15
 ---
 
-Care that helps with pain and other symptoms, and supports the whole family. It
-can start early, and it includes help with making decisions about treatment.
+Care that helps with pain and other symptoms. It supports the whole family
+too. It can start early. It includes help with making choices about treatment.

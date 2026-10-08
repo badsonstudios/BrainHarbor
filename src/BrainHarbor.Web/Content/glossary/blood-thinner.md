@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-09
 ---
 
-A medicine that makes it harder for your blood to clot. Aspirin is one, and
+A medicine that makes it harder for your blood to clot. Aspirin is one. And
 there are several others. Never stop one on your own before an operation. Your
-team decides that, and each medicine is different.
+team decides that. And each medicine is different.

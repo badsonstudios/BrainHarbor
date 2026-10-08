@@ -8,5 +8,6 @@ sources:
     accessed: 2026-09-05
 ---
 
-A medicine approved in 2024 for some people with a grade 2 glioma that has an IDH
-change, after surgery. It acts on the IDH change itself.
+A medicine approved in 2024 for some people with a grade 2 glioma. The glioma
+has to have an IDH change. The medicine acts on that change itself. It is
+taken after surgery.
