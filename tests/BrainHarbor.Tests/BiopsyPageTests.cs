@@ -692,6 +692,88 @@ public sealed class BiopsyPageContentTests
             RegexOptions.Multiline).Count);
         Assert.Equal(urls.Count, Regex.Matches(front, @"^[ \t]+title: \S", RegexOptions.Multiline).Count);
     }
+
+    /// <summary>
+    /// WI-577: THIS PAGE OWNS THE EXCEPTION LIST, AND THE COUNT WAS WRONG ON THREE
+    /// PAGES AT ONCE.
+    ///
+    /// <para><c>## Is there a way to find out without one?</c> said <i>"There is ONE
+    /// exception worth knowing"</i>. content-pipeline §12.17 recorded that the corpus
+    /// asserts TWO: a place too risky to take a sample from, and — on
+    /// <c>/tumors/cns-germ-cell-tumor</c>, from the EANO/SNO/Euracan consensus —
+    /// markers in blood and spinal fluid alone.</para>
+    ///
+    /// <para><b>It was wrong on three pages because two others route here and
+    /// neither enumerates, by design.</b> <c>/tumors/all-brain-tumors</c> says
+    /// <i>"There is a narrow exception, for a thing sitting somewhere that would be
+    /// too risky to take a piece of"</i> and <c>/where-your-tumor-is</c> says
+    /// <i>"if no piece is taken, you get a working answer rather than a confirmed
+    /// one"</i>; both link <c>#is-there-a-way-to-find-out-without-one</c> for the
+    /// detail. So the undercount here was the corpus's answer to that question,
+    /// which is also why fixing it HERE fixes it everywhere.</para>
+    ///
+    /// <para><b>Two is now OPEN, not right.</b> <i>"Two of them come up often enough
+    /// to name here"</i> is WI-567's form for exactly this failure — naming N asserts
+    /// there is no N+1 — because a corrected closed count is the same defect waiting
+    /// for the next item, which is precisely what <i>"one exception"</i> was.</para>
+    ///
+    /// <para><b>What is NOT a third, measured rather than assumed:</b>
+    /// <c>/treatments/watch-and-wait#without-a-sample</c> UPHOLDS the rule (<i>"Only
+    /// a sample of tissue can say for certain"</i>) and describes living with a
+    /// working name — the consequence of going without tissue, not an exception to
+    /// needing it. <c>/tumors/dipg</c>'s <i>"If there was no biopsy, the diagnosis
+    /// comes from the MRI report"</i> is the FIRST exception instantiated, not a
+    /// second one.</para>
+    /// </summary>
+    [Fact]
+    public void TheExceptionsToTheTissueRuleAreOpenCountedAndBothRouted()
+    {
+        var section = CuratedPage.Flatten(
+            CuratedPage.ReaderTextOfBody(Section("Is there a way to find out without one?")));
+
+        // THE CLOSED COUNT, banned. "one exception" is banned only in the forms that
+        // assert the count: /treatments/steroids and /tumors/cns-lymphoma each say
+        // "There is one exception" correctly about THEIR subject, so the ban is
+        // page-scoped rather than corpus-wide (§12.8: a ban entry belongs on a list
+        // only if no correct sentence contains it).
+        foreach (var closed in new[]
+        {
+            "one exception worth knowing", "There is one exception", "the only exception",
+            "There are two exceptions", "the two exceptions",
+        })
+        {
+            Assert.DoesNotContain(closed, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // The rule itself stays hedged — this is the page the corpus quotes it from.
+        Assert.Contains("For most brain tumors, tissue is the only thing", section,
+            StringComparison.Ordinal);
+
+        // BOTH exceptions, each in its own paragraph so a reader can tell them apart.
+        Assert.Contains("brain stem", section, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fluid around the brain and spine", section,
+            StringComparison.OrdinalIgnoreCase);
+
+        // The second one ROUTES to the page that owns it instead of enumerating which
+        // kinds it covers. The consensus sentence it rests on sits under that paper's
+        // "Strategy for NGGCT" heading, and the same paper says "Only marker-negative
+        // tumors should be biopsied" — so stating the scope here, on the page that
+        // sends the question elsewhere, is the two-strengths defect §12.10 bans.
+        Assert.Contains("/tumors/cns-germ-cell-tumor", section, StringComparison.Ordinal);
+
+        // Attributed in the sentence that prints the claim, and hedged.
+        Assert.Contains("an expert group from Europe and North America says", section,
+            StringComparison.Ordinal);
+        Assert.Contains("can sometimes be enough", section, StringComparison.Ordinal);
+
+        // Neither is dressed as something to ask for — the pre-existing ruling on this
+        // section, which the rewrite had to carry rather than drop.
+        Assert.Contains("your team's call", section, StringComparison.OrdinalIgnoreCase);
+
+        // And the source for the new clause is declared. §12.1 is per-claim: the page
+        // may not borrow another page's citation by linking to it.
+        Assert.Contains("PMC8972311", CuratedPage.FrontMatter(Page), StringComparison.Ordinal);
+    }
 }
 
 /// <summary>The biopsy page as served, and the doors that lead to it.</summary>

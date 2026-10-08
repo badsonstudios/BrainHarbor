@@ -6277,6 +6277,16 @@ the hedge is a corpus property, not a page property. `/tests/biopsy` says there 
 *"one exception worth knowing"* where the corpus now asserts two. Those two are
 recorded here and belong to whichever item next touches those pages.
 
+**TAKEN BY WI-577, and the measurement moved the scope of the first one** — §12.32.
+Both findings were correct. What this section could not see is that the rule has
+**two forms** wearing nearly the same words: a *certainty* form that is true with no
+exception, and a *naming* form that the two exceptions falsify. Five pages carry one
+or the other, and only the naming form needed the hedge. `/treatments/craniotomy` is
+fixed; `/tumors/low-grade-glioma` and `/tests/planning-scans` are the other two
+naming-form instances and are recorded in §12.32 for `/pm`, because the third sits
+inside a deliberate three-page `AssertDoesNotRestateTheCorpus` allowlist and hedging
+one of three would re-create the two-strengths defect that allowlist prevents.
+
 **Two others became work items rather than a fourth recording**, because that is
 the threshold WI-574's own entry sets. **WI-576**: `AssertDoesNotRestateTheCorpus`
 walks `pages/` and `blocks/` and not `glossary/`, so a tooltip and a page can drift
@@ -6622,6 +6632,15 @@ added the meningioma-specific third (*"Taking out less, on purpose, can be the
 plan rather than a disappointment"*). All three route to the same craniotomy
 anchor with the same label. No shingle check can see a paraphrase, so this is
 recorded rather than detected: **WI-570 should route, not write a fourth.**
+
+**READ TOGETHER BY WI-577, AND THE COUNT WAS THREE ON THREE WHERE IT IS SIX ON SIX**
+— §12.32. The three named here turned out to be **already right**: all three route to
+the same anchor, and — the half this paragraph did not check — **all three agree on
+strength**, so §12.10 is satisfied and the split is recorded rather than collapsed
+(collapsing it would delete the EANO quote from a page EANO is cited on). The three
+it missed do **not** route: `/tumors/craniopharyngioma`, `/tumors/acoustic-neuroma`
+and `glossary/subtotal-resection.md` — and the glossary one fires as a tooltip **on
+the owner page itself**. For `/pm`.
 
 **CARRIED FORWARD.** `/tumors/meningioma` says weakness in a **leg** is the
 parasagittal give-away and no reachable source read for this item carries the limb
@@ -10228,3 +10247,179 @@ the asymmetry with its measurement. `/pm`.
 > A citation can be perfectly honest, perfectly live, perfectly on-topic for the text it
 > supports — and still assert something false, because the list it renders in has only one
 > heading. Five recordings described the symptom; none asked who the list belonged to.
+
+### 12.32 A seam has two sides, and a count is a claim about somebody else's list (WI-577)
+
+§12.18 recorded a sellar seam it could not own: `/tumors/meningioma` had just claimed
+the address *(near the pituitary and the crossing of the optic nerves)*, and
+`/where-your-tumor-is#pituitary` — the page whose entire job is getting a reader from a
+word on a report to a page about their tumor — did not name it. §12.17 recorded two
+craniotomy and biopsy findings and said in writing that they *"belong to whichever item
+next touches those pages"*. WI-569 touched `/treatments/craniotomy` for one clause and did
+not take them, which is a tripwire firing into nobody's hands. This is both halves taken,
+and the measurement moved the scope of three of the four acceptance bullets.
+
+**THE RULING, IN ONE LINE: AN OPEN COUNT IS HONEST ABOUT A LIST BEING PARTIAL. IT DOES NOT
+MAKE A PARTIAL LIST A ROUTE.** WI-567 round 6 found the sellar entry saying *"the two
+growths here we have written about"* and fixed it to *"two of the ones we have written
+about"*, because naming N asserts there is no N+1. That was correct, it shipped with a
+ban list behind it, and it left the actual defect standing: the entry still **listed two
+of the four** pages whose reader text claims that address. The reader it failed is
+unchanged by the grammar of the sentence above them. **A hedge fixes what a list says
+about itself; only naming the page fixes where the reader can go.**
+
+#### The measurement, and the three numbers it changed
+
+`.claude/work_files/wi577/measure.py` reads **reader text only** — the body after the
+second `---` — because every phrase in all three questions is also quoted verbatim in
+front-matter source notes, where it is a record rather than a claim.
+
+**FOUR pages claim the sellar address, not two.** `/tumors/pituitary-tumor`,
+`/tumors/craniopharyngioma`, `/tumors/meningioma` and `/tumors/cns-germ-cell-tumor`. **The
+fourth is the one a phrase list cannot find**, and it is why this item's test derives the
+set instead of describing it: cns-germ-cell-tumor says it in plain words — *"Just above the
+hormone gland. The pituitary is a small gland under the brain"* — with **no report-word in
+the sentence at all**, so a sweep for *sellar*, *sella turcica*, *pituitary fossa* and
+*tuberculum* returns three pages and reads as complete. The derived form that does find all
+four and nothing else is `\bpituitary\b` over reader text **with links stripped whole**,
+and the stripping is not a refinement: a route's label is the destination's title, so
+without it every page linking `/tumors/pituitary-tumor` counts as claiming the address and
+the reverse direction passes over a dozen pages while asserting nothing.
+
+**THE OUTWARD JOURNEY IS WORSE THAN THE RETURN ONE — 1 of 4 — AND IS LEFT ALONE ON
+PURPOSE.** Only `/tumors/pituitary-tumor` links `#pituitary`. Meningioma routes to
+`#skull-base` three times, which WI-568 settled deliberately in that term's favour;
+craniopharyngioma and cns-germ-cell-tumor reach the page only through `#your-sight`. That
+is a section-order decision for whoever owns those hubs, not a defect, so it is written
+down here rather than fixed in an item whose acceptance is the return journey. **A seam
+has two sides and they do not have to be closed by the same hand — but the side you are
+not closing has to be named.**
+
+**THE PLANNED-SUBTOTAL PRINCIPLE HAS SIX WORDINGS ON SIX FILES, NOT §12.18's THREE ON
+THREE — AND THE SPLIT IS RECORDED RATHER THAN CONSOLIDATED.** Read together, the three
+§12.18 names are **already right**: `/treatments/craniotomy` owns it (*"a subtotal
+resection is not a failed operation"*), `/where-your-tumor-is` quotes EANO's limit
+(*"aiming to get all of it must not cost you how you think or how your body works"*), and
+`/tumors/meningioma` adds the meningioma-specific third (*"Taking out less, on purpose, can
+be the plan rather than a disappointment"*). All three link `#how-much-came-out` with the
+same label, and — the half §12.18 did not check — **all three agree on STRENGTH**:
+craniotomy's *"sometimes settled before the day, and sometimes a decision made for you in
+the moment"* and meningioma's *"sometimes decided beforehand and sometimes in the room"*
+are one claim at one strength, which is what §12.10 actually asks. Each wording is keyed to
+its own page's source, so collapsing them would delete the EANO quote from a page EANO is
+cited on. **The three §12.18 missed do not route**: `/tumors/craniopharyngioma` (*"Many
+teams now deliberately leave a piece alone rather than risk that"*),
+`/tumors/acoustic-neuroma` (*"a piece was deliberately left behind to protect a nerve,
+which is a recognized choice rather than a mistake"*) and
+`glossary/subtotal-resection.md` (*"Surgeons stop short when going further would risk
+something you would not want to lose"*) — and **the glossary one fires as a tooltip on the
+owner page itself**, which says `!%subtotal resection%` forty lines above the owner
+sentence. That last one is §12.26's question, not this one's. For `/pm`.
+
+#### The tissue rule has TWO forms, and only one of them is false
+
+This is the finding that reset §12.17's scope, and it is the reason the fix is on one page
+rather than five. Five pages carry what looks like one sentence. They carry two claims:
+
+| form | pages | true? |
+|---|---|---|
+| **certainty** — *"give you the name FOR CERTAIN"*, *"can say FOR CERTAIN"* | `/tests/mri`, `/tests/ct-scan`, `/treatments/watch-and-wait` | yes, with no exception |
+| **naming** — *"can give it a name"*, *"can name it"*, *"It does not name it"* | `/treatments/craniotomy`, `/tumors/low-grade-glioma`, `/tests/planning-scans` | **no — the corpus asserts two exceptions** |
+
+**The two exceptions, counted rather than assumed.** A place too risky to take a sample
+from (`/tests/biopsy`, instantiated by `/tumors/dipg`'s *"If there was no biopsy, the
+diagnosis comes from the MRI report"*), and markers alone
+(`/tumors/cns-germ-cell-tumor`, from the EANO/SNO/Euracan consensus: *"reliance on tumor
+markers in serum and CSF alone for diagnosis, thereby avoiding the need for a biopsy"*).
+**`/treatments/watch-and-wait#without-a-sample` is NOT a third**, and it was checked
+because the obvious reading says it is: it *upholds* the rule (*"Only a sample of tissue
+can say for certain"*) and describes living with a working name, which is the
+**consequence** of going without tissue rather than an exception to needing it.
+
+**ONE OF THE THREE NAMING-FORM PAGES IS FIXED AND TWO ARE RECORDED, AND THE REASON IS A
+TRAP WORTH KNOWING BEFORE TOUCHING THEM.** `/tests/planning-scans`'s sentence sits inside
+the eight-word shingle that `CtScanPageTests` **and** `PlanningScansPageTests` both put on
+`AssertDoesNotRestateTheCorpus`'s allowlist, whose own comment reads: *"load-bearing on
+four pages. §12.10 says two pages must not state one safety claim at two strengths, so
+where it is load-bearing on both, identical words are the right answer."* **Hedging one of
+that trio would re-create the exact defect the allowlist exists to prevent.** So the trio
+is a single decision, it needs its own item, and `/treatments/craniotomy` — the page
+§12.17 named, and the only one of the three outside the shingle — is hedged here to the
+same strength as the page that owns the exception list. For `/pm`:
+`/tumors/low-grade-glioma` and `/tests/planning-scans`.
+
+#### A count is a claim about somebody else's list
+
+`/tests/biopsy#is-there-a-way-to-find-out-without-one` said *"There is **one** exception
+worth knowing."* It was wrong on **three pages at once**, because this page **owns** the
+exception list and two others route into its anchor without enumerating, by design:
+`/tumors/all-brain-tumors` (*"There is a narrow exception, for a thing sitting somewhere
+that would be too risky to take a piece of"*) and `/where-your-tumor-is` (*"if no piece is
+taken, you get a working answer rather than a confirmed one"*). **An undercount on the page
+that owns a list is an undercount everywhere that routes to it — which is also why fixing
+it there fixes it everywhere.**
+
+**And it is now OPEN rather than right.** *"There are exceptions worth knowing, and two of
+them come up often enough to name here"* — because a corrected closed count is the same
+defect waiting for the next item, which is precisely what *"one exception"* was. The ban is
+page-scoped, not corpus-wide: `/treatments/steroids` and `/tumors/cns-lymphoma` each say
+*"There is one exception"* correctly about their own subject, and §12.8's rule is that a
+ban entry belongs on a list only if no correct sentence contains it.
+
+**The second exception is ROUTED, and the narrowness of its source is why.** The consensus
+sentence sits under that paper's *"Strategy for NGGCT"* heading, and the same paper says
+*"Only marker-negative tumors should be biopsied"*. So `/tests/biopsy` says *"one rare
+group of tumors"*, *"can sometimes be enough"*, attributes the group **in the sentence that
+prints the claim**, and sends the reader to the page that owns the scope. Stating the scope
+on the page that forwards the question is the two-strengths defect in its most tempting
+form, because the forwarding page is the one a reader reaches first.
+
+#### What the gates caught that a hand read did not
+
+**A SENTENCE ADDED TO `/tests/biopsy` WENT RED ON `/where-your-tumor-is`.** The new
+paragraph leads *"**A place that is hard to take a sample from.**"*, and
+`AssertDoesNotRestateTheCorpus` reported it against `/where-your-tumor-is`'s route gloss —
+*"covers the exception it names, which is a place that is hard to take a sample from"* —
+eight words deep in three overlapping runs. **That gloss had TWO things wrong with it and
+the gate could only see one.** It was a restatement, and it was **stale the moment the
+count was fixed**: *"the exception it names"* was singular about a list of two, on the page
+that sends the reader there. §12.17's own rule settles it — a route's label is the
+destination's title, so the route needed no gloss in the first place. **A gloss of somebody
+else's list is a copy of its length, and it goes stale when they change it.**
+
+**A BAN LIST FORBADE THE CORRECTED SHAPE.** The craniotomy guard's first version asserted
+`DoesNotContain("Only a piece of the tumor itself, looked at in a lab, can give it a
+name.")` and went red on the fix, because *"For most brain tumors, only a piece of the
+tumor itself, looked at in a lab, can give it a name"* **contains** the banned string. This
+repo's other instance of this guard has already ruled on it (`ThePageNeverAssertsAClosedCount`:
+*"a ban list that forbids the correct shape is worse than no ban list"*), and the remedy is
+the same — a **windowed negative lookbehind** over the hedges, with the word boundary
+**inside** the alternation.
+
+**A CHECKSUM MOVED, AND THE SHAPE OF THE MOVE IS THE PROOF NOTHING BROKE.** The one new
+citation took WI-574's `TheCorpusWideTotalsAreWhatWi574Measured` from 690 own / 1,401 union
+to **691 / 1,402**, with the **block total UNCHANGED at 711**. That asymmetry is the whole
+check: a source declared on the DECLARED side must land in `OwnSources` and nowhere else.
+And the direction matters — WI-574's ruling is that **narrowing** the union is the one
+change that gate exists to prevent, because every §12.10 citation gate reads the union.
+**Updating a checksum is not the same as re-deriving one:** the new figures are the old ones
+plus the citation in the diff, arithmetic first and measured second. An item that finds
+itself editing those constants with nothing in its diff to account for the difference has a
+code defect, not a stale number.
+
+#### Carried forward
+
+**`/tumors/all-brain-tumors` glosses one of two exceptions** (*"There is a narrow
+exception, for a thing sitting somewhere that would be too risky to take a piece of"*). The
+indefinite article keeps it open, so it is not the `/where-your-tumor-is` defect and it is
+**left as found** — but it is now a page that names one of a pair while routing to the list,
+and whichever item next touches it should decide whether to drop the gloss the way this one
+did next door.
+
+> **The shape, across the five recordings before it.** §12.17 and §12.18 each wrote down a
+> finding on a page they did not own; §12.27 found that a rule's instances were more
+> numerous than the item naming them; §12.31 found a citation that was honest and still
+> asserted something false. This item asked: **does the fix for a count fix the reader, or
+> only the sentence?** The open form was the right fix to the sentence and changed nothing
+> for the reader standing on the paragraph. A list can be grammatically honest about being
+> partial and still be the wrong list.

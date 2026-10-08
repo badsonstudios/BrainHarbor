@@ -13,6 +13,61 @@ sources:
   # arriving. It now says both, and names what decides which. The wider seam
   # (three wordings of the planned-subtotal principle on three pages that link
   # each other, and §12.17's carried-forward tissue-rule finding) is WI-577.
+  #
+  # WI-577 (2026-10-08) TOOK BOTH HALVES OF THAT SEAM. Written up in full as
+  # content-pipeline §12.32; the two things that changed on THIS page are here.
+  #
+  # (1) THE TISSUE RULE IS HEDGED NOW, AND THE MEASUREMENT IS WHY IT IS ONLY
+  # HEDGED HERE. §12.17 recorded this page stating it flat ("Only a piece of the
+  # tumor itself, looked at in a lab, can give it a name") where the corpus
+  # hedges it. The measurement found FIVE instances and TWO DIFFERENT CLAIMS
+  # wearing nearly the same words:
+  #   * a CERTAINTY form -- /tests/mri ("What it cannot do is give you the name
+  #     FOR CERTAIN"), /tests/ct-scan ("can say FOR CERTAIN"),
+  #     /treatments/watch-and-wait ("Only a sample of tissue can say for
+  #     certain"). TRUE with no exception, and left alone.
+  #   * a NAMING form -- this page ("can give it a name"),
+  #     /tumors/low-grade-glioma ("can name it"), /tests/planning-scans ("It does
+  #     not name it"). The corpus asserts TWO exceptions to that one, so the
+  #     naming form is the false one.
+  # This page's is now "For most brain tumors, only a piece..." -- the same
+  # strength as /tests/biopsy's "For most brain tumors, tissue is the only thing
+  # that can give the tumor its name" -- and the exception is ROUTED to the page
+  # that owns it rather than restated. The other two naming-form instances are
+  # recorded in §12.32 for /pm and NOT changed here, and the reason is a real
+  # trap: /tests/planning-scans' sentence is inside the eight-word shingle
+  # CtScanPageTests and PlanningScansPageTests both put on
+  # AssertDoesNotRestateTheCorpus's allowlist, whose own comment says the trio is
+  # identical ON PURPOSE because "§12.10 says two pages must not state one safety
+  # claim at two strengths". Hedging ONE of that trio would re-create the exact
+  # defect the allowlist exists to prevent, so the trio is a single decision and
+  # it is not this item's.
+  #
+  # (2) THE PLANNED SUBTOTAL: THIS PAGE OWNS IT, AND THE OTHER TWO ALREADY
+  # ROUTE -- SO THE SPLIT IS RECORDED RATHER THAN CONSOLIDATED. Read together:
+  # this page says "a subtotal resection is not a failed operation" and names
+  # what decides which; /where-your-tumor-is quotes EANO's limit ("aiming to get
+  # all of it must not cost you how you think or how your body works"); and
+  # /tumors/meningioma says the meningioma-specific third ("Taking out less, on
+  # purpose, can be the plan rather than a disappointment"). All three link
+  # #how-much-came-out with the same label, and ALL THREE AGREE ON STRENGTH --
+  # this page's "sometimes settled before the day, and sometimes a decision made
+  # for you in the moment" and meningioma's "sometimes decided beforehand and
+  # sometimes in the room" are the same claim at the same strength, which is what
+  # §12.10 actually asks. Each wording is keyed to its own page's source, so
+  # collapsing them would delete the EANO quote from the page EANO is cited on.
+  # §12.18's count was THREE WORDINGS ON THREE PAGES and the measurement found
+  # SIX ON SIX FILES: /tumors/craniopharyngioma ("Many teams now deliberately
+  # leave a piece alone rather than risk that"), /tumors/acoustic-neuroma ("a
+  # piece was deliberately left behind to protect a nerve, which is a recognized
+  # choice rather than a mistake") and glossary/subtotal-resection.md ("Surgeons
+  # stop short when going further would risk something you would not want to
+  # lose") -- and the glossary one fires as a TOOLTIP ON THIS PAGE, which says
+  # "!%subtotal resection%Subtotal resection." forty lines above the owner
+  # sentence. Those three do NOT route to #how-much-came-out. Recorded in §12.32
+  # for /pm rather than edited: adding routes to two tumor hubs is a section-order
+  # decision for whoever owns them, and the glossary one is §12.26's question
+  # (a definition and a page's prose on the same screen), not this one's.
   - url: https://braintumor.org/news/what-to-expect-before-and-after-brain-surgery/
     title: "National Brain Tumor Society: What to Expect Before and After Brain Surgery"
     accessed: 2026-09-04
@@ -76,9 +131,11 @@ usually put back later, in a smaller operation.
 There is more than one reason to operate, and it is worth knowing which one is
 yours.
 
-- **To find out what it is.** Only a piece of the tumor itself, looked at in a
-  lab, can give it a name. Your team may already have a good idea from the
-  scans. They cannot be sure without tissue.
+- **To find out what it is.** For most brain tumors, only a piece of the tumor
+  itself, looked at in a lab, can give it a name. Your team may already have a
+  good idea from the scans. They cannot be sure without tissue.
+  [Is there a way to find out without one?](/tests/biopsy#is-there-a-way-to-find-out-without-one)
+  covers the rare times a team goes without.
 - **To take out as much as is safe.** Less tumor left behind can mean less for
   radiation or medicines to deal with afterwards.
 - **To take the pressure down.** A growth inside a closed skull pushes on

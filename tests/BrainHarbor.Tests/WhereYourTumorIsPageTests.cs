@@ -32,9 +32,14 @@ namespace BrainHarbor.Tests;
 ///     nowhere, because naming the types that sit there would be a claim this page
 ///     cannot source.
 ///     The skull base is the one entry whose list of types is SOURCED (MSKCC's own
-///     list); the pituitary entry names two from this site's pages, openly, after
-///     round 6 found it claiming they were the only two — which is false, and was
-///     this item's third closed-count error.
+///     list); the pituitary entry names its types from this site's pages, openly,
+///     after round 6 found it claiming they were the only two — which is false, and
+///     was this item's third closed-count error. <b>WI-577 then found that the open
+///     form had been the whole fix:</b> the entry still named TWO of the FOUR pages
+///     whose reader text claims that address, so the return journey had no
+///     meningioma on it. All four are named now, and
+///     <c>TheSellarReturnJourneyNamesEveryPageThatClaimsTheAddress</c> asserts the
+///     list in both directions.
 ///   * **Function is not the banned thing.** Some entries do say in a clause what a
 ///     part of the brain is for, because a report word with no meaning attached
 ///     teaches nothing. Only three of the nine do (front, upper back, back); the
@@ -697,6 +702,102 @@ public sealed class WhereYourTumorIsPageContentTests
                 CuratedPage.ComposedSubsection(Page, entry.Heading)));
             Assert.Contains($"**{word}**", body, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    /// <summary>
+    /// WI-577, THE SELLAR SEAM: the <c>#pituitary</c> entry names EVERY page whose
+    /// reader text claims that address, and names nothing else.
+    ///
+    /// <para><b>The defect this replaces was the fix for an earlier one.</b> Round 6
+    /// of WI-567 found the entry saying <i>"the two growths here we have written
+    /// about"</i> and opened the count to <i>"two of the ones we have written
+    /// about"</i>, because naming N asserts there is no N+1. That was correct and it
+    /// was not enough: the entry still LISTED two of the FOUR pages that claim the
+    /// address, so a reader arriving with a sellar report had no route from that
+    /// paragraph to <c>/tumors/meningioma</c>, which claims the address outright
+    /// (<i>"Near the pituitary and the crossing of the optic nerves"</i>).
+    /// <b>An open count is honest about the list being partial; it does not make a
+    /// partial list a route.</b></para>
+    ///
+    /// <para><b>The fourth page is the one a phrase list misses, which is why this
+    /// test derives the set instead of describing it.</b>
+    /// <c>/tumors/cns-germ-cell-tumor</c> claims the address in plain words —
+    /// <i>"Just above the hormone gland. The pituitary is a small gland under the
+    /// brain"</i> — with no report-word in the sentence at all, so a sweep for
+    /// <i>sellar</i>, <i>sella turcica</i>, <i>pituitary fossa</i> and
+    /// <i>tuberculum</i> returns three pages and reads as complete.</para>
+    ///
+    /// <para><b>ASSERTED IN BOTH DIRECTIONS</b> (WI-574's shape): the four are a
+    /// pinned literal, every one of them is linked from the entry, and the DERIVED
+    /// set — every tumor page whose reader text says <i>pituitary</i> — must equal
+    /// that literal exactly. A fifth tumor hub acquiring the address reds this test
+    /// instead of silently falling off the return journey.</para>
+    ///
+    /// <para><b>LINKS ARE STRIPPED WHOLE BEFORE THE DERIVED SIDE COUNTS</b>, and
+    /// without that the guard is worthless rather than merely loose: a route's label
+    /// is the destination's title, so every page that links
+    /// <c>/tumors/pituitary-tumor</c> — this page included — would be counted as
+    /// claiming the address. The reverse direction would then pass over a dozen
+    /// pages and assert nothing.</para>
+    ///
+    /// <para><b>The OUTWARD journey is deliberately not asserted here, because it is
+    /// 1 of 4 and that is a decision rather than a defect.</b> Only
+    /// <c>/tumors/pituitary-tumor</c> links <c>#pituitary</c>; meningioma routes to
+    /// <c>#skull-base</c> because WI-568 settled that term in its favour, and
+    /// craniopharyngioma and cns-germ-cell-tumor reach this page through
+    /// <c>#your-sight</c>. Recorded in content-pipeline §12.32 for <c>/pm</c>.</para>
+    /// </summary>
+    [Fact]
+    public void TheSellarReturnJourneyNamesEveryPageThatClaimsTheAddress()
+    {
+        // The pinned literal. Ordered as the entry lists them, which is the order a
+        // reader meets them in.
+        string[] claimants =
+        [
+            "pituitary-tumor", "craniopharyngioma", "meningioma", "cns-germ-cell-tumor",
+        ];
+
+        var entry = CuratedPage.Flatten(ReaderFragment(
+            CuratedPage.ComposedSubsection(Page, "Behind your nose, at the base of your brain")));
+
+        Assert.True(entry.Length > 200,
+            $"the #pituitary entry read as {entry.Length} characters, so this guard is "
+            + "reading almost nothing — the heading has probably been reworded");
+
+        // DIRECTION 1: every claimant is linked from the entry, in order.
+        var at = -1;
+        foreach (var slug in claimants)
+        {
+            var next = entry.IndexOf($"](/tumors/{slug})", at + 1, StringComparison.Ordinal);
+            Assert.True(next > at,
+                $"the #pituitary entry does not link /tumors/{slug} after the one before "
+                + "it. Every page whose reader text claims the sellar address has to be "
+                + "reachable from this paragraph: a reader holding a report that says "
+                + "`sellar` is the reader this entry exists for, and `#skull-base` ten "
+                + "lines above it is not the route they are standing on.");
+            at = next;
+        }
+
+        // And the generic route survives alongside the names, because the list is
+        // partial on purpose — four of the kinds that turn up there, not all of them.
+        Assert.Contains("](/tumors)", entry, StringComparison.Ordinal);
+
+        // DIRECTION 2: the derived set equals the literal. Links stripped WHOLE first
+        // (see the docstring: a label is the destination's title, so without this every
+        // page linking /tumors/pituitary-tumor counts as claiming the address).
+        var derived = CuratedPage.ReaderPages()
+            .Where(p => p.Slug.StartsWith("tumors/", StringComparison.Ordinal))
+            .Where(p => Regex.IsMatch(
+                Regex.Replace(CuratedPage.ReaderText(p.Text), @"\[[^\]]*\]\([^)]*\)", " "),
+                @"\bpituitary\b",
+                RegexOptions.IgnoreCase))
+            .Select(p => p.Slug["tumors/".Length..])
+            .OrderBy(s => s, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.Equal(
+            [.. claimants.OrderBy(s => s, StringComparer.Ordinal)],
+            derived);
     }
 
     /// <summary>
