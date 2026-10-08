@@ -24,16 +24,46 @@
         <partial name="_Disclaimers" model="Model.Article.FrontMatter.Disclaimers" />
     }
 
+    @* WI-574: TWO source lists, not one. A shared block's citations merge into
+       this page's front matter (§12.10) and used to render in the same flat
+       list as the page's own — so on /tumors/dipg the NIDCD title "Vestibular
+       Schwannoma (Acoustic Neuroma) and Neurofibromatosis" read as a claim
+       about the reader's child. The citation is honest and is NOT dropped: the
+       block's location list really does carry a skull-base entry, and NIDCD
+       really is its source. What was wrong was the attribution. *@
     <div class="provenance">
         @if (Model.Article.FrontMatter.Reviewed is { } reviewed)
         {
             <p>Last reviewed: @reviewed.ToString("MMMM d, yyyy", System.Globalization.CultureInfo.InvariantCulture)</p>
         }
-        @if (Model.Article.FrontMatter.Sources.Count > 0)
+        @if (Model.Article.OwnSources.Count > 0)
         {
-            <p>Sources:</p>
-            <ul>
-                @foreach (var source in Model.Article.FrontMatter.Sources)
+            <p id="sources-own">Sources for this page:</p>
+            <ul aria-labelledby="sources-own">
+                @foreach (var source in Model.Article.OwnSources)
+                {
+                    <li><a href="@source.Url">@source.Title</a></li>
+                }
+            </ul>
+        }
+        @* The third sentence ENDS THE PAGE, so §12.6 requires it to be solid and
+           to leave the reader something to do. An earlier draft read "A few of
+           them name other illnesses" — meant to defuse "Neurofibromatosis" on a
+           DIPG hub, and /review measured it FALSE on 14 of the 39 pages (whose
+           shared citations are all caregiver/tumor-board and name no other
+           condition at all). Worse, on the other 25 it labelled the escalation
+           block's stroke, seizure and neutropenia citations — which tell the
+           reader what to watch for IN THEMSELVES — as somebody else's illness.
+           A misattribution introduced by the fix for misattribution. *@
+        @if (Model.Article.BlockSources.Count > 0)
+        {
+            <p id="sources-shared">
+                Some parts of this page are shared with other pages on this site.
+                These are the sources for those shared parts.
+                They are here so you can check any part of this page.
+            </p>
+            <ul aria-labelledby="sources-shared">
+                @foreach (var source in Model.Article.BlockSources)
                 {
                     <li><a href="@source.Url">@source.Title</a></li>
                 }
