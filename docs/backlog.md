@@ -4585,8 +4585,17 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   needs a corpus sweep; WI-574, WI-575 (which this item tripped over twice),
   WI-576 and WI-577 remain open.
 
-- [ ] **WI-574 Block sources render on every including page, and nobody owns the
-  cost** *(raised by WI-568, 2026-09-24)*
+- [x] **WI-574 Block sources render on every including page, and nobody owns the
+  cost** *(raised by WI-568, 2026-09-24; done 2026-10-08 — ruling in
+  `docs/content-pipeline.md` §12.31. **Option (a) TAKEN, option (b) REJECTED with a
+  reason.** `ContentPage` gains `OwnSources` + `BlockSources`, which PARTITION
+  `FrontMatter.Sources`; the union is left unchanged so no §12.10 citation gate
+  narrows, and `ContentPage.cshtml` renders two labelled lists. Measured: **711
+  block-attributed citations on 39 of 55 pages**, the NIDCD title on 17 of the 18
+  hubs that include `[MECHANISM]` — the eighteenth declares the URL itself and
+  correctly keeps it. **No citation dropped**, pinned elementwise by reference
+  identity. Side effect: `ContentPage.cshtml` carried 3 words of prose and was
+  held to NO reading level; it now carries 39 and grades 4.0.)*
   Goal: decide what to do about a defect three files have now recorded and none
   has fixed.
   §12.10 says block `sources` merge into every including page and **render in
