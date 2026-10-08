@@ -7,6 +7,6 @@ sources:
     accessed: 2026-09-05
 ---
 
-Following a tumor with scans at set intervals instead of treating it right
-away. It is a plan, not a delay, and it is chosen to avoid the costs of
-treatment until treatment is needed.
+Following a tumor with scans at set times instead of treating it right away.
+It is a plan, not a delay. It is chosen to put off the costs of treatment.
+Treatment starts if it is needed.

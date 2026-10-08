@@ -9,4 +9,5 @@ sources:
 ---
 
 Having too few of the white blood cells that fight infection. It is a common
-effect of chemotherapy, and it is why a temperature has to be reported at once.
+effect of chemotherapy. And it is why you have to report a temperature at
+once.

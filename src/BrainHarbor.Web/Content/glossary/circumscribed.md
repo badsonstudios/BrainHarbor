@@ -6,6 +6,6 @@ sources:
     accessed: 2026-09-05
 ---
 
-A tumor with an edge, sitting apart from the brain around it rather than growing
-into it. It is the opposite of diffuse, and it is why some of these can be cured
-by an operation.
+A tumor with an edge. It sits apart from the brain around it rather than
+growing into it. It is the opposite of diffuse. That is why some of these can
+be cured by an operation.

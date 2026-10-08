@@ -8,5 +8,5 @@ sources:
 ---
 
 A drug that acts on the blood vessels a tumor builds. In brain tumors it is
-used mainly to control symptoms from swelling, and to reduce how much steroid
-someone needs.
+used mainly for two things. One is to control symptoms from swelling. The
+other is to cut down how much steroid someone needs.

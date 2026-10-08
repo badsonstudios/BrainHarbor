@@ -7,6 +7,6 @@ sources:
     accessed: 2026-08-30
 ---
 
-Taking a small sample through a narrow opening in the skull, guided by a scan,
-instead of a full opening. It is used when the area to be sampled is hard or
+Taking a small sample through a narrow opening in the skull, guided by a scan.
+A full opening is not made. It is used when the area to be sampled is hard or
 risky to reach.

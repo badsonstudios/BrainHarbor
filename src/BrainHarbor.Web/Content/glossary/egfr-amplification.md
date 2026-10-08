@@ -7,4 +7,5 @@ sources:
 ---
 
 The tumor cells carry extra copies of the EGFR gene. It is one of the findings
-your team reads alongside the IDH result when naming an adult glioma.
+your team reads next to the IDH result. They read both when naming an adult
+glioma.

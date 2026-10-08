@@ -8,5 +8,6 @@ sources:
     accessed: 2026-09-04
 ---
 
-A small dissolvable wafer holding chemotherapy. A surgeon places it in the space
-where a tumor was, during the operation, so the drug acts close to that spot.
+A small wafer that holds chemotherapy and melts away. A surgeon puts it in the
+space where a tumor was. This is done during the surgery. That way the drug
+acts close to that spot.

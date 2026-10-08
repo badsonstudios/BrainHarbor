@@ -10,5 +10,5 @@ sources:
 ---
 
 Finding out which parts of your brain do which jobs, like speech or movement.
-It can be done with a scan before an operation, or during one, by testing small
-spots with a tiny electric current.
+A scan before an operation can do it. It can also be done during one. Then
+small spots are tested with a tiny electric current.

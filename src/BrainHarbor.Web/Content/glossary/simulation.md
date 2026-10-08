@@ -10,5 +10,5 @@ sources:
     accessed: 2026-09-04
 ---
 
-The planning visit before radiation starts. No radiation is given. Your mask is
-made, and a scan is taken in the exact position you will be treated in.
+The planning visit before radiation starts. No radiation is given. Your mask
+is made. And a scan is taken in the exact position you will be treated in.
