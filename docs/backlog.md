@@ -4511,7 +4511,9 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     (licensed stock — PLAN.md §5), and that ban is the most likely thing to be
     forgotten when somebody reaches for an existing brain diagram.
   - A slot added to WI-562's inventory for it.
-  Depends on: WI-561, WI-567.
+  Depends on: WI-561 (**shipped — the mechanism is §3b/§12.33; the NCI ban is
+  now enforced mechanically on an image's `source_url`, so the thing most
+  likely to be forgotten here fails the build**), WI-567.
 
 - [x] **WI-573 Visual field loss, and the driving consequence**
   Goal: say the most concrete "what does this mean for me" answer in the whole
@@ -5385,7 +5387,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     item takes them, or records in writing why not.
   Refs: `docs/content-pipeline.md` §12.18, §12.17, §12.10.
 
-- [ ] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
+- [x] **WI-561 Images on curated pages — the mechanism** *(code, blocks WI-562)*
   Goal: give a curated page a way to carry an image, with everything the site's
   existing rules already demand of one.
   **Why it is a separate item from WI-562:** there is no image support on
@@ -5478,9 +5480,10 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
     discover that halfway through.
   - No image is chosen or committed in this item. It produces the list.
   - **No AI-generated imagery**, consistent with the standing rule on feed cards.
-  Refs: PLAN.md §5; docs/content-pipeline.md §12.8;
-  wwwroot/img/cards/IMAGE-CREDITS.md. Depends on: WI-561 (the slots need
-  somewhere to go).
+  Refs: PLAN.md §5; docs/content-pipeline.md §12.8; **§3b and §12.33 (WI-561 —
+  the mechanism, now shipped: what an author writes, what the front matter has
+  to carry, and the checks that fail the page)**;
+  `wwwroot/img/figures/README.md`. **UNBLOCKED by WI-561.**
 
 ---
 

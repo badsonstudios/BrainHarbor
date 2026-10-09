@@ -23,6 +23,36 @@ public class StyleGuideModel(IWebHostEnvironment environment, GlossaryStore glos
     /// </summary>
     public string ReaderGateSampleHtml { get; private set; } = "";
 
+    /// <summary>
+    /// WI-561: a figure, rendered through the real pipeline — front matter
+    /// credit and all, because the credit is half the component. No shipped
+    /// page carries an image yet (WI-562 sources them), so without this the
+    /// figure has no surface to be eyeballed, printed, or scanned by axe on.
+    /// The sample image is a placeholder drawn for this page and served only
+    /// here, which is why it sits under /img/dev/ rather than /img/figures/.
+    /// </summary>
+    public string FigureSampleHtml { get; private set; } = "";
+
+    /// <summary>
+    /// The sample as an author would write it, front matter included. Public
+    /// so <c>StyleGuideTests</c> renders the same string the page does — a
+    /// second copy of a sample is a second thing to keep true.
+    /// </summary>
+    public const string FigureSample = """
+        ---
+        title: Figure sample
+        images:
+          - src: /img/dev/figure-sample.svg
+            credit: "Made for BrainHarbor"
+            license: "CC0 1.0 (public domain)"
+            license_url: https://creativecommons.org/publicdomain/zero/1.0/
+            width: 1200
+            height: 675
+        ---
+
+        ![Three boxes in a row, joined by arrows, with a label in each one.](/img/dev/figure-sample.svg "A placeholder, so the caption and the credit can be checked by eye. The caption says what the picture means for you.")
+        """;
+
     // Sample content from the design handoff — realistic items at the target
     // reading level, one per badge family.
     public IReadOnlyList<FeedCard> SampleCards { get; } =
@@ -80,6 +110,8 @@ public class StyleGuideModel(IWebHostEnvironment environment, GlossaryStore glos
         ReaderGateSampleHtml = ContentStore
             .Parse($"---\ntitle: Reader-choice gate sample\n---\n{gateSample}", "dev/styleguide")
             .Html;
+
+        FigureSampleHtml = ContentStore.Parse(FigureSample, "dev/styleguide").Html;
 
         return Page();
     }

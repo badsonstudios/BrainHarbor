@@ -2357,6 +2357,68 @@ main {
 
 /* Print rules for the gate live in print.css with the rest of them. */
 
+/* ---------- Figures on curated pages (WI-561) ----------
+   A picture on a reading page, with the caption and the credit under it. The
+   P5 pages are walls of text and the audience may be cognitively impaired
+   (PLAN.md §3), so a figure is content rather than decoration — which is why
+   the caption is set in body ink at a body size, not as fine print.
+
+   Phone first: the site is verified at 390px (WI-440), so the image is capped
+   by the column it sits in and never by a pixel width. `height: auto`
+   overrides the intrinsic `height` attribute the renderer writes — that
+   attribute is there to reserve the right SHAPE before the file arrives
+   (no reflow under a lazy image), not to set the final size. */
+.figure {
+  margin-block: var(--space-6);
+  /* The zero is load-bearing: a figure is part of the reading column, and the
+     browser default indents it by 40px, which on a 390px screen is a tenth of
+     the screen taken off the picture. */
+  margin-inline: 0;
+}
+
+.figure__image {
+  display: block;
+  /* BOTH axes auto, and this is load-bearing rather than tidy. The renderer
+     writes width= and height= on the <img>, and an HTML width attribute is a
+     presentational hint that acts as a SPECIFIED width — so with only
+     `height: auto`, the width stays 1200px (clamped to the column) and a
+     height cap squashes the picture instead of scaling it. Measured: 828x384
+     for a 1200x675 drawing when the print cap bit. With both auto the
+     attributes are back to being only an aspect ratio to reserve space with,
+     which is all they were ever for here. */
+  inline-size: auto;
+  max-inline-size: 100%;
+  height: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  /* A tall diagram must not push the words off the screen on a phone. With
+     both caps set and both sizes auto, the browser's replaced-element rules
+     apply whichever bites first and keep the aspect ratio — so no crop, no
+     squash, and no `object-fit` needed to undo a distortion we never cause. */
+  max-block-size: 70vh;
+}
+
+.figure__caption {
+  display: block;
+  margin-block-start: var(--space-3);
+  max-inline-size: var(--measure);
+}
+
+.figure__text {
+  display: block;
+  color: var(--color-ink);
+}
+
+/* The credit is the licence this site is relying on, so it is always visible
+   — but it is not something a reader has to read, so it is quieter and set
+   apart. --text-sm is the smallest size allowed anywhere on the site. */
+.figure__credit {
+  display: block;
+  margin-block-start: var(--space-2);
+  color: var(--color-ink-muted);
+  font-size: var(--text-sm);
+}
+
 /* ---------- Motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

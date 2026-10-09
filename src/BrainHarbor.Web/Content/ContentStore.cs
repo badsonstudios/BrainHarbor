@@ -55,13 +55,20 @@ public sealed partial class ContentStore(
     // as an open <div>. ReaderGate.Verify proves that here rather than leaving
     // it to a comment nobody re-reads — a mis-ordered pipeline fails at
     // start-up instead of publishing prognosis to a reader who did not ask.
-    private static readonly MarkdownPipeline Pipeline = ReaderGateExtension.Verify(
-        new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .DisableHtml()
-            .Use<GlossaryTooltipExtension>()
-            .Use<ReaderGateExtension>()
-            .Build());
+    //
+    // WI-561: FigureExtension.Verify for the same reason, one component over.
+    // Markdig has no fallback renderer for an unknown block, so a pipeline
+    // missing it renders a figure as NOTHING — the picture, the caption and
+    // the credit all gone, with no error.
+    private static readonly MarkdownPipeline Pipeline = FigureExtension.Verify(
+        ReaderGateExtension.Verify(
+            new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .DisableHtml()
+                .Use<GlossaryTooltipExtension>()
+                .Use<ReaderGateExtension>()
+                .Use<FigureExtension>()
+                .Build()));
 
     /// <summary>The render pipeline, exposed so tests can hold it to the gate's guarantees.</summary>
     internal static MarkdownPipeline RenderPipeline => Pipeline;
@@ -282,6 +289,14 @@ public sealed partial class ContentStore(
         ReaderGate.Validate(document, body, urlPath);
 
         GlossaryMarker.Mark(document, glossaryTerms);
+
+        // WI-561, AFTER the glossary marker and for a reason. The marker walks
+        // paragraph literals and strips the %% escapes from them; an image's
+        // alt text is a literal too, so running the figures first would hide
+        // it from both passes. The marker itself cannot put markup inside an
+        // alt attribute — it skips anything under a link, and an image IS a
+        // link — and ContentFigures flattens what is left to plain characters.
+        ContentFigures.Apply(document, frontMatter.Images, body, urlPath);
 
         using var writer = new StringWriter();
         var renderer = new Markdig.Renderers.HtmlRenderer(writer);
