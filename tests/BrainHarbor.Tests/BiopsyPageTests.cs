@@ -692,6 +692,136 @@ public sealed class BiopsyPageContentTests
             RegexOptions.Multiline).Count);
         Assert.Equal(urls.Count, Regex.Matches(front, @"^[ \t]+title: \S", RegexOptions.Multiline).Count);
     }
+
+    /// <summary>
+    /// WI-577: THIS PAGE OWNS THE EXCEPTION LIST, AND THE COUNT WAS WRONG ON THREE
+    /// PAGES AT ONCE.
+    ///
+    /// <para><c>## Is there a way to find out without one?</c> said <i>"There is ONE
+    /// exception worth knowing"</i>. content-pipeline §12.17 recorded that the corpus
+    /// asserts TWO: a place too risky to take a sample from, and — on
+    /// <c>/tumors/cns-germ-cell-tumor</c>, from the EANO/SNO/Euracan consensus —
+    /// markers in blood and spinal fluid alone.</para>
+    ///
+    /// <para><b>It was wrong on three pages because two others route here and
+    /// neither enumerates, by design.</b> <c>/tumors/all-brain-tumors</c> says
+    /// <i>"There is a narrow exception, for a thing sitting somewhere that would be
+    /// too risky to take a piece of"</i> and <c>/where-your-tumor-is</c> says
+    /// <i>"if no piece is taken, you get a working answer rather than a confirmed
+    /// one"</i>; both link <c>#is-there-a-way-to-find-out-without-one</c> for the
+    /// detail. So the undercount here was the corpus's answer to that question,
+    /// which is also why fixing it HERE fixes it everywhere.</para>
+    ///
+    /// <para><b>Two is now OPEN, not right.</b> <i>"Two of them come up often enough
+    /// to name here"</i> is WI-567's form for exactly this failure — naming N asserts
+    /// there is no N+1 — because a corrected closed count is the same defect waiting
+    /// for the next item, which is precisely what <i>"one exception"</i> was.</para>
+    ///
+    /// <para><b>What is NOT a third, measured rather than assumed:</b>
+    /// <c>/treatments/watch-and-wait#without-a-sample</c> UPHOLDS the rule (<i>"Only
+    /// a sample of tissue can say for certain"</i>) and describes living with a
+    /// working name — the consequence of going without tissue, not an exception to
+    /// needing it. <c>/tumors/dipg</c>'s <i>"If there was no biopsy, the diagnosis
+    /// comes from the MRI report"</i> is the FIRST exception instantiated, not a
+    /// second one.</para>
+    /// </summary>
+    [Fact]
+    public void TheExceptionsToTheTissueRuleAreOpenCountedAndTheSecondIsRouted()
+    {
+        var section = CuratedPage.Flatten(
+            CuratedPage.ReaderTextOfBody(Section("Is there a way to find out without one?")));
+
+        // THE CLOSED COUNT, banned. "one exception" is banned only in the forms that
+        // assert the count: /treatments/steroids and /tumors/cns-lymphoma each say
+        // "There is one exception" correctly about THEIR subject, so the ban is
+        // SECTION-scoped rather than corpus-wide (§12.8: a ban entry belongs on a list
+        // only if no correct sentence contains it).
+        foreach (var closed in new[]
+        {
+            "one exception worth knowing", "There is one exception", "the only exception",
+            "There are two exceptions", "the two exceptions",
+        })
+        {
+            Assert.DoesNotContain(closed, section, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // AND THE OPEN COUNT, POSITIVELY. The five bans above are the only thing that
+        // was holding this test's titular property, and a ban list cannot assert a
+        // positive: "Here are two exceptions." trips none of them and satisfies every
+        // other assertion in this method, so the count could be silently closed again
+        // while the test named for its openness stayed green (/review). This clause is
+        // the one that makes it open — the list is partial, and says so.
+        Assert.Contains("come up often enough to name here", section,
+            StringComparison.Ordinal);
+
+        // The rule itself stays hedged — this is the page the corpus quotes it from.
+        Assert.Contains("For most brain tumors, tissue is the only thing", section,
+            StringComparison.Ordinal);
+
+        // BOTH exceptions, each under its OWN BOLD LEAD so a reader can tell them
+        // apart. The leads are asserted rather than described: `section` is flattened,
+        // so paragraph structure is gone and the comment that used to claim "each in
+        // its own paragraph" was a note claiming coverage the guard did not have
+        // (/review). The first lead is also what /where-your-tumor-is's deleted route
+        // gloss rested on, so it is load-bearing off this page too.
+        Assert.Contains("**A place that is hard to take a sample from.**", section,
+            StringComparison.Ordinal);
+        Assert.Contains("**A tumor that blood and fluid tests can point to.**", section,
+            StringComparison.Ordinal);
+
+        Assert.Contains("brain stem", section, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fluid around the brain and spine", section,
+            StringComparison.OrdinalIgnoreCase);
+
+        // The second one ROUTES to the page that owns it instead of enumerating which
+        // kinds it covers. The consensus sentence it rests on sits under that paper's
+        // "Strategy for NGGCT" heading, and the same paper says "Only marker-negative
+        // tumors should be biopsied" — so stating the scope here, on the page that
+        // sends the question elsewhere, is the two-strengths defect §12.10 bans.
+        Assert.Contains("/tumors/cns-germ-cell-tumor", section, StringComparison.Ordinal);
+
+        // Attributed in the sentence that prints the claim, and hedged.
+        Assert.Contains("an expert group from Europe and North America says", section,
+            StringComparison.Ordinal);
+        Assert.Contains("can sometimes be enough", section, StringComparison.Ordinal);
+
+        // Neither is dressed as something to ask for — the pre-existing ruling on this
+        // section, which the rewrite had to carry rather than drop.
+        Assert.Contains("your team's call", section, StringComparison.OrdinalIgnoreCase);
+
+        // And the source for the new clause is DECLARED — read off the parsed source
+        // list, not off the front-matter text. §12.1 is per-claim: the page may not
+        // borrow another page's citation by linking to it.
+        //
+        // THE FIRST VERSION OF THIS WAS `Assert.Contains("PMC8972311", FrontMatter(Page))`
+        // AND THE BREAK HARNESS CAUGHT IT AS A SURVIVOR on both endings
+        // (`biopsy/swap-the-source-id`, the only survivor in 46 breaks). The ID appears
+        // TWICE in this page's front matter: once in the `url:` the reader is actually
+        // cited, and once forty lines above in a `#` source note explaining why the
+        // markers clause can be stated. Swap the `url:` to a different paper and the
+        // substring check still finds it in the NOTE, so the page cited the wrong work
+        // and nothing changed colour. WI-579's round-1 defect from the other end: a
+        // check that reads front-matter PROSE is satisfied by a comment about the thing
+        // instead of the thing. The declared-side parse cannot be satisfied by a note.
+        // (No second assertion pinning that note. The first version of this fix added
+        // one, on the reasoning that it kept the note around so the two versions could
+        // be told apart — but the weak version is GONE, the parsed-source assertion's
+        // strength does not depend on the note existing, and all it actually pinned was
+        // "a `#` comment must contain this accession number forever". Rewording that
+        // note, or moving it to the page that owns the scope, is a content-neutral edit
+        // that would have RED a content test with a message about a mutation harness.
+        // /review, and it was right: the harness result is the record, not a gate.)
+        var declared = CuratedPage.Rendered("tests/biopsy", Page).OwnSources;
+
+        Assert.Single(declared, s => s.Url == MarkersConsensusUrl);
+    }
+
+    /// <summary>
+    /// The EANO/SNO/Euracan consensus review, cited for the markers exception. Named
+    /// once so the guard above and the mutation table agree on one spelling.
+    /// </summary>
+    private const string MarkersConsensusUrl =
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8972311/";
 }
 
 /// <summary>The biopsy page as served, and the doors that lead to it.</summary>

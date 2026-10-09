@@ -129,13 +129,35 @@ sources:
     # which was false -- /tumors/pituitary-tumor exists and the page links it in
     # the very next entry. Five are named, and the pituitary one says so.
     # This is the one region entry whose list of types is SOURCED. The pituitary
-    # entry also names two, from this site's own pages rather than from a source,
-    # and /review round 6 caught what that cost: it said "the two growths here we
-    # have written about", and /tumors/meningioma and /tumors/cns-germ-cell-tumor
-    # both name that same spot in their own reader text. NAMING N ASSERTS THERE IS
-    # NO N+1 -- the third time this item made that mistake, after "one place" and
-    # "two places" in the escalation exception. Both entries are open now, and a
-    # test bans closed counts in the region entries.
+    # entry also names its types from this site's own pages rather than from a
+    # source, and /review round 6 caught what that cost: it said "the two growths
+    # here we have written about", and /tumors/meningioma and
+    # /tumors/cns-germ-cell-tumor both name that same spot in their own reader text.
+    # NAMING N ASSERTS THERE IS NO N+1 -- the third time this item made that
+    # mistake, after "one place" and "two places" in the escalation exception. Both
+    # entries are open now, and a test bans closed counts in the region entries.
+    #
+    # WI-577 TOOK THE N+1 THAT ROUND 6 ONLY WROTE DOWN. The pituitary entry named
+    # TWO of the FOUR pages whose reader text claims that address, so the return
+    # journey had no meningioma on it and no germ cell tumor either -- which is the
+    # half of the seam /tumors/meningioma note (24)(c) filed as a backlog item
+    # rather than a fifth comment. All four are named now, still in the open form,
+    # and WhereYourTumorIsPageTests.TheSellarReturnJourneyNamesEveryPageThat
+    # ClaimsTheAddress asserts the list in BOTH directions: every page named here
+    # claims the address in its own reader text, and every page that claims it is
+    # named here. The fourth one is the one a phrase list misses -- /tumors/cns-
+    # germ-cell-tumor says it in plain words ("Just above the hormone gland. The
+    # pituitary is a small gland under the brain") with no report-word in the
+    # sentence, so the measurement had to be reconciled by hand before the number
+    # was pinned. The reader-facing label is "germ cell tumor in the brain", which
+    # is the one /tumors/pediatric-brain-tumor already uses; this page publishes no
+    # acronyms in a region entry. THE OUTWARD JOURNEY IS STILL 1 OF 4 and is
+    # DELIBERATELY left alone: only /tumors/pituitary-tumor links #pituitary,
+    # meningioma routes to #skull-base because WI-568 settled that term in its
+    # favor, and craniopharyngioma and cns-germ-cell-tumor arrive through
+    # #your-sight. Recorded in content-pipeline §12.32 for /pm, not fixed here,
+    # because a second route from meningioma to this page is a routing decision for
+    # whoever owns /tumors/meningioma's section order.
   - url: https://www.neurosurgery.columbia.edu/patient-care/conditions/brainstem-glioma
     title: "Columbia Neurosurgery: Brainstem Glioma"
     accessed: 2026-09-24
@@ -151,6 +173,23 @@ sources:
     # type, are all considered in order to choose the optimal treatment."
     # The DIPG specifics are NOT restated here. /tumors/dipg owns them,
     # including that centers differ on whether to biopsy.
+    #
+    # WI-577 DELETED THIS PAGE'S GLOSS OF THE EXCEPTION, AND BOTH REASONS ARE
+    # worth having. The route used to read "covers the exception it names, which
+    # is a place that is hard to take a sample from".
+    #   (1) IT WENT STALE THE MOMENT /tests/biopsy's COUNT WAS FIXED. That page
+    #   owns the exception list and now names TWO (a place too risky to sample,
+    #   and markers alone for one rare group of tumors, per content-pipeline
+    #   §12.32), so "the exception it names" was singular about a list of two --
+    #   on the page that SENDS the reader there. A gloss of somebody else's list
+    #   is a copy of its length.
+    #   (2) IT WAS A RESTATEMENT, AND AssertDoesNotRestateTheCorpus CAUGHT IT
+    #   RATHER THAN A HAND READ. The new /tests/biopsy paragraph leads "**A place
+    #   that is hard to take a sample from.**", which shingled against this
+    #   sentence eight words deep in three overlapping runs. §12.17's own rule
+    #   applies: a route's label is the destination's title, so the route needed
+    #   no gloss in the first place -- "covers the exceptions it names" says the
+    #   same thing without copying the answer to the far side of the link.
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8563316/
     title: "Goldbrunner et al: EANO guideline on the diagnosis and management of meningiomas (Neuro-Oncology)"
     accessed: 2026-09-24
@@ -1021,12 +1060,13 @@ Your report may call this the **pituitary**, or it may name the small hollow the
 gland sits in. That hollow has two names on paper: the **pituitary fossa** and
 the **sella turcica**. Anything called **sellar** is about the same area.
 
-The gland sits behind the bridge of your nose, below the brain. More than one kind
-of
-growth turns up there, and two of the ones we have written about are
-[pituitary tumor](/tumors/pituitary-tumor) and
-[craniopharyngioma](/tumors/craniopharyngioma). Each of those pages starts from the
-beginning, and [the tumor types](/tumors) has the rest.
+The gland sits behind the bridge of your nose, below the brain. More than one
+kind of growth turns up there, and four of the ones we have written about are
+[pituitary tumor](/tumors/pituitary-tumor),
+[craniopharyngioma](/tumors/craniopharyngioma),
+[meningioma](/tumors/meningioma) and
+[germ cell tumor in the brain](/tumors/cns-germ-cell-tumor). Each of those pages
+starts from the beginning, and [the tumor types](/tumors) has the rest.
 
 **If sight is your question**,
 [when what changed is your sight](#your-sight) covers it, including what it means
@@ -1354,8 +1394,7 @@ the word.
   document it arrives in. **And if no piece is taken, you get a working answer
   rather than a confirmed one.**
   [Is there a way to find out without one?](/tests/biopsy#is-there-a-way-to-find-out-without-one)
-  covers the exception it names, which is a place that is hard to take a sample
-  from, and
+  covers the exceptions it names, and
   [how can they know what it is without a sample?](/treatments/watch-and-wait#without-a-sample)
   covers the version where nothing is being treated yet. Either way, ask what your
   team is going on instead, and how sure of it they are.
