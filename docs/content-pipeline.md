@@ -46,6 +46,14 @@ review_due: 2027-01-15        # drives the stale-content report
 volatile_figures: true        # dollar amounts / yearly numbers → annual pass required
 reading_grade: 7.2            # stamped by the readability tool
 disclaimers: [medical, benefits]
+images:                       # WI-561 — one entry per picture in the body (§3b)
+  - src: /img/figures/pathology-report-parts.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    source_url: https://example.org/where-it-came-from   # omit for our own work
+    width: 1200
+    height: 675
 ---
 ```
 
@@ -91,6 +99,63 @@ Rules worth knowing before writing one:
 - **A block no page includes is warned about**, because nothing grades it.
 - Blocks may include blocks, up to five deep.
 
+### 3b. Images (WI-561)
+
+A picture is one line of ordinary Markdown, **alone in its own paragraph**:
+
+```markdown
+![Three boxes in a row, joined by arrows.](/img/figures/steps.svg "What the lab does with the tissue, in order.")
+```
+
+The brackets are the **alt text** (what is in the picture, for someone who
+cannot see it); the quoted title is the **caption** (what it means for the
+reader). The credit and the licence live in the page's `images:` front matter,
+keyed by the same `src`. It renders as a real `<figure>` with a
+`<figcaption>` carrying the caption and then the credit.
+
+Everything below **fails the page by name** the way a missing shared block
+does, because every one of them renders perfectly and goes wrong silently:
+
+- **Alt text is required.** An empty `alt=""` only with `decorative: true` in
+  the entry, so it is a decision rather than an omission (WCAG AA).
+  A decorative image carries no caption either — and still renders its credit.
+- **A caption is required.** A figure with no caption is a picture a reader
+  has to interpret alone.
+- **The alt text and the caption may not be the same words**, and the alt text
+  may not start by naming the medium ("Photo of…"): a screen reader has
+  already said "image".
+- **`credit`, `license`, `license_url`, `width` and `height` are required.**
+  The pixel size is what lets the browser hold the space open — figures below
+  the first are lazy-loaded, and one arriving without a reserved box moves the
+  line the reader is on.
+- **The file is served from this site.** A remote `src` tells another server
+  who is reading the page, and rots on their schedule.
+- **Never an NCI embedded image**, and nothing shipped with the AHFS or
+  MedlinePlus drug monographs (PLAN.md §5). Enforced on the image's own
+  `source_url`, not on the page's citations: cancer.gov's *text* is cited all
+  over the corpus and only its *pictures* are barred.
+- **A declared image no line shows, or a file in `wwwroot/img/figures/` no page
+  declares, fails.** Both directions — and the declared `width`/`height` are
+  checked against the file itself.
+- **Anything that reads as image syntax and did not parse as an image fails**,
+  wherever on the line it is. The usual cause is a double quote inside the
+  caption; write the caption in single quotes. Unaudited, that line renders as
+  literal bracket text to a patient.
+- **A figure is a top-level block**, or one inside a `:::outlook` gate. Not a
+  bullet, a quote or a table cell: those render a figure in a shape nothing
+  styled or measured, and a 1200px picture in a table cell takes a 390px
+  screen sideways.
+- **One declaration, one appearance.** A page may not show the same picture
+  twice.
+
+**The caption and the alt text are graded like any other sentence** (§5, 6.0
+limit) — the caption is prose the reader reads, and the alt text is prose a
+screen reader reads aloud.
+
+**A shared block may not carry an image.** A block's front matter carries only
+`sources`, so the credit would have to be declared by a page whose author
+never wrote the picture. It fails at parse time, by name.
+
 ## 4. Plain-language style guide (both pipelines)
 
 - Sentences under ~20 words. One idea per paragraph. Question-style headers.
@@ -108,6 +173,7 @@ Rules worth knowing before writing one:
 | Link rot | outbound checker (monthly job) | 0 broken |
 | A11y smoke | Playwright + axe-core | 0 serious/critical |
 | Review freshness | `review_due` past → report | — |
+| Images (WI-561) | `ContentFigures`, via the page parse | alt text, caption, credit, licence, pixel size — all required; the caption and the alt text are graded at the same ≤ 6.0 (§3b) |
 
 **Reading level for AI summaries (WI-415, 2026-08-13).** The prompt is the
 mechanism; the guardrail is only the backstop.
@@ -10467,3 +10533,227 @@ did next door.
 > only the sentence?** The open form was the right fix to the sentence and changed nothing
 > for the reader standing on the paragraph. A list can be grammatically honest about being
 > partial and still be the wrong list.
+
+### 12.33 A picture is a claim about a licence, and three of its four failures render perfectly (WI-561)
+
+There was no image support on a curated page at all before this item. Markdig would
+emit a bare `<img>` from `![]()`, nothing styled it, nothing carried a caption or a
+credit, nothing sized it on a phone, and `print.css` had no rule for it. WI-562 is the
+item that goes and finds ~30 real pictures; sourcing thirty images before any of that
+existed would have been thirty images with nowhere to go.
+
+**THE RULING, IN ONE LINE: AN IMAGE HAS FOUR WAYS TO BE WRONG AND THREE OF THEM RENDER
+PERFECTLY.** A picture with no alt text looks finished and is invisible to a screen
+reader. A picture with no credit looks finished and is somebody else's legal problem
+(PLAN.md §5). A caption nothing grades looks finished and is reader-facing prose
+outside the 6.0 gate — WI-575's `description` hole re-dug one surface over. Only the
+fourth, a broken file path, shows a reader anything is wrong. **So every one of the
+three silent ones fails the page by name**, at parse time, the way a missing shared
+block has since WI-501 — which makes it a build failure in CI (ContentCheck turns a
+`FormatException` into a Fail) *and* a loud failure at runtime, rather than a gate a
+hand-edited page could walk around.
+
+#### The authoring form, and why the credit is not next to the picture
+
+One line of ordinary Markdown, alone in its paragraph: the brackets are the **alt
+text**, the quoted title is the **caption**, and the `images:` front matter carries
+`credit`, `license`, `license_url`, optional `source_url`, and `width`/`height`, keyed
+by `src` (§3b). The split is deliberate: the Markdown line carries what the READER
+needs and the front matter carries what the SITE needs, where ContentCheck and the
+suite can see it per page. `wwwroot/img/cards/IMAGE-CREDITS.md` is the counter-example
+— one file, nothing mechanically tying a credit to a picture, which is exactly the
+shape WI-502 and WI-505 ruled against for citations.
+
+**A `<figure>` may not live inside a `<p>`**, so the paragraph Markdig built is
+REPLACED by a figure block rather than decorated — and the alt text is flattened to
+plain characters at the same moment. That is not tidiness either: the alt text goes
+into an HTML ATTRIBUTE, and anything that put markup in there (a glossary tooltip's
+`<button>`, say) would be read out as angle brackets. The figure pass therefore runs
+**after** `GlossaryMarker.Mark`, which strips the `%%` escapes from the same literals
+and skips anything under a link — and an image IS a link, so the marker cannot reach
+inside one in the first place. Two independent reasons it is safe, and the second one
+is the one a test pins.
+
+#### The five findings this item did not expect
+
+**1. THE PRINT CAP LOST THE CASCADE, AND ONLY THE PDF SAID SO.** `print.css` wrote
+`figure img { max-block-size: 4in }` against `site.css`'s `.figure__image
+{ max-block-size: 70vh }`. One class beats two element names, so the screen rule won
+and the inch cap did nothing — the picture measured **467px tall in the print layout**
+with a correct-looking rule loaded. `max-block-size: 70vh` is meaningless on a sheet,
+where the height IS a sheet. This is WI-560's lesson with the mechanism named: **a
+print override written at a lower specificity than the screen rule it is overriding is
+invisible everywhere except on paper**, which is why the rest of `print.css` is
+`!important` throughout.
+
+**2. THEN THE CAP SQUASHED THE PICTURE, AND THE SAMPLE HID IT.** Capped at 4in the
+drawing printed into an **828×384 box for a 1200×675 picture**. The cause is a rule
+nobody reads twice: **an HTML `width` attribute is a presentational hint that acts as a
+SPECIFIED width**, so `height: auto` alone leaves the width fixed and a height cap
+distorts instead of scaling. The fix is `inline-size: auto` on both axes, which puts
+the attributes back to being only an aspect ratio to reserve space with. **The style
+guide's sample is an SVG and letterboxed itself inside the distorted box, so the PDF
+looked right** — a photograph, which is most of what WI-562 brings, would have been
+visibly stretched. A sample that cannot exhibit the defect is a sample that certifies
+it, so the ratio is now asserted from the printed layout rather than read off the
+picture.
+
+**3. A CAPTION WITH A DOUBLE QUOTE IN IT STOPS BEING AN IMAGE.** `![a scan](x.svg "a
+"grade 2" tumor")` ends the title early, the line is no longer an image, there is
+nothing in the parse tree to find, and a patient reads the raw Markdown off the page.
+This is `ReaderGate.AuditFenceLines`' hole in a second component — *the likeliest typo
+stops the node from being built at all* — so it gets the same remedy: the raw source is
+audited beside the tree, and a line starting `![` with no figure to account for it
+fails the page. (Write the caption in single quotes.)
+
+**4. THE AUDIT HAS TO RUN BEFORE THE UNUSED-DECLARATION CHECK**, because an image line
+that did not parse also leaves its front-matter entry looking unused. "You declared a
+picture that is not there" is a true sentence about the wrong defect when the picture
+IS there and the caption broke the line. Ordering two true error messages is not
+cosmetic: the first one printed is the one an author acts on.
+
+**5. THE DEV STYLEGUIDE ALREADY OVERFLOWS 390px**, before any figure was on it, so
+"nothing scrolls sideways" would have gone red for somebody else's layout and said
+nothing about this component. The phone test asks the question a figure can actually
+answer — **did it make the page any wider** — by measuring `scrollWidth`, removing the
+figure, and measuring again. A control, for the same reason WI-567 and WI-569 took
+byte-identical control pages: without one, the number is not about the thing under
+test.
+
+#### What is required, and the three rules that are not obvious
+
+- **`width` and `height` are required**, and not for tidiness: every figure below the
+  first is lazy-loaded, and a lazy image with no reserved box shoves the text under it
+  down the screen when it arrives — on a phone that moves the line the reader is on,
+  for the reader this site is built for.
+- **The first figure is eager and the rest are lazy.** "Below the fold" cannot be
+  computed from Markdown, but it can be ordered: the first figure may be the picture a
+  reader is already looking at, and deferring that one delays the only image some
+  readers ever see. Everything after it is below the fold on a 390px screen.
+- **`source_url` is the one optional field, and that is a reading of the acceptance
+  rather than a gap in it.** The item asks that every image carry "a source and a
+  licence". `credit` is the source in the sense that matters — *who made this, and who
+  are we relying on* — and it is required. A URL is required for the LICENCE, which is
+  the thing a reader or a lawyer has to be able to read. What is optional is "where we
+  got it", because a diagram drawn for this site has nowhere to point, and a required
+  field that half the corpus has to fake is a field that stops meaning anything.
+- **The NCI/AHFS/MedlinePlus ban is enforced on the IMAGE's `source_url`, not on the
+  page's citations.** cancer.gov is a cited source on most tumor hubs; only its
+  *pictures* are barred (PLAN.md §5, §12.2 rule 6). A ban written one level up would
+  have been a different, false rule — and it is §12.14's shape ("banning a citation is
+  not fixing a claim") pointed the other way: ban the reuse, keep the citation.
+- **An image inside a shared block is not supported**, in writing. A block's front
+  matter carries only `sources`, so the credit would have to be declared by a page
+  whose author never wrote the picture. It fails at parse time by name, and a suite
+  check keeps every block free of image lines so the failure is never discovered by a
+  reader.
+
+#### What the break harness found, and all four were about the tests
+
+Round 1 ran **78 breaks (39 mutations × LF and CRLF) and 70 went red**. The four
+survivors appeared on both endings, and not one of them was a hole in the mechanism —
+every one was a guard that could not be shown to work:
+
+1. **A TEST THAT PASSED FOR THE WRONG REASON.** The empty-alt test wrote `![](src)`
+   with no caption, so deleting the alt check entirely still threw — on the MISSING
+   CAPTION, one check later — and a bare `Assert.Throws` cannot tell two
+   `FormatException`s apart. **Two checks in sequence means the second one can cover
+   for the first**, and the only defence is to assert the message. (§12.17's "assert
+   the absence, do not infer it", in the exception channel.)
+2. **A STRING SLICE IS NOT A NESTING CHECK.** Swapping `</figcaption>` and `</figure>`
+   produces malformed markup in which the credit is still *between* `<figcaption` and
+   `</figcaption>`, so the slice-based test passed. The property is an ORDER of four
+   landmarks, and it is now asserted as one.
+3. **A GUARD THAT COULD NOT FAIL.** "A figure on its own prints on one sheet" was
+   printing the style guide's LANDSCAPE sample, which the column width caps long
+   before it is tall enough to spill — so the harness removed the 4in height cap
+   outright and the PDF was still one sheet. The test now makes the picture portrait
+   before printing it, which is the shape the cap exists for. *(WI-569: a property
+   guard that has never been seen to fail has not been shown to work.)*
+4. **TWO DECLARATIONS OF ONE DECISION, NEITHER PROVABLE.** `inline-size: auto` was
+   written in `site.css` AND in `print.css`. `site.css` carries no media attribute, so
+   its copy already applies on paper and **no single edit to either file could bring
+   the squash back**. The duplicate is deleted: the decision lives in `site.css`, where
+   the screen rule it has to beat lives, and `print.css` restates only what genuinely
+   differs on paper. **Defence in depth and an unprovable guard look identical from
+   inside the code; the harness is what tells them apart.**
+
+A fifth finding came out of the same pass, from reading rather than from a survivor:
+**the alt-prefix ban forbade a correct shape.** "Diagram of…" was banned alongside
+"Photo of…", but a screen reader announces *image*, not *diagram*, so naming the KIND
+of a drawing is information (WAI's own tutorials write "Chart: …"). Only the words
+that duplicate the `img` role are banned now, and there is a test for the allowed
+side — `ThePageNeverAssertsAClosedCount`'s rule, one component over: **a ban list that
+forbids the correct shape is worse than no ban list.**
+
+#### What `/review` caught, and every one of them was a page that RENDERED
+
+One round, one blocker and seven should-fixes, and the shape they share is the
+item's own ruling pointed back at it: **the failures that matter here are the ones
+with no symptom.**
+
+**THE BLOCKER: the raw-source audit was defeated by two characters.** It counted
+lines whose first non-space character was `![`, so `- ![a scan](x.svg "a "grade 2"
+tumor")` — or any prose in front of the image — shipped the raw Markdown to a reader.
+That is finding 3 above, surviving the fix written for it. The audit now scans the
+PARSED TREE as well, and the tree pass had a second defect that only probing the real
+parser found: **Markdig splits a failed image into `![` and the rest**, so a
+literal-by-literal scan matched neither half and the whole pass was dead. The
+literals of a block are joined first. Both passes stay, because neither sees what
+the other does — a four-space indent makes the line an indented CODE block with no
+inlines at all, which is ReaderGate's recorded case and only the line count catches
+it.
+
+**A null key was a 500, not a message.** `images:` with nothing under it makes
+YamlDotNet assign null OVER the property initializer, and the figure pass then threw
+`NullReferenceException`. That is not a worse error, it is a different failure mode:
+ContentCheck catches only `FormatException`, so the GATE would crash instead of
+failing the page; `ContentStore.GetPage` catches only `IOException`, so a reader
+would get a 500 on a medical page; and `SearchPages` catches only `FormatException`,
+so one dangling key would take **site search down for every page**. The property
+null-coalesces on read now. *(`sources`, `tags` and `disclaimers` have the same
+hole and are left as found — for `/pm`.)*
+
+**THE LICENSING BAN WAS ONE-DIRECTIONAL, on the one rule that is somebody else's
+legal problem.** It read `source_url`, which is optional — so an NCI diagram
+committed to the repo and credited honestly as "National Cancer Institute", with no
+source URL, rendered on a green build. The credit is now scanned too. The field a
+person fills in honestly is the field to read.
+
+**A figure was accepted anywhere a paragraph can live** — a bullet, a blockquote, a
+TABLE CELL — credited, but in a shape nothing styled or measured. The table cell is
+the one that bites: a 1200px picture in an auto-layout `<td>` is the classic way to
+send a 390px screen sideways, and the phone test only ever sees the top-level case.
+A figure must now be a top-level block or inside a `:::outlook` gate, and there is a
+test for the ALLOWED side as well as the forbidden one.
+
+**And two more assertions that could not fail**, after the harness had already found
+three: the print cap was asserted on the landscape sample, which prints 374px against
+a 384px cap and so never reaches it; and `Assert.Contains(". ", …)` as the
+"two sentences, not one run-on" check is true of every output `ExtractSentences` can
+produce. Both are now exact measurements — the cap on a genuinely tall picture, the
+grader on the whole string.
+
+*(Also fixed, each one small and each one silent: an HTML entity in alt text was
+dropped rather than transcoded, losing characters inside the one attribute a blind
+reader has; `src` accepted `/appsettings.json` and `/img/../secret.svg`; one
+declaration could render two figures while the corpus sweep asserted one; a missing
+`FigureExtension` dropped a picture AND its credit with no error, so the pipeline now
+verifies itself at start-up the way the reader-choice gate does; and nothing compared
+the declared `width`/`height` against the actual file, which defeats the entire
+stated reason those fields are required — the test now reads the SVG, PNG and JPEG
+headers.)*
+
+#### Carried forward
+
+**The reverse direction of the file sweep cannot be mutation-proved.** "A file in
+`wwwroot/img/figures/` that no page declares" needs a file to APPEAR, and the break
+harness only edits existing files. It was proved by hand instead (drop a stray file
+in, watch the test go red, delete it) and that is recorded in this item's
+`mutations.py` rather than left as a blind spot.
+
+**No real image ships with this item**, by design — the one picture on the site is a
+hand-drawn placeholder under `/img/dev/`, served only by `/dev/styleguide`, which 404s
+outside Development. WI-562 is next, and the thing to carry into it is finding 2: the
+first real photograph is the first time the shape of a figure is tested by something
+that cannot letterbox itself.

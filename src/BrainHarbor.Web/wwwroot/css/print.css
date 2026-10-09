@@ -322,3 +322,60 @@ a[href^="http"]::after {
 .reader-gate__body {
   border-block-start-color: #000 !important;
 }
+
+/* A figure on a curated page (WI-561). DECIDED, then verified by printing an
+   actual PDF — WI-560's lesson is that print bugs are invisible everywhere
+   except on paper, and the one it found had been shipping for 59 work items.
+
+   THREE DECISIONS, each against a failure the PDF showed or would have:
+
+   1. THE PICTURE PRINTS. It is content, not chrome — an explanatory diagram is
+      often the reason a page was printed at all. (Only the card-hero BACKDROP
+      is dropped, further up this file: that one is decoration and costs toner.)
+      Note `display` is not touched here, which is the WI-560 trap: the blanket
+      `button { display: none }` is what deleted glossary words from paper.
+   2. IT IS CAPPED IN INCHES, not in viewport units. `max-block-size: 70vh` on
+      screen has no meaning on paper, where the height is a sheet; an uncapped
+      1200x1600 diagram prints a page and a half tall and takes the caption
+      with it onto the next sheet.
+   3. THE CAPTION AND CREDIT STAY WITH THE PICTURE. `break-inside: avoid` on
+      the <figure> is what stops a page break landing between a diagram and
+      the words explaining it — and the cap above is what makes that safe: an
+      unbreakable element taller than a sheet is how you get a blank page. */
+.figure {
+  break-inside: avoid;
+  margin: 10pt 0;
+}
+
+/* `.figure__image` and not `figure img`, with !important, and the PDF is how
+   we know: one class beats two element names, so site.css's screen rule
+   (`max-block-size: 70vh`) won the cascade and the inch cap below did
+   nothing. The picture measured 467pt tall in the print layout with this rule
+   loaded and "correct". A print override written at a lower specificity than
+   the screen rule it is overriding is the same silent class of bug as WI-560's
+   vanishing glossary terms — which is why the rest of this file is !important
+   throughout. */
+/* `inline-size: auto` is NOT repeated here, and the break harness is why. It
+   was, and removing it changed nothing: site.css carries no media attribute, so
+   its `inline-size: auto` already applies on paper, and no single edit to this
+   file could make the squash come back. Two declarations of one decision, with
+   the mutation that should have proved this one surviving because the other one
+   held — which is a guard that cannot be shown to work. The decision lives in
+   site.css, where the screen rule it has to beat lives; only the values that
+   genuinely differ on paper are restated here. */
+.figure__image {
+  max-inline-size: 100% !important;
+  max-block-size: 4in !important;
+  height: auto !important;
+}
+
+/* Ink, not grey — a caption at 60% opacity photocopies to nothing. */
+.figure__caption,
+.figure__text,
+.figure__credit {
+  color: #000 !important;
+}
+
+.figure__credit {
+  font-size: 9pt;
+}

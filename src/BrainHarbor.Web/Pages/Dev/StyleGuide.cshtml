@@ -66,6 +66,21 @@
     @Html.Raw(Model.ReaderGateSampleHtml)
 </div>
 
+@* WI-561. Three things to check by eye here, because no test can judge them:
+   the caption must read as part of the page rather than as fine print, the
+   credit must be visible without competing with the caption, and the picture
+   must stay inside the reading column at 390px. The image itself is a
+   hand-drawn placeholder — WI-562 sources the real ones. *@
+<h2>Figure</h2>
+<p>
+    Written in a curated page as one Markdown image line, alone in its
+    paragraph, with the credit in the page's <code>images:</code> front matter.
+    Rendered below through the real ContentStore pipeline.
+</p>
+<div class="container--read">
+    @Html.Raw(Model.FigureSampleHtml)
+</div>
+
 <h2>Feed cards</h2>
 <div class="section-head">
     <h3>Latest updates</h3>

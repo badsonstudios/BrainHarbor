@@ -1303,6 +1303,16 @@ public static partial class ContentChecker
     /// grade by 1–2 levels — punishing exactly the structure that helps
     /// impaired readers.
     /// </summary>
+    /// <summary>
+    /// One sentence, ended once. The block-level walk below has always added a
+    /// terminator only when there is not one already; the caption arm did it
+    /// unconditionally and produced "…for you.. " (<c>/review</c>). Harmless
+    /// for Flesch-Kincaid, which splits on a run of <c>[.!?]</c>, and wrong in
+    /// a function whose whole job is to say where sentences end.
+    /// </summary>
+    private static string Terminated(string text) =>
+        text.Length > 0 && text[^1] is not ('.' or '!' or '?') ? text + ". " : text + " ";
+
     public static string ExtractSentences(string markdown)
     {
         var document = Markdig.Markdown.Parse(markdown, TextPipeline);
@@ -1317,8 +1327,30 @@ public static partial class ContentChecker
 
             var text = string.Concat(block.Inline.Descendants().Select(inline => inline switch
             {
+                // WI-561: A FIGURE'S CAPTION IS GRADED LIKE ANY OTHER SENTENCE,
+                // and so is its alt text.
+                //
+                // An image is `![alt](src "caption")`, so Markdig keeps the alt
+                // text as child literals — which this walk already picked up —
+                // and the caption as the link's Title, which is a property and
+                // has no inline of its own. So without this line the caption was
+                // the one piece of reader-facing prose on a figure that nothing
+                // graded, which is exactly WI-575's `description` hole re-dug one
+                // surface over. The terminator makes it its own sentence instead
+                // of a clause fused to the alt text (§12.20's heading lesson).
+                //
+                // The alt text is graded too, deliberately: it is prose a screen
+                // reader reads aloud to the same audience, at the same reading
+                // level, and it was already being graded here by accident. What
+                // changes is that both are now true on purpose.
+                LinkInline { IsImage: true } image when !string.IsNullOrWhiteSpace(image.Title)
+                    => Terminated(image.Title.Trim()),
                 LiteralInline literal => literal.Content.ToString(),
                 CodeInline code => code.Content,
+                // Same gap the alt-text flattener had: an entity is not a
+                // literal, and dropped silently it takes a word's characters
+                // out of the sample the grade is computed from.
+                HtmlEntityInline entity => entity.Transcoded.ToString(),
                 LineBreakInline => " ",
                 _ => string.Empty,
             })).Trim();
