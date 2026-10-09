@@ -190,6 +190,23 @@ public sealed class BlockSourceAttributionTests
     /// passes if the split quietly moves entries from one list to the other on one
     /// page; only a total reds. 711 block + 690 own = 1,401, which is what the
     /// pre-item flat list rendered.
+    ///
+    /// <para><b>WI-577 MOVED ONE OF THESE NUMBERS, AND THE SHAPE OF THE MOVE IS THE
+    /// PROOF THAT NOTHING BROKE.</b> It declared one new source on
+    /// <c>/tests/biopsy</c> (PMC8972311, for the second exception to the tissue
+    /// rule), so own went 690 → <b>691</b> and the union 1,401 → <b>1,402</b> —
+    /// and <b>the block total is UNCHANGED at 711</b>. That asymmetry is the whole
+    /// check: a citation added on the DECLARED side must land in
+    /// <c>OwnSources</c> and nowhere else, and this test is what would have caught
+    /// it landing in the wrong list or in both. The direction matters too — the union
+    /// GREW. WI-574's own ruling is that narrowing it is the one change the gate
+    /// exists to prevent, because every §12.10 citation gate reads the union.</para>
+    ///
+    /// <para><b>Updating a checksum is not the same as re-deriving one.</b> The new
+    /// figures are the old ones plus the one citation the diff adds, arithmetic
+    /// first and measured second; if a future item finds itself editing these to
+    /// make a test green without a citation in the diff to account for the
+    /// difference, the number is right and the code is wrong.</para>
     /// </summary>
     [Fact]
     public void TheCorpusWideTotalsAreWhatWi574Measured()
@@ -197,8 +214,8 @@ public sealed class BlockSourceAttributionTests
         var corpus = Corpus();
 
         Assert.Equal(711, corpus.Sum(p => p.Rendered.BlockSources.Count));
-        Assert.Equal(690, corpus.Sum(p => p.Rendered.OwnSources.Count));
-        Assert.Equal(1401, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
+        Assert.Equal(691, corpus.Sum(p => p.Rendered.OwnSources.Count));
+        Assert.Equal(1402, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
 
         // THE WORST PAGES, AND THERE ARE TWO OF THEM — pinned by name rather than
         // by MaxBy, which picks one of a tie arbitrarily and would have made this

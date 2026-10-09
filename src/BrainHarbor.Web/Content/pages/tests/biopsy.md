@@ -44,6 +44,42 @@ sources:
   # it is written as what it is. §4.3's "small shaved patch" is bundled into a
   # bullet cited to ACS, which contains the string "shav" ZERO times; the page
   # asks the question instead of asserting the answer.
+  #
+  # WI-577: THIS PAGE OWNS THE EXCEPTION LIST, AND IT HAD THE COUNT WRONG.
+  # content-pipeline §12.17 recorded that "Is there a way to find out without
+  # one?" said "There is ONE exception worth knowing" while the corpus asserted
+  # TWO. The count matters beyond this page because this page is where the
+  # corpus SENDS that question: /tumors/all-brain-tumors ("There is a narrow
+  # exception, for a thing sitting somewhere that would be too risky to take a
+  # piece of") and /where-your-tumor-is ("if no piece is taken, you get a
+  # working answer rather than a confirmed one") BOTH route to
+  # #is-there-a-way-to-find-out-without-one and neither enumerates, by design.
+  # So an undercount here was an undercount on three pages.
+  #
+  # The second exception is the markers, and PMC8972311 is why it can be
+  # published. Verbatim: "reliance on tumor markers in serum and CSF alone for
+  # diagnosis, thereby avoiding the need for a biopsy". ITS SCOPE IS NARROW AND
+  # THE NARROWNESS IS THE POINT -- /tumors/cns-germ-cell-tumor's own front
+  # matter records that this sentence sits under the heading "Strategy for
+  # NGGCT", and the same consensus says "Only marker-negative tumors should be
+  # biopsied". So this page says "one rare group of tumors" and "can sometimes
+  # be enough", attributes the group in the sentence that prints the claim, and
+  # ROUTES for which kinds it covers rather than enumerating them. Stating it
+  # any wider here would be the two-strengths defect §12.10 bans, against the
+  # page that owns the subject.
+  #
+  # NOT RE-COUNTED AS A THIRD: /treatments/watch-and-wait#without-a-sample.
+  # It UPHOLDS the rule ("Only a sample of tissue can say for certain") and
+  # describes living with a working name, which is the CONSEQUENCE of going
+  # without tissue rather than an exception to needing it. /tumors/dipg's "If
+  # there was no biopsy, the diagnosis comes from the MRI report" is not a third
+  # either -- it is the first exception, instantiated.
+  #
+  # AND THE COUNT IS NOW OPEN RATHER THAN RIGHT. "Two of them come up often
+  # enough to name here" is the form WI-567 settled on for exactly this failure
+  # ("naming N asserts there is no N+1"), because a corrected closed count is
+  # the same defect waiting for the next item -- which is what "one exception"
+  # was.
   - url: https://www.cancer.org/cancer/types/brain-spinal-cord-tumors-adults/detection-diagnosis-staging/how-diagnosed.html
     title: "American Cancer Society: Tests for Brain Tumors in Adults"
     accessed: 2026-09-08
@@ -62,6 +98,18 @@ sources:
   - url: https://www.cancerresearchuk.org/about-cancer/brain-tumours/getting-diagnosed/tests/biopsy
     title: "Cancer Research UK: Biopsy for brain tumours"
     accessed: 2026-09-08
+  - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8972311/
+    title: "EANO, SNO and Euracan consensus review on the current management and future development of intracranial germ cell tumors in adolescents and young adults"
+    accessed: 2026-09-21
+    # WI-577, and cited for ONE clause: the second exception to the tissue rule.
+    # Verbatim: "reliance on tumor markers in serum and CSF alone for diagnosis,
+    # thereby avoiding the need for a biopsy". Already a trusted corpus source on
+    # /tumors/cns-germ-cell-tumor, which OWNS the subject and is routed to rather
+    # than restated. NOTHING ELSE from it is used here: the marker cut-offs, the
+    # bifocal rule, the diabetes insipidus presentation and the "Only
+    # marker-negative tumors should be biopsied" line are all that page's, and
+    # publishing any of them here would be this page answering a question it
+    # sends somewhere else.
 reviewed: 2026-09-08
 review_due: 2027-03-31
 disclaimers: [medical]
@@ -240,10 +288,18 @@ say it out loud to today. [Get help now](/get-help-now) has the numbers.
 Usually not. For most brain tumors, tissue is the only thing that can give the
 tumor its name, and the name is what treatment is chosen from.
 
-There is one exception worth knowing. If a tumor sits somewhere that would make
-it hard to take a sample from, such as the brain stem, a scan may sometimes give
-enough information on its own. That is rare, and it is your team's call, not
-something to ask for.
+There are exceptions worth knowing, and two of them come up often enough to name
+here. Both are rare, and both are your team's call rather than something to ask
+for.
+
+**A place that is hard to take a sample from.** If a tumor sits somewhere like
+the brain stem, a scan may sometimes give enough information on its own.
+
+**A tumor that blood and fluid tests can point to.** For one rare group of
+tumors, an expert group from Europe and North America says tests on the blood and
+on the fluid around the brain and spine can sometimes be enough on their own.
+[Germ cell tumor in the brain](/tumors/cns-germ-cell-tumor) goes through which
+kinds that covers.
 
 If you are worried about having the procedure at all, say that to your team
 rather than to nobody. There may be more than one way forward, and the

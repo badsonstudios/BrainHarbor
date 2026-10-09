@@ -604,6 +604,187 @@ public sealed class CraniotomyPageContentTests
             Assert.DoesNotContain(url, front, StringComparison.OrdinalIgnoreCase);
         }
     }
+
+    /// <summary>
+    /// WI-577, §12.17's CARRIED-FORWARD, AND THE TWO FORMS THE MEASUREMENT FOUND.
+    ///
+    /// <para>§12.17 recorded this page stating the tissue rule FLAT — <i>"Only a
+    /// piece of the tumor itself, looked at in a lab, can give it a name"</i> — where
+    /// the corpus hedges it, and left it to <i>"whichever item next touches those
+    /// pages"</i>. WI-569 touched this page for one clause and did not take it, which
+    /// is a tripwire firing into nobody's hands. This is it taken.</para>
+    ///
+    /// <para><b>The measurement is why the guard is on THIS page and not written as a
+    /// corpus sweep.</b> Five pages carry the rule and they carry TWO DIFFERENT
+    /// CLAIMS in nearly the same words. A <b>certainty</b> form —
+    /// <c>/tests/mri</c> (<i>"What it cannot do is give you the name FOR
+    /// CERTAIN"</i>), <c>/tests/ct-scan</c> (<i>"can say FOR CERTAIN"</i>),
+    /// <c>/treatments/watch-and-wait</c> — which is TRUE with no exception. And a
+    /// <b>naming</b> form — this page, <c>/tumors/low-grade-glioma</c>
+    /// (<i>"can name it"</i>), <c>/tests/planning-scans</c> (<i>"It does not name
+    /// it"</i>) — which the corpus asserts TWO exceptions to. Only the naming form is
+    /// false, and that is the distinction §12.17 was pointing at.</para>
+    ///
+    /// <para><b>The other two naming-form instances are recorded, not changed, and
+    /// the reason is a trap worth knowing before touching them.</b>
+    /// <c>/tests/planning-scans</c>'s sentence sits inside the eight-word shingle
+    /// that <c>CtScanPageTests</c> and <c>PlanningScansPageTests</c> BOTH put on
+    /// <c>AssertDoesNotRestateTheCorpus</c>'s allowlist, whose own comment says the
+    /// trio is identical on purpose because <i>"§12.10 says two pages must not state
+    /// one safety claim at two strengths"</i>. Hedging one of three would re-create
+    /// the defect the allowlist exists to prevent, so the trio is a single decision
+    /// and it is not this item's. See content-pipeline §12.32.</para>
+    ///
+    /// <para>The shape is <c>WhereYourTumorIsPageTests</c>'s
+    /// <c>TheNameComesFromTissueIsHedgedAndItsExceptionIsRouted</c>, which WI-567
+    /// proved on the page whose own subject is the location-keyed exception: ban the
+    /// flat wordings, then assert the PROPERTY, so a flat restatement in fresh words
+    /// cannot pass the list.</para>
+    /// </summary>
+    [Fact]
+    public void TheTissueRuleIsHedgedAndItsExceptionIsRouted()
+    {
+        // EVERYTHING A READER MEETS, not the raw body (/review). The ban and the
+        // property below are rules about the WHOLE page, and `ReaderText(Page)` is
+        // narrower than it looks in two ways: the front-matter `description` is the
+        // first paragraph `ContentPage.cshtml` renders and was invisible to it, and
+        // this page includes [CAREGIVER] — so against the raw body that block is the
+        // literal string "[CAREGIVER]" and 1,000-odd words of shared prose were out of
+        // reach. That is the WI-514 trap, and the helper exists for it.
+        var flat = CuratedPage.EverythingAReaderMeets(Page, "/treatments/craniotomy");
+
+        // THE WORDINGS, BANNED UNHEDGED — AND THE LOOKBEHIND IS THE WHOLE POINT OF
+        // THIS LIST. The first version asserted `DoesNotContain` on the bare sentence
+        // and went RED on the fix: "For most brain tumors, only a piece of the tumor
+        // itself, looked at in a lab, can give it a name" CONTAINS the banned string.
+        // A ban list that forbids the corrected shape is worse than no ban list
+        // (ThePageNeverAssertsAClosedCount's own ruling, on this repo's other
+        // instance of this guard), so the hedges are a WINDOWED negative lookbehind
+        // and the word boundary goes inside the alternation.
+        foreach (var unhedged in new[]
+        {
+            @"only a piece of the tumor itself, looked at in a lab, can give it a name",
+            @"only tissue can name it",
+            @"the name comes from tissue",
+        })
+        {
+            Assert.False(
+                Regex.IsMatch(
+                    flat,
+                    $"(?<!{Hedge}[^.!?]{{0,30}})" + unhedged,
+                    RegexOptions.IgnoreCase),
+                $"\"{unhedged}\" is asserted on this page with no hedge in front of it. "
+                + "§12.17 recorded this page as the one stating the tissue rule flat, and "
+                + "the corpus asserts two exceptions to it.");
+        }
+
+        // AND /tests/biopsy's OWN SENTENCE, banned outright rather than unhedged: that
+        // page owns the exception list and this page routes to it, so copying its words
+        // here — hedged or not — is the restatement §12.10 asks a route to replace.
+        Assert.DoesNotContain("tissue is the only thing that can give", flat,
+            StringComparison.OrdinalIgnoreCase);
+
+        // AND THE PROPERTY, because the three wordings above are a floor: every
+        // sentence on this page that claims where a NAME comes from carries a hedge or
+        // a condition. Links stripped whole first — a route's label is the
+        // destination's title, and "[Is there a way to find out without one?](…)" is
+        // the shape this ruling ASKS for rather than a claim about naming.
+        //
+        // IGNORECASE, AND /review CAUGHT THAT IT WAS MISSING. Every other regex in this
+        // method passes it; this one did not, so a sentence-initial claim — and this
+        // page writes its bullets as "- **To find out what it is.**", which makes
+        // "Tissue is what gives the diagnosis." the natural shape — was not extracted as
+        // a claim AT ALL and so never reached the hedge check. The three banned literals
+        // cannot catch a flat restatement in fresh words, so the property half was the
+        // only thing standing behind them, and it had a hole shaped like a capital T.
+        var claims = Regex
+            .Matches(Regex.Replace(flat, @"\[[^\]]*\]\([^)]*\)", " "),
+                @"[^.!?]*\b(tissue|lab|a piece|a sample)\b[^.!?]*",
+                RegexOptions.IgnoreCase)
+            .Select(m => m.Value.Trim())
+            .Where(s => s.Length > 25)
+            .Where(s => Regex.IsMatch(s, @"\b(a name|the name|confirmed|the diagnosis)\b",
+                RegexOptions.IgnoreCase))
+            .ToList();
+
+        Assert.True(claims.Count >= 1,
+            $"only {claims.Count} sentence(s) on this page claim where a name comes "
+            + "from, so this guard is reading nothing — the bullet it was written for "
+            + "has probably been reworded");
+
+        // AND THE EXTRACTION IS PROVED ABLE TO SEE ONE, both ways round. A floor of >= 1
+        // is satisfied by the sentence this guard was written for, so it cannot tell a
+        // regex that reads the page from a regex that reads the page MINUS every
+        // sentence-initial claim — which is exactly what it was. (§12.18: a guard seen
+        // to fail for the wrong reason has not been shown to work either.)
+        Assert.Matches(ClaimShape, "Tissue is what gives the diagnosis, and nothing else does.");
+        Assert.DoesNotMatch(ClaimShape, "The scan is booked for next Tuesday afternoon.");
+
+        var unqualified = claims
+            .Where(s => !Regex.IsMatch(s, Hedge, RegexOptions.IgnoreCase))
+            .ToList();
+
+        Assert.True(unqualified.Count == 0,
+            "a sentence on this page claims where a name comes from with no hedge or "
+            + "condition. The corpus asserts TWO exceptions to it — a place too risky "
+            + "to sample, and markers alone — and §12.17 recorded this page as the one "
+            + "stating the rule flat:\n  " + string.Join("\n  ", unqualified));
+
+        // THE HEDGE AND THE ROUTE ARE SECTION-SCOPED, because WHERE they are is the
+        // property (/review). `CuratedPage.Section`'s own docstring rules the
+        // whole-page form a defect: "a whole-page Contains() passes when the
+        // reassuring line has drifted into the footer, which is precisely the failure
+        // these rules exist to catch." Concretely: "## Where to go next" already links
+        // /tests/biopsy bare, so a page-wide route check was partly satisfied by the
+        // footer — move the exception route out of this bullet and into that list and
+        // the bullet would state a hedged claim with no way out of it, green.
+        var reasons = CuratedPage.Flatten(
+            CuratedPage.ReaderTextOfBody(Section("Why am I having one?")));
+
+        // The hedge, at the SAME STRENGTH as the page that owns the exception list.
+        Assert.Contains("For most brain tumors, only a piece of the tumor", reasons,
+            StringComparison.Ordinal);
+
+        // And the exception ROUTED rather than restated, to the page that owns it —
+        // in the bullet that makes the claim, not somewhere on the page.
+        Assert.Contains("/tests/biopsy#is-there-a-way-to-find-out-without-one", reasons,
+            StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// ONE hedge vocabulary, used by BOTH halves of
+    /// <see cref="TheTissueRuleIsHedgedAndItsExceptionIsRouted"/> — the ban's negative
+    /// lookbehind and the property check's qualifier test.
+    ///
+    /// <para><b>They were two lists and that is a defect in both directions</b>
+    /// (/review). The ban's lookbehind held six word-bounded words; the property check
+    /// held seven UNBOUNDED substrings, which is why it accepted
+    /// <i>"…and it goes somewhere else to be read"</i> as hedged — <c>some</c> inside
+    /// <b>somewhere</b>, and <c>most</c> would have matched <b>almost</b> the same way.
+    /// A flat claim waved through by a substring of an unrelated word is the
+    /// does-not-discriminate defect this repo has now hit three times.</para>
+    ///
+    /// <para>And in the other direction, a conditional the property check accepted
+    /// (<c>if</c>, <c>rather than</c>) was absent from the lookbehind, so
+    /// <i>"Unless markers answer it, the name comes from tissue."</i> — a correct,
+    /// properly conditioned sentence — would have RED as a banned flat wording. §12.8:
+    /// a rule that fails a correct page is worse than no rule.</para>
+    ///
+    /// <para>Word-bounded throughout, and the conditional forms are in it, so both
+    /// halves now agree on what counts as a hedge.</para>
+    /// </summary>
+    private const string Hedge =
+        @"\b(?:most|usually|often|sometimes|some|many|may|might|typically|generally"
+        + @"|rarely|if|unless|rather than)\b";
+
+    /// <summary>
+    /// The sentence shape <see cref="TheTissueRuleIsHedgedAndItsExceptionIsRouted"/>
+    /// treats as a claim about where a name comes from, named so the canary pair can
+    /// pin the extraction itself rather than its result.
+    /// </summary>
+    private const string ClaimShape =
+        @"(?i)[^.!?]*\b(tissue|lab|a piece|a sample)\b[^.!?]*"
+        + @"\b(a name|the name|confirmed|the diagnosis)\b";
 }
 
 /// <summary>The page as served, the door that leads to it, and the tooltips.</summary>

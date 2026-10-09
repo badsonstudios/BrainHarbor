@@ -5301,9 +5301,45 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   CRLF**. Ruling: **`docs/content-pipeline.md` §12.30**.
   PR [#195](https://github.com/badsonstudios/BrainHarbor/pull/195).
 
-- [ ] **WI-577 The sellar seam: two pages that do not point back at each
+- [x] **WI-577 The sellar seam: two pages that do not point back at each
   other, and one that contradicted its own link** *(raised by WI-569,
-  2026-09-25)*
+  2026-09-25; done 2026-10-08 — ruling in `docs/content-pipeline.md` **§12.32**,
+  and §12.17 and §12.18 both now point at it)*
+  **THE RETURN JOURNEY WAS 2 OF FOUR, NOT 2 OF THREE, AND THE FOURTH IS THE ONE A
+  PHRASE LIST CANNOT FIND.** The brief named meningioma; measuring reader text (the
+  body after the front matter, because every one of these phrases is also quoted
+  verbatim in source notes up there) found **four** pages claiming the sellar
+  address — and `/tumors/cns-germ-cell-tumor` says it in plain words (*"Just above
+  the hormone gland"*) with **no report-word in the sentence at all**, so the sweep
+  for *sellar*, *sella turcica*, *pituitary fossa* and *tuberculum* returns three
+  and reads as complete. All four are now named **in order**, the open form and the
+  generic `/tumors` route both kept: **an open count is honest about a list being
+  partial; it does not make a partial list a route.**
+  **THE PLANNED-SUBTOTAL COUNT WAS THREE ON THREE AND IS SIX ON SIX.** The three
+  §12.18 named turned out **already right** — all three route to the same anchor
+  *and* all three agree on strength — so the split is **recorded, not collapsed**
+  (collapsing would delete the EANO quote from a page EANO is cited on). The three
+  it missed do not route; carried to `/pm`.
+  **§12.17'S CARRY-FORWARD TAKEN, BOTH HALVES.** `/treatments/craniotomy`'s flat
+  tissue rule is hedged to the owner page's strength and routes the exception;
+  `/tests/biopsy`'s *"one exception worth knowing"* is now an **open** count with
+  both exceptions in their own bold-led paragraphs, the second attributed in the
+  sentence that prints it and routed to the page that owns its scope, plus a new
+  source declared. That page **owns** the exception list and two others route into
+  its anchor without enumerating, so the undercount was an undercount **on three
+  pages**.
+  **THE TISSUE RULE HAS TWO FORMS AND ONLY ONE IS FALSE** — a *certainty* form,
+  true with no exception, and a *naming* form the two exceptions falsify. Only
+  craniotomy is fixed, on purpose: the rest of the naming-form set is one coupled
+  §12.10 decision and needs its own item. For `/pm`.
+  **WI-574's CHECKSUM MOVED ON PURPOSE:** 690 → **691** own and 1,401 → **1,402**
+  union with the block total **unchanged at 711** — the asymmetry is the proof and
+  the union *grew*.
+  **PROVED BY BREAKING IT: 32 mutations × 2 line endings = 64 breaks, all red, no
+  survivors**, plus all four touched test classes green on LF and on CRLF.
+  **The harness found one real survivor and `/review` found three blockers**, and
+  all four were defects in the new guards rather than in the content — see the
+  PROGRESS rows for what each one was.
   Goal: close the two halves of a seam WI-569 found and could not own.
   **(1) THE RETURN JOURNEY HAS NO MENINGIOMA ON IT.** `/tumors/meningioma` now
   claims the sellar address (*near the pituitary and the crossing of the optic
