@@ -1060,9 +1060,8 @@ Your report may call this the **pituitary**, or it may name the small hollow the
 gland sits in. That hollow has two names on paper: the **pituitary fossa** and
 the **sella turcica**. Anything called **sellar** is about the same area.
 
-The gland sits behind the bridge of your nose, below the brain. More than one kind
-of
-growth turns up there, and four of the ones we have written about are
+The gland sits behind the bridge of your nose, below the brain. More than one
+kind of growth turns up there, and four of the ones we have written about are
 [pituitary tumor](/tumors/pituitary-tumor),
 [craniopharyngioma](/tumors/craniopharyngioma),
 [meningioma](/tumors/meningioma) and

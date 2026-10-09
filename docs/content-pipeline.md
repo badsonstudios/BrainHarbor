@@ -6639,8 +6639,10 @@ the same anchor, and — the half this paragraph did not check — **all three a
 strength**, so §12.10 is satisfied and the split is recorded rather than collapsed
 (collapsing it would delete the EANO quote from a page EANO is cited on). The three
 it missed do **not** route: `/tumors/craniopharyngioma`, `/tumors/acoustic-neuroma`
-and `glossary/subtotal-resection.md` — and the glossary one fires as a tooltip **on
-the owner page itself**. For `/pm`.
+and `glossary/subtotal-resection.md`. The glossary one's tooltip is **suppressed** on
+the owner page (`!%subtotal resection%` is WI-105's suppression marker and a render
+test already asserts the popover is absent), so all three are the same plain routing
+question and none of them is §12.26's — see §12.32. For `/pm`.
 
 **CARRIED FORWARD.** `/tumors/meningioma` says weakness in a **leg** is the
 parasagittal give-away and no reachable source read for this item carries the limb
@@ -10312,9 +10314,27 @@ teams now deliberately leave a piece alone rather than risk that"*),
 `/tumors/acoustic-neuroma` (*"a piece was deliberately left behind to protect a nerve,
 which is a recognized choice rather than a mistake"*) and
 `glossary/subtotal-resection.md` (*"Surgeons stop short when going further would risk
-something you would not want to lose"*) — and **the glossary one fires as a tooltip on the
-owner page itself**, which says `!%subtotal resection%` forty lines above the owner
-sentence. That last one is §12.26's question, not this one's. For `/pm`.
+something you would not want to lose"*).
+
+**AND THE GLOSSARY ONE IS NOT §12.26'S QUESTION, WHICH IS THIS SECTION'S ONE REVERSAL
+OF ITSELF** (`/review`). The first version of this paragraph said the glossary
+definition *"fires as a tooltip on the owner page itself"*, and cited as the evidence
+that `/treatments/craniotomy` writes `!%subtotal resection%Subtotal resection.` forty
+lines above the owner sentence. **`!%term%` is the SUPPRESSION marker, not a firing
+one** — WI-105, §6: *"`!%term%` anywhere on the page suppresses that term for the whole
+page"*. So the cited evidence proves the opposite of the claim it was cited for, and
+`CraniotomyPageRenderTests.TheWordsThisPageDefinesItselfDoNotAlsoFireATooltip` already
+asserts `def-subtotal-resection"` is **absent** from the served page, in both
+directions, on the §12.8 reasoning that a popover repeating the paragraph beneath it is
+noise. There is no definition-and-prose-on-one-screen collision on that page, so §12.26
+has no question to answer here: the glossary wording is simply a **fourth un-routed
+instance** whose tooltip is deliberately suppressed where the owner sentence lives. What
+is left for `/pm` is the routing, the same as the other two. For `/pm`.
+
+*(A note claiming coverage a guard does not have tells the next reader to stop checking
+— `WhereYourTumorIsPageTests`' own ruling. A note claiming a COLLISION that a guard
+positively forbids is the same defect pointing the other way: it hands `/pm` an item
+that cannot exist.)*
 
 #### The tissue rule has TWO forms, and only one of them is false
 
@@ -10324,7 +10344,16 @@ rather than five. Five pages carry what looks like one sentence. They carry two 
 | form | pages | true? |
 |---|---|---|
 | **certainty** — *"give you the name FOR CERTAIN"*, *"can say FOR CERTAIN"* | `/tests/mri`, `/tests/ct-scan`, `/treatments/watch-and-wait` | yes, with no exception |
-| **naming** — *"can give it a name"*, *"can name it"*, *"It does not name it"* | `/treatments/craniotomy`, `/tumors/low-grade-glioma`, `/tests/planning-scans` | **no — the corpus asserts two exceptions** |
+| **naming** — *"can give it a name"*, *"can name it"*, *"It does not name it"*, *"What no scan can do is name it"* | `/treatments/craniotomy`, `/tumors/low-grade-glioma`, `/tests/planning-scans`, `/tests/ct-scan` | **no — the corpus asserts two exceptions** |
+
+**`/tests/ct-scan` IS IN BOTH ROWS, AND `/review` IS WHY.** The first version of this
+table filed it under *certainty* alone, on the strength of its *"can say for certain"*
+sentence. But that sentence is the **second** one: the paragraph **leads** with a bolded,
+flat **naming** claim — ***"What no scan can do is name it."*** — and that one is
+falsified by the first exception **this very item published** on `/tests/biopsy`
+(*"a scan may sometimes give enough information on its own"*). A page can carry both
+forms, and sorting it by the sentence that is true hides the one that is not. So the
+naming-form set carried to `/pm` is **three** pages, not two.
 
 **The two exceptions, counted rather than assumed.** A place too risky to take a sample
 from (`/tests/biopsy`, instantiated by `/tumors/dipg`'s *"If there was no biopsy, the
@@ -10343,10 +10372,25 @@ the eight-word shingle that `CtScanPageTests` **and** `PlanningScansPageTests` b
 four pages. §12.10 says two pages must not state one safety claim at two strengths, so
 where it is load-bearing on both, identical words are the right answer."* **Hedging one of
 that trio would re-create the exact defect the allowlist exists to prevent.** So the trio
-is a single decision, it needs its own item, and `/treatments/craniotomy` — the page
-§12.17 named, and the only one of the three outside the shingle — is hedged here to the
-same strength as the page that owns the exception list. For `/pm`:
-`/tumors/low-grade-glioma` and `/tests/planning-scans`.
+is a single decision and it needs its own item, while `/treatments/craniotomy` — the page
+§12.17 named — is hedged here to the same strength as the page that owns the exception
+list.
+
+**AND THE REASON IS THE TWO-STRENGTHS ONE, NOT A SHINGLE ONE.** This paragraph also said
+craniotomy was *"the only one of the three outside the shingle"*, and `/review` showed
+that is false: `AssertDoesNotRestateTheCorpus` exempts a shingle when it is a **substring
+of an allowlist entry**, and craniotomy's *"only a piece of the tumor itself, looked at in
+a lab, can give it a name"* shares 8-grams with both allowlisted strings, so it is
+**inside** that family too — and it was hedged here **invisibly to the gate**, because a
+leading *"For most brain tumors, "* leaves the shared windows untouched. Hedging
+planning-scans would be equally invisible. **So the gate was never what stood in the way.**
+What stands in the way is §12.10 itself: one safety claim stated at two strengths across a
+trio whose allowlist comment says the identical words are deliberate. That argument is
+sound on its own and is the whole reason; the shingle framing was a mechanical-sounding
+restatement of it that would have sent the next reader to check the wrong thing.
+
+For `/pm`: `/tumors/low-grade-glioma`, `/tests/planning-scans` and `/tests/ct-scan`'s
+lead sentence.
 
 #### A count is a claim about somebody else's list
 

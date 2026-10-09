@@ -726,7 +726,7 @@ public sealed class BiopsyPageContentTests
     /// second one.</para>
     /// </summary>
     [Fact]
-    public void TheExceptionsToTheTissueRuleAreOpenCountedAndBothRouted()
+    public void TheExceptionsToTheTissueRuleAreOpenCountedAndTheSecondIsRouted()
     {
         var section = CuratedPage.Flatten(
             CuratedPage.ReaderTextOfBody(Section("Is there a way to find out without one?")));
@@ -734,7 +734,7 @@ public sealed class BiopsyPageContentTests
         // THE CLOSED COUNT, banned. "one exception" is banned only in the forms that
         // assert the count: /treatments/steroids and /tumors/cns-lymphoma each say
         // "There is one exception" correctly about THEIR subject, so the ban is
-        // page-scoped rather than corpus-wide (§12.8: a ban entry belongs on a list
+        // SECTION-scoped rather than corpus-wide (§12.8: a ban entry belongs on a list
         // only if no correct sentence contains it).
         foreach (var closed in new[]
         {
@@ -745,11 +745,30 @@ public sealed class BiopsyPageContentTests
             Assert.DoesNotContain(closed, section, StringComparison.OrdinalIgnoreCase);
         }
 
+        // AND THE OPEN COUNT, POSITIVELY. The five bans above are the only thing that
+        // was holding this test's titular property, and a ban list cannot assert a
+        // positive: "Here are two exceptions." trips none of them and satisfies every
+        // other assertion in this method, so the count could be silently closed again
+        // while the test named for its openness stayed green (/review). This clause is
+        // the one that makes it open — the list is partial, and says so.
+        Assert.Contains("come up often enough to name here", section,
+            StringComparison.Ordinal);
+
         // The rule itself stays hedged — this is the page the corpus quotes it from.
         Assert.Contains("For most brain tumors, tissue is the only thing", section,
             StringComparison.Ordinal);
 
-        // BOTH exceptions, each in its own paragraph so a reader can tell them apart.
+        // BOTH exceptions, each under its OWN BOLD LEAD so a reader can tell them
+        // apart. The leads are asserted rather than described: `section` is flattened,
+        // so paragraph structure is gone and the comment that used to claim "each in
+        // its own paragraph" was a note claiming coverage the guard did not have
+        // (/review). The first lead is also what /where-your-tumor-is's deleted route
+        // gloss rested on, so it is load-bearing off this page too.
+        Assert.Contains("**A place that is hard to take a sample from.**", section,
+            StringComparison.Ordinal);
+        Assert.Contains("**A tumor that blood and fluid tests can point to.**", section,
+            StringComparison.Ordinal);
+
         Assert.Contains("brain stem", section, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("fluid around the brain and spine", section,
             StringComparison.OrdinalIgnoreCase);
@@ -770,10 +789,39 @@ public sealed class BiopsyPageContentTests
         // section, which the rewrite had to carry rather than drop.
         Assert.Contains("your team's call", section, StringComparison.OrdinalIgnoreCase);
 
-        // And the source for the new clause is declared. §12.1 is per-claim: the page
-        // may not borrow another page's citation by linking to it.
-        Assert.Contains("PMC8972311", CuratedPage.FrontMatter(Page), StringComparison.Ordinal);
+        // And the source for the new clause is DECLARED — read off the parsed source
+        // list, not off the front-matter text. §12.1 is per-claim: the page may not
+        // borrow another page's citation by linking to it.
+        //
+        // THE FIRST VERSION OF THIS WAS `Assert.Contains("PMC8972311", FrontMatter(Page))`
+        // AND THE BREAK HARNESS CAUGHT IT AS A SURVIVOR on both endings
+        // (`biopsy/swap-the-source-id`, the only survivor in 46 breaks). The ID appears
+        // TWICE in this page's front matter: once in the `url:` the reader is actually
+        // cited, and once forty lines above in a `#` source note explaining why the
+        // markers clause can be stated. Swap the `url:` to a different paper and the
+        // substring check still finds it in the NOTE, so the page cited the wrong work
+        // and nothing changed colour. WI-579's round-1 defect from the other end: a
+        // check that reads front-matter PROSE is satisfied by a comment about the thing
+        // instead of the thing. The declared-side parse cannot be satisfied by a note.
+        // (No second assertion pinning that note. The first version of this fix added
+        // one, on the reasoning that it kept the note around so the two versions could
+        // be told apart — but the weak version is GONE, the parsed-source assertion's
+        // strength does not depend on the note existing, and all it actually pinned was
+        // "a `#` comment must contain this accession number forever". Rewording that
+        // note, or moving it to the page that owns the scope, is a content-neutral edit
+        // that would have RED a content test with a message about a mutation harness.
+        // /review, and it was right: the harness result is the record, not a gate.)
+        var declared = CuratedPage.Rendered("tests/biopsy", Page).OwnSources;
+
+        Assert.Single(declared, s => s.Url == MarkersConsensusUrl);
     }
+
+    /// <summary>
+    /// The EANO/SNO/Euracan consensus review, cited for the markers exception. Named
+    /// once so the guard above and the mutation table agree on one spelling.
+    /// </summary>
+    private const string MarkersConsensusUrl =
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8972311/";
 }
 
 /// <summary>The biopsy page as served, and the doors that lead to it.</summary>

@@ -62,12 +62,18 @@ sources:
   # piece was deliberately left behind to protect a nerve, which is a recognized
   # choice rather than a mistake") and glossary/subtotal-resection.md ("Surgeons
   # stop short when going further would risk something you would not want to
-  # lose") -- and the glossary one fires as a TOOLTIP ON THIS PAGE, which says
-  # "!%subtotal resection%Subtotal resection." forty lines above the owner
-  # sentence. Those three do NOT route to #how-much-came-out. Recorded in §12.32
+  # lose"). Those three do NOT route to #how-much-came-out. Recorded in §12.32
   # for /pm rather than edited: adding routes to two tumor hubs is a section-order
-  # decision for whoever owns them, and the glossary one is §12.26's question
-  # (a definition and a page's prose on the same screen), not this one's.
+  # decision for whoever owns them.
+  #
+  # AND THE GLOSSARY ONE IS NOT A TOOLTIP ON THIS PAGE, which is what this note
+  # said for a round. "!%subtotal resection%Subtotal resection." at line 295 is
+  # WI-105's SUPPRESSION marker (§6: "!%term% anywhere on the page suppresses that
+  # term for the whole page"), so it is the reason the definition does NOT fire
+  # here -- CraniotomyPageRenderTests.TheWordsThisPageDefinesItselfDoNotAlsoFireA
+  # Tooltip asserts def-subtotal-resection" is absent from the served page. So
+  # there is no definition-and-prose-on-one-screen collision and §12.26 has no
+  # question here; it is a fourth un-routed wording, nothing more.
   - url: https://braintumor.org/news/what-to-expect-before-and-after-brain-surgery/
     title: "National Brain Tumor Society: What to Expect Before and After Brain Surgery"
     accessed: 2026-09-04
