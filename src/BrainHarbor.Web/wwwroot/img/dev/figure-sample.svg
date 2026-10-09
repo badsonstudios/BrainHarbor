@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WI-561: the figure component needs a picture to be a figure OF, and no
+     real content image exists yet (WI-562 sources those). So this one is drawn
+     here, by hand, in the site's own palette: it is a placeholder, it says so
+     on its face, and it is served only on /dev/styleguide, which returns 404
+     outside Development. It lives under img/dev/ rather than img/figures/ so
+     the corpus sweep over the content figures has nothing to except. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675"
+     role="img" aria-label="A placeholder figure: three labelled boxes in a row.">
+  <rect width="1200" height="675" fill="#eef3f7"/>
+  <g fill="#ffffff" stroke="#0d6a86" stroke-width="4">
+    <rect x="80" y="220" width="280" height="200" rx="18"/>
+    <rect x="460" y="220" width="280" height="200" rx="18"/>
+    <rect x="840" y="220" width="280" height="200" rx="18"/>
+  </g>
+  <g stroke="#0d3b4a" stroke-width="6">
+    <line x1="364" y1="320" x2="452" y2="320"/>
+    <line x1="744" y1="320" x2="832" y2="320"/>
+  </g>
+  <g fill="#16202b" font-family="system-ui, sans-serif" font-size="40" text-anchor="middle">
+    <text x="220" y="335">First step</text>
+    <text x="600" y="335">Then this</text>
+    <text x="980" y="335">Then this</text>
+  </g>
+  <g fill="#455263" font-family="system-ui, sans-serif" text-anchor="middle">
+    <text x="600" y="120" font-size="52" fill="#16202b">Sample figure</text>
+    <text x="600" y="175" font-size="34">Drawn for the style guide. Not a real picture of anything.</text>
+    <text x="600" y="540" font-size="30">Replaced by a real image in WI-562.</text>
+  </g>
+</svg>
