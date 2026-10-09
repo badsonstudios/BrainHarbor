@@ -92,7 +92,13 @@ public static partial class ContentFigures
     /// writes NCI in the credit, because that is what the licence they think
     /// they have would require.</para>
     /// </summary>
-    private static readonly string[] BannedImageCredits =
+    /// <para><b>Public since WI-562</b>, like <see cref="BannedImageSourceHosts"/>
+    /// above: <c>ImagesNeededInventoryTests</c> reads this list to scan the
+    /// SOURCING NOTES in <c>docs/images-needed.md</c> for a note that tells the
+    /// next person to go and fetch a picture from one of these. That note is
+    /// read weeks before any front matter is written, and a hand-copied list in
+    /// the test would stop matching the moment a fifth entry is added here.</para>
+    public static readonly string[] BannedImageCredits =
     [
         "national cancer institute",
         "cancer.gov",
@@ -117,8 +123,14 @@ public static partial class ContentFigures
     /// belong here. This repo has ruled on the shape once already
     /// (<c>ThePageNeverAssertsAClosedCount</c>: a ban list that forbids the
     /// correct shape is worse than no ban list).</para>
+    ///
+    /// <para><b>Public since WI-562:</b> <c>ImagesNeededInventoryTests</c> holds the
+    /// 148 DRAFT alt texts in <c>docs/images-needed.md</c> to this same list, so a
+    /// draft cannot be written today that the build would reject at paste time. It
+    /// reads this field rather than copying it — a sixth prefix added here would
+    /// otherwise leave every draft checked against a list that no longer exists.</para>
     /// </summary>
-    private static readonly string[] AltPrefixesToAvoid =
+    public static readonly string[] AltPrefixesToAvoid =
         ["image of", "picture of", "photo of", "photograph of", "graphic of"];
 
     /// <summary>

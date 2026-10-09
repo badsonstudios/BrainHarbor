@@ -4,6 +4,13 @@ Images shown inside the body of a curated Markdown page live here (WI-561).
 One file per figure, committed to the repo — a curated page may not point an
 `<img>` at somebody else's server.
 
+**Which pictures are wanted, and where each one goes, is
+[`docs/images-needed.md`](../../../../../docs/images-needed.md) (WI-562).** Every
+figure there has an id, and the file lands here named for it — `dia-grade-ladder`
+becomes `dia-grade-ladder.svg`. That file also carries the draft alt text and
+caption for each one, already graded at the 6.0 limit below, so the page edit is a
+paste rather than a fresh piece of writing.
+
 Every file in this directory must be declared by the page that shows it, in
 that page's front matter:
 
