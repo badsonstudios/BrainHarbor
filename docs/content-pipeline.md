@@ -156,6 +156,14 @@ screen reader reads aloud.
 `sources`, so the credit would have to be declared by a page whose author
 never wrote the picture. It fails at parse time, by name.
 
+**Which pictures each page wants, and where each one goes, is
+`docs/images-needed.md`** (WI-562, §12.34): 464 slots over 50 pages resolving to 148
+figures, with the draft alt text and caption for each already graded at the 6.0 limit.
+It chooses no pictures. Two consequences of §3b are recorded there rather than here
+because they are facts about the inventory: the words a shared block contributes still
+earn a slot, hosted by each INCLUDING page at the directive line; and **no slot is
+placed inside an `:::outlook` gate on any page**, though the rules above permit one.
+
 ## 4. Plain-language style guide (both pipelines)
 
 - Sentences under ~20 words. One idea per paragraph. Question-style headers.
@@ -10517,6 +10525,69 @@ plus the citation in the diff, arithmetic first and measured second. An item tha
 itself editing those constants with nothing in its diff to account for the difference has a
 code defect, not a stale number.
 
+#### What `/review` caught, and every finding was about the guard rather than the list
+
+One round. **It re-measured the whole inventory from the corpus and every claim the file
+makes about the pages was right** — 464 rows, 148 figures, all 464 positions present, no
+figure twice on a page, no slot in a gate. **Every finding was in the test, or in a
+number quoted about the test's own subject**, which is the shape to expect when the
+deliverable is a list and the only thing holding it up is a parser.
+
+**1. A RULE ENFORCED ON A FILENAME IS A RULE A RENAME WALKS OUT OF.** The shared-scan
+guard selected on `StartsWith("pd-scan-")`, so it covered 23 of the 32 kind-4 figures and
+would have missed a diagnosis scan renamed to `pd-mri-glioblastoma`. Worse, it made the
+DOC's stated rule false: `pd-hydrocephalus-ct` is kind 4 and is deliberately on two
+pages. The guard now reads the KIND, with the mechanism pictures as a named exemption
+carrying its reason — and the exemption is checked to still be repeating, so it cannot
+become a place to park a name. **An exemption is an obligation, not a waiver.**
+
+**2. TWO MEASURED NUMBERS WERE WRONG, AND BOTH CAME FROM THE SAME BUG.** `mechanism` is
+854 words, not 864, and the raw-file total is 351 slots, not "about 342" — both were
+measured before the word count was moved onto the composed body, by a walk that **dropped
+the text following a `[BLOCK]` directive**. The numbers now come out of the same
+measurement the test makes, and they are in the file's prose because they are the
+argument for counting the composed page at all.
+
+**3. A SELF-TEST THAT RE-IMPLEMENTED THE PREDICATE PROVED THE WRONG THING.** The
+banned-source scan has a planted line to show it can fail — and the planted line was fed
+to a copy of the check written inline in the assertion, not to the loop. So the one thing
+that could kill the guard, the `- **Getting it:**` prefix it filters on, was the one thing
+not covered: rename that label and 69 figures lose cover in silence. The scan is a
+function now, called with the real notes AND the planted line, and the number of
+`Getting it` lines is pinned at one per figure. *(§12.33 finding 1, re-dug: two checks in
+sequence, and the second covering for the first.)*
+
+**4. AN `Assert.Equal` ON TWO RECORDS WITH A LIST MEMBER IS ALWAYS FALSE.** The
+CRLF-vs-LF test compared `WaveSummary` records, whose `Rows` is a list — compared by
+REFERENCE, so identical inventories failed and different ones would have failed
+identically. It flattens to strings now, with an assertion that the flattening can tell
+two inventories apart. **A comparison that is always false proves nothing in either
+direction**, which is the mirror image of a guard that cannot fail.
+
+**5. THE THREE HAND-COPIED LISTS.** The draft alt texts were checked against a private
+copy of `ContentFigures.AltPrefixesToAvoid`, and the banned-source scan against a third
+hand-written copy of the NCI/AHFS/MedlinePlus ban. A sixth prefix added in production
+would have left 148 drafts checked against a list that no longer existed. Both production
+lists are public now and the test reads them. *(`BannedImageSourceHosts` was already
+public for this reason and had no consumer — now it has one.)*
+
+**6. 150 DERIVED NUMBERS IN A FILE WHOSE PREMISE IS THAT UNGUARDED LISTS ROT.** The kind
+table, both wave totals, all 148 `used by` lines, every `Lands at` filename and each
+page's "N listed" were unchecked. They are pure functions of the file's own tables, so
+there is no corpus-drift cost to pinning them and no argument for leaving them loose.
+Pinned. The WORD counts are still deliberately not pinned, and the file says so.
+
+**7. AND TWO §3B CONTAINERS THE INVENTORY COULD HAVE VIOLATED.** `ContentBlocks`
+deliberately supports an INDENTED `[BLOCK]` directive so a block can be spliced into a
+list item — and 97 of these slots sit at a directive line. Indent one and §3b fails the
+figure, 37 slots at once in `caregiver`'s case. A directive is now only a valid position
+at the margin, and a directive inside an `:::outlook` gate counts as being in the
+outlook. Neither shape exists in the corpus today; both are mutation-proved.
+
+**The break harness, after all of that: 58 of 58 red (29 mutations x LF and CRLF), no
+survivors**, and the two the reviewer predicted would survive (the indented directive and
+an un-negated cancer.gov pointer) are mutations 21 and 17.
+
 #### Carried forward
 
 **`/tumors/all-brain-tumors` glosses one of two exceptions** (*"There is a narrow
@@ -10757,3 +10828,108 @@ hand-drawn placeholder under `/img/dev/`, served only by `/dev/styleguide`, whic
 outside Development. WI-562 is next, and the thing to carry into it is finding 2: the
 first real photograph is the first time the shape of a figure is tested by something
 that cannot letterbox itself.
+
+### 12.34 A slot is not a file, and the rule that scaled itself scaled 17x (WI-562)
+
+WI-562 is the inventory: for every curated page, how many figures it wants, which
+heading each one follows, which of the four kinds it is, and one sentence of draft alt
+text. **It chooses no pictures** — that is deliberate, and it is the whole item. The
+deliverable is `docs/images-needed.md`, held to the corpus by
+`ImagesNeededInventoryTests`.
+
+**THE RULING, IN ONE LINE: THE DENSITY RULE IS NOT WRONG, THE CORPUS IS SEVENTEEN TIMES
+BIGGER THAN THE TABLE IT WAS MEASURED ON.** One figure per ~500 words, minimum one per
+page, over the corpus as it stands is **461 slots across 50 reader-facing pages** —
+against the "~30 real pictures" §12.33 wrote down eight days earlier. The ticket
+anticipated growth in as many words (*"the rule moves it from one slot to four without
+anyone editing this ticket"*); it just did not anticipate 217,148 words of reader-facing
+body text against the 13,133 its own table adds up to. A hub is not four slots now. It
+is eleven to fifteen.
+
+What makes 461 finite is that **a slot is not a file**: they resolve to **148 distinct
+figures**, because the corpus is templated (§12.3's seventeen sections × 23 hubs, the
+test/treatment pages' repeated shapes, and eight shared blocks composed in dozens of
+times). One photograph of two people talking at a kitchen table discharges 37 slots.
+
+#### The four findings, and three of them are about counting
+
+**1. THE COUNT IS ONLY RIGHT IF YOU COUNT THE WORDS A READER READS.** The raw `.md`
+files total **351** slots; with the §3a blocks composed in it is 461. `caregiver`
+alone is 413 words on **37 pages**, `mechanism` 854 on **18**. Counting the files rather
+than the pages would have left the longest unbroken stretches on the site uncovered —
+which is the exact defect the item exists to fix, and worse, those stretches are
+*identical* on every page that includes them, so the omission would have been
+systematic rather than scattered.
+
+**2. §3B BARS AN IMAGE IN A BLOCK, SO THE WORDS A BLOCK CONTRIBUTES DEMAND A SLOT THE
+BLOCK CANNOT HOST.** The slot is hosted by each *including page*, at the directive line,
+declared in that page's own front matter. That is not a workaround — it is what makes a
+shared figure correct rather than a compromise: **the same words get the same picture**,
+and the credit still travels with the file on every page that shows it (§12.33's reason
+for putting the credit in front matter at all).
+
+**3. A SHARED PHOTOGRAPH IS HONEST. A SHARED SCAN OF A DIAGNOSIS IS A FALSE CLAIM.** An empty waiting
+room is an empty waiting room on all 50 pages. An MRI of a glioblastoma on the
+meningioma page says *this is what yours looks like*, and it is wrong. So reuse is free for
+everything except a picture **of the diagnosis**: `pd-scan-*` has one member per hub, 23
+of them, each licence-checked on its own, and no member appears twice. **The other nine
+kind-4 pictures illustrate a MECHANISM rather than a diagnosis and may repeat** —
+`pd-hydrocephalus-ct` is big fluid spaces, true on the shunts page and on the location
+page, and neither claims it is the reader's scan. `/review` was right that enforcing
+this on the `pd-scan-` NAME made it a rule about filenames that a rename walks out of;
+the guard reads the KIND and carries the mechanism pictures as a named exemption with
+its reason, in the shape `TumorHubTemplateSweepTests` ruled on — **an exemption is an
+obligation, not a waiver**, so an exempted picture that stops repeating has to be
+deleted from the list rather than left parked in it. This is the one place in the inventory where the per-page work
+does not collapse — and it is the slowest wave per picture for exactly that reason.
+Pointed the other way, it is also what shrank the location family from 23 drawings to
+**one master map, 13 shaded variants and a second labelling**: a region is a region, so `dia-region-sellar`
+is honest on both the pituitary and the craniopharyngioma page.
+
+**4. NO FIGURE GOES INSIDE AN `:::outlook` GATE, ON ANY PAGE.** §3b permits one. The
+outlook section's subject is how long people live, and the only thing a picture there
+could illustrate is a prognosis — the one claim the whole anti-hype apparatus exists to
+keep off these pages. Every hub's *"What might happen over time"* is deliberately empty
+of slots. **The first draft of the guard for this measured nothing**: it looked for
+headings *between* the fences and found none on any of the 55 pages, because the corpus
+writes the heading ABOVE the fence every time. A check that returns an empty set over
+the whole corpus passes forever, so the rewritten one asks which heading *owns* the
+gate, and a second test asserts a floor of 20 pages having that shape before the first
+one is trusted (WI-569: a property guard that has never been seen to fail has not been
+shown to work).
+
+#### Why a list gets a test, and what it does not pin
+
+A list about 55 files that nothing reads goes stale the week after it is written. The
+guard holds six things: coverage closed in **both** directions (a page added later
+cannot acquire "no pictures needed" by being forgotten); the density floor re-measured
+from the live corpus with blocks composed in; every slot position checked against the
+page, so a renamed heading fails rather than leaving a position nobody can find; every
+draft alt text and caption graded at the same **6.0** the page is and held to §3b's
+figure rules; no slot in an outlook gate; and one `pd-scan-*` per page. It also reads
+the sourcing notes for a pointer at a banned source — `ContentFigures` enforces the
+NCI/AHFS/MedlinePlus ban on a committed image's `source_url` **and** its `credit`, but
+nothing would have caught a *note* telling the next person to go to cancer.gov for a
+brain diagram, and the note is read weeks before the front matter is written.
+
+**What it deliberately does not pin: the word counts the file quotes.** They are a
+measurement at a named commit, and pinning them would turn every ordinary content edit
+anywhere in the corpus into a red build in this one file. The floor is pinned; the
+snapshot is documented.
+
+**Five pages get no slots and that is a ruling, not an omission.** `/about`, `/digest`,
+`/how-we-write`, `/privacy`, `/terms`: "minimum one per page" is a rule about pages a
+reader reads **for care**, not about the terms of service. The set is closed in the
+test, each member carries a written reason, and a new page cannot join it.
+
+#### Carried forward
+
+**No picture is sourced here**, by design — that is the next job, and the inventory
+orders it into three waves (49 figures in wave 1, which is where every shared-block
+drawing sits). Carried from §12.33 and still true: **the first real photograph is the
+first time the shape of a figure is tested by something that cannot letterbox itself.**
+79 of the 148 figures are a DRAW or a BUILD rather than a search, and the catalogue
+opens each of those entries with the word, so nobody discovers it halfway through.
+
+**WI-572's diagram is `dia-brain-regions`,** the master of the location family and the
+most load-bearing drawing on the site: 14 further files and 33 slots hang off it.
