@@ -928,7 +928,7 @@ public sealed class SteroidsPageContentTests
         // /treatments/radiation-therapy, which have carried dexamethasone
         // paragraphs since WI-510 and WI-511, and the guard deliberately does
         // not name them.
-        var pageShingles = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var pageShingles = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -938,7 +938,7 @@ public sealed class SteroidsPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = Shingles(CuratedPage.ReaderText(File.ReadAllText(file)), 8)
+            var overlaps = Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)), 8)
                 .Where(pageShingles.Contains)
                 .Where(s => !AllowedShingles.Contains(s))
                 .Where(CarriesContent)

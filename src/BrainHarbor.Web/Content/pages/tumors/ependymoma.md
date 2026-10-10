@@ -321,6 +321,13 @@ sources:
 reviewed: 2026-09-15
 review_due: 2027-03-15
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-ventricles.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -394,6 +401,8 @@ usually does not grow that way, so that sentence was not written about this
 tumor.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the deep fluid spaces shaded.](/img/figures/dia-region-ventricles.svg "These grow where the fluid runs. In adults that is most often the cord, lower down.")
 
 It grows where the fluid spaces are, and **where it sits decides what you
 notice**.

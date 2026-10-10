@@ -1410,7 +1410,7 @@ public sealed class BrainMetastasesPageContentTests
         // written days after /tumors/meningioma and lifted nine passages from it
         // before this guard ran, which is the argument for pointing it at
         // everything rather than at the obvious siblings.
-        var pageShingles = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var pageShingles = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -1420,7 +1420,7 @@ public sealed class BrainMetastasesPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = Shingles(CuratedPage.ReaderText(File.ReadAllText(file)), 8)
+            var overlaps = Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)), 8)
                 .Where(pageShingles.Contains)
                 .Where(s => !AllowedShingles.Contains(s))
                 .Where(CarriesContent)
@@ -1538,12 +1538,12 @@ public sealed class BrainMetastasesPageContentTests
         // allowlist itself uses. Asserting a raw substring instead fails on entries written
         // in reader-facing form, because the page carries markdown links the windowing
         // strips.
-        var mine = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var mine = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
         var Elsewhere = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
             .Where(f => !f.EndsWith("brain-metastases.md", StringComparison.Ordinal))
             .Concat(Directory.EnumerateFiles(CuratedPage.BlocksRoot, "*.md"))
-            .SelectMany(f => Shingles(CuratedPage.ReaderText(File.ReadAllText(f)), 8))
+            .SelectMany(f => Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(f)), 8))
             .ToHashSet();
 
         // The `{#anchor}` tail is optional because §12.8 makes explicit heading ids the

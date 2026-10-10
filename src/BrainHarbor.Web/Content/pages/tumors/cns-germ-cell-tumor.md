@@ -479,6 +479,13 @@ sources:
 reviewed: 2026-09-30
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-pineal.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -549,6 +556,8 @@ work well. A grade describes how a tumor like this would behave if nobody
 treated it. It is not a prediction about you.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the small gland deep in the middle shaded.](/img/figures/dia-region-pineal.svg "The shaded part is the more common of the two spots.")
 
 **Nearly all of these tumors grow along the middle of the brain.** Most are in
 one of two spots, and each spot causes its own kind of trouble.

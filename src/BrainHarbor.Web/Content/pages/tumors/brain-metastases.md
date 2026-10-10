@@ -118,6 +118,13 @@ sources:
 reviewed: 2026-09-12
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -184,6 +191,8 @@ are about the first cancer having traveled. They are not a countdown, and they
 are not a grade.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 A metastasis can land almost anywhere in the brain, and there is often more
 than one. What you notice depends on where they are, and there is a map further

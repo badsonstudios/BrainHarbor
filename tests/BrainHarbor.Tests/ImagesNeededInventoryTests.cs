@@ -654,6 +654,123 @@ public sealed class ImagesNeededInventoryTests
         Assert.NotEmpty(ContentFigures.AltPrefixesToAvoid);
     }
 
+    /// <summary>
+    /// <b>A PICTURE THAT EXISTS IS ON EXACTLY THE PAGES THIS FILE PLANNED FOR
+    /// IT (WI-572).</b> Until a figure is committed the inventory is a list of
+    /// intentions and nothing can check it against reality; the moment one
+    /// lands, the two can disagree — a page that was given a figure nobody
+    /// planned, or a slot the inventory still promises and the corpus never
+    /// filled.
+    ///
+    /// <para>Runs over the figures that EXIST, so it says nothing about the
+    /// 133 not sourced yet and everything about the 15 that are. The pair of
+    /// set comparisons is deliberate (WI-574: a check with one direction is
+    /// half a check) — and it is what would catch a figure quietly dropped
+    /// from a page during an unrelated edit, which is otherwise invisible: the
+    /// page still renders, and so does every other page showing that file.</para>
+    /// </summary>
+    [Fact]
+    public void EveryCommittedFigureIsOnExactlyThePagesTheInventoryGivesIt()
+    {
+        var figuresDirectory = Path.Combine(
+            RepoRoot(), "src", "BrainHarbor.Web", "wwwroot", "img", "figures");
+
+        var committed = Directory.EnumerateFiles(figuresDirectory, "*.svg")
+            .Concat(Directory.EnumerateFiles(figuresDirectory, "*.png"))
+            .Concat(Directory.EnumerateFiles(figuresDirectory, "*.jpg"))
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        Assert.NotEmpty(committed);
+
+        foreach (var id in committed.Order(StringComparer.Ordinal))
+        {
+            var planned = Inv.Slots
+                .Where(s => s.Figure == id)
+                .Select(s => s.Slug)
+                .Distinct(StringComparer.Ordinal)
+                .Order(StringComparer.Ordinal)
+                .ToList();
+
+            var shown = Corpus
+                .Where(page => page.Value.Body.Contains(
+                    $"](/img/figures/{id}.", StringComparison.Ordinal))
+                .Select(page => page.Key)
+                .Order(StringComparer.Ordinal)
+                .ToList();
+
+            Assert.True(planned.SequenceEqual(shown, StringComparer.Ordinal),
+                $"'{id}' is committed, and the pages showing it are not the pages this "
+                + $"inventory gives it.\n  planned: {string.Join(", ", planned)}"
+                + $"\n  shown:   {string.Join(", ", shown)}");
+
+            // AND THE WORDS WENT WITH IT. The draft alt text is written here
+            // and pasted onto the page; nothing was holding the two together,
+            // so rewording a page would have left this file quietly wrong —
+            // and this file is the single source of truth every later item
+            // reads (/review). The alt describes the FILE, so it is pinned;
+            // the caption may differ per page and §5 says so in as many words.
+            foreach (var slug in shown)
+            {
+                var alt = Regex.Match(
+                    Corpus[slug].Body,
+                    @"!\[(?<alt>[^\]]*)\]\(/img/figures/" + Regex.Escape(id) + @"\.");
+
+                Assert.True(alt.Success, $"/{slug} shows '{id}' in a shape this cannot read");
+                Assert.True(alt.Groups["alt"].Value == Inv.Figures[id].Alt,
+                    $"/{slug} describes '{id}' differently from this inventory.\n"
+                    + $"  page:      {alt.Groups["alt"].Value}\n"
+                    + $"  inventory: {Inv.Figures[id].Alt}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// <b>THE DRAFTS ARE PAGE PROSE, SO EVERY RULE ABOUT PAGE PROSE APPLIES —
+    /// and the reading grade was the only one being asked (WI-572).</b>
+    ///
+    /// <para>This inventory was written to be PASTED: "the page edit is a
+    /// paste rather than a fresh piece of writing", in the figures README's
+    /// own words. The first paste found a British spelling in the very first
+    /// alt text — "each part labelled in plain words" — and the corpus-wide
+    /// American-forms sweep turned eight pages red at once. Twenty-one of the
+    /// 296 drafts carried one: labelled, colour, grey, tablets, licence,
+    /// drip. Nothing had looked, because the inventory's gates were §3b's
+    /// figure rules and the 6.0 grade, and a British spelling is neither.</para>
+    ///
+    /// <para>It reads <c>CuratedPage.BritishForms</c> rather than listing
+    /// anything, so the next word added to the corpus list reaches these
+    /// drafts without anyone remembering this file exists.</para>
+    /// </summary>
+    [Fact]
+    public void EveryDraftIsWrittenInTheAmericanFormsTheCorpusUses()
+    {
+        var problems = new List<string>();
+
+        foreach (var figure in Inv.Figures.Values.OrderBy(f => f.Id, StringComparer.Ordinal))
+        {
+            foreach (var (what, prose) in new[] { ("alt", figure.Alt), ("caption", figure.Caption) })
+            {
+                var lowered = " " + prose.ToLowerInvariant() + " ";
+
+                problems.AddRange(CuratedPage.BritishForms
+                    .Where(form => lowered.Contains(form, StringComparison.Ordinal))
+                    .Where(form => !CuratedPage.BritishFormExemptions.Any(allowed =>
+                        allowed.Contains(form, StringComparison.OrdinalIgnoreCase)
+                        && lowered.Contains(allowed.ToLowerInvariant(), StringComparison.Ordinal)))
+                    .Select(form => $"{figure.Id} {what}: '{form}' — \"{prose}\""));
+            }
+        }
+
+        Assert.True(problems.Count == 0,
+            "a draft is written in British English and the corpus is American throughout. "
+            + "These are pasted onto pages verbatim, where the corpus-wide sweep fails them:\n  "
+            + string.Join("\n  ", problems));
+
+        // A control: the list is the corpus's and it can still fire.
+        Assert.Contains("tumour", CuratedPage.BritishForms);
+    }
+
     [Fact]
     public void EveryDraftAltTextAndCaptionIsGradedAtTheSameSixPointZeroThePageIs()
     {

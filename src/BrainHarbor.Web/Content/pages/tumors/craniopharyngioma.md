@@ -292,6 +292,13 @@ sources:
 reviewed: 2026-09-30
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-sellar.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -353,6 +360,8 @@ older report the very same thing is written as grade I.
 those come further down.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the small gland behind the nose shaded.](/img/figures/dia-region-sellar.svg "The shaded part is behind the nose, at the base of the brain.")
 
 **Almost everything on this page follows from its three neighbours.**
 

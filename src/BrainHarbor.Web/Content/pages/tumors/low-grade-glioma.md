@@ -31,6 +31,13 @@ sources:
 reviewed: 2026-09-05
 review_due: 2027-03-05
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -150,6 +157,8 @@ and the rest one at a time. If this has happened to you, that page and a
 conversation with your team are the two things worth having.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 In adults, grade 2 diffuse gliomas are usually in the upper part of the brain.
 Your team may call that supratentorial. It is the part that handles movement,

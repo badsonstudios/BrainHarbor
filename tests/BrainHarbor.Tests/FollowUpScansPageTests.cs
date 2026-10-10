@@ -881,7 +881,7 @@ public sealed class FollowUpScansPageContentTests
         // ("dead tissue" here, "damaged tissue" there), which is exactly what
         // §12.8 (WI-510) says a shingle check exists to catch. A guard that
         // checks the siblings you thought of is a guard that finds nothing.
-        var pageShingles = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var pageShingles = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -890,7 +890,7 @@ public sealed class FollowUpScansPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = Shingles(CuratedPage.ReaderText(File.ReadAllText(file)), 8)
+            var overlaps = Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)), 8)
                 .Where(pageShingles.Contains)
                 .Where(s => !AllowedShingles.Contains(s))
                 .Where(CarriesContent)

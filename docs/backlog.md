@@ -4518,7 +4518,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   claim about a source is the same liability as an absence claim about the literature, and
   nobody re-opens a source recorded as unopenable.
 
-- [ ] **WI-572 The brain diagram: one picture of where the regions are**
+- [x] **WI-572 The brain diagram: one picture of where the regions are**
   Goal: let a reader see where their location is, instead of parsing "upper back
   part of the brain".
   **This is a CONSUMER of WI-561, not a second image mechanism.** WI-561 builds
@@ -4541,6 +4541,45 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   Depends on: WI-561 (**shipped — the mechanism is §3b/§12.33; the NCI ban is
   now enforced mechanically on an image's `source_url`, so the thing most
   likely to be forgotten here fails the build**), WI-567.
+
+  **Shipped 2026-10-09.** The ruling is `docs/content-pipeline.md` **§12.35**.
+  **IT IS FIFTEEN FILES AND ONE DRAWING, ON 33 SLOTS ACROSS 23 PAGES** — 22 of the
+  23 tumor hubs plus `/where-your-tumor-is`, which carries eleven of them. The
+  thirteen `dia-region-*` variants and `dia-region-names` are DERIVED from
+  `dia-brain-regions.svg`: the master's bytes plus a banner, a rewritten
+  `aria-label` and one `<style>` block that sets four custom properties on a
+  region's group id and hides every label but its own. §12.34 shrank this family
+  from 23 drawings to a master and its variants on the grounds that a region is a
+  region; **that argument is only true if the variants cannot drift**, so a test
+  rebuilds all fourteen and a second one reads the committed files alone and
+  asserts the drawing is identical in all fifteen.
+  **ACCEPTANCE, ALL FOUR.** The page works with no image at all (the nine places
+  are nine `###` entries, the figure is an enhancement and the phone guard's
+  13px floor is written against that fact); every label is held to being
+  findable in a sentence or heading the page itself can reach, or — for the
+  whole map only — on the page it routes to, with the door asserted separately;
+  the drawing is ours and CC0, and the NCI ban is asserted inside every one of
+  the fifteen files as well as on the front matter of all 23 pages; the
+  inventory slot was already written, and a new gate now holds a committed
+  figure to exactly the pages the inventory gives it, alt text included.
+  **FOUR FINDINGS, THREE ABOUT WHAT A PICTURE'S WORDS ARE.** Two hyphens in an
+  XML comment render a broken-image icon, and in a derived family one mistake in
+  the master breaks fifteen files at once. A shared figure's words are identical
+  on every page BY DESIGN, so the restatement probes had to stop reading them
+  (`ProseWithoutFigures`, twelve cross-page probes) and `FigureWordsTests` owns
+  them instead. A label is a CLAIM, which is also what decides that a variant
+  labels exactly one place. And the inventory's drafts were graded for reading
+  level and §3b and nothing else a page is held to: the first paste shipped
+  "labelled" onto eight pages.
+  **PROOF: 21 break mutations red, no survivors** (the harness found the one
+  survivor, inside a positive control that entered by a different door than the
+  defect — `DistinctBy` by file, so a restating caption on the eighth page
+  showing a shared figure was never read); suite **2,791/2,791** including the
+  Playwright E2E; ContentCheck **345/0**; LF and CRLF corpora both green; **two
+  `/review` rounds**, the second of which found that the pineal variant was still
+  unreadable at phone width, that the label guard was still near-vacuous while
+  routes counted for variants, and that three numbers in the new ruling were
+  wrong.
 
 - [x] **WI-573 Visual field loss, and the driving consequence**
   Goal: say the most concrete "what does this mean for me" answer in the whole

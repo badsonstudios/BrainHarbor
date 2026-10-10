@@ -121,6 +121,13 @@ sources:
 reviewed: 2026-09-15
 review_due: 2027-03-15
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-brainstem.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -182,10 +189,12 @@ look. It does not change the grade of a tumor with this name.
 
 ## Where does it grow, and why does it cause these symptoms?
 
+![The brain map with the stalk at the base shaded.](/img/figures/dia-region-brainstem.svg "The shaded part is the stalk the brain sits on.")
+
 It grows in the middle of the brain or in the spinal cord, and **where it sits
 decides what you notice**.
 
-- **In the pons**, part of the brain stem. The nerve paths for eye movement,
+- **In the pons**, part of the brain stem, the stalk the brain sits on. The nerve paths for eye movement,
   hearing, speech, swallowing and balance pass through it. So do the paths for
   movement in your arms and legs.
 - **In the thalamus**, deep in the middle of the brain. What you notice depends

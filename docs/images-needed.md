@@ -5,6 +5,26 @@
 > four kinds it is, what it should show, and one sentence of draft alt text.
 > Sourcing the pictures is the next job; nothing here is committed to `wwwroot`.
 
+**SHIPPED SO FAR: 15 of the 148 (WI-572, 2026-10-09)** — `dia-brain-regions` and the
+fourteen other files of the location family, on 33 of the 464 slots. They are one
+drawing: the variants are derived from the master, so the entries below describe
+fifteen files and one piece of artwork. See `wwwroot/img/figures/README.md` before
+editing any of them, and content-pipeline **§12.35** for what the first real picture
+changed about this file. **Two of the drafts below were reworded by that item** (the
+master's caption promised a report's words the master does not print, and the sellar
+alt text described a seat where the drawing shades the gland), and **15 drafts across
+the catalogue carried a British form the corpus's own list gates** — *labelled* six
+times, *colour* six, and one each of *grey*, *licence* and *a drip* — which nothing
+here was checking, because the gates were the 6.0 grade and §3b's figure rules. All 15
+are fixed and the corpus's own American-forms list is read over every draft now. Five
+more lines were reworded in the same pass and were NOT gate failures: *tablets* to
+*pills* and *drips* to *infusions*, for consistency with the corpus, plus the two
+rewordings above. **The gate is on the drafts only, and that is
+deliberate:** the `Shows` and `Getting it` lines are notes to whoever sources the
+picture, and this file's own prose says *licence* thirty-nine times while writing about
+licensing. The rule is about the words that get pasted onto a page, which are the alt
+text and the caption.
+
 Measured against the live corpus on **2026-10-09**, at commit `3e9c0c6`.
 The mechanism these slots are written against shipped at WI-561:
 `docs/content-pipeline.md` §3b (what an author writes) and §12.33 (the ruling),
@@ -337,8 +357,8 @@ Free stock or public domain. Dan can search for these directly, and they are the
 #### `ph-blister-pack` — kind 1, wave 2
 
 - **Shows:** A half-used blister pack of tablets.
-- **Draft alt text:** A blister pack of tablets with some of the pockets empty.
-- **Draft caption:** Tablets come in packs like this, so you can see what you have taken.
+- **Draft alt text:** A blister pack of pills with some of the pockets empty.
+- **Draft caption:** Pills come in packs like this, so you can see what you have taken.
 - **Getting it:** Free stock.
 - **Lands at:** `wwwroot/img/figures/ph-blister-pack.svg` (or `.png` / `.jpg`) — **used by:** `/tests/getting-ready-for-surgery`, `/treatments/chemotherapy`
 
@@ -361,7 +381,7 @@ Free stock or public domain. Dan can search for these directly, and they are the
 #### `ph-car-keys` — kind 1, wave 1
 
 - **Shows:** Car keys and a driving licence on a table.
-- **Draft alt text:** Car keys and a driving licence lying on a table.
+- **Draft alt text:** Car keys and a driver's license lying on a table.
 - **Draft caption:** Driving is the rule people hear about last and mind about most.
 - **Getting it:** Free stock. A generic or blanked licence. Never a real one.
 - **Lands at:** `wwwroot/img/figures/ph-car-keys.svg` (or `.png` / `.jpg`) — **used by:** **8 pages**
@@ -433,8 +453,8 @@ Free stock or public domain. Dan can search for these directly, and they are the
 #### `ph-infusion-chair` — kind 1, wave 1
 
 - **Shows:** A chair in a day unit with a drip stand beside it.
-- **Draft alt text:** A padded chair with a drip stand next to it.
-- **Draft caption:** Many drips are given in a chair like this, and you go home the same day.
+- **Draft alt text:** A padded chair with an IV pole next to it.
+- **Draft caption:** Many infusions are given in a chair like this, and you go home the same day.
 - **Getting it:** Free stock.
 - **Lands at:** `wwwroot/img/figures/ph-infusion-chair.svg` (or `.png` / `.jpg`) — **used by:** `/treatments/chemotherapy`
 
@@ -637,7 +657,7 @@ A made-up example with the parts labelled. **Never a real report** — a real on
 #### `doc-consent-first-page` — kind 2, wave 2
 
 - **Shows:** The first page of a made-up trial consent form, with its parts labelled.
-- **Draft alt text:** The first page of a made-up consent form, with its parts labelled.
+- **Draft alt text:** The first page of a made-up consent form, with its parts labeled.
 - **Draft caption:** You can take this home and read it with someone. Nobody can rush you.
 - **Getting it:** BUILD.
 - **Lands at:** `wwwroot/img/figures/doc-consent-first-page.svg` (or `.png` / `.jpg`) — **used by:** `/treatments/clinical-trials`
@@ -717,7 +737,7 @@ A made-up example with the parts labelled. **Never a real report** — a real on
 #### `doc-radiology-report` — kind 2, wave 2
 
 - **Shows:** A made-up MRI report, with its sections labelled and the measurement line marked.
-- **Draft alt text:** A made-up scan report with its sections labelled down the side.
+- **Draft alt text:** A made-up scan report with its sections labeled down the side.
 - **Draft caption:** A scan report has a shape too. The last part is the part your team acts on.
 - **Getting it:** BUILD.
 - **Lands at:** `wwwroot/img/figures/doc-radiology-report.svg` (or `.png` / `.jpg`) — **used by:** `/tests/follow-up-scans`
@@ -746,6 +766,18 @@ The 13 `dia-region-*` entries are **one drawing**: `dia-brain-regions` is the ma
 and each variant is the same file with one area shaded. That is WI-572's diagram, and
 it is the single most load-bearing drawing on the site.
 
+**SHIPPED (WI-572).** The master, the 13 variants and `dia-region-names` are committed
+and live on 33 slots. **Four placements carry a caption of their own** rather than the
+draft below, because the page's own text gives more than one place and a picture under
+"where does it grow" is an answer to that question: `/tumors/atrt` ("About half of
+these tumors start in the shaded part, low at the back."), `/tumors/chordoma`,
+`/tumors/ependymoma` and `/tumors/cns-germ-cell-tumor`. §5 licenses that, the alt text
+is pinned to the draft and the caption is not, and the four are named here so the next
+paste does not flatten them back. They are DERIVED from the master rather than drawn one at a time,
+and a test rebuilds every one of them — so a variant is never edited on its own. A
+variant labels exactly **one** region, because the page showing it names that region
+and not the other eight: a label is a claim the text has to make too (§12.35).
+
 #### `dia-awake-mapping` — kind 3, wave 2
 
 - **Shows:** The mapping step: the surgeon tests a spot, you speak, the map gets marked.
@@ -773,8 +805,8 @@ it is the single most load-bearing drawing on the site.
 #### `dia-brain-regions` — kind 3, wave 1
 
 - **Shows:** The master brain map: a side view with every region this site names labelled in plain words.
-- **Draft alt text:** A side view of the brain with each part labelled in plain words.
-- **Draft caption:** The parts of the brain, in the words this site uses and the words a report uses.
+- **Draft alt text:** A side view of the brain with each part labeled in plain words.
+- **Draft caption:** The parts of the brain, in the words this site uses.
 - **Getting it:** DRAW. This is WI-572's diagram and the master file every dia-region-* variant comes from. DO NOT take an existing brain diagram from cancer.gov: NCI embedded images are BANNED (PLAN.md §5) and the build now fails on the credit as well as the URL.
 - **Lands at:** `wwwroot/img/figures/dia-brain-regions.svg` (or `.png` / `.jpg`) — **used by:** **8 pages**
 
@@ -989,7 +1021,7 @@ it is the single most load-bearing drawing on the site.
 #### `dia-region-names` — kind 3, wave 2
 
 - **Shows:** The master map again, labelled with the report's words instead of the plain ones.
-- **Draft alt text:** The same brain map, labelled with the words a report uses.
+- **Draft alt text:** The same brain map, labeled with the words a report uses.
 - **Draft caption:** The same places, in the words your report is written in.
 - **Getting it:** DRAW. A second labelling of dia-brain-regions, not a second drawing.
 - **Lands at:** `wwwroot/img/figures/dia-region-names.svg` (or `.png` / `.jpg`) — **used by:** `/where-your-tumor-is`
@@ -1021,7 +1053,7 @@ it is the single most load-bearing drawing on the site.
 #### `dia-region-sellar` — kind 3, wave 1
 
 - **Shows:** The master map with behind the nose, at the base of the brain shaded.
-- **Draft alt text:** The brain map with the small seat behind the nose shaded.
+- **Draft alt text:** The brain map with the small gland behind the nose shaded.
 - **Draft caption:** The shaded part is behind the nose, at the base of the brain.
 - **Getting it:** DRAW. A shaded variant of dia-brain-regions, from the same master file — not a new drawing. NEVER an NCI brain diagram (PLAN.md §5): the build fails on the credit as well as the URL.
 - **Lands at:** `wwwroot/img/figures/dia-region-sellar.svg` (or `.png` / `.jpg`) — **used by:** `/tumors/craniopharyngioma`, `/tumors/pituitary-tumor`, `/where-your-tumor-is`
@@ -1181,7 +1213,7 @@ it is the single most load-bearing drawing on the site.
 #### `dia-tumor-board` — kind 3, wave 2
 
 - **Shows:** A table with labelled seats: who is in the meeting about your case.
-- **Draft alt text:** A table with labelled seats, one for each kind of doctor.
+- **Draft alt text:** A table with labeled seats, one for each kind of doctor.
 - **Draft caption:** A room of people reads your case together. You are not in the room.
 - **Getting it:** DRAW. Carries the shared tumor-board block.
 - **Lands at:** `wwwroot/img/figures/dia-tumor-board.svg` (or `.png` / `.jpg`) — **used by:** **5 pages**
@@ -1253,7 +1285,7 @@ it is the single most load-bearing drawing on the site.
 #### `dia-your-team` — kind 3, wave 2
 
 - **Shows:** Labelled circles: who is on your team and what each one is for.
-- **Draft alt text:** Labelled circles, one for each person on your team.
+- **Draft alt text:** Labeled circles, one for each person on your team.
 - **Draft caption:** Many people, each with one job. The one to ask first is your nurse.
 - **Getting it:** DRAW.
 - **Lands at:** `wwwroot/img/figures/dia-your-team.svg` (or `.png` / `.jpg`) — **used by:** `/tests/getting-ready-for-surgery`, `/treatments/clinical-trials`
@@ -1276,7 +1308,7 @@ members are one per hub by design (§1 above).
 #### `pd-ct-head` — kind 4, wave 2
 
 - **Shows:** A plain CT of the head.
-- **Draft alt text:** A grey cross-section of a head, taken by a CT scanner.
+- **Draft alt text:** A gray cross-section of a head, taken by a CT scanner.
 - **Draft caption:** A CT is quick and good at bleeding and bone. It shows less detail than an MRI.
 - **Getting it:** Wikimedia Commons or an NIH open set. CHECK THE LICENCE ONE PICTURE AT A TIME. NEVER an NCI embedded image, and nothing shipped with the AHFS or MedlinePlus monographs.
 - **Lands at:** `wwwroot/img/figures/pd-ct-head.svg` (or `.png` / `.jpg`) — **used by:** `/tests/ct-scan`
@@ -1284,8 +1316,8 @@ members are one per hub by design (§1 above).
 #### `pd-dti-tracts` — kind 4, wave 3
 
 - **Shows:** A tractography picture: the wiring of the brain drawn as coloured strands.
-- **Draft alt text:** Coloured strands running through a brain, like bundles of wire.
-- **Draft caption:** The colours are bundles of wiring. The surgeon plans a route around them.
+- **Draft alt text:** Colored strands running through a brain, like bundles of wire.
+- **Draft caption:** The colors are bundles of wiring. The surgeon plans a route around them.
 - **Getting it:** Wikimedia Commons or an NIH open set. Licence checked per picture. Never NCI.
 - **Lands at:** `wwwroot/img/figures/pd-dti-tracts.svg` (or `.png` / `.jpg`) — **used by:** `/tests/planning-scans`
 
@@ -1309,7 +1341,7 @@ members are one per hub by design (§1 above).
 
 - **Shows:** A stained slide where some cells have gone brown and others have not.
 - **Draft alt text:** A slide of cells where some have turned brown and others have not.
-- **Draft caption:** A stain makes one protein show up. Which cells turn colour is the answer.
+- **Draft caption:** A stain makes one protein show up. Which cells turn color is the answer.
 - **Getting it:** Wikimedia Commons has good open pathology. Licence checked per picture. Never NCI.
 - **Lands at:** `wwwroot/img/figures/pd-immunostain.svg` (or `.png` / `.jpg`) — **used by:** `/tests/molecular-markers`
 
@@ -1324,15 +1356,15 @@ members are one per hub by design (§1 above).
 #### `pd-perfusion-map` — kind 4, wave 3
 
 - **Shows:** A perfusion map: blood flow shown as colour over a scan slice.
-- **Draft alt text:** A scan slice with colour over it, showing how much blood flows where.
-- **Draft caption:** Colour here means blood flow. Busy areas can mean an active tumor.
+- **Draft alt text:** A scan slice with color over it, showing how much blood flows where.
+- **Draft caption:** Color here means blood flow. Busy areas can mean an active tumor.
 - **Getting it:** Wikimedia Commons or an NIH open set. Licence checked per picture. Never NCI.
 - **Lands at:** `wwwroot/img/figures/pd-perfusion-map.svg` (or `.png` / `.jpg`) — **used by:** `/tests/planning-scans`
 
 #### `pd-pet-brain` — kind 4, wave 3
 
 - **Shows:** A PET scan of a head, with the bright area where the tracer gathered.
-- **Draft alt text:** A blurry coloured head scan with one bright patch in it.
+- **Draft alt text:** A blurry colored head scan with one bright patch in it.
 - **Draft caption:** A PET shows what is busy rather than what is where.
 - **Getting it:** Wikimedia Commons or an NIH open set. Licence checked per picture. Never NCI.
 - **Lands at:** `wwwroot/img/figures/pd-pet-brain.svg` (or `.png` / `.jpg`) — **used by:** `/tests/planning-scans`

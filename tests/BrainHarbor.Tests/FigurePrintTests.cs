@@ -283,4 +283,153 @@ public sealed class FigurePrintTests
 
         Assert.True(serious.Count == 0, string.Join("\n", serious));
     }
+
+    // ---------- the first REAL figure, on a real page (WI-572) ----------
+
+    /// <summary>
+    /// The style guide's sample is a 1200x675 SVG that letterboxes itself
+    /// inside any box it is given, and §12.33's second finding is that a
+    /// sample which cannot exhibit the defect is a sample that certifies it:
+    /// the first version of the print rules printed that sample into an
+    /// 828x384 box for a 1200x675 picture and the PDF looked right.
+    ///
+    /// <para>So the first real figure the corpus ships gets asked the same
+    /// questions on a REAL PAGE, printed to PDF — a different shape (1200x800)
+    /// through the whole content pipeline rather than a C# string, and eleven
+    /// of them on the page that carries the most.</para>
+    /// </summary>
+    [Fact]
+    public async Task TheRealBrainMapPrintsOnARealPageAtItsOwnShape()
+    {
+        // The shape is READ OFF THE FILE, not typed here. A constant would be
+        // a second place the drawing's size is written down, and this test is
+        // about the picture keeping its own shape: the first version held the
+        // map to 1200x800 after the viewBox became 1100x760, which is a test
+        // asserting the old drawing.
+        var mapRatio = await MapRatioFromTheFile();
+
+        var page = await _browser!.NewPageAsync();
+        await page.GotoAsync(new Uri(new Uri(_factory.ServerAddress), "tumors/glioma").ToString());
+        await page.EmulateMediaAsync(new() { Media = Media.Print });
+
+        var image = page.Locator("figure.figure img").First;
+        await image.ScrollIntoViewIfNeededAsync();
+
+        Assert.Equal(1, await page.Locator("figure.figure").CountAsync());
+        Assert.True(await image.IsVisibleAsync(), "the brain map is hidden when the page prints");
+        Assert.Equal("/img/figures/dia-brain-regions.svg", await image.GetAttributeAsync("src"));
+        Assert.False(string.IsNullOrWhiteSpace(await image.GetAttributeAsync("alt")));
+
+        // THE SHAPE, MEASURED FROM THE PRINT LAYOUT. A squashed diagram is a
+        // diagram with squashed words in it: these labels are the picture.
+        var box = await image.BoundingBoxAsync();
+        Assert.NotNull(box);
+        Assert.InRange(box!.Width / box.Height, mapRatio - 0.05, mapRatio + 0.05);
+        Assert.True(box.Height <= PrintHeightCapPx + 1,
+            $"the printed map is {box.Height:0}px tall, over the {PrintHeightCapPx:0}px cap");
+
+        var pdf = await page.PdfAsync(new() { Format = "Letter", PrintBackground = false });
+        Assert.True(pdf.Length > 5_000, $"the printed PDF is {pdf.Length} bytes");
+    }
+
+    /// <summary>
+    /// The master map's own numbers, read from the file the page serves: its
+    /// aspect ratio, its label size, and the width of its coordinate space.
+    /// Read rather than typed, because a constant here is a second place the
+    /// drawing's size is written down and the first version of this file held
+    /// the map to 1200x800 after the viewBox became 1100x760.
+    /// </summary>
+    private async Task<(double Ratio, double FontSize, double ViewBoxWidth)> MapFacts()
+    {
+        using var http = new HttpClient();
+        var svg = await http.GetStringAsync(
+            new Uri(new Uri(_factory.ServerAddress), "img/figures/dia-brain-regions.svg"));
+
+        var box = System.Text.RegularExpressions.Regex.Match(svg, @"viewBox=""0 0 (\d+) (\d+)""");
+        var font = System.Text.RegularExpressions.Regex.Match(svg, @"font-size: (\d+)px");
+        Assert.True(box.Success && font.Success, "the map has no viewBox or no font size");
+
+        var width = double.Parse(box.Groups[1].Value);
+        return (width / double.Parse(box.Groups[2].Value),
+            double.Parse(font.Groups[1].Value), width);
+    }
+
+    private async Task<double> MapRatioFromTheFile() => (await MapFacts()).Ratio;
+
+    /// <summary>
+    /// ELEVEN FIGURES ON ONE PAGE, which no surface in this repo has had
+    /// before: /where-your-tumor-is carries the master map, the twin labelled
+    /// in a report's words, and one shaded variant per region. The lazy rule
+    /// (first eager, rest lazy) only matters at this density, and so does the
+    /// phone column — eleven pictures that each widen the page by a pixel is
+    /// a page that scrolls sideways.
+    /// </summary>
+    [Fact]
+    public async Task TheLocationPageCarriesElevenFiguresAndStaysInsideThePhoneColumn()
+    {
+        var context = await _browser!.NewContextAsync(new()
+        {
+            ViewportSize = new() { Width = 390, Height = 844 },
+            IsMobile = true,
+            HasTouch = true,
+        });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(
+            new Uri(new Uri(_factory.ServerAddress), "where-your-tumor-is").ToString());
+
+        var figures = page.Locator("figure.figure img");
+        Assert.Equal(11, await figures.CountAsync());
+
+        // The first is eager and every one after it is lazy (§12.33): the
+        // first may be the picture already on screen, and ten eager images
+        // on a phone is ten requests before the text arrives.
+        Assert.Null(await figures.Nth(0).GetAttributeAsync("loading"));
+        for (var i = 1; i < 11; i++)
+        {
+            Assert.Equal("lazy", await figures.Nth(i).GetAttributeAsync("loading"));
+        }
+
+        var widest = 0.0;
+        for (var i = 0; i < 11; i++)
+        {
+            await figures.Nth(i).ScrollIntoViewIfNeededAsync();
+            var box = await figures.Nth(i).BoundingBoxAsync();
+            Assert.NotNull(box);
+            widest = Math.Max(widest, box!.Width);
+        }
+
+        Assert.True(widest <= 390, $"a figure is {widest:0}px wide on a 390px screen");
+
+        // THE WORDS INSIDE THE PICTURE, measured rather than assumed. A
+        // diagram's labels are its content, and their size on a phone is a
+        // RATIO: the font size in the SVG divided by the viewBox width, times
+        // the rendered width. The first version of this map set 34px in a
+        // 1200-unit box and rendered its labels at about 10px — under the
+        // 16px floor site.css calls "the smallest allowed anywhere" (WI-440),
+        // on the one surface where the type is a picture and no browser
+        // setting enlarges it.
+        //
+        // THE BAR HERE IS 13px RATHER THAN 16, AND THE REASON IS WRITTEN
+        // DOWN. Nine labels and a readable drawing do not both fit in a
+        // 390px column at 16px — the labels would take the width the brain
+        // needs. The acceptance for this item says the page has to work with
+        // NO image at all: the nine places are nine headings on
+        // /where-your-tumor-is, the alt text and the caption carry the
+        // figure, and the drawing is an enhancement over them. So the number
+        // is a floor that catches a regression (a wider viewBox, a smaller
+        // font) rather than a claim that this is as legible as body text.
+        var (_, fontSize, viewBoxWidth) = await MapFacts();
+        var firstBox = await figures.Nth(0).BoundingBoxAsync();
+        var labelPx = fontSize * firstBox!.Width / viewBoxWidth;
+
+        Assert.True(labelPx >= 13,
+            $"the map's labels render at {labelPx:0.0}px in a {firstBox.Width:0}px column "
+            + $"({fontSize:0}px in a {viewBoxWidth:0}-unit viewBox). Widening the viewBox or "
+            + "shrinking the font makes the only words inside the picture smaller.");
+        Assert.True(await page.EvaluateAsync<int>(
+            "() => document.documentElement.scrollWidth") <= 390,
+            "the location page scrolls sideways on a phone");
+
+        await context.DisposeAsync();
+    }
 }
