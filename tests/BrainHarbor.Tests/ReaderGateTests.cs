@@ -1,9 +1,10 @@
-using System.Text.RegularExpressions;
 using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
 using BrainHarbor.Web.Content;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
+using System.Text.RegularExpressions;
 
 namespace BrainHarbor.Tests;
 
@@ -371,7 +372,7 @@ public sealed class ReaderGateTests : IDisposable
         // ContentCheck walks .md and .cshtml files. This component's words
         // live in a C# constant, which is the one place that walk cannot see,
         // so the gate is applied here instead — same analyzer, same limit.
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(ReaderGate.ReaderFacingCopy);
+        var grade = ReadingGrade.Of(ReaderGate.ReaderFacingCopy, ReadingGradeOptions.CuratedPages);
 
         Assert.True(
             grade <= ContentChecker.FailGrade,

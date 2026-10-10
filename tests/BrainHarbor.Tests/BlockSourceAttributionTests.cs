@@ -1,4 +1,5 @@
 using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
 using BrainHarbor.Web.Content;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -395,7 +396,7 @@ public sealed class BlockSourceAttributionTests
         // in the opposite direction (/review). Measured at 1.9 today.
         var labels = string.Join(" ", Labels);
         Assert.True(
-            ReadabilityAnalyzer.FleschKincaidGrade(labels) <= ContentChecker.FailGrade,
+            ReadingGrade.Of(labels, ReadingGradeOptions.CuratedPages) <= ContentChecker.FailGrade,
             $"the provenance labels, graded alone, read above the {ContentChecker.FailGrade:0.0} limit");
 
         // Every pinned label is really in the file, so the grade above is not the

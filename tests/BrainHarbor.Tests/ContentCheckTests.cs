@@ -1,4 +1,5 @@
 using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
 
 namespace BrainHarbor.Tests;
 
@@ -18,8 +19,8 @@ public class ContentCheckTests
     public void SimpleTextScoresLow()
     {
         // Short words, short sentences — early-grade text.
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
-            "The cat sat on the mat. The dog ran to the park. We like to play.");
+        var grade = ReadingGrade.Of(
+            "The cat sat on the mat. The dog ran to the park. We like to play.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade < 4, $"expected < 4, got {grade}");
     }
@@ -27,10 +28,10 @@ public class ContentCheckTests
     [Fact]
     public void PlainLanguageMedicalTextPassesTheGate()
     {
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
+        var grade = ReadingGrade.Of(
             "A glioma is a tumor that starts in the brain. Doctors grade it " +
             "from 1 to 4. The grade tells you how fast it tends to grow. " +
-            "Your care team will explain what your grade means.");
+            "Your care team will explain what your grade means.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade <= 8.5, $"expected <= 8.5, got {grade}");
     }
@@ -38,11 +39,11 @@ public class ContentCheckTests
     [Fact]
     public void AcademicTextScoresHigh()
     {
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
+        var grade = ReadingGrade.Of(
             "Notwithstanding contemporary advancements in neuro-oncological " +
             "therapeutics, the prognostic implications of isocitrate dehydrogenase " +
             "mutations necessitate comprehensive multidisciplinary evaluation " +
-            "incorporating histopathological and molecular characterization.");
+            "incorporating histopathological and molecular characterization.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade > 12, $"expected > 12, got {grade}");
     }
@@ -50,11 +51,11 @@ public class ContentCheckTests
     [Fact]
     public void HarderTextScoresHigherThanSimplerText()
     {
-        var simple = ReadabilityAnalyzer.FleschKincaidGrade(
-            "We read the news each day. Then we write it in plain words.");
-        var harder = ReadabilityAnalyzer.FleschKincaidGrade(
+        var simple = ReadingGrade.Of(
+            "We read the news each day. Then we write it in plain words.", ReadingGradeOptions.CuratedPages);
+        var harder = ReadingGrade.Of(
             "Subsequently, the organization disseminates carefully synthesized " +
-            "summaries incorporating contemporaneous oncological developments.");
+            "summaries incorporating contemporaneous oncological developments.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(harder > simple);
     }
@@ -68,7 +69,7 @@ public class ContentCheckTests
     [InlineData("radiation", 4)]
     public void SyllableHeuristicHandlesCommonShapes(string word, int expected)
     {
-        Assert.Equal(expected, ReadabilityAnalyzer.CountSyllables(word));
+        Assert.Equal(expected, ReadingGrade.Syllables(word, ReadingGradeOptions.CuratedPages));
     }
 
     // ---------- page checks ----------
@@ -153,7 +154,7 @@ public class ContentCheckTests
         var text = "The nurse called the family about the visit. " +
                    "She answered their questions about the plan. " +
                    "They felt better after they talked.";
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
+        var grade = ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages);
         Assert.True(grade >= ContentChecker.WarnGrade && grade <= ContentChecker.FailGrade,
             $"sample must sit in the warn band, got {grade}");
 
@@ -172,9 +173,9 @@ public class ContentCheckTests
         var flat = "Treatment options. Surgery is one option. Radiation is " +
                    "another option. Your care team will explain each one.";
 
-        var structuredGrade = ReadabilityAnalyzer.FleschKincaidGrade(
-            ContentChecker.ExtractSentences(structured));
-        var flatGrade = ReadabilityAnalyzer.FleschKincaidGrade(flat);
+        var structuredGrade = ReadingGrade.Of(
+            ContentChecker.ExtractSentences(structured), ReadingGradeOptions.CuratedPages);
+        var flatGrade = ReadingGrade.Of(flat, ReadingGradeOptions.CuratedPages);
 
         Assert.True(Math.Abs(structuredGrade - flatGrade) < 0.5,
             $"structured {structuredGrade} vs flat {flatGrade} — structure must not change the grade");

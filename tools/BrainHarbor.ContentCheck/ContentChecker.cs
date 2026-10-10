@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using BrainHarbor.Safety;
 using BrainHarbor.Web.Content;
 using Markdig;
 using Markdig.Syntax;
@@ -309,7 +310,7 @@ public static partial class ContentChecker
             return [new(FindingLevel.Info, relativePath, $"{words} word(s) of prose — too little to grade")];
         }
 
-        return [GradeFinding(ReadabilityAnalyzer.FleschKincaidGrade(text), relativePath)];
+        return [GradeFinding(ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages), relativePath)];
     }
 
     /// <summary>
@@ -444,7 +445,7 @@ public static partial class ContentChecker
         // an item about descriptions that read ABOVE sixth grade. Only the GRADE is
         // gated everywhere; the two ways a description leaves the GRADED SET stay gated
         // per directory, which is why `finishedSlice` above is still load-bearing.
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
+        var grade = ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages);
 
         // FAIL above the limit ANYWHERE, WARN in the approach band, Info below it.
         // Info renders as "  ok" (Program.cs), so reporting a grade-19.7 description as
@@ -1355,7 +1356,7 @@ public static partial class ContentChecker
         }
 
         var plainText = ExtractSentences(page.Markdown);
-        findings.Add(GradeFinding(ReadabilityAnalyzer.FleschKincaidGrade(plainText), relativePath));
+        findings.Add(GradeFinding(ReadingGrade.Of(plainText, ReadingGradeOptions.CuratedPages), relativePath));
 
         findings.AddRange(GradeDescription(page, relativePath));
 
@@ -1532,7 +1533,7 @@ public static partial class ContentChecker
                 return findings;
             }
 
-            var grade = ReadabilityAnalyzer.FleschKincaidGrade(term.Definition);
+            var grade = ReadingGrade.Of(term.Definition, ReadingGradeOptions.CuratedPages);
 
             // FAIL above the limit, WARN in the approach band, Info below — the shape
             // GradeFinding has had for page bodies since WI-414 and GradeDescription

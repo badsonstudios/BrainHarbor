@@ -186,7 +186,7 @@ placed inside an `:::outlook` gate on any page**, though the rules above permit 
 
 | Gate | Tool | Threshold |
 |---|---|---|
-| Reading level | Flesch-Kincaid script | ≤ 6.0 grade, warn ≥ 5.5 — curated pages AND reader-facing Razor pages (WI-414) |
+| Reading level | `ReadingGrade` under `CuratedPages` (§5a) | ≤ 6.0 grade, warn ≥ 5.5 — curated pages AND reader-facing Razor pages (WI-414) |
 | Glossary coverage | medical terms used but not in glossary → warn | — |
 | Link rot | outbound checker (monthly job) | 0 broken |
 | A11y smoke | Playwright + axe-core | 0 serious/critical |
@@ -214,6 +214,9 @@ mechanism; the guardrail is only the backstop.
   publish, so setting the gate *at* the target would flag ordinary variation
   around it and drain the feed into the review queue instead of making it
   easier to read. 7.0 catches genuine outliers.
+  **WI-416 corrected the grader behind it and deliberately did NOT move this
+  number** — see §5a: raising it by the measured shift would have loosened the
+  gate for plain prose, where the correction is worth nothing.
 - `Guardrails.GradeLevel` is **block-aware**: the plain title and the template
   blocks arrive newline-separated and a title has no full stop, so grading the
   raw run merged title into hook and inflated every score by ~0.7 of a grade
@@ -223,6 +226,115 @@ mechanism; the guardrail is only the backstop.
   real CLI and prints the distribution. **Already-published summaries were
   written by older prompts and are not retro-fixed** — they stay as they are
   until re-summarized.
+
+### 5a. One grader, and which allowance applies where (WI-416, 2026-10-10)
+
+**There is one Flesch-Kincaid implementation**, `BrainHarbor.Safety.ReadingGrade`, and
+the two populations differ by exactly one named option. Before WI-416 there were two —
+`ReadabilityAnalyzer` for pages, `Guardrails.GradeLevel` for summaries — that disagreed
+in four ways nobody had chosen, so **6.0 and 7.0 were not comparable numbers** and no
+statement of the form "summaries get one grade more than pages" was true.
+
+| Population | Option | Allowance |
+|---|---|---|
+| Curated pages, reader-facing Razor copy, glossary definitions, front-matter descriptions | `ReadingGradeOptions.CuratedPages` | **none** |
+| AI summaries | `ReadingGradeOptions.AiSummaries` | 31 brain-tumor terms count as 2 syllables, plus their regular plural and possessive |
+
+**Why the page side gets nothing.** A page is written by a person who can choose the
+words. Where it must use a long one it says it once and then says "this tumor", which is
+house style (§4) — so an allowance here would excuse prose a rewrite should fix. A
+summary cannot choose its nouns: an item about bevacizumab in glioblastoma has to say
+both words, and refusing to publish it over their syllable count would drain the feed
+into the review queue rather than make anything easier to read.
+
+**Which side won each of the four disagreements, and why.** All four went to the page
+implementation: an apostrophe is part of an English word (both apostrophes — a model
+emits the curly one freely); the vowel-hiatus rule applies, so gli-o-ma is three
+syllables and `-tion`/`-sion`/`-cian`/`-gion` still collapse; the silent-e rule exempts
+consonant + `le`, so `table` keeps its two syllables; and the grade is rounded to one
+decimal and clamped at 0, because **the number compared against a threshold has to be
+the number that is printed** — an unrounded 6.0000001 against a 6.0 limit fails a page
+that reads 6.0, and a short plain sentence scored below zero.
+
+**Preparing text into sentences is deliberately NOT in the grader.** Markdig for curated
+markdown, a Razor extractor for `.cshtml`, line-splitting for a summary's
+title-plus-blocks (WI-415) — three routes to the same thing, one terminated sentence per
+block. Folding any of them in would be a fifth fork wearing an option.
+
+#### What it cost, and what did NOT change
+
+**The page numbers did not move at all.** The unified grader is bit-identical to the one
+it replaced on every sample, pinned by
+`ReadingGradeTests.ThePageGraderIsBitIdenticalToTheOneItReplaced`, and by construction
+for inputs the sample does not cover: with the `CuratedPages` term set empty, the only
+new code path is a no-op.
+
+**The summary grader DID change, and the correction is a function of Latin density, not
+a constant.** The hiatus rule is the only part that moves numbers much, so:
+
+| population | shift |
+|---|---|
+| 183 samples (55 page bodies, 105 glossary definitions, 23 source abstracts) | median **+0.13** (min −0.08, max +1.01) |
+| 13 hand-written ideal summaries, per item | median **+0.44**, max +0.90 |
+| plain Germanic prose with no hiatus and no consonant+`le` | **≈ 0.00** |
+
+**`Guardrails.MaxGradeLevel` STAYS AT 7.0, and that was the second answer.** The first
+response to the correction was to raise it to 7.6 — the measured shift added to the old
+number. **`/review` refused it and was right.** Because the correction is ~0.00 on plain
+Germanic prose, a flat +0.6 on the *threshold* is a real loosening for exactly the plain
+writing `summarize-v4` is prompted to produce; `/review` produced a grammatical
+plain-English sentence that graded 7.54 under the old rules and 7.50 under the new —
+flagged at 7.0, passing at 7.6. **A number that looks like a re-calibration on dense
+prose is a loosening on plain prose, and the plain prose is the point.** That sentence is
+a fixture in `ReadingGradeTests.NearTheCeiling` now, so the band the claim is about is
+exercised by something.
+
+**What was actually wrong was the ALLOWANCE, not the ceiling.** The correction pushed one
+ideal summary from 6.61 to 7.30, through the backstop, and `GoldenSetTests.EveryIdealSummaryPassesTheWI304Guardrails`
+went red — a summary this project wrote *by hand as the standard*, failing its own gate.
+It reads "schwannomas" and "meningiomas"; the list held only the singulars, so a summary
+of a ten-person case series paid full syllable price for the letter s. The allowance
+covers regular plurals and the possessive now, which is the allowance doing its stated
+job rather than the gate doing less of its own. With that, all thirteen pass at 7.0.
+
+**So the gate is unchanged for plain prose and stricter in real terms for Latin-dense
+prose**, which is the only direction a reading-level backstop for a cognitively-impaired
+audience should ever move by accident. `ReadingGradeTests.NothingPassesNowThatWasFlaggedBefore`
+pins the half that can be pinned offline: no text anywhere in the measurable corpus was
+flagged before WI-416 and passes after it. **Expect the live flag rate to tick up from
+4.8%** — that is the correction working, and the next `Category=Live` run is the
+measurement, not a desk calculation.
+
+#### Numbers to read carefully
+
+- **What the allowance is worth: median 0.00, max 5.60** over the 183 samples. Most prose
+  contains no listed term at all, so the allowance is a carve-out for a named vocabulary
+  and not a general loosening. The 5.60 extreme (`glossary/pcv`, 16.1 → 10.5) is **a
+  figure no gate actually produces**: that definition is 19 words, under
+  `MinimumDefinitionWordsToGrade`, and it is page text where the allowance does not apply
+  at all. It bounds what the mechanism can do, not what it does.
+- **The possessive branch is kept for behaviour, not for the corpus.** Measured on text a
+  gate actually grades, possessives of listed terms occur **twice** (`chemotherapy's`, in
+  `pages/treatments/targeted-therapy.md`) and **not at all** in the ideal summaries. The
+  nine `meningioma's` hits are in YAML comments inside front matter, which nothing grades.
+  It stays because the old grader's `[A-Za-z]+` dropped the apostrophe and therefore
+  allowed possessives by accident, and silently ending that was not a change this item
+  was entitled to make unnoticed.
+- **Irregular forms are not covered and the list carries them itself:** `metastasis` and
+  `metastases` are separate entries. A listed term that ends in a strippable suffix is
+  still matched as itself first — the first version of the inflection code stripped and
+  returned, so `metastases` became `metastas`, missed the list it is on, and pushed a
+  *different* yardstick summary from 7.0 to 7.3 in the same run.
+- **The effective ceiling is 7.049**, not 7.0: `Check` compares the one-decimal grade
+  with `>`. Rounding is the right call — see above — but the extra half-tenth is part of
+  the arithmetic.
+- **One ideal summary (`42388439`) now reads EXACTLY 7.0.** It passes, with no margin at
+  all. That is a finding about the yardstick, not the gate: a hand-written exemplar
+  sitting on a 7.0 ceiling when the target is 6.0, for an audience that may be
+  cognitively impaired. **Rewriting an exemplar is editorial work and belongs to `/pm`,
+  not to a grader item** — so WI-416 makes it visible and makes it a tripwire instead:
+  `TheIdealSummariesAreTheRightPopulationForTheBackstop` pins that summary by name and
+  value, and reds the moment anything moves it either way.
 
 ## 6. Inline definitions (tooltips)
 
@@ -11534,3 +11646,140 @@ ContentCheck 345/0 on the shipped corpus, with `Covered: 55 curated page(s), 105
 glossary term(s), 20 reader-facing Razor page(s), 8 content block(s)`.** **A reader
 sees nothing change**: not one page, route, byte of rendered HTML or published
 summary moves. What changed is what the gate does when it has not read the corpus.
+
+### 12.39 Two graders meant "6th grade" meant two things, and the fix tried to move the gate (WI-416)
+
+`ReadabilityAnalyzer` graded curated pages against 6.0. `Guardrails.GradeLevel` graded
+AI summaries against 7.0. **They were two different Flesch-Kincaid implementations that
+disagreed in four ways nobody had chosen**, so the two numbers were not comparable and
+no statement of the form *"summaries get one grade more than pages"* was true.
+
+**The four disagreements, and why they all go to the page side.** An apostrophe is part
+of an English word (`doesn't` was one word on a page and two in a summary). The
+vowel-hiatus rule applies, so gli-o-ma is three syllables and `-tion`/`-sion` still
+collapse — a grader with no hiatus rule reports the hardest vocabulary on the site as
+the easiest. The silent-e rule exempts consonant + `le`, so `table` keeps its two
+syllables. And the grade is rounded to one decimal and clamped at 0, **which is the one
+that makes a threshold mean anything**: a gate comparing an unrounded 6.0000001 against
+6.0 fails a page that reads 6.0, and the old unrounded summary path could emit *"reading
+level 7.0 is above 7"*.
+
+**THE ALLOWANCE IS AN OPTION AND IT IS THE ONLY DIFFERENCE LEFT.** 31 brain-tumor terms
+count as two syllables for summaries and for nothing else. A page is written by a person
+who can choose the words and say "this tumor" the second time (§4); a summary about
+bevacizumab in glioblastoma has to say both words. Measured over 183 samples the
+allowance is worth **median 0.00, max 5.60** — most prose contains no listed term, so it
+is a carve-out for a named vocabulary and not a general loosening.
+
+**THE PAGE SIDE MOVED BY NOTHING, and that is provable rather than sampled.** With the
+`CuratedPages` term set empty, the only new code path is a no-op, so the unified grader
+is identical to the one it replaced for *all* inputs — not just the 183 measured.
+`ThePageGraderIsBitIdenticalToTheOneItReplaced` holds the sampled half by keeping both
+pre-WI-416 implementations in the test file verbatim. **A refactor's claim is "nothing
+moved except what I said would move", and the way to prove it is to keep the thing you
+moved away from.**
+
+#### The part that nearly shipped wrong
+
+The corrected grader reads medical prose harder. On the thirteen hand-written ideal
+summaries in the golden set the median goes 5.08 → 5.70, and **one went 6.61 → 7.30,
+through the 7.0 backstop** — so `GoldenSetTests.EveryIdealSummaryPassesTheWI304Guardrails`
+went red. That red is the finding: *the change had altered a threshold's MEANING and not
+only its arithmetic.*
+
+**The first answer was to raise the backstop to 7.6** — the measured shift added to the
+old number, derived twice (7.0 + 0.62, and 0.5 above the re-measured live max) and
+written up as a re-calibration rather than a loosening.
+
+**`/review` refused it and was right.** The correction is **a function of Latin density,
+not a constant**: ~+0.5 on medical prose and **~0.00 on plain Germanic prose** — which is
+exactly what `summarize-v4` is prompted to produce. So a flat +0.6 on the *threshold* is
+a real loosening for the plainest writing, and `/review` produced a grammatical
+plain-English sentence that graded 7.54 under the old rules and 7.50 under the new:
+**flagged at 7.0, passing at 7.6.** It also found that the test meant to pin "the same
+prose gets the same verdict" compared `false == false` thirteen times, because the band
+the claim was about contained no samples at all. **A number that looks like a
+re-calibration on dense prose is a loosening on plain prose, and the plain prose is the
+point.**
+
+**WHAT WAS ACTUALLY WRONG WAS THE ALLOWANCE, NOT THE CEILING.** The yardstick summary
+that broke reads *"schwannomas"* and *"meningiomas"*. The list held only the singulars,
+so a summary of a ten-person case series paid full syllable price **for the letter s**.
+The allowance covers regular plurals and the possessive now — the allowance doing its
+stated job rather than the gate doing less of its own — and all thirteen pass at an
+unchanged 7.0. **The gate is unchanged for plain prose and stricter in real terms for
+Latin-dense prose, which is the only direction a reading-level backstop for a
+cognitively-impaired audience should ever move by accident.**
+
+**AND THE FIX FOR ONE YARDSTICK SUMMARY BROKE A DIFFERENT ONE IN THE SAME RUN.** The
+first version of the inflection code stripped a suffix and returned it, never trying the
+word itself — so `metastases`, which is **on the list**, became `metastas`, missed, and
+pushed 42388439 from 7.0 to 7.3. Caught by the measurement this item already had, which
+is the argument for having built it.
+
+#### What else `/review` found, all taken
+
+- **The documentation stated both thresholds as current.** §5a's superseded first draft
+  was left in place above its own correction, inside the section the code comments cite
+  as the ruling of record. Rewritten to one answer.
+- **`+0.62` was a difference of medians, not a median shift.** The per-item median is
+  +0.44 (+0.49 before the plural fix). A statistic no individual summary experienced was
+  load-bearing in a derivation.
+- **The "read-only" allowance was mutable.** `IReadOnlySet<string>` over a `HashSet` let
+  a downcast `Add()` a term and give every curated page an allowance process-wide —
+  `/review` ran it. It is a `FrozenSet` now, which is also the right shape for a
+  lookup-only set.
+- **"An option, not a fork" was not enforced by the type.** The positional record's
+  constructor was public, so anything could invent a third population — the exact failure
+  the docstring claimed to prevent. Sealed class, private constructor, two statics. (Its
+  record equality was wrong too: a record whose only member is a set compares by
+  reference.)
+- **The apostrophe fix only covered the straight one.** `[A-Za-z']+` excludes U+2019, and
+  `Guardrails.Negation`'s own docstring says *"a model emits the curly one freely"* about
+  the same text the summary gate grades. Half-settling a disagreement is not settling it.
+- **The "verbatim" legacy baseline read the live term list**, so adding one term would
+  have silently redefined what "the old grader did" and moved every pinned number. A
+  baseline whose behaviour can change is not a baseline.
+- **The threshold's numbers were printed and never asserted.** Editing the golden set
+  could have falsified every figure in §5a with the suite green. They are pinned.
+- **The possessive evidence was wrong by an order of magnitude.** "Twelve possessives in
+  the corpus" counted YAML comments and front matter no grader reads; on text a gate
+  actually grades it is **two**, and **none** in the ideal summaries. The branch stays —
+  the old grader allowed possessives by accident and ending that silently was not this
+  item's right — but the claim had to be corrected.
+- **`Nit`: the 5.60 allowance extreme is measured on text no gate produces** (a 19-word
+  definition, under the word floor, on the page side where the allowance does not apply).
+  It bounds what the mechanism can do, not what it does.
+- **`Nit`: the ordering remark had the ordering backwards** — a comment about a
+  static-initialisation trap, with the order wrong.
+
+#### One thing recorded and deliberately not fixed
+
+**`ideal:42388439` now reads EXACTLY 7.0.** It passes — `Check` compares with `>` — with
+no margin at all. That is a finding about the yardstick and not the gate: a hand-written
+exemplar sitting on a 7.0 ceiling when the target is 6.0, for an audience that may be
+cognitively impaired. **Rewriting an exemplar is editorial work on the project's
+yardstick and belongs to `/pm`, not to a grader item**, so this one is made visible and
+made a tripwire instead: the test pins that summary by name and value and reds the moment
+anything moves it in either direction.
+
+**AND THE STATIC-INITIALISATION TRAP THIS ITEM FELL INTO ITSELF.** `AiSummaries` was a
+`static readonly` field reading a list declared below it. `static readonly` initialisers
+run in declaration order, so `TwoSyllableTerms` was **null** — no compiler warning — and
+every summary grade threw on the first measurement. Twelve tests caught it at once, which
+is the only reason it cost minutes. It is assigned in a static constructor now, so there
+is no order to get wrong, and `NoOptionSetHasANullTermList` is the guard if anybody turns
+it back.
+
+**PROOF: 18 of 18 harness cases as wanted, no survivors** — two positive controls
+(ContentCheck still 345/0 with identical coverage; all thirteen ideal summaries clear the
+backstop) and 16 code mutations all red, including **this item's own rejected first
+answer**: `backstop-raised-by-the-measured-shift` restores 7.0 → 7.6 and must go red,
+because a harness that cannot red its rejected draft has not recorded the decision.
+**2,924 of 2,924 tests including the Playwright E2E; ContentCheck 345/0,
+`Covered: 55 curated page(s), 105 glossary term(s), 20 reader-facing Razor page(s),
+8 content block(s)`.** **A reader sees nothing change today** — no page, route or
+published summary moves — but unlike §12.38 this item is NOT inert in production: the
+summary gate now measures medical prose correctly, and **the live flag rate should tick
+up from 4.8%**. That is the correction working. The next `Category=Live` run is the
+confirmation, and it is a desk calculation until then.

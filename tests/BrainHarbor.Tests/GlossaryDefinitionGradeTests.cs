@@ -1,4 +1,5 @@
 using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
 
 namespace BrainHarbor.Tests;
 
@@ -464,7 +465,7 @@ public sealed class GlossaryDefinitionGradeTests
             // reported 38 over the limit and a worst of 16.1 differed from the tool by
             // exactly these entries, and the second grader's cost was a wrong number
             // that nearly reached a doc.
-            var measured = ReadabilityAnalyzer.FleschKincaidGrade(term.Definition);
+            var measured = ReadingGrade.Of(term.Definition, ReadingGradeOptions.CuratedPages);
             Assert.Equal(wouldGrade, measured, 1);
 
             // THE BRANCH READS THE MEASURED VALUE, NOT THE TABLE (/review). Reading

@@ -926,7 +926,42 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: Summarize/Guardrails.cs, content-pipeline.md §5/§9, WI-414.
   Depends on: nothing (but do it before WI-408 soft launch).
 
-- [ ] **WI-416 One reading-level grader, not two**
+- [x] **WI-416 One reading-level grader, not two**
+  *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.39, spec §5a)* —
+  one implementation, `BrainHarbor.Safety.ReadingGrade`, and the medical-vocabulary
+  allowance is a named option (`CuratedPages` / `AiSummaries`) rather than a fork.
+  **All four disagreements go to the page side**: the apostrophe is part of a word (both
+  apostrophes — a model emits the curly one freely), the vowel-hiatus rule applies with
+  its `-tion`/`-sion` exceptions, the silent-e rule exempts consonant + `le`, and the
+  grade is rounded to one decimal and clamped at 0 — the last of which is what makes a
+  threshold mean anything. **The page numbers moved by nothing**, provable rather than
+  sampled: with the page term set empty the only new code path is a no-op, and the test
+  file keeps BOTH pre-WI-416 implementations verbatim to hold the sampled half.
+  **THE PART THAT NEARLY SHIPPED WRONG.** The corrected grader reads medical prose
+  harder; on the thirteen hand-written ideal summaries the median goes 5.08 → 5.70 and
+  one went 6.61 → 7.30, through the 7.0 backstop, so `GoldenSetTests` went red. The first
+  answer was to raise the backstop to 7.6. **`/review` refused it and was right**: the
+  correction is a function of Latin density — ~+0.5 on medical prose, **~0.00 on plain
+  Germanic prose**, which is what the prompt is built to produce — so a flat +0.6 on the
+  THRESHOLD is a real loosening for the plainest writing, and `/review` produced a plain
+  English sentence that was flagged at 7.0 and would pass at 7.6. **What was wrong was
+  the ALLOWANCE**: the broken yardstick summary says "schwannomas" and "meningiomas" and
+  the list held only the singulars, so it paid full price for the letter s. The allowance
+  covers regular plurals and the possessive now; **the backstop stays at 7.0**; the gate
+  is unchanged for plain prose and stricter in real terms for Latin-dense prose.
+  **And the fix for one yardstick summary broke another in the same run** — the first
+  inflection code stripped and returned without trying the word itself, so `metastases`,
+  which is ON the list, missed it. `/review` also found a mutable "read-only" allowance
+  (a downcast `Add()` gave every page an allowance process-wide), a public constructor
+  that let anything invent a third population, a legacy baseline that read the live term
+  list, unpinned threshold numbers, and a possessive count wrong by an order of magnitude
+  — all taken. **Recorded and deliberately NOT fixed: `ideal:42388439` now reads exactly
+  7.0**, passing with no margin; rewriting an exemplar is `/pm`'s editorial call, so it
+  is pinned by name and value as a tripwire. **PROOF: 18 of 18 harness cases as wanted,
+  no survivors — including this item's own rejected first answer (7.0 → 7.6 must go RED);
+  2,924 tests; ContentCheck 345/0.** No reader-facing change today, but **expect the live
+  flag rate to tick up from 4.8%** — that is the correction working, and the next
+  `Category=Live` run is the confirmation.
   Goal: "6th grade" should mean one thing.
   Problem (found 2026-08-13 in the WI-415 review): `ReadabilityAnalyzer`
   (pages) and `Guardrails.GradeLevel` (summaries) implement Flesch-Kincaid
