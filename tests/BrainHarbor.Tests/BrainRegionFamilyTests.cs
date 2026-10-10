@@ -33,6 +33,102 @@ public class BrainRegionFamilyTests
         File.ReadAllText(BrainRegionFamily.FileFor(figureId));
 
     /// <summary>
+    /// WI-583: the line endings of the DERIVED output, which is the one property
+    /// <see cref="Lf"/> cannot stand in for.
+    ///
+    /// <para><c>Derive</c> re-expands LF to CRLF when the master has CRLF, and it
+    /// was expanding over banner text that already carried CRLF of its own —
+    /// producing nine <c>\r\r\n</c> per file. <c>Lf</c> collapses the trailing
+    /// pair and leaves the bare CR, so <see cref="EveryVariantIsTheMasterRebuilt"/>
+    /// failed with a diff a reader could not see. <b>It went red with nobody
+    /// touching it</b>: the regenerator had just written the files as LF, git
+    /// stores them LF and checks them out CRLF, and the first checkout after the
+    /// commit flipped this method's input. <b>And it could not fail on CI</b>,
+    /// where the master is LF and the expanding branch never runs — so the
+    /// repo's own CRLF/LF discipline was being asserted by a guard that only
+    /// ever saw one of the two.</para>
+    /// </summary>
+    [Fact]
+    public void DerivingTwiceOverDifferentLineEndingsGivesOneDrawing()
+    {
+        RefuseToCertifyInRegenerationMode();
+
+        var crlf = Lf(Master).Replace("\n", "\r\n");
+        var lf = Lf(Master);
+
+        foreach (var member in BrainRegionFamily.Members(lf)
+                     .Where(m => m != BrainRegionFamily.MasterId))
+        {
+            var fromCrlf = BrainRegionFamily.Derive(crlf, member);
+            var fromLf = BrainRegionFamily.Derive(lf, member);
+
+            // THE ASSERTION THAT WAS MISSING: not "they agree once normalised"
+            // — that is what hid this — but that each output's line endings are
+            // UNIFORM. A bare CR survives every normaliser in this file.
+            Assert.DoesNotContain("\r", fromLf);
+
+            var pairs = fromCrlf.Split("\r\n").Length - 1;
+            Assert.Equal(pairs, fromCrlf.Count(c => c == '\n'));
+            Assert.Equal(pairs, fromCrlf.Count(c => c == '\r'));
+
+            Assert.Equal(fromLf, Lf(fromCrlf));
+        }
+    }
+
+    /// <summary>
+    /// WI-583: the normaliser has to map a LONE CR too, and the break harness is
+    /// what forced this test to exist.
+    ///
+    /// <para><c>/review</c> argued it from <c>"\r\r\n"</c>, and the break harness
+    /// showed that case is ALREADY covered — the CRLF branch normalises once
+    /// into <c>lf</c> and once into <c>normalized</c>, and two sequential
+    /// single-pass replaces between them collapse the doubled CR. The mutation
+    /// stayed green until this test fed the input that really is uncovered: a
+    /// LONE CR, which <c>Replace("\r\n", "\n")</c> cannot see at all. <b>A fix
+    /// whose mutation survives has not been shown to do anything</b>, and the
+    /// first version of this test proved the wrong thing.</para>
+    /// </summary>
+    [Fact]
+    public void ADerivationFromAMasterWithAStrayCarriageReturnIsStillUniform()
+    {
+        RefuseToCertifyInRegenerationMode();
+
+        // A CR at the START of a line, mid-file: it removes no newline, splits
+        // no token, and leaves the lone "</svg>\n" ending Derive insists on, so
+        // every structural check still passes and the byte reaches the
+        // normaliser. Corrupting the whole file instead would be rejected
+        // before the normaliser is ever reached, which is why this is precise.
+        // THE LAST indented line, not the first (which cost a round): the
+        // master opens with a banner comment that `Derive` replaces WHOLESALE,
+        // so a corruption placed there is discarded before the normaliser sees
+        // it and the mutation stayed green. The last one is inside the drawing,
+        // which is the half that is copied through byte for byte.
+        var lf = Lf(Master);
+        var corrupted = ReplaceLast(lf, "\n  ", "\n\r  ");
+        Assert.Contains("\n\r", corrupted);
+        Assert.DoesNotContain("\r\n", corrupted);
+
+        foreach (var member in BrainRegionFamily.Members(lf)
+                     .Where(m => m != BrainRegionFamily.MasterId))
+        {
+            var derived = BrainRegionFamily.Derive(corrupted, member);
+
+            // UNIFORMITY, not equality with the clean derivation: mapping the
+            // stray CR to a newline legitimately adds a line, so the content
+            // differs. What must hold is that no CR escapes — this master is
+            // CRLF-free, so the output has to be too.
+            Assert.DoesNotContain("\r", derived);
+        }
+    }
+
+    private static string ReplaceLast(string text, string find, string replacement)
+    {
+        var at = text.LastIndexOf(find, StringComparison.Ordinal);
+        Assert.True(at >= 0, $"'{find}' is not in the master");
+        return string.Concat(text.AsSpan(0, at), replacement, text.AsSpan(at + find.Length));
+    }
+
+    /// <summary>
     /// THE REGENERATOR, and it only runs when asked. A test that rewrites the
     /// files it is checking would turn every drift into a silent pass, so this
     /// one does nothing at all unless <c>BH_WRITE_REGION_MAPS=1</c> is in the

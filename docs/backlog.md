@@ -2966,8 +2966,36 @@ Start only after Dan has signed off WI-513's template.
   the nearest open sweep is how a defect gets lost.
   **Depends on:** nothing. Blocks nothing, but it silently weakens every guard it
   touches, so do it before the corpus doubles.
-- [ ] **WI-583 Three more front-matter keys that turn a Fail into a 500** *(raised by
-  WI-561's `/review`, carried by WI-562)* — `images:` with nothing under it made
+- [x] **WI-583 Three more front-matter keys that turn a Fail into a 500**
+  *(done 2026-10-10 — shipped NINE, ruling `docs/content-pipeline.md` §12.36)* —
+  filed as three keys on one type; `/review` found the scope was the wrong noun.
+  **The site has nine YAML list properties across five types and this named three.**
+  Two of the six it missed are worse than anything it was filed about:
+  `GlossaryFrontMatter.Also` is an `ArgumentNullException` in the tooltip matcher
+  during the parse of **all 55 pages** (one half-typed key in a file no reader opens),
+  and `TumorType.Also` / `TaxonomyFile.TumorTypes` are walked in `TaxonomyStore`'s
+  **constructor** — a half-typed key in `taxonomy.yml` stopped the site BOOTING.
+  All nine coalesce **on write** now, not on read: the `??=` getter WI-561 wrote
+  mutates an object the page cache shares across requests, and a nullable backing
+  field breaks the value-equality of the `record` schema. The durable guard reads the
+  ASSEMBLY (`EveryYamlListPropertyOnEverySchemaRefusesNull`), because a guard scoped
+  to the type that crashed repeats WI-561's mistake one layer up.
+  **Two of the nine have no failure mode and are fixed anyway** — their single call
+  site coalesces downstream, which is a property of that call site, not the schema —
+  and `tags` has no consumer at all (measured: reverting it reddens 3 tests, `sources`
+  15, `disclaimers` 13), so its guard is a tripwire, a floor and not a fence.
+  **ALSO FIXED, A WI-572 CARRY-OVER THAT WAS RED ON `develop`:** `BrainRegionFamily.Derive`
+  re-expanded LF to CRLF over raw string literals that already carried CRLF, giving
+  nine `\r\r\n` per file. It was green at commit (the regenerator had just written the
+  files as LF) and red at the first checkout after it, and it **cannot fail on CI**,
+  where the master is LF and the branch never runs.
+  **PROOF: 15/15 break mutations red, no survivors; 2,850/2,850 tests including the
+  Playwright E2E; ContentCheck 345/0; green on a fully LF corpus AND a fully CRLF one.**
+  Three instrument corrections are recorded in §12.36, all the same error: a mutation
+  stronger than the defect, a corruption placed where the code discards it, and a
+  `/review` argument that reasoned from the already-covered case.
+  <details><summary>Original entry</summary>
+  `images:` with nothing under it made
   YamlDotNet assign **null over the property initializer**, and the figure pass then
   threw `NullReferenceException`. WI-561 fixed that one key by null-coalescing on read.
   **`sources`, `tags` and `disclaimers` have the identical hole and were left as found.**
@@ -2988,6 +3016,7 @@ Start only after Dan has signed off WI-513's template.
     checks in sequence let the second cover for the first, so assert the message.
   - Proven on a CRLF copy (`core.autocrlf=true` here, CI is Linux/LF).
   **Depends on:** nothing. Three lines of production code; the item is the tests.
+  </details>
 - [x] **WI-517 Oligodendroglioma, deepened** *(done 2026-09-08 — `/tumors/oligodendroglioma`)* —
   a 172-word stub became the §12.3 seventeen-section hub. Reading grade **5.8**,
   **1357 tests** (1322 before), ContentCheck **232/0**, **all 47

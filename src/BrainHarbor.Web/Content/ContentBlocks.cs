@@ -362,7 +362,21 @@ public static partial class ContentBlocks
 
     private sealed class ContentBlockFrontMatter
     {
+        /// <summary>
+        /// WI-583: coalesced on write — see <see cref="ContentFrontMatter"/> for
+        /// the rule. One of the two of the nine that was already safe, and only
+        /// by accident of its single call site: <c>ParseBlock</c> reads it as
+        /// <c>frontMatter?.Sources ?? []</c>, so the null never escaped. Fixed
+        /// here anyway, because that call site is the reason it was safe and the
+        /// next one would not know.
+        /// </summary>
         [YamlMember(Alias = "sources")]
-        public List<ContentSource> Sources { get; set; } = [];
+        public List<ContentSource> Sources
+        {
+            get => _sources;
+            set => _sources = value ?? [];
+        }
+
+        private List<ContentSource> _sources = [];
     }
 }
