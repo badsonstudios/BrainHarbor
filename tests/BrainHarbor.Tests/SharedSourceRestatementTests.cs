@@ -671,10 +671,12 @@ public sealed class SharedSourceRestatementTests
     ///   prose), and they passed only because the guard existed on three pages and
     ///   none of them was one.</item>
     /// <item><b>Two of the three called <c>ReaderText(Body(page))</c></b>, and
-    ///   <c>ReaderText</c> already applies <c>Body</c>. The second call searches for
-    ///   `"\n---"`, finds nothing, adds 4 to −1 and returns <b>the body with three
+    ///   <c>ReaderText</c> already applies <c>Body</c>. The second call searched for
+    ///   `"\n---"`, found nothing, added 4 to −1 and returned <b>the body with three
     ///   characters chopped off</b> — the exact trap <see cref="CuratedPage.ReaderTextOfBody"/>
-    ///   was written for. Harmless by luck for the terms they checked.</item>
+    ///   was written for. Harmless by luck for the terms they checked.
+    ///   <b>WI-566 made that shape throw</b>, so the luck is no longer load-bearing:
+    ///   <c>Body</c> refuses anything that is not a whole page.</item>
     /// <item><b>A substring scan of reader text is not the firing rule.</b> It
     ///   cannot see that a heading and a link cannot fire a tooltip (§12.11, both
     ///   directions), so "the word is on the page" and "there was something to

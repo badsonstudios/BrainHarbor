@@ -89,7 +89,7 @@ public sealed class CnsGermCellTumorPageContentTests
         return match.Groups[1].Value;
     }
 
-    private static string Flat(string text) => CuratedPage.Flatten(CuratedPage.ReaderText(text));
+    private static string Flat(string text) => CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(text));
 
     private static List<string> Headings() =>
         [.. Regex.Matches(Page, @"(?m)^##\s+(.+?)\s*(?:\{#.*\})?\s*$").Select(m => m.Groups[1].Value.Trim())];
@@ -337,7 +337,7 @@ public sealed class CnsGermCellTumorPageContentTests
         // (round 1 removed the page's unsupported "not graded" claim); it is simply not
         // what a reader of this report needs, and the page answers old names and the
         // grade itself. Asserted against the BLOCK'S OWN WORDS.
-        var block = Flat(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
+        var block = Flat(CuratedPage.Body(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"))));
 
         foreach (var blockOnly in new[]
                  {
@@ -365,7 +365,8 @@ public sealed class CnsGermCellTumorPageContentTests
     [Fact]
     public void ThePosteriorFossaBlockIsExcludedBecauseThisIsNotCerebellarSurgery()
     {
-        var block = Flat(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "posterior-fossa-syndrome.md")));
+        var block = Flat(CuratedPage.Body(File.ReadAllText(
+            Path.Combine(CuratedPage.BlocksRoot, "posterior-fossa-syndrome.md"))));
 
         const string BlockOnly = "Most children slowly get better";
         Assert.Contains(BlockOnly, block, StringComparison.Ordinal);
@@ -728,10 +729,12 @@ public sealed class CnsGermCellTumorPageContentTests
     {
         var gate = Regex.Match(Page, @":::outlook(.*?):::", RegexOptions.Singleline);
         Assert.True(gate.Success, "the outlook section has lost its reader-choice gate");
-        // ReaderText expects a page and strips everything up to the closing front-matter
-        // fence, so the gate's inside is wrapped in an EMPTY front matter to be read as
-        // body text rather than swallowed as YAML.
-        var inside = CuratedPage.Flatten(CuratedPage.ReaderText("---\n---\n" + gate.Groups[1].Value));
+        // WI-566: this wrapped the gate's inside in an EMPTY front matter so that
+        // `ReaderText`, which only accepted whole pages, would hand it back instead of
+        // swallowing it as YAML. `Body` now refuses a fragment rather than silently
+        // eating three characters of it, so the fake page is unnecessary and the
+        // marker-stripping half is what this wanted all along.
+        var inside = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(gate.Groups[1].Value));
 
         Assert.Matches(new Regex(@"describe groups, not you", RegexOptions.IgnoreCase), inside);
         Assert.Matches(new Regex(@"half\s+of a group did better and half did worse", RegexOptions.IgnoreCase), inside);

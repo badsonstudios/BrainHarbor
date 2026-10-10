@@ -104,7 +104,7 @@ public sealed class AtrtPageContentTests
     [Fact]
     public void TheEmergencyRulesAreAttributedToTheSignsAndNotToTheTumor()
     {
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(SymptomHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(SymptomHeading)));
 
         // THE HONEST STATEMENT, and it is the claim the whole item turns on. The page
         // says out loud where its emergency advice comes from, because no ATRT source
@@ -211,7 +211,7 @@ public sealed class AtrtPageContentTests
         // property of the SOURCE file, which is all RawSection can see. A guard whose
         // comment claims more than its assertion can reach is the shape §12.8 records
         // again and again, so the claim is scoped here rather than left flattering.
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(SymptomHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(SymptomHeading)));
         var malfunction = SentenceWith(section, "If you think the shunt has stopped working");
 
         foreach (var venue in new[] { "emergency room", "911", "emergency department" })
@@ -243,7 +243,7 @@ public sealed class AtrtPageContentTests
         // BOTH HALVES ARE ASSERTED. The first draft of this guard checked only that the
         // emergency instruction was present, which a page carrying the dangerous short
         // form would also satisfy.
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(SymptomHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(SymptomHeading)));
 
         Assert.Matches(new Regex(
             @"often looks\s+full when a baby is crying, lying down or throwing up, and that is ordinary",
@@ -317,7 +317,7 @@ public sealed class AtrtPageContentTests
         // reads as "not all of this is yours" instead of as this page's own advice.
         Assert.Matches(new Regex(
             @"The general list below speaks straight to a patient", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(raw)));
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(raw)));
 
         // THE [SPINAL-CORD] LEAD-OUT IS PINNED BY POSITION, AND NOTHING PINNED IT
         // BEFORE. /review round 1: delete that paragraph and the whole suite stayed
@@ -338,7 +338,7 @@ public sealed class AtrtPageContentTests
         // sign cannot be read the usual way in a child who is not toilet trained.
         Assert.Matches(new Regex(
             @"not toilet trained yet", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(raw)));
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(raw)));
     }
 
     // ------------------------------------------------------------- the block rulings
@@ -424,7 +424,7 @@ public sealed class AtrtPageContentTests
         // telling a parent it was reasonable to wait. What Boston actually supports is
         // the CONTRAST -- "increased head size in infants or headaches and vomiting in
         // older children" -- so the warning is different in a baby, not later.
-        var where = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(WhereHeading)));
+        var where = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(WhereHeading)));
         Assert.Matches(new Regex(@"In a baby the skull can still give", RegexOptions.IgnoreCase), where);
         Assert.Matches(new Regex(
             @"bony plates have not knitted together", RegexOptions.IgnoreCase), where);
@@ -495,7 +495,7 @@ public sealed class AtrtPageContentTests
         Assert.DoesNotContain("tumor-board", ContentBlocks.DirectBlockNames(Page));
 
         // And the page routes where the sources actually point.
-        var treatment = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(TreatmentHeading)));
+        var treatment = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(TreatmentHeading)));
         Assert.Matches(new Regex(
             @"treated as part of a brain tumor trial", RegexOptions.IgnoreCase), treatment);
         Assert.Contains("/treatments/clinical-trials", treatment, StringComparison.Ordinal);
@@ -509,7 +509,7 @@ public sealed class AtrtPageContentTests
         // confirmed by direct question against the live page. So this hub may carry the
         // syndrome and may NOT carry a rate, because the block's source cannot support
         // one for this tumor (§12.4 R2).
-        var after = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(AfterHeading)));
+        var after = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(AfterHeading)));
 
         Assert.Matches(new Regex(
             @"How often it follows an operation for this particular tumor is not published",
@@ -572,7 +572,7 @@ public sealed class AtrtPageContentTests
         // not medulloblastoma either. So the honest claim is that the grade rides on a
         // FAMILY-LEVEL rule, never that a table prints it and never that WHO declined to
         // grade this tumor.
-        var grade = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(GradeHeading)));
+        var grade = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(GradeHeading)));
 
         Assert.Matches(new Regex(@"doctors grade it 4", RegexOptions.IgnoreCase), grade);
         Assert.Matches(new Regex(@"Every tumor in this group is grade 4", RegexOptions.IgnoreCase), grade);
@@ -609,7 +609,7 @@ public sealed class AtrtPageContentTests
         // teratoid/rhabdoid tumor (AT/RT)" -- NCI PDQ, verbatim, re-read by me. So a
         // parent may meet staging WORDS without there being an official stage, and the
         // page says that rather than teaching a ladder that does not exist.
-        var report = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(ReportHeading)));
+        var report = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(ReportHeading)));
 
         Assert.Matches(new Regex(
             @"there is no agreed staging system for ATRT", RegexOptions.IgnoreCase), report);
@@ -669,7 +669,7 @@ public sealed class AtrtPageContentTests
         // other way -- which is why the position assertion below is the property, not
         // the phrase. A reason deserves the same check as a claim (WI-536), and this
         // reason was wrong in the direction that flattered the page.
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(CauseHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(CauseHeading)));
 
         Assert.Matches(new Regex(
             @"an inherited gene change is more common than it is for most brain\s+tumors",
@@ -1029,7 +1029,7 @@ public sealed class AtrtPageContentTests
         // composed [CAREGIVER] block goes on to discuss driving, in the seizure routing it
         // carries on every hub. The claim was false of the page a reader actually receives,
         // while being true of the section it sits in. Source review cannot see that.
-        var life = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(LifeHeading)));
+        var life = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(LifeHeading)));
         Assert.Matches(new Regex(
             @"Nothing in this section is about driving, work or money", RegexOptions.IgnoreCase), life);
 
@@ -1180,9 +1180,9 @@ public sealed class AtrtPageContentTests
         // WHY A GUARD AND NOT A CAREFUL EDIT. Every one of these passed ContentCheck,
         // the full suite and three rendered reads. The suite cannot see a claim drifting
         // away from its source; only a pin can.
-        var diagnosis = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(DiagnosisHeading)));
-        var treatment = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(TreatmentHeading)));
-        var after = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(AfterHeading)));
+        var diagnosis = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(DiagnosisHeading)));
+        var treatment = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(TreatmentHeading)));
+        var after = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(AfterHeading)));
 
         // THE SCAN, BOTH HALVES. St. Jude: "In some cases, your child may get sedation
         // medicines or general anesthesia", and "Many children can have diagnostic
@@ -1382,7 +1382,7 @@ public sealed class AtrtPageContentTests
         // was already fixed protects against nothing (/review round 4). Canaried like
         // every other ban in this file, because a ban nobody proved can fire is a ban
         // nobody has tested.
-        var life = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(LifeHeading)));
+        var life = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(LifeHeading)));
         var falsePremise = new Regex(
             @"(?:which|what)\s+(?:one|route)[^.]{0,40}\bunder 3\b"
             + @"|\b(?:IEP|504)\b[^.]{0,40}\bunder 3\b", RegexOptions.IgnoreCase);

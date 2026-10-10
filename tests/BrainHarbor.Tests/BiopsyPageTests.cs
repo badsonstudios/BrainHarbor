@@ -99,7 +99,7 @@ public sealed class BiopsyPageContentTests
         Assert.True(siblingSameDay.Success,
             "/treatments/craniotomy no longer has a 'When to call the team the same day' list");
 
-        var here = CuratedPage.Flatten(CuratedPage.ReaderText(Section("For the person going with them")));
+        var here = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(Section("For the person going with them")));
 
         var ambulanceHere = Regex.Match(here,
             @"Call an ambulance\. These cannot wait:\*\*(.*?)(?=\*\*[A-Z]|If you are not sure|\z)",
@@ -234,7 +234,7 @@ public sealed class BiopsyPageContentTests
         // The COMPOSED section, because the link to the seizure page now comes
         // from [CAREGIVER] rather than being repeated in the bullet.
         var section = CuratedPage.Flatten(
-            CuratedPage.ReaderText(CuratedPage.ComposedSection(Page, "For the person going with them")));
+            CuratedPage.ReaderTextOfBody(CuratedPage.ComposedSection(Page, "For the person going with them")));
 
         // The qualifier is the whole point: the list names WHICH seizures, and
         // then says out loud that not every seizure is one of them.

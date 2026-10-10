@@ -789,7 +789,7 @@ public sealed class SteroidsPageContentTests
         // flat "same day" bullet here would have been a quieter rule on the
         // page about the drug that hides a temperature. The sibling is read at
         // the section the link lands on (§12.10).
-        var feverRule = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Section(
+        var feverRule = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(CuratedPage.Section(
             CuratedPage.Read("treatments", "chemotherapy.md"), "Your blood counts, and the fever rule")));
         Assert.Matches(new Regex(@"straight away, at any hour", RegexOptions.IgnoreCase), feverRule);
         Assert.Matches(new Regex(@"a fever is a call right away, at any hour", RegexOptions.IgnoreCase), today);
