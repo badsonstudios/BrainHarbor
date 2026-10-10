@@ -127,9 +127,40 @@ internal static class BrainRegionFamily
             + "  <style>\n" + rules + "\n  </style>\n"
             + closing;
 
+        // WI-583: NORMALIZE BEFORE EXPANDING. `appended` is NOT pure LF — the
+        // master half of it is (line 90), but the banner and the style rules are
+        // raw string literals in THIS file, which `core.autocrlf=true` checks
+        // out as CRLF, so they arrive carrying "\r\n" of their own. Expanding
+        // "\n" over that produced "\r\r\n" nine times, and `Lf()` in the test
+        // collapses only the trailing pair — leaving a bare CR that no
+        // comparison could normalise away.
+        //
+        // IT WAS GREEN WHEN WI-572 SHIPPED AND RED AFTERWARDS, WITHOUT ANYONE
+        // TOUCHING IT. The regenerator had just written the fifteen files as
+        // LF, so the working tree matched; git stores them LF and checks them
+        // out CRLF, so the first checkout after the commit flipped the input to
+        // this method and the comparison started failing. And it CANNOT fail on
+        // CI: Linux checks the master out as LF, `Contains("\r\n")` is false,
+        // and this branch never runs. A guard whose green depends on the line
+        // endings a working tree happens to have is red for every Windows
+        // developer and green in the only place anybody looks.
+        // AND THE OTHER BRANCH HAD IT TOO, which the new guard found and reading
+        // did not: with an LF master this returned `appended` UNTOUCHED, so the
+        // banner's own CRLF went straight into the output and a Windows working
+        // tree derived a mixed-ending file from a pure-LF master. Normalising
+        // first and expanding second makes the output uniform whatever endings
+        // the master and THIS SOURCE FILE happen to have.
+        // THE SECOND `Replace` IS NOT BELT AND BRACES (/review). Without it
+        // `Replace("\r\n", "\n")` is not a normaliser: handed "\r\r\n" it
+        // matches at index 1, leaves the leading CR, and the expansion below
+        // puts the pair back — so Derive would REPRODUCE the exact byte
+        // sequence this item is named after instead of removing it. A lone CR
+        // is likewise invisible to both replaces. Mapping every CR to LF first
+        // makes the function total over any input the master could have.
+        var normalized = appended.Replace("\r\n", "\n").Replace("\r", "\n");
         return master.Contains("\r\n", StringComparison.Ordinal)
-            ? appended.Replace("\n", "\r\n")
-            : appended;
+            ? normalized.Replace("\n", "\r\n")
+            : normalized;
     }
 
     private static string Banner(string figureId, string what) =>

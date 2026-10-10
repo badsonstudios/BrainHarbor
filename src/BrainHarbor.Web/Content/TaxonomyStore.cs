@@ -14,14 +14,45 @@ public sealed record TumorType
     [YamlMember(Alias = "parent")]
     public string? Parent { get; init; }
 
+    /// <summary>
+    /// WI-583: coalesced on write — see <see cref="ContentFrontMatter"/> for the
+    /// rule. This and <see cref="TaxonomyFile.TumorTypes"/> are the only two of
+    /// the nine that are a BOOT failure: <see cref="TaxonomyStore"/> walks both
+    /// in its constructor, which runs at DI composition, so a half-typed key in
+    /// <c>taxonomy.yml</c> did not break a page — it stopped the site starting.
+    ///
+    /// <para>The backing field is non-nullable for a second reason here: this is
+    /// a <c>record</c>, so the compiler's value-equality compares backing
+    /// fields. A field that could be null would make two instances reading
+    /// <c>Also</c> equal compare UNEQUAL.</para>
+    /// </summary>
     [YamlMember(Alias = "also")]
-    public List<string> Also { get; init; } = [];
+    public List<string> Also
+    {
+        get => _also;
+        init => _also = value ?? [];
+    }
+
+    private readonly List<string> _also = [];
 }
 
 internal sealed class TaxonomyFile
 {
+    /// <summary>
+    /// WI-583: coalesced on write. A dangling <c>tumor_types:</c> hit
+    /// <c>parsed.TumorTypes.Count</c> in <see cref="TaxonomyStore"/>'s
+    /// constructor; it now reaches the <c>FormatException</c> that was always
+    /// meant to catch an empty taxonomy, which is the gate that stops an
+    /// invented tumor type reaching a patient.
+    /// </summary>
     [YamlMember(Alias = "tumor_types")]
-    public List<TumorType> TumorTypes { get; set; } = [];
+    public List<TumorType> TumorTypes
+    {
+        get => _tumorTypes;
+        set => _tumorTypes = value ?? [];
+    }
+
+    private List<TumorType> _tumorTypes = [];
 }
 
 /// <summary>Result of filtering classifier tags: what survived, what didn't.</summary>

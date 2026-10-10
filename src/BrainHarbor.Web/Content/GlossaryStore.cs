@@ -25,13 +25,37 @@ public sealed record GlossaryTerm(
     public IReadOnlyList<ContentSource> Sources { get; init; } = Sources ?? [];
 }
 
+/// <summary>
+/// WI-583: both list keys coalesce on write — see
+/// <see cref="ContentFrontMatter"/> for the rule and why it lives on the type.
+///
+/// <para><b><c>also</c> has the widest blast radius of the nine</b>, because a
+/// glossary file is not a page: it reaches <c>GlossaryTooltips.BuildMatchers</c>
+/// as <c>names.AddRange(term.Aliases)</c> — an <c>ArgumentNullException</c>,
+/// which is neither of the exception types anything upstream catches — during
+/// the marker pass of EVERY curated page. One half-typed key in a file no reader
+/// opens directly, 55 pages of 500s, and site search gone with them.</para>
+///
+/// <para><b><c>sources</c> was already safe, and <c>/review</c> got this one
+/// wrong in the other direction</b> — it reported a 500 on the whole
+/// <c>/glossary</c> index. <see cref="GlossaryTerm.Sources"/> is declared
+/// <c>Sources ?? []</c>, so the null is absorbed one hop downstream before
+/// either the view or ContentCheck can see it. Same shape as
+/// <c>ContentBlockFrontMatter.Sources</c>: safe by its single call site, not by
+/// its type. Fixed here anyway, for the reason that call site cannot carry — the
+/// next caller will not know.</para>
+/// </summary>
 public sealed class GlossaryFrontMatter
 {
     [YamlMember(Alias = "term")]
     public string Term { get; set; } = "";
 
     [YamlMember(Alias = "also")]
-    public List<string> Also { get; set; } = [];
+    public List<string> Also
+    {
+        get => _also;
+        set => _also = value ?? [];
+    }
 
     [YamlMember(Alias = "pronunciation")]
     public string? Pronunciation { get; set; }
@@ -41,7 +65,14 @@ public sealed class GlossaryFrontMatter
     // carried this since WI-104; the glossary was the surface where 40
     // definitions could land with nowhere to record where they came from.
     [YamlMember(Alias = "sources")]
-    public List<ContentSource> Sources { get; set; } = [];
+    public List<ContentSource> Sources
+    {
+        get => _sources;
+        set => _sources = value ?? [];
+    }
+
+    private List<string> _also = [];
+    private List<ContentSource> _sources = [];
 }
 
 /// <summary>
