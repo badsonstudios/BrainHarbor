@@ -171,7 +171,7 @@ public class ShellPagesTests : IClassFixture<WebApplicationFactory<Program>>
         var findings = ContentChecker.CheckAll(
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages"),
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
-            DateOnly.FromDateTime(DateTime.UtcNow));
+            DateOnly.FromDateTime(DateTime.UtcNow), CorpusFloor.Shipped).Findings;
 
         var failures = findings.Where(f => f.Level == FindingLevel.Fail).ToList();
         Assert.True(failures.Count == 0,

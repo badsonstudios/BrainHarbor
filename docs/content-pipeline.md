@@ -11378,3 +11378,159 @@ including the Playwright E2E; ContentCheck 345/0. The change is test-only:
 `CuratedPage` is internal to the test assembly, so the new `FormatException`
 cannot reach `ContentCheck`, `GetPage` or `SearchPages` — which is the §12.36
 hazard class, and the reason this one is a different kind of item.**
+
+### 12.38 Zero meant two things, so the gate reported success having read nothing (WI-435)
+
+```
+$ dotnet run --project tools/BrainHarbor.ContentCheck -- --nologo
+WARN  --nologo: pages root MISSING — no pages were checked
+...
+ContentCheck passed (232 checks, 0 failures).
+$ echo $?
+0
+```
+
+**A clean run is 345 checks. 113 vanished in silence, and they were every curated
+page's reading grade** — the one hard requirement this project has. Run from the
+wrong directory it was worse: **3 checks, 0 failures, exit 0**, the gate on the
+whole medical corpus reporting success having opened nothing at all. (The filed
+entry said 22 checks and 48 pages; the numbers had moved and nothing else had.)
+
+**THE CAUSE AND THE DEFECT ARE DIFFERENT THINGS, and fixing only the cause would
+have left this open.** The cause is that `args[0]` was the pages root whatever
+the string was, so a flag became a directory name. The defect is underneath:
+**coverage was an `int` per root, and `0` meant both *this root is not in scope,
+do not judge me on it* and *this root is in scope and I read nothing from it*.**
+`DescriptionCorpusReport` read 0 as the first and took its "not our business"
+`yield break` — correct for a caller that checks the glossary alone, and
+catastrophic for a run that was asked for 55 pages and opened none. Two
+meanings, one value, and the broken run left through the gap. So `CorpusCoverage`
+and `CorpusFloor` carry `int?`: **`null` is not in scope, `0` is in scope and
+empty, and the second can no longer borrow the first's silence.** That is §12.37's
+fix in another coat — there a helper taking a `string` could not tell a page from
+a section, here an `int` could not tell an absence from an emptiness, and in both
+the repair is to make the type able to say which.
+
+**ACCEPTANCE WAS A FLOOR AND NOT A LOUDER WARNING, and the entry's own history is
+why.** `WARN pages root MISSING` had existed since WI-106. It was on screen for
+the whole broken run. It did not help, because **the only consumer of this tool is
+a CI step that reads an exit code** — a warning is a message addressed to nobody.
+The strongest evidence is in the backlog entry itself: its author hit this defect,
+read that WARN, and then *quoted the partial check count as verification on
+PR #46*. A gate whose failure mode is "grade nothing and report success" is worse
+than no gate, because it manufactures confidence.
+
+**PER ROOT, because one total is met by one root.** §12.37 shipped exactly this
+mistake and `/review` caught it there: a single floor of 55 across a 168-file
+sweep was satisfied by the pages alone, so a renamed `Content/blocks` left the
+guard green having read no block. `CorpusFloor.Shipped` is 55 pages / 105 glossary
+entries / 20 reader-facing Razor pages / 8 blocks, and each reds on its own line
+with the other three intact. **The blocks root is the one that matters most and is
+least obvious: blocks have no reading level of their own, because a page is graded
+COMPOSED. Lose them and 55 pages grade clean on prose they do not actually show a
+reader.** The Razor root is WI-414's whole point: the most-read text on the site
+lives in `.cshtml`, and before this item a working directory could take the gate
+off it while printing `razor root MISSING` and exiting 0.
+
+**THE FLOOR IS REQUIRED, NOT DEFAULTED, and that was the expensive half.**
+`CheckAll` takes `CorpusFloor` as a positional argument with no default, so all
+fifteen existing call sites had to answer "is this the shipped corpus or a
+three-page temp directory?" **Seven turned out to be the real corpus and now say
+so**, which makes them a second enforcement of the floor from inside the suite. A
+defaulted parameter would have answered for all fifteen silently — the same way
+the positional `args[0]` answered "what is the pages root?" silently.
+**The error is asymmetric and that is recorded rather than fixed:** a fixture
+wrongly given `Shipped` fails loudly, a real-corpus call site wrongly given `None`
+passes **silently** and nothing pins it. That is tolerable only because the gate is
+the executable and not the suite.
+
+**AND THE FLOOR IS EQUAL TO THE CORPUS, NOT BELOW IT.** A floor left behind by a
+growing corpus is pure slack: at 55 with 63 pages on disk, eight pages could stop
+being walked with every gate green — this item's defect at one eighth scale.
+`TheFloorIsTheShippedCorpusAndNotAnOldMeasurementOfIt` asserts equality in both
+directions, which costs **one constant edit per content item** and is a deliberate
+price. §12.24 made the same argument against a count that locks in a total. The
+next eight library pages should expect to move `CorpusWhenMeasured`, and the test
+message says so, because the person who sees that red will be somebody who just
+added a page and has never heard of a corpus floor.
+
+**THE ARGUMENT HANDLING WAS UNTESTABLE AND THAT WAS NOT INCIDENTAL.** The defect
+lived in four lines inside `Cli.Main`, an entry point with no seam and zero tests,
+and **the first test ever written against it found it**. Two seams were cut:
+`Run(args, TextWriter)` so output can be asserted without racing xUnit's parallel
+collections on a process-global `Console.Out`, and `Resolve(args)` →
+`Roots(Pages, Glossary, Razor, Blocks)` with **four non-nullable members, which is
+itself the claim**. `CorpusFloor.Shortfalls` skips a root that is out of scope,
+which is an escape hatch the floor cannot close by itself; what closes it is that
+the executable CI runs *cannot express a root out of scope*. A future flag making
+one of those nullable would re-open this item exactly, so it is pinned by
+`EveryArgumentCountStillResolvesAllFourRoots` over every argument count a person
+can type, including the no-argument form CI uses.
+
+**WHAT THE BREAK HARNESS PROVED, AND THE THREE THINGS IT FOUND.** Part A runs the
+real executable the way CI runs it and asks only what it returns, twice per
+mutation: red at HEAD, and **exit 0 with `ContentCheck passed` on the pre-WI-435
+tool restored from git**. A red alone would prove the floor fires; the pair proves
+the hole was real and reachable by an accident somebody would plausibly have. The
+mutations are to the WORLD and not to the code — a flag in the wrong position, the
+wrong working directory, a renamed content directory, **one page deleted (55 →
+54)** — because those are the things that actually happen.
+
+1. **Where a root turned out to be covered already, the harness says COVERED and
+   not PAIR OK.** A renamed `Content/blocks` was ALSO non-zero before the fix:
+   every page including a block fails by name, so the blocks floor is a backstop
+   there and not the first line of defence. Claiming a hole that was not there is
+   the same dishonesty as missing one, and it is how a harness ends up certifying
+   the wrong thing (WI-583).
+2. **Two guards were green for the wrong reason, both times because the test
+   asserted the OUTCOME and not the CAUSE.** Deleting the unrecognised-argument
+   check entirely left every argument test green — `--nologo` is not a directory
+   either, so the next check refused it and the exit code was identical. Same for
+   the empty-argument check. Both now carry a named message constant and a test
+   that asserts it, and what each alone buys is written down: naming the problem as
+   a flag rather than as a missing path, and refusing a flag that happens to BE a
+   directory.
+3. **A mutation that does not compile proves nothing**, so that is reported as a
+   broken mutation rather than as a red — and every mutation's target string is
+   verified to exist before any test runs, because two full Part B runs were spent
+   discovering a stale target twenty minutes in.
+
+**THE POSITIVE CONTROLS ARE FIRST AND THEY ARE NOT A FORMALITY.** A floor set one
+file too high reds on the shipped corpus too, and the first thing that would do is
+get somebody to lower it — which switches the gate off while looking like
+maintenance. §12.19's rule (ask which inputs a guard can fire on) applied to a
+guard whose entire job is to fire. **The second control is `/review`'s best
+finding:** the test oracle for the blocks root walked `AllDirectories` and every
+`*.md`, while `ContentBlockStore.Load` reads the top directory only and skips any
+file whose name is not a block slug — with a docstring calling a `README.md`
+dropped in there "a normal thing to do". Under that oracle, dropping one in made
+the gate say "re-measure to 9" and **the blocks floor would then have been
+permanently unreachable: red forever, with lowering a floor as the only way out.**
+*An oracle that walks differently from the walk manufactures exactly the failure
+the floor's own advice text is written to talk people out of.* A README in
+`Content/blocks` is now a harness case that must stay GREEN.
+
+**`/review` FOUND SEVEN PARALLEL LISTS OF THE SAME FOUR ROOTS** — the coverage
+record, the floor record, `Cli.Roots`, the header labels, the argument-name array,
+the coverage line, and a literal array inside `Shortfalls`. The consequence is
+specific: add a fifth root, wire it into the coverage and the resolver, forget the
+array in `Shortfalls`, and **the new root has no floor at all**, silently, with
+every test green. There is one table now, and
+`TheRootTableCoversEveryRootCoverageCanReport` asserts by REFLECTION that it covers
+every member of `CorpusCoverage` — as a set, not a count, because the point is to
+name a member nobody remembered to think about. **Two more of its findings were the
+same class:** the Razor root was the only one of the four with no oracle
+independent of the walk (so `IsReaderFacing` could swap one reader page out for one
+admin page with the count stuck at 20 — the set is pinned now, and the harness
+carries that exact count-preserving swap), and on the FLOOR side `0` meant both "no
+floor claimed" and "a floor of zero", which is this item's own headline defect
+handed back one record over.
+
+**PROOF: 39 of 39 harness cases as wanted, no survivors** — 16 Part-A cases on the
+real executable (2 positive controls, 8 RED-at-HEAD/exit-0-before pairs plus the
+wrong-working-directory pair, one honest COVERED, 5 usage refusals) and 23 Part-B
+code mutations all red; **2,897 of 2,897 tests including the Playwright E2E;
+ContentCheck 345/0 on the shipped corpus, with `Covered: 55 curated page(s), 105
+glossary term(s), 20 reader-facing Razor page(s), 8 content block(s)`.** **A reader
+sees nothing change**: not one page, route, byte of rendered HTML or published
+summary moves. What changed is what the gate does when it has not read the corpus.
