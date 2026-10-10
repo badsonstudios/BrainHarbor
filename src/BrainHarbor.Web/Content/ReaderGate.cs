@@ -68,7 +68,7 @@ public static partial class ReaderGate
     /// ContentCheck grades .md files and .cshtml files; copy that lives in a
     /// C# constant is the one place its file walk cannot see, so
     /// ReaderGateTests grades THIS through the same
-    /// <c>ReadabilityAnalyzer</c> the build uses.
+    /// <c>ReadingGrade</c> the build uses (WI-416; it was <c>ReadabilityAnalyzer</c>).
     /// </summary>
     public static string ReaderFacingCopy => $"{WarningText} {ShowLabel}. {HideLabel}.";
 

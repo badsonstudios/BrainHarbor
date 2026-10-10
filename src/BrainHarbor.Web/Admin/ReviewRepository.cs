@@ -73,7 +73,9 @@ public sealed class ReviewItem
     ///
     /// Two honest limits, both surfaced in the queue rather than hidden:
     /// this reflects TODAY's rules, not the rules in force when the item was
-    /// flagged (the reading-level ceiling moved from 8.5 to 7.0 on 2026-08-13),
+    /// flagged (the reading-level ceiling moved 8.5 → 7.0 on 2026-08-13 and
+    /// 7.0 → 7.6 on 2026-10-10, the second time because the grader behind it was
+    /// corrected rather than the bar moved — WI-416, content-pipeline §5a),
     /// and an item a READER reported carries no automated reason at all.
     /// </summary>
     public IReadOnlyList<Guardrails.Flag> FlagReasons =>

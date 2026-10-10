@@ -18,7 +18,8 @@ public static partial class Guardrails
     /// 7.0, not the 6.0 the pages are held to (WI-414/415), because the PROMPT
     /// is the mechanism and this is only the backstop. `summarize-v4` asks for
     /// 6th grade and delivers it: measured live over 8 golden-set items,
-    /// median 4.9, max 6.4. (The old prompt's median was 6.0, measured
+    /// median 4.7, max 6.5. (4.9 / 6.4 until WI-416 — stale, and contradicted by
+    /// §5, §5a and PROGRESS.md, which all record 4.7 / 6.5.) (The old prompt's median was 6.0, measured
     /// block-aware over the 1,038 published items — a different population,
     /// so treat it as a direction, not a like-for-like delta.) Setting the
     /// gate AT the target would flag ordinary variation around it, and a
@@ -27,6 +28,40 @@ public static partial class Guardrails
     /// outliers, which is what a backstop is for.
     ///
     /// Re-measure against a real pipeline run before tightening further.
+    ///
+    /// <para><b>IT STAYS AT 7.0 THROUGH WI-416, AND THAT WAS THE SECOND ANSWER.</b>
+    /// The unified <see cref="ReadingGrade"/> corrects a grader that had no
+    /// vowel-hiatus rule and so under-counted Latin-derived medical syllables. Measured
+    /// over the thirteen hand-written ideal summaries in the golden set, the correction
+    /// is worth a per-item median of <b>+0.49</b> — and one of them went from 6.61 to
+    /// 7.30, through this ceiling, which is how the change was found to have altered a
+    /// threshold's MEANING and not only its arithmetic.</para>
+    ///
+    /// <para><b>The first response was to raise this number to 7.6 and <c>/review</c>
+    /// refused it, correctly.</b> The correction is a function of Latin density: ~+0.5 on
+    /// medical prose, and <b>~0.00 on plain Germanic prose</b> — which is exactly what
+    /// <c>summarize-v4</c> is prompted to produce. A flat +0.6 on the THRESHOLD would
+    /// therefore have been a real loosening for the plainest writing, and <c>/review</c>
+    /// produced a grammatical plain-English sentence ("The men and women who took the
+    /// drug went longer before the growth got bigger and most of the harms they had were
+    /// mild") that was flagged at 7.0 and would have passed at 7.6. <b>A number that
+    /// looks like a re-calibration on dense prose is a loosening on plain prose, and the
+    /// plain prose is the point.</b></para>
+    ///
+    /// <para><b>What was actually wrong was the ALLOWANCE, not the ceiling.</b> The
+    /// yardstick summary that broke reads "schwannomas" and "meningiomas"; the list held
+    /// only the singulars, so a summary of a ten-person case series paid full syllable
+    /// price for the letter s. The allowance covers regular plurals and the possessive
+    /// now (see <see cref="ReadingGradeOptions.MedicalTwoSyllableTerms"/>), which is the
+    /// allowance doing its stated job rather than the gate doing less of its own.</para>
+    ///
+    /// <para><b>So the gate is unchanged for plain prose and STRICTER in real terms for
+    /// Latin-dense prose</b>, which is the only direction a reading-level backstop for a
+    /// cognitively-impaired audience should ever move by accident.
+    /// <c>ReadingGradeTests.NothingPassesNowThatWasFlaggedBefore</c> pins the half of
+    /// that which can be pinned offline. <b>Expect the live flag rate to tick up from
+    /// 4.8%</b> — that is the correction working, not a regression, and the next
+    /// <c>Category=Live</c> run is the measurement.</para>
     /// </summary>
     public const double MaxGradeLevel = 7.0;
 
@@ -40,6 +75,13 @@ public static partial class Guardrails
     [GeneratedRegex(@"[.!?]+(?=\s|$)")]
     private static partial Regex SentenceEnd();
 
+    /// <summary>
+    /// Tokens for the number-word lookup only. <b>This is no longer the grader's
+    /// tokenizer</b> (WI-416): it was, and <c>[A-Za-z]+</c> drops the apostrophe, which
+    /// is why <c>doesn't</c> counted as two words in a summary and one on a page. Here
+    /// the pattern is right — every key in <see cref="NumberWords"/> is a bare word, and
+    /// an apostrophe would only ever add noise.
+    /// </summary>
     [GeneratedRegex(@"[A-Za-z]+")]
     private static partial Regex Word();
 
@@ -87,21 +129,9 @@ public static partial class Guardrails
         ["ninety"] = "90", ["hundred"] = "100", ["thousand"] = "1000",
     };
 
-    /// <summary>
-    /// Common brain-tumor vocabulary counted as 2 syllables for the reading
-    /// level, so a required drug/tumor name (glioblastoma, bevacizumab) doesn't
-    /// push an otherwise-plain summary over the ceiling. The surrounding prose
-    /// is still measured normally.
-    /// </summary>
-    private static readonly HashSet<string> MedicalTerms = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "glioma", "glioblastoma", "astrocytoma", "oligodendroglioma", "meningioma",
-        "medulloblastoma", "ependymoma", "craniopharyngioma", "schwannoma", "hemangioblastoma",
-        "metastasis", "metastases", "metastatic", "radiosurgery", "radionecrosis",
-        "chemotherapy", "immunotherapy", "radiotherapy", "temozolomide", "bevacizumab",
-        "vorasidenib", "ivosidenib", "stereotactic", "intracranial", "leptomeningeal",
-        "progression", "recurrence", "diagnosis", "diagnosed", "biomarker", "molecular",
-    };
+    // The medical two-syllable allowance moved to ReadingGradeOptions (WI-416): the
+    // list and the only grader that reads it belong together, and keeping a copy here
+    // is how two implementations happen in the first place.
 
     /// <summary>
     /// Which check flagged an item (WI-417). The reason text has always been
@@ -276,30 +306,22 @@ public static partial class Guardrails
         return Negation().IsMatch(text[sentenceStart..index]);
     }
 
-    /// <summary>Flesch-Kincaid grade level, with a medical-vocabulary allowance
-    /// (WI-106 uses the same formula for static pages).</summary>
-    public static double GradeLevel(string text)
-    {
-        // Block-aware (WI-415), matching ContentChecker.ExtractSentences: the
-        // plain title and each template block arrive newline-separated, and a
-        // title almost never ends in a full stop — so grading the raw run
-        // merged the title into the hook and made one long sentence out of
-        // two short ones. Measured over the 1,038 published summaries, that
-        // inflated the median by 0.7 of a grade (6.7 reported vs 6.0 real).
-        text = AsSentences(text);
-
-        var sentences = Math.Max(1, SentenceEnd().Matches(text).Count);
-        var words = Word().Matches(text).Select(m => m.Value).ToList();
-        if (words.Count == 0)
-        {
-            return 0;
-        }
-
-        var syllables = words.Sum(CountSyllables);
-        return (0.39 * words.Count / sentences)
-             + (11.8 * syllables / words.Count)
-             - 15.59;
-    }
+    /// <summary>
+    /// The reading grade of a summary: <see cref="ReadingGrade"/> under
+    /// <see cref="ReadingGradeOptions.AiSummaries"/>, over block-aware sentences.
+    ///
+    /// <para><b>WI-416 took the arithmetic out of here.</b> This method held a second
+    /// Flesch-Kincaid implementation that disagreed with the page one in four ways —
+    /// the word pattern, the vowel-hiatus rule, the silent-e rule, and rounding — so
+    /// "6th grade" meant two different things depending on which gate measured, and the
+    /// 6.0 page limit and the 7.0 backstop below were not comparable numbers.
+    /// <see cref="ReadingGrade"/> records which side won each disagreement and why. What
+    /// is left here is the two things that are genuinely about summaries: the block-aware
+    /// preparation, and the medical-vocabulary allowance, which is now a named option
+    /// instead of a fork.</para>
+    /// </summary>
+    public static double GradeLevel(string text) =>
+        ReadingGrade.Of(AsSentences(text), ReadingGradeOptions.AiSummaries);
 
     /// <summary>A block boundary is a sentence boundary: each block gets a
     /// terminator when the writer left it off (blocks may hold several
@@ -331,32 +353,4 @@ public static partial class Guardrails
     private static string Normalize(string number) =>
         number.Replace(",", "").TrimEnd('.');
 
-    private static int CountSyllables(string word)
-    {
-        // Required medical terms don't get penalized for their length.
-        if (MedicalTerms.Contains(word))
-        {
-            return 2;
-        }
-
-        word = word.ToLowerInvariant();
-        var count = 0;
-        var previousVowel = false;
-        foreach (var c in word)
-        {
-            var isVowel = "aeiouy".Contains(c);
-            if (isVowel && !previousVowel)
-            {
-                count++;
-            }
-            previousVowel = isVowel;
-        }
-
-        if (word.EndsWith('e') && count > 1)
-        {
-            count--;
-        }
-
-        return Math.Max(1, count);
-    }
 }
