@@ -16,6 +16,15 @@ what absorbed it and why.
 Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 `/pm decompose <phase>` when we get there.
 
+> **⚠ ORDER OVERRIDE, agreed 2026-10-10 — read `../PROGRESS.md` §"The agreed
+> plan" BEFORE picking an item.** The next twelve items are chosen and ordered
+> there, and it is **not** this file's top-to-bottom order: it starts with
+> **WI-435**, pulls two M4 defects (WI-435, WI-416) and two P5 guards
+> (WI-564, WI-565) ahead of the seven remaining library pages, and puts
+> WI-557 last. The reason is that a guard written *after* eight new medical
+> pages has to sweep a bigger corpus and fix pages that were written wrong.
+> Work that list top to bottom; fall back to this file's order once it is empty.
+
 ---
 
 ## Phase M0 — Skeleton ($0 hosting)
