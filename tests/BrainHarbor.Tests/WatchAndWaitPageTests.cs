@@ -1057,7 +1057,7 @@ public sealed class WatchAndWaitPageContentTests
         // /tests/follow-up-scans (the scans, the wait, the report) and
         // /tumors/low-grade-glioma (whose watch section predates this page),
         // and the guard deliberately does not name them.
-        var pageShingles = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var pageShingles = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -1066,7 +1066,7 @@ public sealed class WatchAndWaitPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = Shingles(CuratedPage.ReaderText(File.ReadAllText(file)), 8)
+            var overlaps = Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)), 8)
                 .Where(pageShingles.Contains)
                 .Where(s => !AllowedShingles.Contains(s))
                 .Where(CarriesContent)

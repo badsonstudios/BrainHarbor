@@ -2966,6 +2966,28 @@ Start only after Dan has signed off WI-513's template.
   the nearest open sweep is how a defect gets lost.
   **Depends on:** nothing. Blocks nothing, but it silently weakens every guard it
   touches, so do it before the corpus doubles.
+- [ ] **WI-583 Three more front-matter keys that turn a Fail into a 500** *(raised by
+  WI-561's `/review`, carried by WI-562)* — `images:` with nothing under it made
+  YamlDotNet assign **null over the property initializer**, and the figure pass then
+  threw `NullReferenceException`. WI-561 fixed that one key by null-coalescing on read.
+  **`sources`, `tags` and `disclaimers` have the identical hole and were left as found.**
+  Why it is not merely a worse error message: it is a different FAILURE MODE in three
+  places that each catch a different exception type —
+  - `ContentCheck` catches only `FormatException`, so **the CI gate crashes instead of
+    failing the page by name** (a crash is an unexplained red build, not a content error);
+  - `ContentStore.GetPage` catches only `IOException`, so **a reader gets a 500 on a
+    medical page**;
+  - `SearchPages` catches only `FormatException`, so **one dangling key takes site search
+    down for every page on the site**, not just the broken one.
+  Acceptance:
+  - All three properties null-coalesce on read, the same shape as
+    `ContentFrontMatter.Images`. Three lines.
+  - **A test per key that pins the FAILURE MODE, not just the absence of a crash**: a
+    page with `sources:` and nothing under it must Fail by name rather than throw, and
+    site search must still answer for the other 54 pages. WI-561 recorded that two
+    checks in sequence let the second cover for the first, so assert the message.
+  - Proven on a CRLF copy (`core.autocrlf=true` here, CI is Linux/LF).
+  **Depends on:** nothing. Three lines of production code; the item is the tests.
 - [x] **WI-517 Oligodendroglioma, deepened** *(done 2026-09-08 — `/tumors/oligodendroglioma`)* —
   a 172-word stub became the §12.3 seventeen-section hub. Reading grade **5.8**,
   **1357 tests** (1322 before), ContentCheck **232/0**, **all 47
@@ -4496,7 +4518,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   claim about a source is the same liability as an absence claim about the literature, and
   nobody re-opens a source recorded as unopenable.
 
-- [ ] **WI-572 The brain diagram: one picture of where the regions are**
+- [x] **WI-572 The brain diagram: one picture of where the regions are**
   Goal: let a reader see where their location is, instead of parsing "upper back
   part of the brain".
   **This is a CONSUMER of WI-561, not a second image mechanism.** WI-561 builds
@@ -4510,10 +4532,54 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   - **Drawn for us or genuinely public domain. NCI embedded images are BANNED**
     (licensed stock — PLAN.md §5), and that ban is the most likely thing to be
     forgotten when somebody reaches for an existing brain diagram.
-  - A slot added to WI-562's inventory for it.
+  - A slot added to WI-562's inventory for it. **DONE AHEAD OF THIS ITEM (WI-562,
+    2026-10-09): the diagram is `dia-brain-regions`, and it is the master of a family
+    of 15 files carrying 33 slots** — 13 shaded regional variants plus a second
+    labelling in the report's words. That is a bigger deliverable than "one picture",
+    and it is the reason the per-tumor location slot on all 23 hubs is a variant of
+    one drawing rather than 23 drawings. See `docs/images-needed.md` §5, kind 3.
   Depends on: WI-561 (**shipped — the mechanism is §3b/§12.33; the NCI ban is
   now enforced mechanically on an image's `source_url`, so the thing most
   likely to be forgotten here fails the build**), WI-567.
+
+  **Shipped 2026-10-09.** The ruling is `docs/content-pipeline.md` **§12.35**.
+  **IT IS FIFTEEN FILES AND ONE DRAWING, ON 33 SLOTS ACROSS 23 PAGES** — 22 of the
+  23 tumor hubs plus `/where-your-tumor-is`, which carries eleven of them. The
+  thirteen `dia-region-*` variants and `dia-region-names` are DERIVED from
+  `dia-brain-regions.svg`: the master's bytes plus a banner, a rewritten
+  `aria-label` and one `<style>` block that sets four custom properties on a
+  region's group id and hides every label but its own. §12.34 shrank this family
+  from 23 drawings to a master and its variants on the grounds that a region is a
+  region; **that argument is only true if the variants cannot drift**, so a test
+  rebuilds all fourteen and a second one reads the committed files alone and
+  asserts the drawing is identical in all fifteen.
+  **ACCEPTANCE, ALL FOUR.** The page works with no image at all (the nine places
+  are nine `###` entries, the figure is an enhancement and the phone guard's
+  13px floor is written against that fact); every label is held to being
+  findable in a sentence or heading the page itself can reach, or — for the
+  whole map only — on the page it routes to, with the door asserted separately;
+  the drawing is ours and CC0, and the NCI ban is asserted inside every one of
+  the fifteen files as well as on the front matter of all 23 pages; the
+  inventory slot was already written, and a new gate now holds a committed
+  figure to exactly the pages the inventory gives it, alt text included.
+  **FOUR FINDINGS, THREE ABOUT WHAT A PICTURE'S WORDS ARE.** Two hyphens in an
+  XML comment render a broken-image icon, and in a derived family one mistake in
+  the master breaks fifteen files at once. A shared figure's words are identical
+  on every page BY DESIGN, so the restatement probes had to stop reading them
+  (`ProseWithoutFigures`, twelve cross-page probes) and `FigureWordsTests` owns
+  them instead. A label is a CLAIM, which is also what decides that a variant
+  labels exactly one place. And the inventory's drafts were graded for reading
+  level and §3b and nothing else a page is held to: the first paste shipped
+  "labelled" onto eight pages.
+  **PROOF: 21 break mutations red, no survivors** (the harness found the one
+  survivor, inside a positive control that entered by a different door than the
+  defect — `DistinctBy` by file, so a restating caption on the eighth page
+  showing a shared figure was never read); suite **2,791/2,791** including the
+  Playwright E2E; ContentCheck **345/0**; LF and CRLF corpora both green; **two
+  `/review` rounds**, the second of which found that the pineal variant was still
+  unreadable at phone width, that the label guard was still near-vacuous while
+  routes counted for variants, and that three numbers in the new ruling were
+  wrong.
 
 - [x] **WI-573 Visual field loss, and the driving consequence**
   Goal: say the most concrete "what does this mean for me" answer in the whole
@@ -5425,7 +5491,7 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   Refs: docs/content-pipeline.md §5 (the automated gates), §12.8;
   wwwroot/img/cards/IMAGE-CREDITS.md; PLAN.md §5. Depends on: nothing.
 
-- [ ] **WI-562 Images Needed — the per-page slot inventory** *(Dan sources)*
+- [x] **WI-562 Images Needed — the per-page slot inventory** *(Dan sources)*
   Goal: for every curated page, say what images it wants, what kind each one is,
   and where on the page it goes — so Dan can go and find them without having to
   re-read each page first.
@@ -5484,6 +5550,25 @@ form `CuratedPage.BritishForms` bans in reader text and nothing gates in a desig
   the mechanism, now shipped: what an author writes, what the front matter has
   to carry, and the checks that fail the page)**;
   `wwwroot/img/figures/README.md`. **UNBLOCKED by WI-561.**
+  **DONE 2026-10-09 — `docs/images-needed.md`, 464 slots over 50 reader pages, 148
+  figures, 0 pictures chosen.** The headline finding is the arithmetic: the density
+  rule over the corpus as it stands is **461 slots, not ~30** — the ticket's table was
+  measured on 13,133 words and the corpus is now 217,148, so a hub is eleven to fifteen
+  slots rather than four. It stays finite because **a slot is not a file**: 464 slots
+  resolve to 148 figures, one of which (two people at a kitchen table) covers 37 slots.
+  Three rulings came out of it, all recorded in **§12.34**: the count is only right with
+  the §3a blocks COMPOSED IN (raw files give 351, and `caregiver` alone is 413 words on
+  37 pages); §3b bars an image inside a block, so the words a block contributes demand a
+  slot each including page hosts at the directive line; and **a shared photograph is
+  honest while a shared scan is a false claim**, which is why `pd-scan-*` is one member
+  per hub and why the location family is one master map plus 13 shaded variants rather
+  than 23 drawings. **No figure is slotted inside an `:::outlook` gate on any page** —
+  §3b permits one, and the only thing it could illustrate is a prognosis.
+  `ImagesNeededInventoryTests` (17 tests) holds the list to the live corpus: coverage
+  closed both ways, the density floor re-measured every run, every slot position checked
+  against the page, and every draft alt text and caption graded at the same 6.0 the page
+  is. 79 of the 148 figures are a DRAW or a BUILD rather than a search, and each of those
+  catalogue entries opens with the word.
 
 ---
 

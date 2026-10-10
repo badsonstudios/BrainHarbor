@@ -1174,7 +1174,7 @@ public sealed class AcousticNeuromaPageContentTests
         // both. The two failures came from exactly there — a door's link text and
         // an ask-list question. A clean report from one guard says nothing about
         // the other, so this page asserts itself against the one that caught it.
-        var pageShingles = LinkTextShingles(CuratedPage.ReaderText(Page)).ToHashSet();
+        var pageShingles = LinkTextShingles(CuratedPage.ProseWithoutFigures(Page)).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -1184,7 +1184,7 @@ public sealed class AcousticNeuromaPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = LinkTextShingles(CuratedPage.ReaderText(File.ReadAllText(file)))
+            var overlaps = LinkTextShingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)))
                 .Where(pageShingles.Contains)
                 .Where(s => s.Split(' ').Count(w => !Stopwords.Contains(w)) >= 3)
                 .Distinct()

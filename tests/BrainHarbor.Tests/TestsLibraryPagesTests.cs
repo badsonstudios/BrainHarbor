@@ -648,6 +648,35 @@ internal static class CuratedPage
     public static string ReaderText(string page) => ReaderTextOfBody(Body(page));
 
     /// <summary>
+    /// WI-572: the page's prose with its FIGURE LINES taken out — for the
+    /// cross-page restatement probes, and for nothing else.
+    ///
+    /// <para><b>A shared figure's words are the same words on every page that
+    /// shows it, on purpose.</b> §12.34's whole argument for one drawing with
+    /// thirteen shaded variants is that a region is a region: the same picture
+    /// is honest on the pituitary page and on the craniopharyngioma page. Its
+    /// alt text describes the FILE, so it cannot differ between them without
+    /// one of the two being wrong — and a restatement probe reading it reports
+    /// the design as a defect. (It did, on the first paste: three page-local
+    /// probes went red on "a side view of the brain with each part labeled".)
+    /// </para>
+    ///
+    /// <para><b>The words are not unguarded, they are guarded by something
+    /// that can tell the difference.</b> <c>FigureWordsTests</c> asserts that
+    /// one file carries ONE description everywhere, and that no figure's words
+    /// collide with prose that is not a figure's. That is the property these
+    /// probes were reaching for; what they can see is only the collision.</para>
+    ///
+    /// <para>Deliberately NOT folded into <see cref="ReaderText"/>, which
+    /// around a hundred guards call: an alt text is prose a reader hears, and
+    /// the British-form sweep, the minimisation scan and the reading grade all
+    /// have to keep seeing it. The first paste of this item shipped "labelled"
+    /// into eight pages and that sweep is what caught it.</para>
+    /// </summary>
+    public static string ProseWithoutFigures(string page) =>
+        Regex.Replace(ReaderText(page), @"(?m)^[ \t]*!\[.*$", "");
+
+    /// <summary>
     /// The marker-stripping half of <see cref="ReaderText"/>, for a caller that
     /// already holds a BODY rather than a whole page — notably a COMPOSED page
     /// out of <see cref="ContentStore.Parse"/>, whose front matter is already
@@ -1308,6 +1337,16 @@ internal static class CuratedPage
             text, @"(?ms)^## What to ask your team.*?(?=^## |\z)", " ", RegexOptions.Multiline);
 
         text = Regex.Replace(text, @"(?m)^#{1,6} .*$", " ");
+
+        // FIGURE LINES GO FIRST AND ON PURPOSE (WI-572). The link strip below
+        // happens to swallow `![alt](src "caption")` too, so this probe was
+        // already blind to a figure's words — by accident, through a rule
+        // written about links. The page-local copies of this helper keep link
+        // TEXT and were therefore NOT blind, and three of them went red on the
+        // first shared figure. One line, stated where it is meant, beats a
+        // side effect nobody could rely on. See ProseWithoutFigures for why a
+        // shared figure's words cannot be a restatement.
+        text = Regex.Replace(text, @"(?m)^[ \t]*!\[.*$", " ");
         text = Regex.Replace(text, @"\[[^\]]*\]\([^)]*\)", " ");
         text = Regex.Replace(text, @"[^A-Za-z]", " ").ToLowerInvariant();
 

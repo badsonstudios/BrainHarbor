@@ -1307,7 +1307,7 @@ public sealed class CnsLymphomaPageContentTests
         // the first draft it alone saw /tests/biopsy and
         // /tests/waiting-for-results. A clean report from one guard says nothing
         // about the other (§12.8, WI-541).
-        var pageShingles = LinkTextShingles(CuratedPage.ReaderText(Page)).ToHashSet();
+        var pageShingles = LinkTextShingles(CuratedPage.ProseWithoutFigures(Page)).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -1317,7 +1317,7 @@ public sealed class CnsLymphomaPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = LinkTextShingles(CuratedPage.ReaderText(File.ReadAllText(file)))
+            var overlaps = LinkTextShingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)))
                 .Where(pageShingles.Contains)
                 .Where(s => s.Split(' ').Count(w => !Stopwords.Contains(w)) >= 3)
                 .Distinct()

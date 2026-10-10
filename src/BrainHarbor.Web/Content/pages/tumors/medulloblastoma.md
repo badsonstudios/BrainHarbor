@@ -265,6 +265,13 @@ sources:
 reviewed: 2026-09-15
 review_due: 2027-03-15
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-cerebellum.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -319,6 +326,8 @@ has spread, matter more.** Both are on your report, and the next sections explai
 them.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the low back part shaded.](/img/figures/dia-region-cerebellum.svg "The shaded part is low at the back, under everything else.")
 
 It grows at the back of the brain, beside the space the brain's fluid runs
 through, and **most of the early symptoms come from that fluid backing up**.

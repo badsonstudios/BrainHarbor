@@ -462,6 +462,13 @@ sources:
 reviewed: 2026-09-30
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-cerebellum.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -513,6 +520,8 @@ Grade 1 describes a tumor that grows slowly. It is not a promise about any one
 person.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the low back part shaded.](/img/figures/dia-region-cerebellum.svg "The shaded part is low at the back, under everything else.")
 
 **Most often in the cerebellum.** That is the lower back part of the brain, and
 it runs balance and coordination. Cancer Research UK says most start there.

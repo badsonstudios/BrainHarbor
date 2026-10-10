@@ -42,6 +42,13 @@ sources:
 reviewed: 2026-09-07
 review_due: 2027-03-07
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -161,6 +168,8 @@ question and not a rude one. Your team can answer it from your report and any
 earlier scans you have had.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 These tumors can start anywhere in the brain or spinal cord, but most often they
 are in the upper part of the brain. Your team may call that supratentorial. It

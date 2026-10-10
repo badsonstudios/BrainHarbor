@@ -268,13 +268,13 @@ public sealed class MeningiomaPageContentTests
         // OVER-BROAD direction — the one that hides real collisions, and the one rounds 2,
         // 3 and 4 each had to correct by hand. Checking it here makes the suite do that
         // arithmetic every run instead.
-        var mine = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var mine = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var elsewhere = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
             .Where(f => !f.EndsWith("meningioma.md", StringComparison.Ordinal))
             .Concat(Directory.EnumerateFiles(CuratedPage.BlocksRoot, "*.md"))
-            .SelectMany(f => Shingles(CuratedPage.ReaderText(File.ReadAllText(f)), 8))
+            .SelectMany(f => Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(f)), 8))
             .ToHashSet();
 
         foreach (var entry in DeliberatelyShared)
@@ -2107,7 +2107,7 @@ public sealed class MeningiomaPageContentTests
         // here is /treatments/watch-and-wait, which already carries its own
         // meningioma paragraph — so this is the page most likely to be
         // duplicated, and the guard must not be pointed at it by hand.
-        var pageShingles = Shingles(CuratedPage.ReaderText(Page), 8).ToHashSet();
+        var pageShingles = Shingles(CuratedPage.ProseWithoutFigures(Page), 8).ToHashSet();
 
         var others = Directory
             .EnumerateFiles(CuratedPage.PagesDirectory, "*.md", SearchOption.AllDirectories)
@@ -2117,7 +2117,7 @@ public sealed class MeningiomaPageContentTests
         foreach (var file in others)
         {
             var slug = Path.GetFileNameWithoutExtension(file);
-            var overlaps = Shingles(CuratedPage.ReaderText(File.ReadAllText(file)), 8)
+            var overlaps = Shingles(CuratedPage.ProseWithoutFigures(File.ReadAllText(file)), 8)
                 .Where(pageShingles.Contains)
                 .Where(s => !AllowedShingles.Contains(s))
                 .Where(CarriesContent)

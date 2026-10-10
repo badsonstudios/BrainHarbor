@@ -156,6 +156,24 @@ screen reader reads aloud.
 `sources`, so the credit would have to be declared by a page whose author
 never wrote the picture. It fails at parse time, by name.
 
+**The first fifteen are shipped (WI-572, §12.35).** `dia-brain-regions` and its
+fourteen derived variants — the location family — are on 33 slots across 23 pages.
+They are **one drawing**: a variant is the master's bytes plus one `<style>` block, so
+do not edit a `dia-region-*.svg`; edit the master and regenerate (see
+`wwwroot/img/figures/README.md`). Two rules came out of them and apply to every figure
+that follows: **a figure's words belong to the FILE**, so the restatement probes read
+them out and `FigureWordsTests` owns them instead; and **a label drawn on a picture is
+a claim**, so every word a figure prints has to be findable on the page showing it or
+on a page it routes to.
+
+**Which pictures each page wants, and where each one goes, is
+`docs/images-needed.md`** (WI-562, §12.34): 464 slots over 50 pages resolving to 148
+figures, with the draft alt text and caption for each already graded at the 6.0 limit.
+It chooses no pictures. Two consequences of §3b are recorded there rather than here
+because they are facts about the inventory: the words a shared block contributes still
+earn a slot, hosted by each INCLUDING page at the directive line; and **no slot is
+placed inside an `:::outlook` gate on any page**, though the rules above permit one.
+
 ## 4. Plain-language style guide (both pipelines)
 
 - Sentences under ~20 words. One idea per paragraph. Question-style headers.
@@ -10517,6 +10535,69 @@ plus the citation in the diff, arithmetic first and measured second. An item tha
 itself editing those constants with nothing in its diff to account for the difference has a
 code defect, not a stale number.
 
+#### What `/review` caught, and every finding was about the guard rather than the list
+
+One round. **It re-measured the whole inventory from the corpus and every claim the file
+makes about the pages was right** — 464 rows, 148 figures, all 464 positions present, no
+figure twice on a page, no slot in a gate. **Every finding was in the test, or in a
+number quoted about the test's own subject**, which is the shape to expect when the
+deliverable is a list and the only thing holding it up is a parser.
+
+**1. A RULE ENFORCED ON A FILENAME IS A RULE A RENAME WALKS OUT OF.** The shared-scan
+guard selected on `StartsWith("pd-scan-")`, so it covered 23 of the 32 kind-4 figures and
+would have missed a diagnosis scan renamed to `pd-mri-glioblastoma`. Worse, it made the
+DOC's stated rule false: `pd-hydrocephalus-ct` is kind 4 and is deliberately on two
+pages. The guard now reads the KIND, with the mechanism pictures as a named exemption
+carrying its reason — and the exemption is checked to still be repeating, so it cannot
+become a place to park a name. **An exemption is an obligation, not a waiver.**
+
+**2. TWO MEASURED NUMBERS WERE WRONG, AND BOTH CAME FROM THE SAME BUG.** `mechanism` is
+854 words, not 864, and the raw-file total is 351 slots, not "about 342" — both were
+measured before the word count was moved onto the composed body, by a walk that **dropped
+the text following a `[BLOCK]` directive**. The numbers now come out of the same
+measurement the test makes, and they are in the file's prose because they are the
+argument for counting the composed page at all.
+
+**3. A SELF-TEST THAT RE-IMPLEMENTED THE PREDICATE PROVED THE WRONG THING.** The
+banned-source scan has a planted line to show it can fail — and the planted line was fed
+to a copy of the check written inline in the assertion, not to the loop. So the one thing
+that could kill the guard, the `- **Getting it:**` prefix it filters on, was the one thing
+not covered: rename that label and 69 figures lose cover in silence. The scan is a
+function now, called with the real notes AND the planted line, and the number of
+`Getting it` lines is pinned at one per figure. *(§12.33 finding 1, re-dug: two checks in
+sequence, and the second covering for the first.)*
+
+**4. AN `Assert.Equal` ON TWO RECORDS WITH A LIST MEMBER IS ALWAYS FALSE.** The
+CRLF-vs-LF test compared `WaveSummary` records, whose `Rows` is a list — compared by
+REFERENCE, so identical inventories failed and different ones would have failed
+identically. It flattens to strings now, with an assertion that the flattening can tell
+two inventories apart. **A comparison that is always false proves nothing in either
+direction**, which is the mirror image of a guard that cannot fail.
+
+**5. THE THREE HAND-COPIED LISTS.** The draft alt texts were checked against a private
+copy of `ContentFigures.AltPrefixesToAvoid`, and the banned-source scan against a third
+hand-written copy of the NCI/AHFS/MedlinePlus ban. A sixth prefix added in production
+would have left 148 drafts checked against a list that no longer existed. Both production
+lists are public now and the test reads them. *(`BannedImageSourceHosts` was already
+public for this reason and had no consumer — now it has one.)*
+
+**6. 150 DERIVED NUMBERS IN A FILE WHOSE PREMISE IS THAT UNGUARDED LISTS ROT.** The kind
+table, both wave totals, all 148 `used by` lines, every `Lands at` filename and each
+page's "N listed" were unchecked. They are pure functions of the file's own tables, so
+there is no corpus-drift cost to pinning them and no argument for leaving them loose.
+Pinned. The WORD counts are still deliberately not pinned, and the file says so.
+
+**7. AND TWO §3B CONTAINERS THE INVENTORY COULD HAVE VIOLATED.** `ContentBlocks`
+deliberately supports an INDENTED `[BLOCK]` directive so a block can be spliced into a
+list item — and 97 of these slots sit at a directive line. Indent one and §3b fails the
+figure, 37 slots at once in `caregiver`'s case. A directive is now only a valid position
+at the margin, and a directive inside an `:::outlook` gate counts as being in the
+outlook. Neither shape exists in the corpus today; both are mutation-proved.
+
+**The break harness, after all of that: 58 of 58 red (29 mutations x LF and CRLF), no
+survivors**, and the two the reviewer predicted would survive (the indented directive and
+an un-negated cancer.gov pointer) are mutations 21 and 17.
+
 #### Carried forward
 
 **`/tumors/all-brain-tumors` glosses one of two exceptions** (*"There is a narrow
@@ -10757,3 +10838,314 @@ hand-drawn placeholder under `/img/dev/`, served only by `/dev/styleguide`, whic
 outside Development. WI-562 is next, and the thing to carry into it is finding 2: the
 first real photograph is the first time the shape of a figure is tested by something
 that cannot letterbox itself.
+
+### 12.34 A slot is not a file, and the rule that scaled itself scaled 17x (WI-562)
+
+WI-562 is the inventory: for every curated page, how many figures it wants, which
+heading each one follows, which of the four kinds it is, and one sentence of draft alt
+text. **It chooses no pictures** — that is deliberate, and it is the whole item. The
+deliverable is `docs/images-needed.md`, held to the corpus by
+`ImagesNeededInventoryTests`.
+
+**THE RULING, IN ONE LINE: THE DENSITY RULE IS NOT WRONG, THE CORPUS IS SEVENTEEN TIMES
+BIGGER THAN THE TABLE IT WAS MEASURED ON.** One figure per ~500 words, minimum one per
+page, over the corpus as it stands is **461 slots across 50 reader-facing pages** —
+against the "~30 real pictures" §12.33 wrote down eight days earlier. The ticket
+anticipated growth in as many words (*"the rule moves it from one slot to four without
+anyone editing this ticket"*); it just did not anticipate 217,148 words of reader-facing
+body text against the 13,133 its own table adds up to. A hub is not four slots now. It
+is eleven to fifteen.
+
+What makes 461 finite is that **a slot is not a file**: they resolve to **148 distinct
+figures**, because the corpus is templated (§12.3's seventeen sections × 23 hubs, the
+test/treatment pages' repeated shapes, and eight shared blocks composed in dozens of
+times). One photograph of two people talking at a kitchen table discharges 37 slots.
+
+#### The four findings, and three of them are about counting
+
+**1. THE COUNT IS ONLY RIGHT IF YOU COUNT THE WORDS A READER READS.** The raw `.md`
+files total **351** slots; with the §3a blocks composed in it is 461. `caregiver`
+alone is 413 words on **37 pages**, `mechanism` 854 on **18**. Counting the files rather
+than the pages would have left the longest unbroken stretches on the site uncovered —
+which is the exact defect the item exists to fix, and worse, those stretches are
+*identical* on every page that includes them, so the omission would have been
+systematic rather than scattered.
+
+**2. §3B BARS AN IMAGE IN A BLOCK, SO THE WORDS A BLOCK CONTRIBUTES DEMAND A SLOT THE
+BLOCK CANNOT HOST.** The slot is hosted by each *including page*, at the directive line,
+declared in that page's own front matter. That is not a workaround — it is what makes a
+shared figure correct rather than a compromise: **the same words get the same picture**,
+and the credit still travels with the file on every page that shows it (§12.33's reason
+for putting the credit in front matter at all).
+
+**3. A SHARED PHOTOGRAPH IS HONEST. A SHARED SCAN OF A DIAGNOSIS IS A FALSE CLAIM.** An empty waiting
+room is an empty waiting room on all 50 pages. An MRI of a glioblastoma on the
+meningioma page says *this is what yours looks like*, and it is wrong. So reuse is free for
+everything except a picture **of the diagnosis**: `pd-scan-*` has one member per hub, 23
+of them, each licence-checked on its own, and no member appears twice. **The other nine
+kind-4 pictures illustrate a MECHANISM rather than a diagnosis and may repeat** —
+`pd-hydrocephalus-ct` is big fluid spaces, true on the shunts page and on the location
+page, and neither claims it is the reader's scan. `/review` was right that enforcing
+this on the `pd-scan-` NAME made it a rule about filenames that a rename walks out of;
+the guard reads the KIND and carries the mechanism pictures as a named exemption with
+its reason, in the shape `TumorHubTemplateSweepTests` ruled on — **an exemption is an
+obligation, not a waiver**, so an exempted picture that stops repeating has to be
+deleted from the list rather than left parked in it. This is the one place in the inventory where the per-page work
+does not collapse — and it is the slowest wave per picture for exactly that reason.
+Pointed the other way, it is also what shrank the location family from 23 drawings to
+**one master map, 13 shaded variants and a second labelling**: a region is a region, so `dia-region-sellar`
+is honest on both the pituitary and the craniopharyngioma page.
+
+**4. NO FIGURE GOES INSIDE AN `:::outlook` GATE, ON ANY PAGE.** §3b permits one. The
+outlook section's subject is how long people live, and the only thing a picture there
+could illustrate is a prognosis — the one claim the whole anti-hype apparatus exists to
+keep off these pages. Every hub's *"What might happen over time"* is deliberately empty
+of slots. **The first draft of the guard for this measured nothing**: it looked for
+headings *between* the fences and found none on any of the 55 pages, because the corpus
+writes the heading ABOVE the fence every time. A check that returns an empty set over
+the whole corpus passes forever, so the rewritten one asks which heading *owns* the
+gate, and a second test asserts a floor of 20 pages having that shape before the first
+one is trusted (WI-569: a property guard that has never been seen to fail has not been
+shown to work).
+
+#### Why a list gets a test, and what it does not pin
+
+A list about 55 files that nothing reads goes stale the week after it is written. The
+guard holds six things: coverage closed in **both** directions (a page added later
+cannot acquire "no pictures needed" by being forgotten); the density floor re-measured
+from the live corpus with blocks composed in; every slot position checked against the
+page, so a renamed heading fails rather than leaving a position nobody can find; every
+draft alt text and caption graded at the same **6.0** the page is and held to §3b's
+figure rules; no slot in an outlook gate; and one `pd-scan-*` per page. It also reads
+the sourcing notes for a pointer at a banned source — `ContentFigures` enforces the
+NCI/AHFS/MedlinePlus ban on a committed image's `source_url` **and** its `credit`, but
+nothing would have caught a *note* telling the next person to go to cancer.gov for a
+brain diagram, and the note is read weeks before the front matter is written.
+
+**What it deliberately does not pin: the word counts the file quotes.** They are a
+measurement at a named commit, and pinning them would turn every ordinary content edit
+anywhere in the corpus into a red build in this one file. The floor is pinned; the
+snapshot is documented.
+
+**Five pages get no slots and that is a ruling, not an omission.** `/about`, `/digest`,
+`/how-we-write`, `/privacy`, `/terms`: "minimum one per page" is a rule about pages a
+reader reads **for care**, not about the terms of service. The set is closed in the
+test, each member carries a written reason, and a new page cannot join it.
+
+#### Carried forward
+
+**No picture is sourced here**, by design — that is the next job, and the inventory
+orders it into three waves (49 figures in wave 1, which is where every shared-block
+drawing sits). Carried from §12.33 and still true: **the first real photograph is the
+first time the shape of a figure is tested by something that cannot letterbox itself.**
+79 of the 148 figures are a DRAW or a BUILD rather than a search, and the catalogue
+opens each of those entries with the word, so nobody discovers it halfway through.
+
+**WI-572's diagram is `dia-brain-regions`,** the master of the location family and the
+most load-bearing drawing on the site: 14 further files and 33 slots hang off it.
+
+### 12.35 The drawing exists once, and a label is a claim the page has to make too (WI-572)
+
+WI-572 is the first real picture in the corpus: `dia-brain-regions`, a side view of the
+brain with the nine places `/where-your-tumor-is` names labeled in that page's own
+words, **drawn for BrainHarbor and released CC0**. It ships with the other fourteen
+files of §12.34's location family — thirteen shaded regional variants and a second
+labeling in a report's words — on **33 slots across 23 pages**: 22 of the 23 tumor
+hubs plus the location page. (`/tumors/all-brain-tumors` is the one hub with no
+map, which is a question for the inventory rather than for this item: it is where
+the shared mechanism block sends people.)
+
+**THE RULING, IN ONE LINE: §12.34 SHRANK THIS FAMILY FROM 23 DRAWINGS TO ONE MASTER
+AND ITS VARIANTS, AND THAT ARGUMENT IS ONLY TRUE IF THE VARIANTS CANNOT DRIFT.** A
+region is a region, so `dia-region-sellar` is honest on the pituitary page and on the
+craniopharyngioma page — but fifteen hand-kept copies of one drawing would be that
+claim with nothing behind it, and the first edit to the master would leave fourteen
+pages showing a map that no longer matches. So the fourteen are **derived**: each one
+is the master's bytes with a banner comment, a rewritten `aria-label`, and one
+`<style>` block that shades a region and hides every label but its own.
+`BrainRegionFamilyTests` rebuilds all fourteen and fails on a byte, and a second test
+reads the committed files alone and asserts the DRAWING is byte-identical in all
+fifteen — so a derivation that is wrong in both directions is still a red build.
+
+Shading is four custom properties set on one group id, which is why a variant is four
+lines rather than a second drawing: every shadeable property in the master reads a
+custom property with its own default, so the same four lines work on a lobe, on a line
+of bone and on a nerve. The region ids are read off the drawing rather than listed
+anywhere, so a region drawn with no variant file fails, and a variant shading nothing
+the master draws cannot be derived at all.
+
+#### Four findings, and three of them are about what a picture's words are
+
+**1. TWO HYPHENS IN AN XML COMMENT DO NOT RENDER A PICTURE, THEY RENDER A BROKEN-IMAGE
+ICON — AND A DERIVATION MULTIPLIES THAT BY FIFTEEN.** The master's own comment explained
+the shading by naming the custom property it sets. Two hyphens in a row are illegal
+inside an XML comment, an SVG loaded through `<img>` is parsed as XML, and every other
+file in the family is a copy of that one: all fifteen stopped rendering at once, with
+the caption and the credit still sitting under the gap. This is the one failure mode of
+§12.33's four that a reader can SEE, and it was still found in a browser rather than by
+reading. Every family file now gets the cheapest possible check that it is a file at
+all (`XDocument.Parse`), plus a ban on two hyphens inside any comment in it.
+
+**2. A SHARED FIGURE'S WORDS ARE THE SAME WORDS ON EVERY PAGE BY DESIGN, SO THE
+RESTATEMENT PROBES HAD TO STOP READING THEM.** An alt text says what is IN the picture,
+which makes it a property of the FILE: two pages describing one drawing differently
+means one of them is wrong, and the only reader who would ever find out is the one
+using a screen reader. Three page-local restatement probes went red on the first paste
+— "a side view of the brain with each part labeled" — and one of them produced a
+shingle that straddled the end of a paragraph and the start of an alt text. **The
+corpus-wide probe was already blind to figure lines by accident**, through a rule
+written about links, which is not something to rely on. `ProseWithoutFigures` now takes
+figure lines out in one place, the twelve cross-page probes read it, and the exclusion
+is stated rather than inherited.
+
+**It is not an exemption, it is a change of owner.** `FigureWordsTests` asks what those
+probes were reaching for and could not phrase: one file carries one description
+everywhere it appears, and a figure's words collide with nothing that is not that
+figure. That guard needed two widenings to go green — headings out, then link text out
+— and each widening is a step towards a probe that can no longer see anything, so it
+carries a positive control lifted verbatim out of `/tumors/glioma`'s own prose
+(WI-569: a guard that has never been seen to fail has not been shown to work).
+
+**3. EVERY LABEL DRAWN ON A FIGURE IS A CLAIM THE TEXT HAS TO MAKE TOO.** This item's
+acceptance asks for "alt text and a text equivalent that names every region the diagram
+labels", and that is a property over the corpus rather than a sentence on one page: for
+all 33 placements, every word the drawing prints has to be findable on the page or on a
+page it routes to. **It is also what decides what a variant may label.** The master
+labels nine places because `/where-your-tumor-is` has nine `###` region entries; a
+shaded variant labels exactly ONE, because the hub page showing it names that region
+and not the other eight. A map labeling nine places on a page about one of them is
+eight claims that page never makes.
+
+**The route half is not a loophole — it is why the master can be on eight pages.**
+Requiring a hub to name all nine would push the whole location topic back onto every
+hub, which §12.10 and §12.18 spent two items pulling out of them. The hub carries the
+picture and the door; `/where-your-tumor-is` carries the words; and a separate
+assertion holds every page showing the whole map to having that door. **The first
+version of the guard scoped the door to the figure's own section, and the corpus said
+no:** the route a hub has to the location page lives inside the shared `[MECHANISM]`
+block, and that block opens a `##` heading of its own partway through, so the door is
+four paragraphs under the picture and in the NEXT section by the composer's reckoning.
+A guard scoped to the section would have been a rule about where a shared block puts
+its heading, which is not a fact about the picture.
+
+**4. THE INVENTORY'S DRAFTS WERE GRADED FOR READING LEVEL AND FOR §3b, AND FOR NOTHING
+ELSE A PAGE IS HELD TO.** `docs/images-needed.md` was written to be pasted — "the page
+edit is a paste rather than a fresh piece of writing" — and the very first paste shipped
+**"each part labelled in plain words"** onto eight pages, where the corpus-wide
+American-forms sweep caught it. **Fifteen** drafts carried a form the corpus's own list
+gates — *labelled* six times, *colour* six, and one each of *grey*, *licence* and
+*a drip* — and five further lines were reworded in the same pass for consistency
+(*tablets* to *pills*, *drips* to *infusions*) or because this item changed what the
+picture shows. All fifteen are fixed, and
+`ImagesNeededInventoryTests` now reads `CuratedPage.BritishForms` — the corpus's own
+list rather than a copy of it — over every draft alt text and caption. **A draft
+written to be pasted is page prose that has not been pasted yet, and every rule about
+page prose applies to it on the day it is written.**
+
+#### What else the first real figure changed
+
+- **The print claim is now made by a real figure on a real page.** §12.33's second
+  finding was that the style guide's sample is an SVG that letterboxes itself inside a
+  distorted box, so the PDF looked right while the picture was squashed — *a sample
+  that cannot exhibit the defect is a sample that certifies it*. `/tumors/glioma` is
+  printed to PDF now with the real 1100x760 map on it, and the ratio is asserted from
+  the printed layout. `/where-your-tumor-is` carries **eleven figures**, a density no
+  surface in this repo has had: the first eager and the other ten lazy, and none of
+  them widens a 390px screen.
+- **A committed figure is on exactly the pages the inventory gives it**, checked in both
+  directions. Until a picture existed the inventory was a list of intentions nothing
+  could contradict; now a page that acquires a figure nobody planned, or quietly loses
+  one in an unrelated edit, is a red build — and losing one is otherwise invisible,
+  because the page still renders and so does every other page showing that file.
+- **The placeholder waiting for this item was replaced, not deleted** (WI-547's
+  precedent, for the third time): `/where-your-tumor-is` asserted "the corpus has no
+  images at all today" with a flat ban on `![`, and now asserts eleven figures with one
+  shaded variant per region entry — because a page where eight of nine entries carry a
+  picture reads as unfinished, and a count of eleven cannot say that.
+
+#### What the break harness and `/review` found, which reading did not
+
+**THE BREAK HARNESS FOUND THE ONE SURVIVOR, AND IT WAS IN A POSITIVE CONTROL.** Twenty-one
+mutations, twenty red: a hand-edited variant, a master that changes while the variants
+do not, two hyphens in a comment, a page that loses its figure line, two pages
+describing one drawing differently, a label no page can say, a hub that loses its door,
+a British spelling back in the inventory, a declared pixel size that stops matching the
+file, a region with no variant, a variant shading somebody else's region, a deleted
+file, an NCI credit, a region entry that loses its picture, and a figure placed on a
+page the inventory never gave it. The nineteenth — *a caption restates the page's own
+prose* — came back **green**, with the guard's own positive control passing beside it.
+The comparison ran `DistinctBy(f => f.Src)`, one placement per FILE, so a restating
+caption on the eighth page showing a shared figure was never read; and the control
+planted a figure with a src of its own, which is the one shape `DistinctBy` keeps. **A
+control that enters by a different door than the defect pins nothing** — the third time
+this repo has written that sentence (WI-567, WI-579) and the first time a harness rather
+than a reviewer caught it. The repaired control then did it again: planted on the last
+placement in directory order, which is the only placement of its file, so `DistinctBy`
+would have kept that one too. It now plants on the last placement of the MOST-shared
+file, which is the case the defect needs.
+
+**`/review` FOUND A PICTURE THAT WAS A PICTURE OF ITS OWN POINTER.** The leader dot is 6
+units across and four of the thirteen regions are not much bigger: on
+`dia-region-pineal` the dot sat concentric with the shaded gland and covered it, so the
+page for a tumor of that gland showed a grey dot captioned *"the shaded part is the
+small gland deep in the middle"*. Every guard in this item passed — the CSS said the
+right region was shaded, and nothing renders. **The four regions that are not much
+bigger than the dot now have their leader end BESIDE them**, and the gland is drawn
+bigger than life, because at the width a phone gives this figure true scale is three
+pixels. The nine bigger regions keep a dot on the shape, which is ordinary; the rule is
+about the small ones, and it is written that way in the file so the next editor does
+not "fix" the drawing to match an absolute version of it.
+
+**AND THE TYPE INSIDE THE PICTURE IS A RATIO, NOT A NUMBER.** The first draft set 34px
+in a 1200-unit viewBox, which is about **10px in a 390px phone column** — against
+`site.css`'s "16px, the smallest allowed anywhere". The labels ARE the diagram's
+content, and no browser setting enlarges them. The map is now 42px in an 1100-unit box
+(about 13.5px), its label strings are shortened to fit, and the phone test MEASURES the
+rendered label size rather than the picture's box. **The bar is 13px and not 16, with
+the reason written into the test:** nine labels and a readable drawing do not both fit
+in a 390px column at 16px, and this item's own acceptance says the page works with no
+image at all — the nine places are nine headings, and the figure is an enhancement over
+them. A floor that catches a regression is worth more than a bar nothing can meet.
+
+Three more, each a rule for the next figure as much as for this one: a **greyscale
+print** is where a shaded LINE disappears (the skull-base variant changed luminance by
+1.21x at the first weight tried, where a filled region changes by 3x, so the shade now
+carries a weight change the paper can see); **`<use>` inside `<clipPath>`** is the one
+construct in the drawing with a history of rendering as nothing in older WebKit, and it
+was holding four lobes inside the brain's outline, so the outline moved INTO the clip
+path and `<use>` draws the visible copy; and a guard's **docstring can promise what its
+assertion does not do** — the location page's "every region entry has its own variant"
+was a whole-page `Contains` under a comment explaining why a whole-page check is not
+enough, and it is now sliced per `###` entry and matched anchor to region.
+
+**AND A SECOND REVIEW ROUND FOUND THAT HALF OF THAT WAS NOT YET TRUE.** The dot came
+off the gland and the picture was still unreadable at the width a phone gives it: 18
+units of clearance is 0.7px in a 354px column, and the shaded gland and its grey
+pointer fused into one blob. The gland is drawn bigger than life now, and the lesson
+generalises past this file — **a figure is only as good as its smallest meaningful
+mark, measured at the width the page actually renders it**, which is not the width you
+drew it at. The same round found that the label guard, strengthened once already, was
+still near-vacuous: 18 of the 22 hubs route to a page that names all nine regions, so
+with routes allowed for the shaded variants every variant was interchangeable with
+every other. A ROUTE NOW COUNTS FOR THE WHOLE MAP AND NOT FOR A SHADED ONE — a variant
+labels one place, and the page showing it has to be able to say that place in its own
+words. Five placements failed that on the first run: three pages gained the plain
+phrase beside the report's word (house style, §4), and three labels were reworded to
+the words their page already uses. **And the guard was reading the figure's own alt
+text as the page's text equivalent**, which collapses the "and" in *alt text AND a text
+equivalent* — on seven of the fifteen variant pages the figure's own line was the only
+sentence carrying its label's words.
+
+Three more from that round, each the same shape as the pineal: **a claim in a comment
+is a claim**. "A leader ends beside its region, never on it" was false of ten of the
+thirteen regions, "the figure printed to PDF is 1200x800" was the size before this
+item's own relayout, and "twenty-one drafts carried a British form" counted five
+rewordings the gate never fired on (it is fifteen). Three numbers in a document about
+a rule nobody could measure, written by the item that measured it.
+
+**And four placements carry a caption of their own**, because a picture under *"where
+does it grow"* is an answer to that question: `/tumors/atrt` shades the cerebellum on a
+page whose own text says about half start there, and chordoma, ependymoma and the germ
+cell tumors are the same shape. The inventory's draft caption is a default per FILE;
+the alt text is pinned to it and the caption is not, and the four exceptions are named
+in `docs/images-needed.md` so the next paste does not flatten them.

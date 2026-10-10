@@ -417,6 +417,13 @@ sources:
 reviewed: 2026-09-19
 review_due: 2027-03-19
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-spinal-cord.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -471,6 +478,8 @@ them decided a grade would not help. If your report has a name and no number
 beside it, nothing is missing. Ask your team to read your report with you.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the cord running down the back shaded.](/img/figures/dia-region-spinal-cord.svg "The shaded part is the cord running down the back.")
 
 **Where it sits decides almost everything**, so this is worth understanding once.
 Doctors sort these tumors into three places.

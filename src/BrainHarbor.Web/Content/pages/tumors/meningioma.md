@@ -361,6 +361,13 @@ sources:
 reviewed: 2026-09-12
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-meninges.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -439,6 +446,8 @@ something that is not cancer. The useful questions are where it is and what it
 is doing, not which side of that word it falls on.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the thin covering layers shaded.](/img/figures/dia-region-meninges.svg "The shaded part is the coverings over the brain.")
 
 **This is the idea the whole page is built on.** Where it sits decides what
 you notice, and much of what your team plans. Size decides less than you

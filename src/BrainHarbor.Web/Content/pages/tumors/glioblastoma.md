@@ -66,6 +66,13 @@ sources:
 reviewed: 2026-09-08
 review_due: 2027-03-08
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -132,6 +139,8 @@ first look, and they are what the rules go on now.
 [Molecular markers](/tests/molecular-markers) explains each of those results.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 Most glioblastomas grow in the large upper part of the brain. That part handles
 movement, speech, thinking and vision. So the first symptoms are often on one

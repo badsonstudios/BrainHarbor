@@ -37,6 +37,13 @@ sources:
 reviewed: 2026-09-07
 review_due: 2027-03-07
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -158,6 +165,8 @@ been reported, but they are unusual enough to be written up when they happen.
 So the thing staging is designed to measure mostly does not apply here.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 [MECHANISM]
 

@@ -358,6 +358,13 @@ sources:
 reviewed: 2026-09-18
 review_due: 2027-03-18
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-hearing-nerve.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 ## The short version
 
@@ -425,8 +432,10 @@ doing.** Both come further down.
 
 ## Where does it grow, and why does it cause these symptoms?
 
+![The brain map with the nerve behind the ear shaded.](/img/figures/dia-region-hearing-nerve.svg "The shaded part is the nerve behind the ear.")
+
 **Nearly everything on this page follows from one fact: it grows on the nerve
-that carries hearing and balance.**
+that carries hearing and balance from the inner ear to the brain.**
 
 The growth usually starts on the balance branch. That is the first reason the
 old name is a poor fit, and there is a second: it is made of the wrapping

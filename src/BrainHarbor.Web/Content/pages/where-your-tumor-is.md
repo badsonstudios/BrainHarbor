@@ -857,6 +857,73 @@ sources:
 reviewed: 2026-09-30
 review_due: 2027-03-31
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-names.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-frontal.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-temporal.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-parietal.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-occipital.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-cerebellum.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-brainstem.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-ventricles.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-skull-base.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
+  - src: /img/figures/dia-region-sellar.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version {#short-version}
@@ -881,6 +948,8 @@ warning of its own.
 [the reason](#no-list) is worth the two minutes.
 
 ## What "where it is" tells you, and what it does not {#what-it-means}
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 A scan gives your team two things at once: a picture, and a place read out of it.
 The place is the part of the report that reads like directions.
@@ -944,6 +1013,8 @@ and why there is no reason to hold the question back.
 
 ## The regions, in plain words and in your report's words {#the-regions}
 
+![The same brain map, labeled with the words a report uses.](/img/figures/dia-region-names.svg "The same places, in the words your report is written in.")
+
 Nine places, in the order this site uses elsewhere. Each one gives the plain
 name first and then the word your scan report is likely to use, because the word
 on the paper is often the only clue you were handed.
@@ -972,6 +1043,8 @@ cause](/tumors/all-brain-tumors#where-is-this-coming-from).
 
 ### The front of your brain {#front}
 
+![The brain map with the front shaded.](/img/figures/dia-region-frontal.svg "The shaded part is the front of the brain.")
+
 Above and behind your forehead.
 !%frontal lobe%Your report may call this the **frontal lobe**. There are two, one on
 each side, and they are the largest of the four lobes.
@@ -982,17 +1055,23 @@ side.
 
 ### The side of your brain, near your ear {#side}
 
+![The brain map with the side, near the ear, shaded.](/img/figures/dia-region-temporal.svg "The shaded part is the side of the brain, near the ear.")
+
 Your report may call this the **temporal lobe**. There are two, and they sit at
 about ear level on each side of your head. Other pages here call the same place the
 side of the brain near the temple, which is the same spot.
 
 ### The upper back part of your brain {#upper-back}
 
+![The brain map with the upper back part shaded.](/img/figures/dia-region-parietal.svg "The shaded part is the upper back part of the brain.")
+
 Your report may call this the **parietal lobe**, and there are two of these as
 well. It is the main place where what your body feels gets put together with
 everything else your brain knows.
 
 ### The back of your brain {#back}
+
+![The brain map with the back shaded.](/img/figures/dia-region-occipital.svg "The shaded part is the back of the brain.")
 
 At the very back of your head. Your report may call this the **occipital lobe**.
 There are two, and they are where what your eyes send gets turned into seeing.
@@ -1002,6 +1081,8 @@ There are two, and they are where what your eyes send gets turned into seeing.
 
 ### Low at the back, under everything else {#cerebellum}
 
+![The brain map with the low back part shaded.](/img/figures/dia-region-cerebellum.svg "The shaded part is low at the back, under everything else.")
+
 Your report may call this the **cerebellum**. It sits at the back of the brain,
 underneath the lobes above it.
 
@@ -1010,6 +1091,8 @@ underneath the lobes above it.
 cerebellum, the brain stem and several of the nerves to the face and head.
 
 ### The stalk the brain sits on {#brainstem}
+
+![The brain map with the stalk at the base shaded.](/img/figures/dia-region-brainstem.svg "The shaded part is the stalk the brain sits on.")
 
 Your report may call this the **brain stem**, or it may name one of the three
 parts it is made of instead: the **midbrain**, the **pons** and the **medulla**,
@@ -1023,6 +1106,8 @@ takes that question.
 
 ### Deep in the middle, where the fluid runs {#ventricles}
 
+![The brain map with the deep fluid spaces shaded.](/img/figures/dia-region-ventricles.svg "The shaded part is deep in the middle, where the fluid runs.")
+
 Your report may call these the **ventricles**. There are four, and it may name
 which one: the two **lateral ventricles**, one in each half of the brain, the
 **third ventricle** in the center of the brain, and the **fourth ventricle**.
@@ -1035,6 +1120,8 @@ what happens if the flow through there is held up, and it is worth reading if th
 is your region.
 
 ### The floor of the skull {#skull-base}
+
+![The brain map with the floor of the skull shaded.](/img/figures/dia-region-skull-base.svg "The shaded part is the floor of the skull.")
 
 Your report may call this the **skull base**. It is an umbrella word, and it
 means the whole floor of the skull, the part the brain rests on. That is how
@@ -1055,6 +1142,8 @@ The useful question is which part of the floor yours is on, and you can put it t
 your team in those words.
 
 ### Behind your nose, at the base of your brain {#pituitary}
+
+![The brain map with the small gland behind the nose shaded.](/img/figures/dia-region-sellar.svg "The shaded part is behind the nose, at the base of the brain.")
 
 Your report may call this the **pituitary**, or it may name the small hollow the
 gland sits in. That hollow has two names on paper: the **pituitary fossa** and

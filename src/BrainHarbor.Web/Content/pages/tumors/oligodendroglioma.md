@@ -47,6 +47,13 @@ sources:
 reviewed: 2026-09-08
 review_due: 2027-03-08
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-frontal.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -143,6 +150,8 @@ ones. Both grades are treated, and with the same kinds of treatment. What
 changes is usually the order and how soon they start.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the front shaded.](/img/figures/dia-region-frontal.svg "The shaded part is the front of the brain.")
 
 This tumor has a favorite address. It turns up most often in the **frontal
 lobe**, and it tends to sit in and just under the cortex, which is the folded
