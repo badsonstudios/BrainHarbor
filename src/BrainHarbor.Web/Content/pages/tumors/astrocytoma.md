@@ -35,6 +35,13 @@ sources:
 reviewed: 2026-09-08
 review_due: 2027-03-08
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -142,6 +149,8 @@ Comparing your grade with somebody else's, when the names differ, tells you less
 than it looks like it does.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 !%frontal lobe%An IDH-mutant astrocytoma can occur anywhere in the brain or spinal
 cord, but it is usually **near or in the frontal lobes**, the front of the brain. That

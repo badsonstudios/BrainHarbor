@@ -2084,9 +2084,46 @@ public sealed class WhereYourTumorIsPageContentTests
         Assert.Contains("it says what that means for driving", Headline,
             StringComparison.Ordinal);
 
-        // WI-572 owns the diagram, and the corpus has no images at all today.
-        Assert.DoesNotContain("![", Page, StringComparison.Ordinal);
+        // WI-572 LANDED THE DIAGRAM, so the placeholder here ("the corpus has
+        // no images at all today", with a flat ban on `![`) is REPLACED rather
+        // than deleted — WI-547's precedent again, and the same move this very
+        // test made on WI-573's three bans. The new subject is the thing the
+        // ban was standing in for: this page carries the master map, the
+        // report-labelled twin and one shaded variant per region, and it never
+        // hand-writes the markup a figure is made of.
+        Assert.Equal(11, Regex.Matches(Page, @"(?m)^!\[").Count);
+        Assert.Contains("![A side view of the brain", Page, StringComparison.Ordinal);
         Assert.DoesNotContain("<figure", Page, StringComparison.Ordinal);
+
+        // AND EVERY REGION ENTRY HAS ITS OWN, IN ITS OWN SUBSECTION. Nine
+        // `###` entries, nine shaded variants: a page where eight of the nine
+        // carry a picture reads as unfinished, and the one without it reads
+        // as the one nobody bothered to explain.
+        //
+        // THE SLICE IS THE POINT, and the first version of this did a
+        // whole-page `Contains` under a comment claiming otherwise
+        // (/review): all nine could sit under one heading and both that and
+        // the count above would pass. The pairing is what matters — the
+        // shaded map belongs to the entry that explains the place — so the
+        // anchor of each entry is matched to the region it must show.
+        var entries = Regex.Matches(
+            Page.Replace("\r\n", "\n"),
+            @"(?ms)^### .*?\{#(?<anchor>[^}]+)\}(?<body>.*?)(?=^#{2,3} |\z)");
+
+        Assert.Equal(9, entries.Count);
+
+        foreach (var (anchor, region) in new[]
+            {
+                ("front", "frontal"), ("side", "temporal"), ("upper-back", "parietal"),
+                ("back", "occipital"), ("cerebellum", "cerebellum"), ("brainstem", "brainstem"),
+                ("ventricles", "ventricles"), ("skull-base", "skull-base"), ("pituitary", "sellar"),
+            })
+        {
+            var entry = entries.FirstOrDefault(m => m.Groups["anchor"].Value == anchor);
+            Assert.True(entry is not null, $"the page has no '### …{{#{anchor}}}' entry");
+            Assert.Contains($"/img/figures/dia-region-{region}.svg", entry!.Groups["body"].Value,
+                StringComparison.Ordinal);
+        }
     }
 
     /// <summary>

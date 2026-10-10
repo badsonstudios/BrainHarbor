@@ -929,6 +929,13 @@ sources:
 reviewed: 2026-09-19
 review_due: 2027-03-19
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-cerebellum.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -986,6 +993,8 @@ What matters more than the number is where the tumor is, whether it has spread,
 and what your team can do about it. Those are the next sections.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the low back part shaded.](/img/figures/dia-region-cerebellum.svg "About half of these tumors start in the shaded part, low at the back.")
 
 **Start with the fluid.** The brain is bathed in a watery fluid. It circles the
 brain, runs down around the cord, and drains off. A growth in the wrong spot can

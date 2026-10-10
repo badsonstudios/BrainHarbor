@@ -748,6 +748,13 @@ sources:
 reviewed: 2026-09-20
 review_due: 2027-03-20
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-skull-base.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -818,6 +825,8 @@ it. Those come further down.
 writing a grade. The rules changed in 2021 and ordinary numbers are used now.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the floor of the skull shaded.](/img/figures/dia-region-skull-base.svg "About a third start in the shaded part. The rest start lower down the spine.")
 
 **Three places, all down the middle.** The base of the skull, the spine, and the
 sacrum, which is the bone at the bottom of your spine behind your hips.

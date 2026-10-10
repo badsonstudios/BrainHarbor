@@ -412,6 +412,13 @@ sources:
 reviewed: 2026-09-18
 review_due: 2027-03-18
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-region-ventricles.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 ## The short version
 
@@ -472,6 +479,8 @@ Your report will name the cell. Your scans and an eye examination say where it
 is. Those two things, not a number, are what the plan is built from.
 
 ## Where does it grow, and why does it cause these symptoms?
+
+![The brain map with the deep fluid spaces shaded.](/img/figures/dia-region-ventricles.svg "The shaded part is deep in the middle, where the fluid runs.")
 
 **It tends to grow deep, near the fluid spaces in the middle of the brain.**
 

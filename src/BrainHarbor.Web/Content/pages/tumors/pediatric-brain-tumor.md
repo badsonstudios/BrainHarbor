@@ -633,6 +633,13 @@ sources:
 reviewed: 2026-09-16
 review_due: 2027-03-16
 disclaimers: [medical]
+images:
+  - src: /img/figures/dia-brain-regions.svg
+    credit: "Made for BrainHarbor"
+    license: "CC0 1.0 (public domain)"
+    license_url: https://creativecommons.org/publicdomain/zero/1.0/
+    width: 1100
+    height: 760
 ---
 
 ## The short version
@@ -690,6 +697,8 @@ study before you carry the result across. That is worth doing even when the
 tumor name matches.
 
 ## Where it grows, and why that causes symptoms
+
+![A side view of the brain with each part labeled in plain words.](/img/figures/dia-brain-regions.svg "The parts of the brain, in the words this site uses.")
 
 **Two notes before the next part, because it was written for an adult patient
 and you are a parent.** It says "you" and "your tumor", and here the tumor is

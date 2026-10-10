@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- dia-region-occipital: DERIVED FROM dia-brain-regions.svg (WI-572). DO NOT EDIT.
+
+     This file is the master drawing with the occipital region shaded and every label but
+     its own hidden.
+     BrainRegionFamilyTests rebuilds it from the master and fails on any
+     difference, so an edit here is lost and an edit to the master is carried
+     to the whole family. Change the drawing in the master.
+
+     Drawn for BrainHarbor, CC0. NEVER an NCI embedded image, and nothing out
+     of the AHFS or MedlinePlus monographs (PLAN.md §5). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 760" width="1100" height="760"
+     role="img"
+     aria-label="A side view of the brain with one part shaded.">
+  <!-- EVERY SHADEABLE PROPERTY READS A CUSTOM PROPERTY WITH ITS OWN DEFAULT,
+       which is what lets a variant be four lines rather than a second copy of
+       the drawing: shading a region is setting those properties on one group
+       id, and the same four lines work on a lobe, on a line of bone and on a
+       nerve, because each class consumes the one that applies to it. -->
+  <style>
+    .bg { fill: #eef3f7; }
+    .part { fill: var(--shade, #dbe6ee); stroke: #0d3b4a; stroke-width: 3; }
+    .hollow { fill: var(--shade, #ffffff); stroke: #0d3b4a; stroke-width: 3; }
+    .line { fill: none; stroke: var(--stroke-shade, #0d3b4a);
+            stroke-width: var(--line-weight, 3); }
+    .detail { fill: none; stroke: var(--detail-shade, #0d3b4a); stroke-width: 3; }
+    .bone { fill: none; stroke: var(--stroke-shade, #455263);
+            stroke-width: var(--line-weight, 7); stroke-linecap: round; }
+    .nerve { fill: none; stroke: var(--stroke-shade, #0d3b4a);
+             stroke-width: var(--line-weight, 5); stroke-linecap: round; }
+    .leader { fill: none; stroke: #455263; stroke-width: 3; }
+    .dot { fill: #455263; }
+    text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+           font-size: 42px; fill: #16202b; }
+    .report { display: none; }
+    .label--variant-only { display: none; }
+  </style>
+
+  <rect class="bg" width="1100" height="760"/>
+
+  <!-- The brain, seen from the side, facing left. Drawn in its own
+       coordinates and placed once, so the shapes can be read as geometry
+       rather than as arithmetic. -->
+  <g transform="translate(193 57) scale(0.721)">
+    <defs>
+      <!-- The outline is defined INSIDE the clip path and drawn from it with
+           <use>, rather than the other way round: a <use> inside a <clipPath>
+           is the one construct in this file with a history of rendering as
+           nothing in older WebKit, and here that would put four lobe polygons
+           outside the brain with no fallback and no error. -->
+      <clipPath id="cerebrum">
+        <path id="brainline" d="M 206 300
+          C 206 230 236 166 300 128
+          C 352 98 416 86 470 90
+          C 548 96 622 124 678 170
+          C 726 210 760 266 762 324
+          C 764 378 740 424 700 442
+          C 664 458 622 452 580 450
+          C 520 448 452 452 396 450
+          C 332 448 282 436 248 410
+          C 218 386 206 344 206 300 Z"/>
+      </clipPath>
+    </defs>
+
+    <!-- The four lobes tile the cerebrum exactly: they share their corners,
+         and the clip is what gives each one the brain's own edge. -->
+    <g clip-path="url(#cerebrum)">
+      <g id="region-frontal">
+        <path class="part" d="M 100 0 L 488 0 L 420 330 L 214 372 L 100 372 Z"/>
+      </g>
+      <g id="region-parietal">
+        <path class="part" d="M 488 0 L 730 0 L 616 318 L 420 330 Z"/>
+      </g>
+      <g id="region-occipital">
+        <path class="part" d="M 730 0 L 900 0 L 900 560 L 640 560 L 616 318 Z"/>
+      </g>
+      <g id="region-temporal">
+        <path class="part" d="M 100 372 L 214 372 L 420 330 L 616 318 L 640 560 L 100 560 Z"/>
+      </g>
+    </g>
+    <use href="#brainline" class="line"/>
+
+    <g id="region-cerebellum">
+      <path class="part" d="M 612 452 C 660 444 724 452 762 476
+        C 792 496 788 546 752 568 C 708 594 648 584 620 556 C 602 536 600 470 612 452 Z"/>
+      <path class="detail" d="M 632 458 C 656 490 670 526 668 568"/>
+      <path class="detail" d="M 674 452 C 702 482 718 518 718 554"/>
+      <path class="detail" d="M 718 460 C 748 482 768 510 776 538"/>
+    </g>
+    <g id="region-brainstem">
+      <path class="part" d="M 516 430 L 568 436 C 578 490 584 546 586 596
+        L 540 602 C 538 544 530 486 518 452 Z"/>
+    </g>
+    <g id="region-spinal-cord">
+      <path class="part" d="M 540 602 L 586 596 L 598 740 L 552 746 Z"/>
+    </g>
+    <g id="region-ventricles">
+      <path class="hollow" d="M 338 296 C 354 246 406 224 462 234
+        C 506 242 530 266 536 296
+        C 516 280 480 264 434 264 C 388 264 358 280 338 296 Z"/>
+    </g>
+    <g id="region-pineal">
+      <circle class="hollow" cx="566" cy="306" r="24"/>
+    </g>
+
+    <!-- The floor: under the side of the brain, a hollow for the gland, the
+         slope behind it, the gap the stalk passes through, then the back. -->
+    <g id="region-skull-base">
+      <path class="bone" d="M 212 388 C 252 444 320 478 390 492
+        C 404 495 414 500 422 508
+        C 430 526 446 536 462 532 C 478 528 488 514 492 496
+        C 502 532 512 580 518 620"/>
+      <path class="bone" d="M 616 652 C 684 660 752 626 792 560"/>
+    </g>
+    <g id="region-sellar">
+      <path class="part" d="M 434 500 C 428 528 440 546 456 546
+        C 472 546 482 528 476 502 Z"/>
+    </g>
+    <g id="region-meninges">
+      <path class="line" d="M 203 300 C 203 226 234 160 298 120
+        C 352 88 418 76 472 80 C 552 86 628 116 686 164
+        C 736 206 770 264 772 324"/>
+      <path class="line" d="M 192 300 C 192 220 226 150 292 108
+        C 350 72 420 62 474 66 C 558 72 638 104 698 156
+        C 750 200 784 262 786 324"/>
+    </g>
+    <g id="region-hearing-nerve">
+      <path class="nerve" d="M 580 556 C 596 566 608 576 616 586"/>
+      <path class="hollow" d="M 624 592 C 640 588 652 602 648 618
+        C 644 634 628 640 618 630 C 628 626 634 612 628 602"/>
+    </g>
+  </g>
+
+  <!-- A DOT ON A LOBE IS FINE; A DOT ON A SMALL REGION IS THE PICTURE.
+       The dot is 12 units across, which is nothing against a lobe and
+       everything against the four regions that are barely bigger than it: the
+       gland behind the nose, the small gland deep in the middle, the fluid
+       spaces, and the nerve behind the ear. Those four leaders end BESIDE
+       their region; the nine bigger ones end inside it, which is ordinary.
+       The first version ended the pineal leader in the CENTRE of the gland
+       and covered the only thing that file exists to show, so the page for a
+       tumor of that gland carried a picture of a grey dot captioned "the
+       shaded part is the small gland". The gland is drawn bigger than life
+       for the same reason: at the width a phone gives this figure, true
+       scale is three pixels across. -->
+  <g id="labels">
+    <g class="label" data-region="frontal">
+      <polyline class="leader" points="316,228 380,228 409,223"/>
+      <circle class="dot" cx="409" cy="223" r="6"/>
+      <text class="plain" x="300" y="240" text-anchor="end">The front</text>
+      <text class="report" x="300" y="240" text-anchor="end">frontal lobe</text>
+    </g>
+    <g class="label" data-region="temporal">
+      <polyline class="leader" points="316,361 390,361 431,345"/>
+      <circle class="dot" cx="431" cy="345" r="6"/>
+      <text class="plain" x="300" y="350" text-anchor="end">The side,<tspan x="300" dy="45" text-anchor="end">near the ear</tspan></text>
+      <text class="report" x="300" y="372" text-anchor="end">temporal lobe</text>
+    </g>
+    <g class="label" data-region="sellar">
+      <polyline class="leader" points="316,611 450,611 500,428"/>
+      <circle class="dot" cx="500" cy="428" r="6"/>
+      <text class="plain" x="300" y="600" text-anchor="end">Behind the<tspan x="300" dy="45" text-anchor="end">nose</tspan></text>
+      <text class="report" x="300" y="622" text-anchor="end">pituitary</text>
+    </g>
+    <g class="label" data-region="skull-base">
+      <polyline class="leader" points="316,491 370,491 417,400"/>
+      <circle class="dot" cx="417" cy="400" r="6"/>
+      <text class="plain" x="300" y="480" text-anchor="end">The floor of<tspan x="300" dy="45" text-anchor="end">the skull</tspan></text>
+      <text class="report" x="300" y="502" text-anchor="end">skull base</text>
+    </g>
+    <g class="label" data-region="ventricles">
+      <polyline class="leader" points="774,151 600,151 481,221"/>
+      <circle class="dot" cx="481" cy="221" r="6"/>
+      <text class="plain" x="790" y="140">Deep in the<tspan x="790" dy="45">middle</tspan></text>
+      <text class="report" x="790" y="162">ventricles</text>
+    </g>
+    <g class="label" data-region="parietal">
+      <polyline class="leader" points="774,276 680,276 597,187"/>
+      <circle class="dot" cx="597" cy="187" r="6"/>
+      <text class="plain" x="790" y="265">The upper<tspan x="790" dy="45">back part</tspan></text>
+      <text class="report" x="790" y="287">parietal lobe</text>
+    </g>
+    <g class="label" data-region="occipital">
+      <polyline class="leader" points="774,378 730,378 698,273"/>
+      <circle class="dot" cx="698" cy="273" r="6"/>
+      <text class="plain" x="790" y="390">The back</text>
+      <text class="report" x="790" y="390">occipital lobe</text>
+    </g>
+    <g class="label" data-region="cerebellum">
+      <polyline class="leader" points="774,511 740,511 698,418"/>
+      <circle class="dot" cx="698" cy="418" r="6"/>
+      <text class="plain" x="790" y="500">Low at the<tspan x="790" dy="45">back</tspan></text>
+      <text class="report" x="790" y="522">cerebellum</text>
+    </g>
+    <g class="label" data-region="brainstem">
+      <polyline class="leader" points="774,628 660,628 582,432"/>
+      <circle class="dot" cx="582" cy="432" r="6"/>
+      <text class="plain" x="790" y="640">The stalk</text>
+      <text class="report" x="790" y="640">brain stem</text>
+    </g>
+
+    <!-- THE FOUR THE MASTER DOES NOT LABEL. The master labels the nine places
+         /where-your-tumor-is names; these four are named on the pages that
+         show their own variant, the nerve behind the ear on
+         /tumors/acoustic-neuroma, the coverings on /tumors/meningioma, the
+         small gland on /tumors/cns-germ-cell-tumor and the cord on
+         /tumors/spinal-cord-tumor. Their geometry lives here so that the
+         drawing, and every label on it, exists in exactly one file. -->
+    <g class="label label--variant-only" data-region="meninges">
+      <polyline class="leader" points="316,151 370,151 409,144"/>
+      <circle class="dot" cx="409" cy="144" r="6"/>
+      <text class="plain" x="300" y="151" text-anchor="end">The coverings</text>
+    </g>
+    <g class="label label--variant-only" data-region="spinal-cord">
+      <polyline class="leader" points="316,701 540,701 608,555"/>
+      <circle class="dot" cx="608" cy="555" r="6"/>
+      <text class="plain" x="300" y="690" text-anchor="end">The cord<tspan x="300" dy="45" text-anchor="end">running down</tspan></text>
+    </g>
+    <g class="label label--variant-only" data-region="pineal">
+      <polyline class="leader" points="774,431 700,431 648,254"/>
+      <circle class="dot" cx="648" cy="254" r="6"/>
+      <text class="plain" x="790" y="420">The small<tspan x="790" dy="45">gland</tspan></text>
+    </g>
+    <g class="label label--variant-only" data-region="hearing-nerve">
+      <polyline class="leader" points="774,701 700,701 666,500"/>
+      <circle class="dot" cx="666" cy="500" r="6"/>
+      <text class="plain" x="790" y="690">The nerve<tspan x="790" dy="45">from the ear</tspan></text>
+    </g>
+  </g>
+
+  <!-- DERIVED. See the banner at the top of this file. -->
+  <style>
+    #region-occipital { --shade: #0d6a86; --stroke-shade: #0d6a86;
+                     --detail-shade: #eef3f7; --line-weight: 12; }
+    #labels .label { display: none; }
+    #labels .label[data-region="occipital"] { display: inline; }
+  </style>
+</svg>
