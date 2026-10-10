@@ -182,7 +182,7 @@ public sealed class GlossaryDefinitionGradeTests
         var findings = ContentChecker.CheckAll(
             Path.Combine(CuratedPage.RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages"),
             CuratedPage.GlossaryRoot,
-            DateOnly.FromDateTime(DateTime.UtcNow));
+            DateOnly.FromDateTime(DateTime.UtcNow), CorpusFloor.Shipped).Findings;
 
         return findings
             .Where(f => f.File.EndsWith(ContentChecker.DefinitionMarker, StringComparison.Ordinal))
@@ -605,7 +605,7 @@ public sealed class GlossaryDefinitionGradeTests
         var findings = ContentChecker.CheckAll(
             Path.Combine(CuratedPage.RepoRoot(), "src", "BrainHarbor.Web", "Content", "pages"),
             CuratedPage.GlossaryRoot,
-            DateOnly.FromDateTime(DateTime.UtcNow));
+            DateOnly.FromDateTime(DateTime.UtcNow), CorpusFloor.Shipped).Findings;
 
         var report = Assert.Single(findings.Where(f => f.File == "(glossary)"));
 

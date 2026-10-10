@@ -942,7 +942,43 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
 
-- [ ] **WI-435 ContentCheck passes when it checked nothing**
+- [x] **WI-435 ContentCheck passes when it checked nothing**
+  *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.38)* —
+  **worse than this entry said: `-- --nologo` graded ZERO of the 55 curated pages and
+  printed `ContentCheck passed (232 checks, 0 failures)`, a clean run being 345; run
+  from the wrong directory it was 3 checks, 0 failures, exit 0.**
+  **The cause and the defect are different things.** The cause is that `args[0]` was
+  the pages root whatever the string was; the defect is that coverage was an `int` per
+  root and **0 meant both "not in scope" and "in scope and read nothing"**, so
+  `DescriptionCorpusReport` took its "not our business" early return on a run that had
+  been asked for 55 pages and opened none. `CorpusCoverage`/`CorpusFloor` carry `int?`
+  now — `null` is not in scope, `0` is empty — which is §12.37's fix in another coat.
+  **A FLOOR, NOT A LOUDER WARNING:** the missing-root WARN had existed since WI-106,
+  was on screen for the whole broken run, and changed nothing, because the only
+  consumer is a CI step reading an exit code. **PER ROOT** (55 pages / 105 glossary /
+  20 reader-facing Razor / 8 blocks), because §12.37 shipped the one-combined-total
+  version and a renamed `Content/blocks` satisfied it from the pages alone.
+  **The floor argument is REQUIRED, not defaulted** — all fifteen `CheckAll` call
+  sites had to say whether they were the corpus or a fixture, and the seven that are
+  the corpus now enforce the floor from inside the suite. **The floor equals the
+  corpus**, pinned in both directions, so **adding a page means moving
+  `CorpusWhenMeasured`** — a deliberate price, because a floor below the corpus is
+  slack. Unknown arguments, a fifth argument, an empty argument and a path that is not
+  there are exit 2 (usage) rather than exit 1 (content). `Resolve(args)` and
+  `Run(args, TextWriter)` were split out so the argument handling could be tested at
+  all — it had zero tests and **the first one ever written against it found the
+  defect**. **`/review` found seven parallel lists of the same four roots** (a fifth
+  root would silently get no floor) — one table now, checked by reflection — plus the
+  Razor root having no oracle independent of the walk, and `0` meaning two things on
+  the FLOOR side too. **Its best finding was a positive control:** the blocks oracle
+  walked `AllDirectories` while `ContentBlockStore.Load` reads the top directory and
+  skips non-slug filenames, so a `README.md` in `Content/blocks` — which that method's
+  own docstring calls normal — would have made the blocks floor permanently
+  unreachable. **PROOF: 39 of 39 harness cases as wanted, no survivors** — 16 Part-A
+  cases on the real executable (2 positive controls, 9 RED-at-HEAD/exit-0-before pairs,
+  one honest COVERED where the blocks root turned out to be caught already, 5 usage
+  refusals) and 23 Part-B code mutations all red; **2,897 tests; ContentCheck still
+  345/0 on the shipped corpus.** No reader-facing change.
   Goal: the gate that enforces reading level on medical copy must fail loudly
   when it is not actually checking anything.
   Problem (found 2026-08-19 while editing `start.md`): the tool takes the pages
