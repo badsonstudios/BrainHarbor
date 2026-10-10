@@ -11149,3 +11149,122 @@ page whose own text says about half start there, and chordoma, ependymoma and th
 cell tumors are the same shape. The inventory's draft caption is a default per FILE;
 the alt text is pinned to it and the caption is not, and the four exceptions are named
 in `docs/images-needed.md` so the next paste does not flatten them.
+
+### 12.36 A key with nothing under it, and the guard that was green because the files were new (WI-583)
+
+**The item was filed as three lines of production code and shipped nine.**
+`sources:`, `tags:` and `disclaimers:` had the hole WI-561 closed for `images:`
+one item earlier: YamlDotNet assigns **null over a `List<>` property
+initializer**, so a key the author typed and then stopped typing — the key, then
+the closing `---` — arrives as null rather than as the empty list the
+initializer promises.
+
+**THE RULING, IN ONE LINE: A NULL WHERE AN EMPTY LIST WAS PROMISED IS NOT A
+WORSE ERROR MESSAGE, IT IS A DIFFERENT FAILURE MODE IN EVERY PLACE THAT CATCHES
+A NARROWER EXCEPTION THAN THE ONE IT NOW GETS.** On a curated page that is three
+places, three exception types, three outcomes:
+
+- `ContentChecker.CheckPage` catches only `FormatException`, so **the CI gate
+  crashes instead of failing the page by name** — an unexplained red build, not
+  a content error, and nothing tells you which file to open.
+- `ContentStore.GetPage` catches only `IOException`, so **a reader gets a 500 on
+  a medical page**.
+- `ContentStore.SearchPages` catches only `FormatException`, so **one dangling
+  key takes site search down for all 55 pages**, not just the broken one.
+
+**AND THE ITEM WAS SCOPED TO THE WRONG NOUN.** The first `/review` round put it
+plainly: a reflection guard reading `typeof(ContentFrontMatter)` reproduces
+WI-561's mistake exactly one layer up — *a fix written where the crash happened
+teaches nothing to the TYPES that have not crashed yet.* **The site has nine
+YAML list properties across five types, and the item named three of them.** Two
+of the six it did not name are worse than anything it was filed about:
+
+- **`GlossaryFrontMatter.Also`** reaches `GlossaryTooltips.BuildMatchers` as
+  `names.AddRange(term.Aliases)` — an **`ArgumentNullException`**, which is
+  neither of the types anything upstream catches — during the marker pass of
+  **every** curated page. One half-typed key in a file no reader opens directly,
+  55 pages of 500s, site search gone with them.
+- **`TumorType.Also` and `TaxonomyFile.TumorTypes`** are both walked in
+  `TaxonomyStore`'s **constructor**, which runs at DI composition. A half-typed
+  key in `taxonomy.yml` never broke a page: **it stopped the site booting.**
+
+So the fix goes on the type, nine times, and the guard sweeps the **assembly**:
+`EveryYamlListPropertyOnEverySchemaRefusesNull` asks each property for the null
+YamlDotNet would hand it and reads it back, with an exact expected set of the
+nine so a renamed `[YamlMember]` cannot quietly empty the walk.
+
+**TWO OF THE NINE HAVE NO FAILURE MODE AND ARE STILL FIXED, FOR DIFFERENT
+REASONS.** `ContentBlockFrontMatter.Sources` and `GlossaryFrontMatter.Sources`
+were already safe — their single call site coalesces downstream (`?? []` in
+`ParseBlock`, `Sources ?? []` in `GlossaryTerm`). **That is a property of the
+call site, not of the schema, and the next caller will not know.** And
+`tags` has no consumer anywhere at all: measured, not assumed, with the break
+harness confirming it — reverting `tags` turns **3** tests red (the invariant on
+both line endings, and the sweep) while reverting `sources` turns **15** red and
+`disclaimers` **13**. Its guard is therefore a **tripwire asking to be told when
+the stakes change**, written down as a floor and not a fence. It had to be
+widened once: the first version matched `FrontMatter.Tags` and the mutation that
+plants a consumer wrote `frontMatter.Tags`, the local — **a scan that names one
+spelling of the thing it looks for finds one spelling of it.**
+
+**`/review` ALSO GOT ONE WRONG, IN THE OTHER DIRECTION**, and that is worth
+recording because a review finding is a claim too: it reported a dangling
+glossary `sources:` as a 500 on the whole `/glossary` index. `GlossaryTerm`
+declares `Sources ?? []`, so the null is absorbed a hop downstream and the
+symptom is not reproducible. Checked before it was written down; the comment on
+that property now says so.
+
+---
+
+**THE OTHER HALF OF THIS ITEM WAS A RED ON `develop` THAT NOBODY PUT THERE.**
+`BrainRegionFamilyTests.EveryVariantIsTheMasterRebuilt` — WI-572's own
+anti-drift guard, the one carrying the argument that fifteen files are one
+drawing — was failing on `dia-region-names.svg` with a difference a reader could
+not see. `BrainRegionFamily.Derive` LF-normalises the master, appends banner and
+style text from **raw string literals in a source file `core.autocrlf=true`
+checks out as CRLF**, then re-expands `\n` to `\r\n` over the lot: nine
+`\r\r\n` per file, and the test's `Lf()` helper collapses the trailing pair and
+leaves the bare CR behind.
+
+**It was green when WI-572 shipped and red afterwards with nobody touching it.**
+The regenerator had just written the fifteen files as LF, so the working tree
+matched; git stores them LF and checks them out CRLF, so **the first checkout
+after the commit flipped the method's input.** And it cannot fail on CI, where
+the master is LF and the expanding branch never runs.
+
+**The rule that falls out: a guard whose green depends on the line endings a
+working tree happens to have has not been proven, it has been sampled.** The new
+guard derives from an LF master and from a CRLF master and asserts each output's
+endings are **uniform** — not that the two agree once normalised, which is
+exactly what hid this. It immediately found a second instance: the LF branch
+returned the appended text untouched, so a pure-LF master on a CRLF working tree
+derived a mixed-ending file. **Normalise before expanding, in both branches.**
+
+---
+
+**AND THE INSTRUMENTS NEEDED THREE CORRECTIONS BEFORE THEY CERTIFIED ANYTHING.**
+All three are the same error — an instrument that is satisfied by something other
+than the defect it names:
+
+1. **A mutation stronger than the defect proves the wrong thing.** The harness's
+   first version crippled the getter (`get => _tags!;`) and collected nine reds
+   that meant nothing: a crippled getter is null when the key is **absent** too,
+   so it breaks all 55 pages and never exercises the dangling case. The
+   mutations are restorations now — each property put back exactly as it was —
+   and the harness prints *which* tests went red, so a red landing on the wrong
+   test is visible instead of being counted.
+2. **A corruption placed where the code discards it tests nothing.** The guard
+   for the lone-CR branch first corrupted the master's *first* indented line,
+   which is inside the banner comment `Derive` replaces wholesale. The mutation
+   stayed green. It corrupts the *last* one now — inside the drawing, the half
+   that is copied through byte for byte.
+3. **`/review`'s own argument for that branch was the already-covered case.** It
+   reasoned from `\r\r\n`; the CRLF path normalises once into `lf` and once into
+   `normalized`, and two sequential single-pass replaces collapse the doubled CR
+   between them. The genuinely uncovered input is a **lone** CR, which
+   `Replace("\r\n", "\n")` cannot see at all. The fix was right and the reason
+   given for it was not.
+
+**PROOF: 15 of 15 break mutations red, no survivors; 2,850 of 2,850 tests
+including the Playwright E2E; ContentCheck 345/0; the whole suite green on a
+fully LF corpus and a fully CRLF corpus.**
