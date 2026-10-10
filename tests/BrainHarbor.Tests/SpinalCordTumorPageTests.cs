@@ -95,7 +95,7 @@ public sealed class SpinalCordTumorPageContentTests
         // THE CLAIM THE ITEM TURNS ON, asserted as THREE properties rather than one.
         // Presence of any single half is not the property; carrying all three is. A draft
         // that dropped the metastatic half would still read like a complete page.
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(SymptomHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(SymptomHeading)));
 
         // 1. THE METASTATIC HALF. ACS: "call your doctor right away or go to the emergency
         //    room"; OncoLink: "Call 911 or your care team right away".
@@ -213,7 +213,7 @@ public sealed class SpinalCordTumorPageContentTests
         // as "not all of this is yours" instead of as this page's own advice.
         Assert.Matches(new Regex(
             @"The list below is the general one, written for any tumor", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(raw)));
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(raw)));
     }
 
     [Fact]
@@ -223,7 +223,7 @@ public sealed class SpinalCordTumorPageContentTests
         // tier relative to the shared block. So the weaker half must never appear without
         // its counterweight, and "quickly" must be given a meaning rather than left to the
         // reader to interpret as "whenever".
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(SymptomHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(SymptomHeading)));
 
         // "Quickly" IS GONE, AND SO IS THE WINDOW IT CARRIED. The first draft said
         // "Quickly still means this week rather than the next routine visit" — an invented
@@ -342,7 +342,7 @@ public sealed class SpinalCordTumorPageContentTests
         // BOTH DIRECTIONS ARE ASSERTED. The hedge must be present AND the promise absent:
         // a check for only the hedge passes a page that also carries the promise two
         // paragraphs later, which is exactly how WI-542 shipped an APPENDED fix.
-        var after = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(AfterHeading)));
+        var after = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(AfterHeading)));
 
         Assert.Matches(new Regex(
             @"It does not always settle completely", RegexOptions.IgnoreCase), after);
@@ -529,7 +529,7 @@ public sealed class SpinalCordTumorPageContentTests
         // AND THE PAGE WRITES ITS OWN MECHANISM INSTEAD, because excluding a block without
         // replacing what it did would leave the §12.3 section-3 question unanswered. The
         // canal, not the skull.
-        var where = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(WhereHeading)));
+        var where = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(WhereHeading)));
         Assert.Matches(new Regex(
             @"narrowest stretch of the whole canal", RegexOptions.IgnoreCase), where);
         Assert.Matches(new Regex(
@@ -588,7 +588,7 @@ public sealed class SpinalCordTumorPageContentTests
         // on the page that exists to say this is not a brain tumor — and it is silent on
         // the reader whose tumor arrived from a cancer elsewhere, who is not asking the
         // same question at all.
-        var section = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(CauseHeading)));
+        var section = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(CauseHeading)));
 
         Assert.Matches(new Regex(
             @"spread to the spine\s+from a cancer elsewhere", RegexOptions.IgnoreCase), section);
@@ -654,7 +654,7 @@ public sealed class SpinalCordTumorPageContentTests
         // So this page's slice is the collision neither of them can carry: a reader
         // holding an operative note that says "Simpson Grade I" has two documents using
         // the word grade for completely different things.
-        var report = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(ReportHeading)));
+        var report = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(ReportHeading)));
 
         Assert.Matches(new Regex(@"Two different things are both called grade 1",
             RegexOptions.IgnoreCase), report);
@@ -704,7 +704,7 @@ public sealed class SpinalCordTumorPageContentTests
         // AND THE FORMULATION IS THE ONE THE SOURCES SUPPORT. No fetched source says a cord
         // tumor IS a brain tumor; what they support is the CNS framing. The page must not
         // overclaim in the other direction either — these are not unrelated illnesses.
-        var what = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(WhatHeading)));
+        var what = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(WhatHeading)));
         Assert.Matches(new Regex(@"two parts\s+of one system, called the central nervous system",
             RegexOptions.IgnoreCase), what);
         Assert.Matches(new Regex(@"same kinds of specialists\s+look after both",
@@ -891,7 +891,7 @@ public sealed class SpinalCordTumorPageContentTests
         // /tumors/pediatric-brain-tumor adapts its symptoms heading for a parent.
         Assert.DoesNotContain("seizure", LifeHeading, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotMatch(new Regex(@"\bseizures?\b", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(LifeHeading))));
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(LifeHeading))));
     }
 
     [Fact]
@@ -932,14 +932,14 @@ public sealed class SpinalCordTumorPageContentTests
         // on bladder, bowel, skin and pain was written for spinal cord INJURY, not tumor.
         // The brief permits using it because the functional problem is the same one; it
         // does not permit implying tumor-specific evidence exists.
-        var life = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(LifeHeading)));
+        var life = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(LifeHeading)));
         Assert.Matches(new Regex(
             @"worked out for people whose spinal cord was damaged\s+in other ways",
             RegexOptions.IgnoreCase), life);
 
         // And the caregiver section says it again, because that reader meets the same
         // material and arrives by a different route.
-        var care = CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(CareHeading)));
+        var care = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(CareHeading)));
         Assert.Matches(new Regex(
             @"not\s+because it was studied in people with tumors", RegexOptions.IgnoreCase), care);
     }

@@ -223,16 +223,16 @@ public sealed class ImagesNeededInventoryTests
             var slug = Path.GetRelativePath(PagesRoot, file).Replace('\\', '/')[..^3];
             var raw = File.ReadAllText(file).TrimStart('﻿');
 
-            // The same split as ContentStore.Parse, and it REQUIRES the opening
-            // fence for the reason CuratedPage.ReaderTextOfBody's doc comment
-            // records: `IndexOf("\n---") + 4` on a string with no front matter
-            // returns -1 + 4, and silently hands back the body three characters
-            // short. A word count off by three characters is a word count nothing
-            // would ever question.
+            // The slice is CuratedPage.Body's since WI-566, not a fourth copy of
+            // it. This loop re-rolled the split and got both conditions right by
+            // hand — and a word count off by three characters is a word count
+            // nothing would ever question, which is why the helper now refuses
+            // rather than relying on the next copy being as careful. The two
+            // assertions stay because they name the SLUG; the throw cannot.
             Assert.StartsWith("---", raw, StringComparison.Ordinal);
-            var end = raw.IndexOf("\n---", 3, StringComparison.Ordinal);
-            Assert.True(end > 0, $"{slug}: unterminated front matter.");
-            var body = raw[(end + 4)..].TrimStart('\r', '\n');
+            Assert.True(raw.IndexOf("\n---", 3, StringComparison.Ordinal) > 0,
+                $"{slug}: unterminated front matter.");
+            var body = CuratedPage.Body(raw).TrimStart('\r', '\n');
 
             var (composed, _) = ContentBlocks.Compose(body, blocks, slug);
             pages[slug] = new LivePage(slug, body, composed);

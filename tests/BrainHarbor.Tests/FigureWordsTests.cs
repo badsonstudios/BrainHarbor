@@ -350,8 +350,17 @@ public class FigureWordsTests
             // carrying the label's words. The acceptance asks for "alt text
             // AND a text equivalent", and reading the alt text as the text
             // equivalent collapses the and (/review round 2).
-            var reachable = Units(CuratedPage.ReaderTextOfBody(
-                Regex.Replace(composed, @"(?m)^[ \t]*!\[.*$", ""))).ToList();
+            //
+            // WI-566: THIS WAS READING THE FRONT MATTER AS PROSE, and nothing
+            // could see it. `Composed` returns the WHOLE page, front matter
+            // included, and `ReaderTextOfBody` strips authoring markers and
+            // nothing else — so a region label counted as "said in the page's
+            // own words" when the only place it appeared was a `description`,
+            // a `tags` entry or a cited source's TITLE. The whole point of this
+            // guard is that a picture may not make a claim the page's prose
+            // does not, and a source title is not the page's prose. Found by
+            // making `ReaderTextOfBody` refuse a whole page, not by reading.
+            var reachable = Units(CuratedPage.ProseWithoutFigures(composed)).ToList();
 
             // A ROUTE COUNTS FOR THE WHOLE MAP AND NOT FOR A SHADED ONE.
             // The master labels nine places and a hub names three or four, so
@@ -370,9 +379,8 @@ public class FigureWordsTests
                 {
                     if (corpus.TryGetValue(route, out var target))
                     {
-                        reachable.AddRange(Units(CuratedPage.ReaderTextOfBody(Regex.Replace(
-                            CuratedPage.Composed(target, "/" + route),
-                            @"(?m)^[ \t]*!\[.*$", ""))));
+                        reachable.AddRange(Units(CuratedPage.ProseWithoutFigures(
+                            CuratedPage.Composed(target, "/" + route))));
                     }
                 }
             }

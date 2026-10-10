@@ -1069,7 +1069,7 @@ public sealed class StereotacticRadiosurgeryPageContentTests
         // The rule also MOVED. §12.10 says a page's own escalation line goes
         // BENEATH the shared block, not in a different section two screens up.
         var raw = CuratedPage.Flatten(
-            CuratedPage.ReaderText(RawSection(LaterHeading)));
+            CuratedPage.ReaderTextOfBody(RawSection(LaterHeading)));
 
         Assert.Matches(@"(?i)\bhot to the touch\b", raw);
         Assert.Matches(@"(?i)\bcloudy or bad smelling\b", raw);

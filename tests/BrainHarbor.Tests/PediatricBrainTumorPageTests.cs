@@ -395,11 +395,14 @@ public sealed class PediatricBrainTumorPageContentTests
         // reminder and the second one a reader passes both tiers, both fever rules, the
         // shunt rule and two sign-off links. "The list below" had plainly ended by then.
         // NOT ReaderText(ComposedSection(...)). ReaderText strips front matter by seeking
-        // "\n---"; a SECTION has none, so IndexOf returns -1 and it returns body[3..] --
-        // three characters eaten, silently. Every assertion below is a Contains anchored
-        // further in, so the test would go GREEN carrying the bug, and it did on the run
-        // that caught this by reading rather than by failing. §12.8 (WI-520) records the
-        // ReaderText(Body(page)) form of the same root cause.
+        // "\n---"; a SECTION has none, so IndexOf used to return -1 and the helper
+        // returned body[3..] -- three characters eaten, silently. Every assertion below
+        // is a Contains anchored further in, so the test would go GREEN carrying the
+        // bug, and it did on the run that caught this by reading rather than by failing.
+        // §12.8 (WI-520) records the ReaderText(Body(page)) form of the same root cause,
+        // and WI-566 made `Body` REFUSE a fragment so neither form can be silent again:
+        // a caller holding a section wants ReaderTextOfBody. This one needs neither,
+        // because ComposedSection already flattens and the section has no markers.
         //
         // ComposedSection already flattens, and this section carries no authoring
         // markers, so nothing else is needed.

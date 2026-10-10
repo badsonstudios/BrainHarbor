@@ -452,7 +452,7 @@ public sealed class AstrocytomaPageContentTests
     [Fact]
     public void RomanNumeralGradesNeverAppearAsLiveGrades()
     {
-        var body = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(Page)));
+        var body = CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 
         // IgnoreCase, and it is not decoration. §12.9 records this trap biting
         // three times (WI-505, WI-506, WI-508): a guard written case-sensitive
@@ -465,7 +465,7 @@ public sealed class AstrocytomaPageContentTests
 
         // The canary: the shared block is supposed to keep printing the old
         // notation for the reader holding it.
-        var crosswalk = File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"));
+        var crosswalk = CuratedPage.Body(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
         Assert.Matches(
             new Regex(@"grade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase), crosswalk);
     }
@@ -476,9 +476,9 @@ public sealed class AstrocytomaPageContentTests
         // §12.10/§12.11's division of labour, asserted against the BLOCK's own
         // words so that moving a sentence into the block later turns the
         // duplicate red instead of silently creating one.
-        var block = CuratedPage.Flatten(
-            File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
-        var ownProse = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(Page)));
+        var block = CuratedPage.Flatten(CuratedPage.Body(
+                File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"))));
+        var ownProse = CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 
         foreach (var universal in new[]
                  {

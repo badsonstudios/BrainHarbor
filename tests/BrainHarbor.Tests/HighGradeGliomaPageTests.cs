@@ -483,7 +483,7 @@ public sealed class HighGradeGliomaPageContentTests
         // and the shared block already teaches the numerals. So this asserts
         // absence outright rather than negation-awareness, and the canary below
         // proves the block still carries the notation somewhere.
-        var body = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(Page)));
+        var body = CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 
         // IgnoreCase added by WI-516, which planted "**Grade III.**" and
         // watched this stay green. §12.9's IgnoreCase trap, fourth occurrence.
@@ -493,7 +493,7 @@ public sealed class HighGradeGliomaPageContentTests
         // The shared block IS supposed to print one, for the reader holding it.
         // If it stops, the site has quietly lost the translation and this
         // page's silence stops being a deliberate division of labour.
-        var crosswalk = File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"));
+        var crosswalk = CuratedPage.Body(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
         Assert.Matches(
             new Regex(@"grade\s+(I{1,3}V?|IV)\b", RegexOptions.IgnoreCase), crosswalk);
     }
@@ -510,9 +510,9 @@ public sealed class HighGradeGliomaPageContentTests
         // Asserted against the BLOCK's own words rather than a literal list, so
         // that moving a sentence into the block makes this fail rather than
         // silently creating a duplicate.
-        var block = CuratedPage.Flatten(
-            File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
-        var ownProse = CuratedPage.Flatten(CuratedPage.ReaderText(CuratedPage.Body(Page)));
+        var block = CuratedPage.Flatten(CuratedPage.Body(
+                File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"))));
+        var ownProse = CuratedPage.Flatten(CuratedPage.ReaderText(Page));
 
         foreach (var universal in new[]
                  {

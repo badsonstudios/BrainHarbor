@@ -632,8 +632,78 @@ internal static class CuratedPage
     public static string[] SentencesOf(string section) =>
         [.. Regex.Split(section, @"(?<=[.!?])\s+").Where(s => s.Trim().Length > 0)];
 
-    /// <summary>The body, with the YAML front matter removed.</summary>
-    public static string Body(string page) => page[(page.IndexOf("\n---", 3, StringComparison.Ordinal) + 4)..];
+    /// <summary>
+    /// The body, with the YAML front matter removed.
+    ///
+    /// <para><b>It REFUSES anything that is not a whole page, and that refusal is
+    /// the whole of WI-566.</b> Until this threw, the slice was
+    /// <c>page[(page.IndexOf("\n---", 3) + 4)..]</c> and nothing else: handed a
+    /// SECTION, or a body whose front matter is already gone, <c>IndexOf</c>
+    /// returned -1, the arithmetic made that 3, and the helper returned the text
+    /// with ITS FIRST THREE CHARACTERS MISSING. No throw, no red, and no
+    /// <c>Assert.Contains</c> anchored further in could see it — six live guards
+    /// across four files were scanning truncated text while green
+    /// (<c>"Some things should not wait…"</c> arriving as
+    /// <c>"e things should not wait…"</c>).</para>
+    ///
+    /// <para>The rule was already written down — <c>ReaderText(page)</c>, NOT
+    /// <c>ReaderText(Body(page))</c>, thirty lines from where it was re-committed
+    /// (§12.8, WI-520) — and it was re-committed six times anyway. That points at
+    /// the helper, not at anyone's care: <b>it takes a <c>string</c> and cannot
+    /// tell a page from a section.</b> Now it can, so the -1 branch cannot
+    /// truncate silently ever again. A caller who legitimately holds a body
+    /// wants <see cref="ReaderTextOfBody"/>.</para>
+    ///
+    /// <para><b>Two conditions, not one.</b> Requiring the CLOSING <c>\n---</c>
+    /// alone would still mis-slice a fragment that happens to contain a markdown
+    /// horizontal rule: it would find one, add 4, and cut the fragment in half at
+    /// a place no front matter ever was — a silent wrong answer of exactly the
+    /// kind this guard exists to stop, just with different characters. Front
+    /// matter opens at offset 0 or it is not front matter, so the OPENING
+    /// delimiter is checked too.</para>
+    ///
+    /// <para><b>AND HERE IS WHAT THE PAIR STILL CANNOT TELL APART, written down
+    /// because /review found the comment above overclaiming.</b> A fragment
+    /// whose FIRST line is a horizontal rule and which carries a SECOND one
+    /// later satisfies both conditions, and this returns it sliced at the second
+    /// rule. No string-taking helper can discriminate that from a page: a rule
+    /// and a fence are the same three characters in the same position. It is
+    /// pinned rather than papered over — see
+    /// <c>CuratedPageBodyTests.BodyCannotTellAPageFromAFragmentThatOpensAndCloses
+    /// WithAHorizontalRule</c> — and it is not live: no file under
+    /// <c>Content/</c> has a third <c>^---</c> line, and no fragment any caller
+    /// here produces opens with one, because a section begins after a <c>##</c>
+    /// heading. A third condition (sniffing the fenced region for a YAML key)
+    /// was considered and dropped: prose beginning "Note: …" satisfies it too,
+    /// so it trades a known limit for a subtler one.</para>
+    /// </summary>
+    public static string Body(string page)
+    {
+        if (!page.StartsWith("---", StringComparison.Ordinal))
+        {
+            throw new FormatException(
+                "CuratedPage.Body was handed a string that does not OPEN with front matter, so it is not a "
+                + "whole page — a section, a fragment, or a body that has already been stripped. It used to "
+                + "return that string with its first three characters eaten (WI-566). Read the page with "
+                + "CuratedPage.Read and section it AFTERWARDS, or use ReaderTextOfBody if you already hold a "
+                + $"body. It began: {Excerpt(page)}");
+        }
+
+        var closing = page.IndexOf("\n---", 3, StringComparison.Ordinal);
+        if (closing < 0)
+        {
+            throw new FormatException(
+                "CuratedPage.Body was handed a string that opens with front matter and never closes it, so "
+                + "there is no body to return and the old slice would have eaten three characters (WI-566). "
+                + $"It began: {Excerpt(page)}");
+        }
+
+        return page[(closing + 4)..];
+    }
+
+    /// <summary>The first few characters of a rejected string, so the message names the caller's text rather than describing it.</summary>
+    private static string Excerpt(string text) =>
+        '"' + Flatten(text.Length <= 60 ? text : text[..60]).Trim() + (text.Length > 60 ? "…\"" : "\"");
 
     /// <summary>
     /// The body as the READER meets it: the WI-105 authoring markers removed,
@@ -648,8 +718,12 @@ internal static class CuratedPage
     public static string ReaderText(string page) => ReaderTextOfBody(Body(page));
 
     /// <summary>
-    /// WI-572: the page's prose with its FIGURE LINES taken out — for the
-    /// cross-page restatement probes, and for nothing else.
+    /// WI-572: the page's prose with its FIGURE LINES taken out — written for the
+    /// cross-page restatement probes, and since WI-566 also the helper
+    /// <c>FigureWordsTests</c> uses to ask what a page can say in its OWN words.
+    /// (It said "and for nothing else" until that item; the claim was already
+    /// false of <c>FigureWordsTests</c>' weak-label measurement, and the
+    /// front-matter defect WI-566 found there is what made it a third caller.)
     ///
     /// <para><b>A shared figure's words are the same words on every page that
     /// shows it, on purpose.</b> §12.34's whole argument for one drawing with
@@ -682,15 +756,53 @@ internal static class CuratedPage
     /// out of <see cref="ContentStore.Parse"/>, whose front matter is already
     /// gone.
     ///
-    /// WI-576 needed this and the reason is a trap, not a tidy-up:
-    /// <see cref="Body"/> is <c>page[(page.IndexOf("\n---", 3) + 4)..]</c>, so on
-    /// a string with no front matter it finds nothing, adds 4 to -1, and
-    /// silently returns the body with THREE CHARACTERS CHOPPED OFF rather than
-    /// failing. A shingle set built on that is wrong in a way no assertion
-    /// would show.
+    /// WI-576 needed this and the reason was a trap, not a tidy-up:
+    /// <see cref="Body"/> WAS <c>page[(page.IndexOf("\n---", 3) + 4)..]</c> and
+    /// nothing else, so on a string with no front matter it found nothing, added
+    /// 4 to -1, and silently returned the body with THREE CHARACTERS CHOPPED OFF
+    /// rather than failing. A shingle set built on that is wrong in a way no
+    /// assertion would show. <b>Past tense since WI-566</b> — and the tense is
+    /// the point: this item's whole thesis is that a warning comment was not
+    /// enough, so a comment still asserting the defect as live would repeat the
+    /// failure one layer up (/review).
+    ///
+    /// <para><b>It refuses a WHOLE PAGE, which is the converse hole WI-566's own
+    /// fix would otherwise open.</b> Once <see cref="Body"/> throws on a
+    /// fragment, this is the escape hatch every corrected call site reaches for —
+    /// and handed a whole page it happily returns the YAML front matter as if it
+    /// were prose. That is not a cosmetic difference: §12.8 records the same
+    /// surface making a guard FAIL for the wrong reason (a page quoting the cord
+    /// block in a front-matter comment "retyped" a sentence no reader sees) and
+    /// PASS for the wrong reason (an <c>Assert.Contains(url, …)</c> satisfied by
+    /// a URL in a comment). A helper pair where one half throws and the other
+    /// silently scans metadata has moved the defect, not fixed it.</para>
+    ///
+    /// <para>The same two conditions as <see cref="Body"/>, and for the same
+    /// reason: a body whose first line is a markdown horizontal rule opens with
+    /// <c>---</c> without being a page, so the CLOSING delimiter has to be there
+    /// too before this refuses. <b>The same residue too, and in the opposite
+    /// direction:</b> a body that opens with a rule AND carries a second one is
+    /// refused here for looking like a page, where <see cref="Body"/> accepts it
+    /// for the same reason. Neither is live (no file under <c>Content/</c> has a
+    /// third <c>^---</c> line); both are pinned in
+    /// <c>CuratedPageBodyTests</c> so the behaviour is a decision rather than an
+    /// accident.</para>
     /// </summary>
-    public static string ReaderTextOfBody(string body) =>
-        Regex.Replace(Regex.Replace(body, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
+    public static string ReaderTextOfBody(string body)
+    {
+        if (body.StartsWith("---", StringComparison.Ordinal)
+            && body.IndexOf("\n---", 3, StringComparison.Ordinal) >= 0)
+        {
+            throw new FormatException(
+                "CuratedPage.ReaderTextOfBody was handed a WHOLE PAGE — it opens with front matter and closes "
+                + "it. It strips authoring markers and nothing else, so it would have returned the YAML as if "
+                + "it were prose, and a rule asserted against that is asserted against metadata no reader "
+                + "meets (WI-566). Use ReaderText for a whole page; this half is for a body or a section. "
+                + $"It began: {Excerpt(body)}");
+        }
+
+        return Regex.Replace(Regex.Replace(body, @"!%(.+?)%", ""), @"%%(.+?)%%", "$1");
+    }
 
     /// <summary>
     /// The page with its shared blocks resolved, through the REAL composer
@@ -910,7 +1022,7 @@ internal static class CuratedPage
     /// </summary>
     public static void AssertEscalationTiers(string page, string slug, string heading)
     {
-        var section = Flatten(ReaderText(ComposedSection(page, heading)));
+        var section = Flatten(ReaderTextOfBody(ComposedSection(page, heading)));
 
         // The list header ends with a period now, not a colon: it carries the
         // 911 instruction on its own line so a US reader gets the action and
@@ -1027,7 +1139,7 @@ internal static class CuratedPage
         // page. The first version matched the chemotherapy page's INTRO line,
         // so gutting the whole {#fever-rule} section would have left this green
         // while the block's link landed the reader on an empty heading.
-        var feverRule = Flatten(ReaderText(
+        var feverRule = Flatten(ReaderTextOfBody(
             Section(Read("treatments", "chemotherapy.md"), "Your blood counts, and the fever rule")));
         Assert.True(
             Regex.IsMatch(feverRule, @"straight away, at any hour", RegexOptions.IgnoreCase),
@@ -1079,10 +1191,12 @@ internal static class CuratedPage
     {
         // `ReaderText(page)`, NOT `ReaderText(Body(page))`. `ReaderText` strips
         // the front matter itself, and fed a body with no `\n---` in it,
-        // `IndexOf` returns -1 and the helper returns `body[3..]` — three
+        // `IndexOf` returned -1 and the helper returned `body[3..]` — three
         // characters off the front, silently. §12.8 (WI-520) records this, and
         // records it appearing again thirty lines from the comment warning
-        // about it.
+        // about it. WI-566 is what stopped that: this comment was re-committed
+        // past six times, so `Body` now THROWS on anything that is not a whole
+        // page instead of relying on the next person reading the warning.
         var lines = Regex.Split(ReaderText(page), @"\r?\n");
 
         var urgency = new Regex(

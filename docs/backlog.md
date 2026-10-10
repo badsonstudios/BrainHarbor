@@ -2937,8 +2937,25 @@ Start only after Dan has signed off WI-513's template.
   `blocks/escalation.md` must match — WI-563 pinned the two together with a test
   that reads the sibling's `{#fever-rule}` section, so they cannot drift again.
   **Depends on:** WI-563.
-- [ ] **WI-566 `CuratedPage.ReaderText` silently eats three characters, on six live
-  guards** *(raised by WI-538)* — `ReaderText` strips front matter by seeking
+- [x] **WI-566 `CuratedPage.ReaderText` silently eats three characters, on six live
+  guards** *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.37)* —
+  **filed as six sites, surfaced FORTY-FIVE, which is what the throw is for:** a grep
+  finds the shapes somebody already thought of. `Body` now refuses anything that is not
+  a whole page (two conditions — it must OPEN with `---` as well as close, or a fragment
+  containing a horizontal rule gets sliced at the rule), and `ReaderTextOfBody` refuses
+  the CONVERSE, a whole page, because fixing one half made it the escape hatch every
+  corrected site reaches for and it would have scanned YAML as prose.
+  **Truncation can only make a NEGATIVE assertion pass**, so four of the six named sites
+  were live holes and two were blind-but-harmless; the harness plants a forbidden phrase
+  in the exact three characters and proves RED at HEAD / **GREEN before the fix** for all
+  four. **One shipped guard was reading front matter as the page's own words**
+  (`FigureWordsTests` passed the whole composed page to `ReaderTextOfBody`, so a region
+  label could be "supported" by a `description`, a `tags` entry or a cited source's
+  TITLE) — found only by the converse refusal, measured as certifying nothing wrongly.
+  Two sites had pasted a FAKE empty front matter in front of a fragment to get past the
+  old helper. 21 of 21 mutations as wanted, no survivors; 2,860/2,860; ContentCheck
+  345/0.
+  **The original entry, kept:** `ReaderText` strips front matter by seeking
   `\n---`. Handed a string that has none — a SECTION, or a body that has already been
   stripped — `IndexOf` returns -1 and it returns `body[3..]`. It does not throw, and it
   does not fail an `Assert.Contains` anchored further in, so **every affected guard is

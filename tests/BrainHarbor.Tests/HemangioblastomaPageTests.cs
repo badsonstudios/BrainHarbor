@@ -83,7 +83,7 @@ public sealed class HemangioblastomaPageContentTests
         return match.Groups[1].Value;
     }
 
-    private static string Flat(string text) => CuratedPage.Flatten(CuratedPage.ReaderText(text));
+    private static string Flat(string text) => CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(text));
 
     private static List<string> Headings() =>
         [.. Regex.Matches(Page, @"(?m)^##\s+(.+?)\s*(?:\{#.*\})?\s*$").Select(m => m.Groups[1].Value.Trim())];
@@ -420,7 +420,7 @@ public sealed class HemangioblastomaPageContentTests
         // tumor really does grow in the cord. Asserted against the BLOCK'S OWN WORDS:
         // its rule is credited to a sentence about CANCER pressing on the cord, and
         // this tumor is not cancer, so the credit would not survive the move.
-        var block = Flat(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "spinal-cord.md")));
+        var block = Flat(CuratedPage.Body(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "spinal-cord.md"))));
 
         foreach (var blockOnly in new[]
                  {
@@ -447,8 +447,8 @@ public sealed class HemangioblastomaPageContentTests
         // The block describes children after surgery low at the back of the brain.
         // This tumor is found mostly in adults, and no source recorded for this page
         // describes that syndrome after a hemangioblastoma operation.
-        var block = Flat(File.ReadAllText(
-            Path.Combine(CuratedPage.BlocksRoot, "posterior-fossa-syndrome.md")));
+        var block = Flat(CuratedPage.Body(File.ReadAllText(
+            Path.Combine(CuratedPage.BlocksRoot, "posterior-fossa-syndrome.md"))));
 
         const string BlockOnly = "Most children slowly get better";
         Assert.Contains(BlockOnly, block, StringComparison.Ordinal);
@@ -462,7 +462,7 @@ public sealed class HemangioblastomaPageContentTests
         // Its gene bullet is false for this name: this tumor is named by what it is
         // made of, and the name carries no gene result. The page answers the old names
         // itself instead.
-        var block = Flat(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md")));
+        var block = Flat(CuratedPage.Body(File.ReadAllText(Path.Combine(CuratedPage.BlocksRoot, "crosswalk.md"))));
 
         foreach (var blockOnly in new[]
                  {
@@ -689,7 +689,7 @@ public sealed class HemangioblastomaPageContentTests
         // find on some sites, and NO fetched source says it in words. What is sourced:
         // the aim is to take out the solid part, and the pocket collapses once it is
         // out. The page says only that.
-        var operation = CuratedPage.Flatten(CuratedPage.ReaderText(
+        var operation = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
             Subsection(TreatmentHeading, "The operation")));
 
         Assert.Matches(new Regex(
@@ -720,7 +720,7 @@ public sealed class HemangioblastomaPageContentTests
         // effective" with no caveat; the surgeons' review says it "can involve severe
         // complications". A page that carried only the first half would send a reader
         // in asking for a procedure whose risks nobody had mentioned.
-        var operation = CuratedPage.Flatten(CuratedPage.ReaderText(
+        var operation = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
             Subsection(TreatmentHeading, "The operation")));
 
         Assert.Matches(new Regex(@"called\s+embolization", RegexOptions.IgnoreCase), operation);
@@ -743,7 +743,7 @@ public sealed class HemangioblastomaPageContentTests
         // fluid pocket, which is the half a reader with a big pocket needs. And the
         // experts disagree about when it should come first, so the page says that
         // rather than picking a side it cannot support.
-        var radiation = CuratedPage.Flatten(CuratedPage.ReaderText(
+        var radiation = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
             Subsection(TreatmentHeading, "Focused radiation")));
 
         Assert.Matches(new Regex(
@@ -768,7 +768,7 @@ public sealed class HemangioblastomaPageContentTests
         // WITH VHL whose tumors do not need surgery right away. A reader with a one-off
         // tumor who asks for this drug has been misled by the page, so the scope and
         // the "not approved without VHL" sentence are both pinned.
-        var pill = CuratedPage.Flatten(CuratedPage.ReaderText(
+        var pill = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
             Subsection(TreatmentHeading, "A pill, for people with VHL")));
 
         Assert.Matches(new Regex(
@@ -802,7 +802,7 @@ public sealed class HemangioblastomaPageContentTests
         // RULING 10. "We will watch it" is heard as "they are not treating me", which
         // is how a reader ends up pushing for an operation nobody recommended. The
         // page names it as a plan, says what it consists of, and credits it.
-        var watching = CuratedPage.Flatten(CuratedPage.ReaderText(
+        var watching = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
             Subsection(TreatmentHeading, "Watching instead of treating")));
 
         Assert.Matches(new Regex(
@@ -824,7 +824,7 @@ public sealed class HemangioblastomaPageContentTests
         // for the other.
         Assert.Matches(new Regex(
             @"The VHL Alliance says to look at all three choices", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
                 Subsection(TreatmentHeading, "Watching instead of treating"))));
         Assert.Contains("/treatments/watch-and-wait", Subsection(TreatmentHeading, "Watching instead of treating"),
             StringComparison.Ordinal);

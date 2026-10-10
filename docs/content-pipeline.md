@@ -11268,3 +11268,113 @@ than the defect it names:
 **PROOF: 15 of 15 break mutations red, no survivors; 2,850 of 2,850 tests
 including the Playwright E2E; ContentCheck 345/0; the whole suite green on a
 fully LF corpus and a fully CRLF corpus.**
+
+### 12.37 A helper that takes a `string` cannot tell a page from a section, so it has to refuse (WI-566)
+
+**`CuratedPage.Body` was one expression:**
+`page[(page.IndexOf("\n---", 3) + 4) ..]`. Handed a SECTION, or a body whose
+front matter is already gone, `IndexOf` returns -1, the arithmetic turns that
+into 3, and it returns **the text with its first three characters missing**. No
+throw. No red. And no `Assert.Contains` anchored further in can see it:
+`"Some things should not wait…"` arrives as `"e things should not wait…"` and
+every assertion about the sentence still passes.
+
+**THE RULE WAS ALREADY WRITTEN DOWN AND WAS RE-COMMITTED PAST SIX TIMES.**
+`TestsLibraryPagesTests` carries the comment "`ReaderText(page)`, NOT
+`ReaderText(Body(page))`", and §12.8 (WI-520) records it appearing again thirty
+lines from the warning about it. §12.33 (WI-538) found the same shape a third
+way and raised this item rather than fixing the six sites, because the sites were
+never the defect. **The defect is that the helper takes a `string` and cannot
+tell a page from a section.** The fix is therefore on the HELPER and the sites
+are consequences — §12.36's rule one layer up: a fix scoped to what crashed
+teaches nothing to what has not crashed yet.
+
+1. **The refusal is TWO conditions, and the second one is not symmetry.** `Body`
+   throws unless the string OPENS with `---` *and* carries a closing `\n---`.
+   Checking only the closing fence would still mis-slice a fragment that happens
+   to contain a markdown horizontal rule: it finds one, adds 4, and cuts the
+   fragment in half at a place no front matter ever was — the same silent wrong
+   answer with different characters.
+
+2. **THE RESIDUE IS WRITTEN DOWN RATHER THAN CLAIMED AWAY.** A fragment whose
+   first line is a rule AND which carries a second one satisfies both
+   conditions. `Body` accepts it; `ReaderTextOfBody` refuses it. No string-taking
+   helper can discriminate — a rule and a fence are the same three characters in
+   the same position — so the behaviour is PINNED by a test
+   (`BodyCannotTellAPageFromAFragmentThatOpensAndClosesWithAHorizontalRule`)
+   instead of asserted away in a comment. `/review` caught the comment
+   overclaiming. It is not live: no file under `Content/` has a third `^---`
+   line, and no fragment any caller produces opens with one, because a section
+   begins after a `##` heading. A third condition — sniffing the fenced region
+   for a YAML key — was considered and dropped: prose beginning "Note: …"
+   satisfies it too, so it trades a known limit for a subtler one.
+
+3. **FIXING ONE HALF OPENED THE OTHER, AND THE CONVERSE HAD TO BE CLOSED IN THE
+   SAME ITEM.** Once `Body` throws, `ReaderTextOfBody` — the marker-stripping
+   half — is the escape hatch every corrected call site reaches for, and handed a
+   WHOLE page it returns the YAML as if it were prose. §12.8 records that exact
+   surface making a guard FAIL for the wrong reason (a page quoting the cord
+   block in a front-matter comment "retyped" a sentence no reader sees) and PASS
+   for the wrong reason (an `Assert.Contains(url, …)` satisfied by a URL in a
+   comment). **A pair where one half throws and the other silently scans
+   metadata has moved the defect, not fixed it.**
+
+4. **FILED AS SIX SITES, SURFACED FORTY-FIVE — which is what the item predicted
+   and the reason the throw is the instrument.** A grep finds the shapes someone
+   already thought of; the throw finds every caller that runs. Most of the
+   surfaced sites were *harmless*: a `RawSection` fragment opens with a newline,
+   so the three eaten characters were whitespace. **Harmless by luck is not the
+   same as correct**, and the luck was load-bearing.
+
+5. **TRUNCATION CANNOT MAKE A POSITIVE ASSERTION PASS — ONLY A NEGATIVE ONE.**
+   This is what decides which of the corrected guards were actually broken.
+   Removing characters can only remove matches, so an `Assert.Matches` on
+   truncated text was failing or correct, never falsely green. A
+   `DoesNotMatch` / `Assert.False(contains)` is the opposite: a forbidden phrase
+   sitting in the three missing characters was INVISIBLE. **Four of the six sites
+   the item named are negative assertions, and all four were live holes.** The
+   harness plants `Grade IV.` and `NOS means …` as the first characters of
+   `/tumors/astrocytoma` and `/tumors/high-grade-glioma` and runs each plant
+   twice: RED at HEAD, **GREEN with the call site and the helper reverted.** A
+   red alone proves a guard works; the pair proves the hole was real. The other
+   two sites are positive assertions, were blind only at the start, and are
+   proved still to bite rather than claimed to be fine.
+
+6. **A SHIPPED GUARD WAS READING FRONT MATTER AS THE PAGE'S OWN WORDS, and only
+   the converse refusal could see it.** `FigureWordsTests` asked whether a
+   region label on a figure is a claim the page can also make in prose — and
+   passed the WHOLE composed page to `ReaderTextOfBody`. `ContentBlocks.Compose`
+   passes front matter straight through, so a label counted as "said in the
+   page's own words" when the only place it appeared was a `description`, a
+   `tags` entry, or **a cited source's title**. `/tumors/chordoma`'s front matter
+   carries the word "floor" inside a quoted source about *pelvic floor therapy*:
+   the guard was one coincidence away from certifying a brain-map label with a
+   sentence about pelvic physiotherapy. Fixed to `ProseWithoutFigures`, and
+   proved by moving the one sentence in the corpus that says "floor" and "skull"
+   together out of that page's prose and into its `description` — RED now, GREEN
+   before. **Measured, not assumed: no label actually depended on front matter,
+   so nothing was certified wrongly. The guard was over-permissive, not wrong.**
+
+7. **A WORKAROUND IS EVIDENCE ABOUT THE HELPER, NOT ABOUT THE CALLER.** Two
+   pages' outlook-gate tests read
+   `ReaderText("---\n---\n" + gate.Groups[1].Value)` — an EMPTY front matter
+   pasted in front of a fragment so a helper that only accepted whole pages
+   would hand it back, with a comment explaining the trick. When a caller builds
+   a fake page to get past a helper, the helper is the thing to change.
+
+8. **AND THE TEST THIS ITEM WROTE WAS FOOLED BY THE DEFECT IT WAS WRITTEN FOR.**
+   The corpus-wide invariant first asserted that the prefix `Body` removes "ends
+   with `---`" — and `page[3..]` removes exactly the three characters `---`,
+   which ends with `---`. Mutation A4 put the defect back on whole pages and the
+   test stayed green. It demands a newline too now. **A suffix check cannot see
+   this defect either: `page[3..]` IS a suffix of `page`.** `/review` then found
+   the floor was one total of 55 over a 168-file sweep — met by the pages alone,
+   so a renamed `Content/blocks` would leave it green having read no block. It is
+   a floor PER ROOT now, which is §12.36's expected-set rule in another coat.
+
+**PROOF: 21 of 21 break mutations as wanted, no survivors — including four
+RED/GREEN pairs that show the hole was live and is not; 2,860 of 2,860 tests
+including the Playwright E2E; ContentCheck 345/0. The change is test-only:
+`CuratedPage` is internal to the test assembly, so the new `FormatException`
+cannot reach `ContentCheck`, `GetPage` or `SearchPages` — which is the §12.36
+hazard class, and the reason this one is a different kind of item.**
