@@ -345,7 +345,14 @@ public sealed class PituitaryTumorPageContentTests
         // the whole tier: vomiting is the sign that the medicine is not getting
         // in, and it is the one a reader explains away.
         Assert.Matches(new Regex(
-            @"Being sick and unable to keep pills down needs help\s*the same hour, not the next day",
+            // WI-564 /review: the first replacement here read "Throwing up and unable to
+            // keep pills down", which is ungrammatical — the British original worked by
+            // ellipsis ("being sick and [being] unable"), and "throwing up" leaves no
+            // auxiliary to license "unable". The assertion pinned the broken form, so
+            // both moved together. A swap that is correct word-for-word can still be
+            // wrong sentence-for-sentence.
+            @"Throwing up and not being able to keep pills down needs help\s*the same hour, "
+            + @"not\s*the next day",
             RegexOptions.IgnoreCase), adrenal);
 
         // THE ROUTE MUST SIT OUTSIDE THE INJECTION CLAUSE — review round 2's B1,
@@ -445,7 +452,7 @@ public sealed class PituitaryTumorPageContentTests
         // reader whose body has stopped making its own steroid was being told to
         // wait for the same day on the textbook presentation of a condition the
         // same paragraph says can kill.
-        foreach (var crisisSign in new[] { "confused", "being sick again and again", "faint" })
+        foreach (var crisisSign in new[] { "confused", "throwing up again and again", "faint" })
         {
             Assert.Contains(crisisSign, sameDay.Groups[1].Value, StringComparison.OrdinalIgnoreCase);
         }

@@ -111,7 +111,7 @@ public sealed class AntiSeizureMedicinesPageContentTests
         // Content/blocks/escalation.md and /seizures/what-to-do both use. A
         // safety claim that must not have two strengths (§12.10), and this page
         // is about the medicine that is meant to prevent it.
-        "another seizure starting before they have come round from the first",
+        "another seizure starting before they have woken up from the first",
 
         // WI-532. The corpus's one wording for an ambulance instruction, which
         // /treatments/targeted-therapy now also carries for the serious
@@ -166,6 +166,16 @@ public sealed class AntiSeizureMedicinesPageContentTests
         // identical on purpose rather than reworded.
         "It does not replace the list your own team gives you for your tumor, and "
         + "[get help now](/get-help-now) has the numbers to keep on a phone. Call",
+
+        // WI-564, the other side of the same allowlist entry — see
+        // SteroidsPageTests for the whole reason. In short: this page already said
+        // "You are throwing up again and again" and /treatments/steroids said
+        // "You are being sick again and again". One same-day trigger, two wordings,
+        // and the §12.10 drift was invisible to this guard precisely BECAUSE one of
+        // the two was British idiom. Standardising the idiom is what made them the
+        // same eight words. Carried with the trailing "You" because the window spans
+        // the bullet boundary.
+        "You are throwing up again and again. You",
     ];
 
     private static readonly HashSet<string> AllowedShingles =
@@ -530,7 +540,7 @@ public sealed class AntiSeizureMedicinesPageContentTests
                      "It is reasonable to halve your dose until your team can see you.",
                      "It is safe to skip a single dose while you wait for the clinic to call back.",
                      "If the anger is bad, hold tonight's dose and call in the morning.",
-                     "You are allowed to miss one dose if you are being sick.",
+                     "You are allowed to miss one dose if you are throwing up.",
                      "If they are furious after a dose, it is fair to leave the next one until you "
                      + "have spoken to the team.",
                  })
@@ -1142,7 +1152,7 @@ public sealed class AntiSeizureMedicinesPageContentTests
         // The status-epilepticus bullet is ASSERTED PRESENT, not merely
         // allowlisted for sharing. /review deleted it and the ambulance capture
         // was still 390 characters, so the length check below could not notice.
-        Assert.Matches(new Regex(@"another seizure starting before they have come round from the first",
+        Assert.Matches(new Regex(@"another seizure starting before they have woken up from the first",
             RegexOptions.IgnoreCase), now);
 
         // Breathing stays in the ambulance tier. /review moved it down to

@@ -550,9 +550,9 @@ pressure builds up. The general part below explains how that works.
 **Which ones you get follows the place it grows.**
 
 **In the lower back part of the brain**, signs are usually headaches, feeling
-sick or throwing up, feeling dizzy, and trouble with balance. You may walk
-unsteadily, or feel clumsy. Any of these that is new is worth a call to your
-team, and the next part says which ones cannot wait.
+sick to your stomach, throwing up, feeling dizzy, and trouble with balance. You
+may walk unsteadily, or feel clumsy. Any of these that is new is worth a call to
+your team, and the next part says which ones cannot wait.
 
 **In the brainstem**, symptoms can be more serious, because so many nerves pass
 through that small space. The Brain Tumour Charity says signs from a tumor here

@@ -717,8 +717,8 @@ knowing so that a "no" does not read as a door closing.
 
 ### The hospital stays
 
-**Each round of the main drug usually means a few days in hospital**, and the
-reason is not the medicine going in. That part takes a few hours. The days
+**Each round of the main drug usually means a few days in the hospital**, and
+the reason is not the medicine going in. That part takes a few hours. The days
 afterwards are about getting it safely out again.
 
 While you are there:

@@ -160,7 +160,7 @@ public sealed class PosteriorFossaSyndromeBlockTests
         // exists precisely because onset is not always witnessed on the ward ("start or
         // get worse after you are home"). §12.10: a hedge in a block is scope, and the
         // scope widened when the block gained a second hub.
-        Assert.Contains("usually starts in hospital", carveOut, StringComparison.Ordinal);
+        Assert.Contains("usually starts in the hospital", carveOut, StringComparison.Ordinal);
         Assert.Contains("where the team is watching for it", carveOut, StringComparison.Ordinal);
 
         // The carve-out comes BEFORE the at-home tier it protects. Reversed, a parent

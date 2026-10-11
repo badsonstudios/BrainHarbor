@@ -1172,13 +1172,13 @@ worst near the end and for a while afterwards. Skin over the treated area can ge
 sore. Where the beam passes near your ears, mouth or throat, expect effects
 there.
 
-**Scans do not happen straight after radiation.** Teams normally wait a couple of
+**Scans do not happen right after radiation.** Teams normally wait a couple of
 months before imaging, because the area needs time to settle before a picture
 means anything.
 
 ## Everyday life
 
-**Tiredness catches people out.** It is not the same as being short of sleep, and
+**Tiredness trips people up.** It is not the same as being short of sleep, and
 rest does not entirely fix it. Studies have shown that physical activity, during
 treatment and after it, can bring it down.
 

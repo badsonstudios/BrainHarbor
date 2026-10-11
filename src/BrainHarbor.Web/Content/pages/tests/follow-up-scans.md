@@ -393,7 +393,7 @@ what was seen.
 **Ask which of those it is.** It is a fair question, the answer is usually short,
 and it saves you weeks of assuming the worst of them.
 
-Two other repeats catch people out and neither of them is this.
+Two other repeats trip people up and neither of them is this.
 [Your MRI scan](/tests/mri#navigation-scan) covers the scan just before surgery
 and the scan just after it.
 

@@ -334,8 +334,8 @@ holds: if you are not sure, call.
 
 ## Were you sent home with anything?
 
-Two things often start before anybody has a name, and both of them catch people
-out because they arrive without an explanation attached.
+Two things often start before anybody has a name, and both of them trip people
+up because they arrive without an explanation attached.
 
 **A steroid.** It is given for the swelling rather than for the thing on the
 scan, so feeling better on it is not news about what the thing is. It also

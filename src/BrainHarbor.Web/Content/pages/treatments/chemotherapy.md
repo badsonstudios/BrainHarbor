@@ -69,7 +69,7 @@ Chemotherapy uses drugs to stop tumor cells growing. The ones used most for
 brain tumors are on this page, and most of them are capsules you take at home
 rather than something given through an IV. The drugs lower your blood counts, so you will have blood tests
 all the way through. **The one thing to know before you start: a fever during
-chemotherapy is a phone call straight away, not something to sleep on.**
+chemotherapy is a phone call right away, not something to sleep on.**
 
 ## What is chemotherapy for a brain tumor?
 
@@ -128,8 +128,9 @@ them it is given with radiation, and then after it.
 **How you take it.** Capsules, by mouth, at home. There is no IV and no
 hospital stay for it.
 
-**What it does to you.** The common effects are tiredness, feeling or being
-sick, constipation, loss of appetite, and low blood counts. The tiredness has
+**What it does to you.** The common effects are tiredness, feeling sick to
+your stomach, throwing up, constipation, loss of appetite, and low blood
+counts. The tiredness has
 been reported during treatment and for months afterwards. Periods can stop for
 a while.
 
@@ -156,7 +157,7 @@ Vincristine is different: it goes into a vein, either through a thin tube in
 your arm for the day, or through a line that stays in place for the whole
 course.
 
-**What it does to you.** The main problems are low blood counts, being sick,
+**What it does to you.** The main problems are low blood counts, throwing up,
 constipation, effects on the liver, and nerve damage in the hands and feet.
 That last one comes mainly from the vincristine, and it shows up as numbness,
 tingling or weakness. Tell your team early if you notice it, because it is one
@@ -164,10 +165,10 @@ of the things that changes what they do next.
 
 **There is a food and drink rule with procarbazine, and it is the one thing on
 this page you can get wrong at home tonight.** Alcohol can cause a reaction
-with it: flushing in the face and neck, feeling hot, sweating, feeling sick,
-itching and a headache. Some foods can do the same, mostly aged or fermented
-ones. **Ask for the list before your first capsule**, and ask whether it covers
-low-alcohol and alcohol-free drinks too, because it often does.
+with it: flushing in the face and neck, feeling hot, sweating, feeling sick to
+your stomach, itching and a headache. Some foods can do the same, mostly aged or
+fermented ones. **Ask for the list before your first capsule**, and ask whether
+it covers low-alcohol and alcohol-free drinks too, because it often does.
 
 **Be honest about how you are coping with it.** One study at a national
 neuro-oncology center in Ireland looked at a full year of PCV in people with
@@ -284,11 +285,11 @@ ten days after treatment. That is when the risk of a serious infection is
 highest, and it is why the timing of a temperature matters.
 
 **Here is the rule.** During chemotherapy, **a temperature over 100.4 °F
-(38 °C) means calling your team straight away, at any hour.** Not in the
+(38 °C) means calling your team right away, at any hour.** Not in the
 morning. Not after seeing how you feel. An infection with low white cells can
 go from mild to dangerous quickly, and it is treatable when it is caught early.
 
-Call straight away for any of these too:
+Call right away for any of these too:
 
 - Chills, or shaking, or drenching sweats.
 - New or worsening confusion.
@@ -297,7 +298,7 @@ Call straight away for any of these too:
 
 **Before your first cycle, get three things.** Ask for them by name:
 
-1. **The number to call out of hours**, written down, kept where you can see
+1. **The number to call after hours**, written down, kept where you can see
    it. Not the clinic's daytime number.
 2. **Their temperature rule**, in their words. Some teams use a slightly
    different number. Some also ask you to call if your temperature is unusually
@@ -314,13 +315,13 @@ phone call about a temperature that turns out to be nothing.
 ## What does a cycle feel like?
 
 Cycles differ by drug, and yours will have its own shape. But there is a common
-pattern worth knowing, because it repeats and because it catches people out the
+pattern worth knowing, because it repeats and because it trips people up the
 first time.
 
-The day you take it is usually unremarkable. Feeling sick, if it happens, tends
-to come later that day or the next, which is why the anti-sickness medicine
-matters more than it seems to on the morning of day one. Tiredness builds over
-the days that follow rather than arriving at once.
+The day you take it is usually unremarkable. Feeling sick to your stomach, if it
+happens, tends to come later that day or the next, which is why the
+anti-sickness medicine matters more than it seems to on the morning of day one.
+Tiredness builds over the days that follow rather than arriving at once.
 
 Then, and this is the part that surprises people, **you feel worst when you
 feel finished**. Blood counts reach their lowest point about a week to ten days
@@ -360,10 +361,10 @@ finishes.
 **before** treatment starts rather than partway through. Your team can tell you
 whether the drug you are having affects that, and who to talk to about it.
 
-## Feeling sick, and the medicine for it
+## Feeling sick to your stomach, and the medicine for it
 
-Feeling or being sick is common. Doctors usually prescribe anti-sickness
-medicine to go with chemotherapy.
+Feeling sick to your stomach, or throwing up, is common. Doctors usually
+prescribe anti-sickness medicine to go with chemotherapy.
 
 The useful thing to ask is **when** to take it. Anti-sickness medicine is
 generally easier to stay ahead of than to catch up with, so ask your team
@@ -397,7 +398,7 @@ asking about rather than worrying about.
 
 Ask how long you will be on it and what would end it, because "until your
 counts recover" means a blood test decides, not the calendar. And tell your
-team about **a new rash** while you are taking it, straight away.
+team about **a new rash** while you are taking it, right away.
 
 ## What you need first
 
@@ -415,7 +416,7 @@ Before chemotherapy starts, expect:
 
 Worth sorting out before day one:
 
-- The out-of-hours number, written down.
+- The after-hours number, written down.
 - A thermometer.
 - Somebody who knows you are starting, and knows the fever rule too.
 
@@ -428,9 +429,9 @@ wrong at home, in front of you. That is different from surgery and different
 from radiation.
 
 **Learn the fever rule as well as they do.** A temperature over 100.4 °F during
-chemotherapy is a call straight away, at any hour. You may be the one who
+chemotherapy is a call right away, at any hour. You may be the one who
 notices they are hot, or shivering, or not making sense. Do not wait for
-morning, and do not wait to be sure. Have the out-of-hours number somewhere you
+morning, and do not wait to be sure. Have the after-hours number somewhere you
 can find it in the dark.
 
 **Get a thermometer, and use it.** A hand on a forehead is a guess. This is
@@ -461,7 +462,7 @@ plan working the way it is designed to.
 - They are not breathing properly, or are breathless at rest.
 - You cannot wake them.
 
-**When to call the team straight away, at any hour.** Not the next morning:
+**When to call the team right away, at any hour.** Not the next morning:
 
 - A temperature over 100.4 °F, or chills, shaking or drenching sweats.
 - An unusually low temperature.
@@ -523,11 +524,11 @@ say so, and ask them to call you when it lands.
 - Which drug am I having, and what is it meant to do for my tumor?
 - Is it capsules at home, or something given at the hospital?
 - How often will you check my blood, and who tells me the result?
-- **What temperature means I call you, and what is the number out of hours?**
+- **What temperature means I call you, and what is the number after hours?**
 - What anti-sickness medicine will I have, and when should I take it?
 - Am I going to be on an antibiotic, and for how long?
 - How many cycles are we planning, and what would change that?
-- What should I report straight away rather than saving for the next visit?
+- What should I report right away rather than saving for the next visit?
 - What happens if my counts are too low on the day?
 - Could this affect my fertility, and who do I talk to about it before we
   start?

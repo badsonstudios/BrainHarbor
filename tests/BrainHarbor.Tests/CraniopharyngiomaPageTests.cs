@@ -353,7 +353,7 @@ public sealed class CraniopharyngiomaPageContentTests
             "/treatments/steroids has no readable same-day list, so the conditional above it "
             + "cannot be checked against what it actually escalates");
 
-        foreach (var crisisSign in new[] { "confused", "being sick again and again", "faint" })
+        foreach (var crisisSign in new[] { "confused", "throwing up again and again", "faint" })
         {
             Assert.Contains(crisisSign, sameDay.Groups[1].Value, StringComparison.OrdinalIgnoreCase);
         }

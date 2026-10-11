@@ -68,8 +68,8 @@ talking.** It can also change swallowing, walking, mood and behavior. It always
 starts within the first week.
 
 **Suddenly not being able to speak is on the ambulance list above, and that rule
-still stands.** What this section describes usually starts in hospital, in the days
-right after the operation, where the team is watching for it.
+still stands.** What this section describes usually starts in the hospital, in
+the days right after the operation, where the team is watching for it.
 
 It is frightening to see. Doctors know it as a complication of the operation
 itself. **Most children slowly get better.** Speech usually comes back over days

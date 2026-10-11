@@ -92,11 +92,11 @@ the tumor being any different than it was.
 
 **Pressure can build up inside the head.** When the pressure inside the skull
 rises, there is a pattern doctors watch for: headaches that are worse in the
-morning, feeling sick and throwing up, odd eye movements, seizures, and being
-confused or very drowsy. Not everybody with raised pressure has all of it, and
-some people have almost none of it. If this pattern is new for you, it is worth
-a phone call rather than a wait. If you have a shunt, it means getting help right
-away.
+morning, feeling sick to your stomach and throwing up, odd eye movements,
+seizures, and being confused or very drowsy. Not everybody with raised pressure
+has all of it, and some people have almost none of it. If this pattern is new
+for you, it is worth a phone call rather than a wait. If you have a shunt, it
+means getting help right away.
 
 **It can set off seizures.** A tumor and the irritated brain around it can upset
 the normal electrical activity of that part of the brain. For some people a

@@ -794,7 +794,7 @@ privately.
 Scans go on for a long time with this diagnosis. For once there is something
 worth waiting for at the end of them.
 
-**The wait for the result is harder than the scan**, which catches people out.
+**The wait for the result is harder than the scan**, which trips people up.
 [Follow-up scans](/tests/follow-up-scans) goes through how one scan is set
 against the last, and what to do with the waiting.
 

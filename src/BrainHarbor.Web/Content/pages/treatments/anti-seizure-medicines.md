@@ -495,7 +495,7 @@ keep on a phone.
 **Call an ambulance.** Call **911**, or your local emergency number, for:
 
 - a seizure lasting more than five minutes
-- another seizure starting before they have come round from the first
+- another seizure starting before they have woken up from the first
 - anybody who cannot be woken, or is having trouble breathing
 - a **first ever** seizure
 - a rash with blisters, peeling skin, or sores in the mouth or eyes, especially
@@ -516,7 +516,7 @@ draws that line properly.
 - You are much sleepier or unsteadier than usual, or you have started falling.
 - Your seizures come back after a stretch without them, or change shape, or come
   more often.
-- You are being sick and cannot keep the pills down. A missed dose is not a
+- You are throwing up and cannot keep the pills down. A missed dose is not a
   minor inconvenience here, and a team has other ways of getting it into you.
 - You are confused, or somebody says you are not making sense. Too much of a
   seizure medicine can do this, and so can other things worth ruling out.
@@ -578,7 +578,7 @@ you having to talk about whether they can manage.
 - What are the driving rules where I live, and who tells the licensing people?
 - What should I write down between appointments?
 - Would you ever try coming off it, and what would have to be true first?
-- Who do I call about this medicine, out of hours?
+- Who do I call about this medicine, after hours?
 
 ## Where to go next {#where-to-go-next}
 
