@@ -137,6 +137,35 @@ public sealed class SteroidsPageContentTests
         // is nobody's claim.
         "an operation. Brain tumor types if you want the page for your own tumor. "
         + "Get help now if you need to talk to a person today.",
+
+        // WI-564, AND THE SHARING WAS ALREADY THERE — IN TWO DIALECTS, WHICH IS WHAT
+        // HID IT. This page said "You are being sick again and again" and
+        // /treatments/anti-seizure-medicines said "You are throwing up again and again":
+        // one same-day trigger, two wordings, and §12.10's "must not have two strengths"
+        // rule broken in the most literal way available, because one of the two was
+        // British for vomiting and the other was not. The idiom sweep made them
+        // identical and THAT is when this guard could finally see them.
+        //
+        // Allowlisted rather than reworded, for the reason the confusion line above is:
+        // a symptom sorted into a tier is the definitive §12.10 claim, and rewording one
+        // page to dodge this check is the wrong fix.
+        //
+        // Carried with the trailing "You", like the "phone." entry above: the window
+        // spans the bullet boundary, and both pages' next bullet starts with that word.
+        "You are throwing up again and again. You",
+
+        // WI-564, THE SAME FINDING ON THE CORPUS'S MOST SAFETY-CRITICAL SENTENCE.
+        // This page's fever bullet says a fever during chemotherapy "is a call right
+        // away, at any hour"; /treatments/chemotherapy, which OWNS the rule and which
+        // this page deep-links to, said "is a call straight away, at any hour". One
+        // rule, two wordings, one of them British — and §12.10's "a safety claim must
+        // not have two strengths" could not see it, because the two strengths were in
+        // two dialects. Standardising the idiom is what made them one sentence.
+        //
+        // Allowlisted, not reworded: this page routes to #fever-rule and repeats the
+        // rule because a steroid reader on chemotherapy needs it where they are
+        // standing (§12.11). An identical wording is the point.
+        "a fever is a call right away, at any hour, and not a wait for the morning",
     ];
 
     private static readonly HashSet<string> AllowedShingles =
@@ -791,7 +820,7 @@ public sealed class SteroidsPageContentTests
         // the section the link lands on (§12.10).
         var feverRule = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(CuratedPage.Section(
             CuratedPage.Read("treatments", "chemotherapy.md"), "Your blood counts, and the fever rule")));
-        Assert.Matches(new Regex(@"straight away, at any hour", RegexOptions.IgnoreCase), feverRule);
+        Assert.Matches(new Regex(@"right away, at any hour", RegexOptions.IgnoreCase), feverRule);
         Assert.Matches(new Regex(@"a fever is a call right away, at any hour", RegexOptions.IgnoreCase), today);
         Assert.Contains("/treatments/chemotherapy#fever-rule", today, StringComparison.Ordinal);
 
@@ -823,7 +852,7 @@ public sealed class SteroidsPageContentTests
         foreach (var owed in new[]
                  {
                      "keep your pills down", "headache keeps building", "faint", "fever",
-                     "being sick again and again", "confused", "new weakness", "trouble speaking",
+                     "throwing up again and again", "confused", "new weakness", "trouble speaking",
                      "blood in your stool", "stumble or fall", "chickenpox",
                  })
         {

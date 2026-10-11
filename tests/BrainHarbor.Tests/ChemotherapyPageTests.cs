@@ -60,7 +60,7 @@ public sealed class ChemotherapyPageContentTests
 
         Assert.Matches(new Regex(@"100\.4", RegexOptions.IgnoreCase), section);
         Assert.Matches(
-            new Regex(@"calling your team straight away, at any hour", RegexOptions.IgnoreCase),
+            new Regex(@"calling your team right away, at any hour", RegexOptions.IgnoreCase),
             section);
 
         // The Celsius form, which was unpinned: 100.4 \u00b0F is 38.0 \u00b0C, and
@@ -126,7 +126,7 @@ public sealed class ChemotherapyPageContentTests
 
         Assert.Matches(
             new Regex(@"Their temperature rule.{0,200}Use theirs", RegexOptions.IgnoreCase), section);
-        Assert.Matches(new Regex(@"number to call out of hours", RegexOptions.IgnoreCase), section);
+        Assert.Matches(new Regex(@"number to call after hours", RegexOptions.IgnoreCase), section);
 
         // "If unsure, call" has to sit after the list, the way the craniotomy
         // caregiver section does it. It is the line that makes an incomplete
@@ -539,7 +539,7 @@ public sealed class ChemotherapyPageContentTests
         // Reading the page end to end found this, and it is the WI-511 blocker
         // reproduced inside the section written to prevent it.
         //
-        // The body says a fever means calling "straight away, at any hour". The
+        // The body says a fever means calling "right away, at any hour". The
         // caregiver section had a single list headed "When to call the team the
         // SAME DAY", and the first bullet on it was the temperature. A
         // caregiver who reads the list and not the paragraph above it has been
@@ -556,16 +556,16 @@ public sealed class ChemotherapyPageContentTests
             StringComparison.OrdinalIgnoreCase);
         Assert.True(sameDay > 0, "the caregiver section has no 'call the same day' list");
 
-        var straightAway = section.IndexOf("When to call the team straight away",
+        var rightAway = section.IndexOf("When to call the team right away",
             StringComparison.OrdinalIgnoreCase);
-        Assert.True(straightAway > 0, "the caregiver section has no 'call straight away' list");
-        Assert.True(straightAway < sameDay,
+        Assert.True(rightAway > 0, "the caregiver section has no 'call right away' list");
+        Assert.True(rightAway < sameDay,
             "the same-day list comes first, so a reader meets the lesser urgency first");
 
         // The temperature belongs to the straight-away list and must not appear
         // anywhere in the same-day one.
         Assert.DoesNotContain("100.4", section[sameDay..], StringComparison.Ordinal);
-        Assert.Contains("100.4", section[straightAway..sameDay], StringComparison.Ordinal);
+        Assert.Contains("100.4", section[rightAway..sameDay], StringComparison.Ordinal);
     }
 
     [Fact]
@@ -627,7 +627,7 @@ public sealed class ChemotherapyPageContentTests
         // one slot §12.8 says a treatment page always carries, unpinned on a
         // treatment page. Both headings, because the pair is the content.
         Assert.Contains("Side effects, and what is done about them", headings);  // slot 6b
-        Assert.Contains("Feeling sick, and the medicine for it", headings);      // slot 6b
+        Assert.Contains("Feeling sick to your stomach, and the medicine for it", headings);      // slot 6b
     }
 
     [Fact]
@@ -748,7 +748,7 @@ public sealed class ChemotherapyPageContentTests
         var section = CuratedPage.Flatten(Section("What to ask your team"));
 
         Assert.Matches(
-            new Regex(@"What temperature means I call you, and what is the number out of hours",
+            new Regex(@"What temperature means I call you, and what is the number after hours",
                 RegexOptions.IgnoreCase),
             section);
         Assert.Matches(

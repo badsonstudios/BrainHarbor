@@ -255,9 +255,9 @@ more mistakes on the tests.
 At each spot, the current is on for only a few seconds, usually less than
 four.
 
-How long you stay in hospital afterwards depends on the operation and on you.
-[The brain surgery page](/treatments/craniotomy#how-long) goes through the stay
-and the weeks after it.
+How long you stay in the hospital afterwards depends on the operation and on
+you. [The brain surgery page](/treatments/craniotomy#how-long) goes through the
+stay and the weeks after it.
 
 ## What does it feel like? {#what-it-feels-like}
 

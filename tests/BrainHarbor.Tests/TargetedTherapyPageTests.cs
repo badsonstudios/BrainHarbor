@@ -939,7 +939,21 @@ public sealed class TargetedTherapyPageContentTests
             // emergency line on the site.
             "chest pain or trouble breathing is an ambulance call 911 or your local "
             + "emergency number that is where the rest of this site files it too an "
-            + "ambulance call or your local emergency number");
+            + "ambulance call or your local emergency number",
+
+            // WI-564, and the same call StereotacticRadiosurgeryPageTests makes for the
+            // "or" variant of this phrase — see there for the full reason. In short: a
+            // SYMPTOM PAIR IS A FACT, NOT RESTATED PROSE (§12.27), and "feeling sick to
+            // your stomach and throwing up" is EXACTLY eight words, so it is a whole
+            // shingle window on its own and no amount of differing neighbours separates
+            // two pages that both use it. The British form it replaced was five words
+            // and fell under the window, which is the only reason this was ever quiet.
+            //
+            // One of the three sites was rewritten rather than exempted (the
+            // Dordaviprone bullet, which now reads as a comma series), because a drug's
+            // side-effect list genuinely wanted one. The NTRK bullet did not: the pair
+            // is coordinated there and splitting it reads as two separate effects.
+            "feeling sick to your stomach and throwing up");
     }
 
     [Fact]

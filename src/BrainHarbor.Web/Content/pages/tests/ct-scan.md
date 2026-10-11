@@ -340,8 +340,8 @@ doubt about the last answer.
 - **An MRI, after the CT.** The usual next step, and the reason is at the top of
   this page: the MRI shows the brain in far more detail.
   [Your MRI scan](/tests/mri) is that appointment, start to finish.
-- **A scan just before an operation, and one just after it.** Both catch people
-  out and neither means something has changed.
+- **A scan just before an operation, and one just after it.** Both trip people
+  up and neither means something has changed.
   [Your MRI scan](/tests/mri#navigation-scan) explains the two together.
 - **A CT for radiation planning.** If radiation is part of your treatment, one
   of these is done as part of a planning visit, with a mask made for you at the

@@ -598,7 +598,7 @@ in between.
 
 ### Two different things are both called grade 1
 
-**This one catches people out, and it is worth reading twice.** If you have had
+**This one trips people up, and it is worth reading twice.** If you have had
 an operation, you may be holding two documents that both use the word grade, and
 they mean completely different things.
 

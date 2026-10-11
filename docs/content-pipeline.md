@@ -11783,3 +11783,318 @@ published summary moves — but unlike §12.38 this item is NOT inert in product
 summary gate now measures medical prose correctly, and **the live flag rate should tick
 up from 4.8%**. That is the correction working. The next `Category=Live` run is the
 confirmation, and it is a desk calculation until then.
+
+### 12.40 Spelling is a substring and idiom is not, and dialect drift hid three shared safety claims (WI-564)
+
+`CuratedPage.BritishForms` has grown eight times and catches **spellings**. It cannot
+catch **idiom**, and idiom is what actually misleads: §12.10 records WI-563 shipping
+*"Being sick over and over"* in a same-day escalation **trigger**, where a US reader
+parses it as *being unwell* rather than *vomiting* and the misread changes what they do.
+Seven idioms were named for a sweep and the sweep was deferred four times.
+
+**There was no shared idiom list at all. There were THIRTY of them.** Nineteen page
+test classes banned `straight away`, eighteen banned `being sick`, sixteen each banned
+`out of hours` and `A&E`, thirteen banned `GP`, eleven banned `999` — each hand-written,
+each reading only its own page. So the corpus's answer
+to *"is this idiom shipped anywhere?"* was thirty independent local answers and no
+global one — **and a page whose own class carried no entry from that family had no answer
+at all**. `/tests/getting-ready-for-surgery` shipped *"on the ward"* behind a page-local
+list of three (`nil by mouth`, `pre-med`, `day case`), and `/tumors/craniopharyngioma`
+shipped *"passing water"* with no idiom array in its class at all — while other pages
+banned both by name. Only `ShuntsPageTests` ever banned `the ward`, and it is one of the
+two files that never shipped the phrase.
+
+#### The corpus answered the item's open question itself
+
+WI-564's entry asks for a **deliberate decision** on `straight away`, which
+`BritishForms` had already REJECTED on the grounds that banning it *"would fail a shipped
+page"*. **That is the wrong test.** §12.8 asks whether a *correct* sentence contains the
+phrase, not whether an unfixed one does — a live occurrence is the reason to act, not the
+reason to stop. Measured over the whole corpus before anything was added:
+
+| US form the corpus already used | British residue |
+|---|---|
+| `right away` 38 | `straight away` 9 |
+| `after hours` / `after-hours` 15 | `out of hours` 9 |
+| `throwing up` 27 | `being sick` 15 |
+
+**The site already spoke US on every one of these.** The sharpest case is a question
+bullet in the same template slot. **Seventeen pages ask it, in eight wordings** — which
+is its own finding, and it cuts against any claim that the slot had one wording. But the
+three that said `out of hours` (`/tumors/astrocytoma`, `/tumors/glioma`,
+`/tumors/high-grade-glioma`) and the two that said `after hours` in the IDENTICAL
+remaining words (`/tumors/glioblastoma`, `/tumors/oligodendroglioma`) differed in nothing
+else: *"Who do I call [after | out of] hours, and what number is it?"*. Fourteen of the
+seventeen already used the US form in some wording. The decision was not a judgement
+call; it was a measurement nobody had taken.
+
+#### A promotion is not a copy — the scope change is a new rule and has to be measured like one
+
+**This is the finding to carry forward.** `AtrtPageTests` bans the phone-call "ring" as
+`\brings?\b`, correctly: that page has no other "ring", and the item's own `/review`
+round 9 reasoned carefully about "bring" and "coverings". **Promoted unchanged it fails
+four pages** — the CT scanner *is* a ring, and the bright ring on a scan is
+glioblastoma's central fact. `\bfits\b` is the same shape (39 live, every one correct:
+*"a trial that fits me"*) and so is `\bflat\b` (11 live: *"lie flat"*, *"feeling
+flat"*). A guard can be safe page-locally and wrong corpus-wide, and the only way to know
+is to run it over the corpus. All three stay page-local, recorded in
+`RejectedBritishIdioms` so the next item does not promote them and re-find it the hard
+way.
+
+The converse also held: **where a per-page copy was STRONGER, the shared entry took the
+stronger form.** `ShuntsPageTests` alone wrote `out[- ]of[- ]hours`, and **2 of the 9
+live occurrences were hyphenated** — invisible to the other eleven arrays, which all ban
+the bare string. `\b999\b` is bounded here and is not in the seven copies, which would
+fire on a year. A promotion that kept the commonest form rather than the best one would
+be a vote, not a decision.
+
+#### Each entry carries its own precision, because half of them are correct English elsewhere
+
+`BritishIdioms` is a **regex table**, not a second string array beside a second exemption
+array. `feeling sick(?! to your stomach)` is the entry that forces it: *"feeling sick to
+your stomach"* is the natural US form and was **already live and correct** on
+`/tumors/brain-metastases` and `/tumors/cns-germ-cell-tumor`. All six per-page arrays
+that carry `feeling sick` ban it as a plain substring, so promoted in that form the
+list fails two shipped pages — §12.8's exact prohibition.
+`BrainMetastasesPageTests` had found this page-locally and written the lookahead; nothing
+shared it. A separate exemption array is also how this repo has already shipped a live
+bug (§12.8, WI-575 `/review` round 1: exemptions stripped case-sensitively while forms
+matched case-insensitively).
+
+`\bdifferent to\b` is the mirror image and was **rejected because its single live hit is
+correct**: `/tests/planning-scans` says *"without the day looking any different to
+you"*, where *to you* is the experiencer and not the British comparative. The one hit a
+grep finds is the one that proves the rule wrong.
+
+#### Dialect drift hid three shared safety claims, and standardising the idiom is what exposed them
+
+Three restatement failures arrived after the content fix, and **not one of them was
+caused by it**:
+
+1. `/treatments/steroids` said *"You are being sick again and again"*;
+   `/treatments/anti-seizure-medicines` said *"You are throwing up again and again"*.
+   **One same-day trigger, two wordings, §12.10's "a safety claim must not have two
+   strengths" broken in the most literal way available** — and the guard could not see it
+   because one of the two strengths was in another dialect.
+2. The same page's fever bullet said a fever *"is a call right away, at any hour"* while
+   `/treatments/chemotherapy`, which **owns** the rule and which it deep-links,
+   said *"straight away, at any hour"*. The corpus's most safety-critical sentence, in
+   two dialects.
+3. A symptom pair on four pages. **A symptom pair is a fact, not restated prose**
+   (§12.27: a rule and its instances are different facts, and only the rule has one
+   owner).
+
+(1) and (2) are allowlisted on both sides with the reason, because an identical wording
+is the point. (3) is allowlisted on two pages and **rewritten on the two whose test
+classes record NO ALLOWLIST as an earned position** (`/tumors/craniopharyngioma`,
+`/tumors/hemangioblastoma`) — a documented stance is not something a later item quietly
+reverses.
+
+**And the mechanism behind (3) is worth knowing before the next vocabulary change.**
+`feeling sick or throwing up` is five words and fell UNDER the eight-word shingle
+window; `feeling sick to your stomach or throwing up` is **exactly eight** and is a
+whole window on its own, so no amount of differing neighbours separates two pages that
+both use it. **A guard tuned to prose length starts reporting shared facts when a
+replacement crosses its threshold.** Nothing became duplicated; a longer form crossed a
+line.
+
+#### The structural half: the guards were reading the wrong text (WI-537)
+
+A shared block is spliced in at render time (§12.10, WI-514), so an idiom in
+`blocks/mechanism.md` is an idiom on **eighteen tumor hubs** — and a guard reading the
+RAW page sees the literal string `[MECHANISM]`. That block carried *"feeling sick"* on
+its raised-pressure line for the whole life of the corpus and **no per-page array could
+ever have turned red on it**. WI-537 predicted exactly this and it was true.
+
+`BritishIdiomSweepTests` reads `CuratedPage.EverythingAReaderMeets` — headline plus
+**composed** body — for all 55 pages, plus `SharedSources()` for the glossary, whose
+tooltips fire site-wide and which no page composes.
+`TheSweepReadsBlockProseThroughEveryPageThatIncludesIt` pins the scope rather than
+asserting it in a comment: it proves `/tumors/glioma`'s swept text contains a sentence
+its own source does not have, that at least ten hubs do, and — the negative control —
+that `review_due:` does not, so the sweep is not reading front matter as prose.
+
+**The thirty per-page arrays are left alone, deliberately.** They carry page-specific
+entries this list has no business holding (`fractious`, `late effects clinic`,
+`freephone`, `high dependency`, `DVLA`), and re-scoping thirty call sites has a far
+larger blast radius than the hole being closed. That is WI-575's choice in the same
+situation for the same reason (§12.21): *swept here rather than by editing the call
+sites.* What they now are is harmless duplication of a rule that holds globally.
+
+#### The line this list draws: an institution is not an idiom
+
+`\bNHS\b`, `\bMacmillan\b` and `\bDVLA\b` are left out. `/tumors/hemangioblastoma`
+attributes a claim to Macmillan **by name** and is right to — crediting a source means
+naming it, which is the same reason `BritishFormExemptions` carries the two charity
+names. **A UK body named as a SOURCE is correct; a UK body offered as the reader's own
+route is a page defect, and no substring can tell those apart.** That stays a reading
+job.
+
+#### A guard found its own first version wrong, twice
+
+`catch(?:es|ing)? \w+ out` was the first form of the "catches people out" entry. `\w+` is
+an **open** class, so it fires on *"catch the bus out of town"* — the same mistake §12.8
+keeps recording, reached while writing the list that records it. The British idiom always
+takes a PERSON as its object and pronouns are a closed class, so the entry is a closed
+alternation and only false NEGATIVES are possible. **That widening is also what found six
+more:** every per-page array and this item's own first pass banned `catches people out`
+and missed the plural verb, `catch people out`, live on `/tests/ct-scan`,
+`/tests/follow-up-scans`, `/tumors/all-brain-tumors`, `/tumors/glioma`,
+`/tumors/high-grade-glioma` and `/tumors/low-grade-glioma`.
+
+The rejected-list control found the second. Its selector was `^\d+ live`, which swallowed
+an entry whose reason opens *"0 live"* — and then demanded the corpus contain a word that
+entry says it does not. **A control whose selector is a text pattern has to read the text
+precisely.** `^[1-9]\d*` now.
+
+And a canary derived from the pattern by stripping regex furniture was tried and
+abandoned: it needs a regex parser, and it cut `(?:catch|catches|catching)` in half. Each
+row carries a `Sample` and a `Fixed` which are **the same sentence twice** — the
+`HeadlineSweepTests` shape. The second direction is the load-bearing one: the way this
+list could be wrong is not by missing an idiom, it is by refusing the replacement it
+demands.
+
+#### A stale pairing that passed by reading the wrong half
+
+`GliomaPageTests.EveryWarningSignTheMechanismBlockTeachesHasAnActionOnThisPage` asked the
+block for `being sick` **and the block has never said it** — its raised-pressure line
+said *"feeling sick and throwing up"*. It passed because its "block" side read the
+COMPOSED page, so `/tumors/glioma`'s own prose satisfied it, under a failure message
+blaming the block. **Both halves had to move, and the first fix only moved one** — see
+the `/review` section below, where re-anchoring the word while leaving the source alone
+is recorded as a comment that overstated its own guard.
+
+
+#### What `/review` caught, and the first one was a live defect on the page that matters most
+
+**`/seizures/what-to-do` still shipped the idiom after the sweep was green.** The entry
+was written `\bcome round\b` and the page says *"**Coming** round takes a while"* — in
+the **After it stops** section, which is the one a caregiver reads while the person is
+still unconscious, on the page this corpus calls the one to know by heart. One hit,
+corpus-wide, and the sweep could not see it.
+
+**Two things make that worse than a missed word.** The `catches people out` entry four
+rows down had *already* been widened to its inflections in this same item, and this
+section credits that widening with finding six more hits — **the identical reasoning was
+not applied one entry up**. And the entry's own count was taken with the narrow pattern,
+so **the measurement and the gap had the same cause**: it said 5 live when the corpus
+held 6. A measurement taken with the rule under test cannot find the rule's blind spot.
+The pattern is inflected now, and the count says 6.
+
+**The pairing fix was announced and not made.** `GliomaPageTests`' mechanism-block
+pairing read `Flatten(Composed)` — the whole composed page, which contains
+`/tumors/glioma`'s own prose. Re-anchoring the WORD (`being sick` → `throwing up`) left
+the SOURCE alone, so deleting a sign from `blocks/mechanism.md` still passed, under a
+message blaming the block, **and the comment claimed the pairing was now block-to-block
+"in fact"**. It reads the block file now. A comment that overstates a guard's strength is
+worse than the stale comment it replaced, because the next reader stops checking.
+
+**Four entries would have failed correct US English**, which is the failure mode §12.8
+calls worse than no rule, and all four were found by inventing ordinary sentences rather
+than by re-reading the corpus:
+
+- **`advice line` is not British.** A *24-hour nurse advice line* is standard US
+  health-plan language — Kaiser, TRICARE, most commercial plans. It is one of the seven
+  the item was told to promote, and it went to `RejectedBritishIdioms` instead. Its
+  stated reason had been the phrase's **provenance** (it is CRUK's wording), and
+  provenance is not §12.8's test: a phrase a UK charity happens to use is not thereby
+  British. 0 live, so the list loses nothing.
+- **`go to hospital` had no lookahead at all** while the `in hospital` entry directly
+  above it carried a long one. *"You will go to hospital appointments every week"* and
+  *"children often go to hospital school between treatments"* both failed — and the
+  second is a real thing on a corpus with pediatric pages. Clause-final now.
+- **`in hospital`'s lookahead was too short, and its comment was wrong about the fix.**
+  *"Differences in hospital stays"*, *"in hospital mortality"*, *"in hospital teams"*
+  and — the one the comment could not have predicted — *"in hospital-based clinics"*,
+  where `\s+` could not reach past the hyphen. The comment had promised that any miss was
+  "a one-word addition"; for the hyphen it was a change to the pattern.
+- **`\bcaught out\b` was a bare second branch** under a comment asserting that only false
+  negatives were possible. *"He was caught out in the rain"* is ordinary English. The
+  branch is gone and **the passive voice is now a recorded false negative**, left open
+  rather than closed with an exclusion list, because what separates *caught out later*
+  from *caught out in the rain* is a locative and locatives are an open class.
+
+**And one entry is kept in spite of the test, which the list now says out loud.** *"There
+is no shame in being sick"* is natural US English for being ill, so a correct sentence
+does contain `being sick` — which is precisely the argument that put `feel sick` on the
+rejected list. Two lists giving opposite answers to one question is how the next author
+takes whichever they read first. It stays because the costs are not symmetric: the false
+pass is a reader misreading an escalation **trigger** and not calling; the false fail is
+a sentence an author rewords in ten seconds.
+
+**A replacement can be right word-for-word and wrong sentence-for-sentence.**
+`/tumors/pituitary-tumor` read *"**Throwing up** and unable to keep pills down needs help
+the same hour"*. The British original worked by ellipsis — *being* sick and *[being]*
+unable — and "throwing up" leaves no auxiliary to license "unable". The assertion pinned
+the broken form, so both moved together.
+
+**Three guard holes the review found in this item's own new tests.** The rejected-list
+control's floor was `>= 6` when seven entries qualified, so one could fall out silently.
+`Assert.NotEmpty(BritishIdiomsIn(sample))` passes when a NEIGHBOURING row fires and the
+row under test does not — it asserts the pattern by name now. And the sweep's single
+`>= 150` floor was carried by the 105 glossary files, so ~37 new entries would have let
+all 55 pages vanish while it stayed green; it is two floors, per root (§12.37).
+
+**Finally, a guard that has existed for several items and still could not fail.**
+`AssertDoesNotRestateTheCorpus` compares allowlist entries against lowercase,
+punctuation-stripped eight-word windows, so an entry written with its original commas
+exempts **nothing** — and the helper only prints what it finds, so a dead entry is silent
+until the collision it was added for comes back. This repo has shipped that twice
+(WI-521's inverted containment; `StereotacticRadiosurgeryPageTests`' own first entry).
+Every entry is now asserted to produce at least one window. The four added by this item
+were checked by hand and are live; the point is that nothing had been checking.
+
+**And the counts in the first draft of this section were wrong in eight places**, which
+is §12.20 in its own ruling: the live total (83, not 75), the files (31, not 29), the
+`right away` baseline (38, not 58), `throwing up` (27, not 28), the hubs
+`[MECHANISM]` reaches (18, not 22), the per-page array census (30 files, not 32, with
+every per-phrase figure understated), the list floor, and the claim that two pages had
+"no test class" when what they lacked was an idiom array. **The cause was mixing source
+counts with composed counts in one table without saying so**, which made the headline
+unauditable. There is one stated convention now — source occurrences in reader-facing
+body text — and the composed figure is given separately where it is the point.
+
+#### Proof
+
+**136 of 136 break mutations caught, no survivors.** Every one of the 17 live patterns
+planted into four carriers on both line endings: a shared **block** (proves composition),
+`pages/privacy.md` and `pages/about.md` — pages with **no per-page idiom array**, which
+proves the sweep is not leaning on them — and a **glossary** entry, which no page
+composes. WI-564's entry asked for exactly this (*"plant idioms rather than only grep for
+them — a grep finds the forms somebody already thought of"*), and it is how WI-549 found
+`fortnight` after five review rounds had read the page.
+
+**83 live occurrences fixed across 31 files (29 pages and 2 shared blocks). 2,929 of
+2,929 tests; ContentCheck 345/0.** The count is SOURCE occurrences in reader-facing body
+text, measured with the final pattern set — one convention, said out loud, because the
+first version of this section mixed source counts with composed ones in a single table
+and the headline was therefore unauditable (/review). Composed, the `feeling sick` row
+alone is 42, because `blocks/mechanism.md` carries one of them onto eighteen hubs.
+
+**A reader does see this change**, unlike §12.38 and §12.39: 75 phrases on 29 published
+pages, including the chemotherapy fever rule and four seizure escalation lines.
+**The reading-grade cost was measured, not assumed:** the US forms are longer, and the
+only page whose grade moved is `/treatments/chemotherapy`, which took 18 of the 83
+replacements and went **5.4 → 5.5**. Every one of the 55 pages is still under 6.0, the
+worst curated page is unchanged at **5.8** (`/tumors/oligodendroglioma`), and the
+page-level WARN count went **17 → 18**. (The corpus's only 6.0 is a glossary
+definition, `rescue-medicine`, and this item changed no glossary file.)
+
+#### Carried forward
+
+- **`/tumors/oligodendroglioma` and five sibling hubs restate the mechanism block's
+  raised-pressure pattern in their own symptom sections.** Pre-existing, and now visible
+  because the phrase is eight words. It is a content-ownership question (§12.26 / §12.27)
+  and not an idiom one, so it was not decided here. For `/pm`.
+- **`anti-sickness medicine` is British** (US: *anti-nausea*), live 4 times on
+  `/treatments/chemotherapy`. Found by this sweep and deliberately NOT taken: it is drug
+  vocabulary rather than a reader idiom, every occurrence is on one page, and changing it
+  touches that page's heading slot and image inventory a second time in one item.
+- **`PituitaryTumorPageTests` and `MeningiomaPageTests` carry `straight away` as a live
+  alternative** inside positive urgency detectors. Harmless — a dead alternative in a
+  positive alternation costs nothing — but it is dead now, and §12.8's own rule about
+  redactions you have not watched fire applies to alternatives too.
+- **`BritishForms`' rejection note for `straight away` is now wrong** and was left in
+  place with the entry promoted into `BritishIdioms` above it. The two lists are read
+  together and the note records why the first answer was wrong, which is worth more than
+  a clean list.

@@ -612,7 +612,7 @@ public sealed class CnsLymphomaPageContentTests
         var feverSection = CuratedPage.Section(
             CuratedPage.Read("treatments", "chemotherapy.md"),
             "Your blood counts, and the fever rule");
-        Assert.Matches(new Regex(@"straight away, at any hour", RegexOptions.IgnoreCase),
+        Assert.Matches(new Regex(@"right away, at any hour", RegexOptions.IgnoreCase),
             feverSection);
     }
 
@@ -887,7 +887,7 @@ public sealed class CnsLymphomaPageContentTests
         var section = CuratedPage.Flatten(Regex.Replace(
             CuratedPage.ComposedSubsection(Page, "The hospital stays"), @"[*_]", ""));
 
-        Assert.Matches(new Regex(@"usually means a few days in hospital", RegexOptions.IgnoreCase),
+        Assert.Matches(new Regex(@"usually means a few days in the hospital", RegexOptions.IgnoreCase),
             section);
         Assert.Matches(new Regex(@"Not everybody stays in", RegexOptions.IgnoreCase), section);
         Assert.Matches(new Regex(

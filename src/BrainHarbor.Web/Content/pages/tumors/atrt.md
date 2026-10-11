@@ -1152,7 +1152,7 @@ which most families find harder than the tests.
 
 ### There is no official stage for this tumor
 
-**This one catches people out.** You may see staging words on your child's
+**This one trips people up.** You may see staging words on your child's
 report, and there is no agreed staging system for ATRT. The National Cancer
 Institute says so plainly. So the words describe what was found. They are not
 steps on an official ladder.

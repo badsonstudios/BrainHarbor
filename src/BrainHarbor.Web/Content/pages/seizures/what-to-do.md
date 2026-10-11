@@ -52,14 +52,14 @@ disclaimers: [medical]
 Most seizures do not need one. Call **911** (or your local emergency number) if:
 
 - the seizure lasts **longer than 5 minutes**
-- another seizure starts before they have come round from the first
+- another seizure starts before they have woken up from the first
 - they are having trouble breathing, or they seem to be choking
 - they do not wake up after it stops
 - they got hurt
 - **it happened in water**
 - this is their **first ever** seizure
 - they are pregnant
-- they have diabetes and do not come round
+- they have diabetes and do not come around
 - they ask you to
 
 If you are frightened and you are not sure, call. That is what the number is
@@ -95,9 +95,9 @@ This is the one situation where you call every single time.
 
 ## After it stops
 
-Coming round takes a while. They may be muddled, exhausted, upset, or sore. They
-may not remember any of it. All of that is normal, and it is not a sign that
-something has gone wrong.
+Coming around takes a while. They may be muddled, exhausted, upset, or sore.
+They may not remember any of it. All of that is normal, and it is not a sign
+that something has gone wrong.
 
 Ask them their name, where they are, and what day it is. If they cannot say,
 tell them, kindly, and say they are safe. Do not leave them alone until they can
@@ -156,4 +156,4 @@ information for the care team, and it is often something medicine can control.
 - Should we have a rescue medicine at home, and when would I use it?
 - When do you want me to call you, and when should I call an ambulance instead?
 - What should I write down when one happens?
-- Who do we call out of hours?
+- Who do we call after hours?

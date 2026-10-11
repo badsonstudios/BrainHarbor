@@ -409,6 +409,15 @@ internal static class CuratedPage
         //     library. Banning it would fail a shipped page, and §12.8's rule
         //     is that a phrase belongs on this list only if no correct
         //     sentence contains it.
+        //     >>> WI-564 REVERSED THIS, and the note is kept because the
+        //     reasoning in it is the mistake worth recording. "Banning it would
+        //     fail a shipped page" is not §12.8's test: §12.8 asks whether a
+        //     CORRECT sentence contains the phrase, and an unfixed page is not
+        //     a correct one. A live occurrence is the reason to act. Measured
+        //     corpus-wide, the site already said "right away" 38 times against
+        //     9 "straight away"; all 9 are fixed and the entry is live in
+        //     BritishIdioms (§12.40). It is not duplicated here — the idiom
+        //     list is where it belongs, because it is not a spelling.
         //   * "chemist" — matches "chemistry" on /tests/waiting-for-results and
         //     "immunohistochemistry" on /tests/molecular-markers and in a
         //     glossary entry. WI-511's stemming defect exactly: a substring of
@@ -454,6 +463,351 @@ internal static class CuratedPage
         // crediting a source means spelling its name the way it is spelled.
         "Brain Tumour Research", "brain tumour research",
     ];
+
+    /// <summary>
+    /// One British idiom, the US form that replaces it, and why it misleads.
+    /// <b>WI-564.</b>
+    ///
+    /// <para><b>SPELLING AND IDIOM ARE DIFFERENT PROBLEMS, and only the first
+    /// had a shared list.</b> <see cref="BritishForms"/> has grown eight times
+    /// and is a <i>substring</i> array, which is right for a spelling: "tumour"
+    /// is wrong wherever it appears. An idiom is not like that. Half the entries
+    /// below are correct English in some other sentence, so each one carries its
+    /// own precision — <c>feeling sick(?! to your stomach)</c>, <c>\bin
+    /// hospital\b</c> with a lookahead, <c>\b999\b</c> rather than bare
+    /// <c>999</c>. That is why this is a regex table and not a second string
+    /// array beside a second exemption array: an exemption list that is applied
+    /// case-sensitively while the forms are matched case-insensitively is a live
+    /// bug this repo has already had (§12.8, WI-575 /review round 1).</para>
+    ///
+    /// <para><b>EVERY ENTRY WAS RUN OVER THE WHOLE CORPUS BEFORE IT WAS ADDED,
+    /// which is §12.8's rule, and that measurement is the item.</b> 83 live
+    /// occurrences across 31 files (29 pages and 2 shared blocks), all fixed.
+    /// The counts in the comments are the measurement at the time of adding,
+    /// kept because the next sweep's first question is "was this ever live?".
+    /// <b>ONE CONVENTION: they are SOURCE occurrences in reader-facing body
+    /// text</b>, measured with the final pattern set. The first version of this
+    /// comment mixed source counts with composed ones in a single table and the
+    /// headline was therefore unauditable (/review); composed, the
+    /// <c>feeling sick</c> row alone is 42, because <c>blocks/mechanism.md</c>
+    /// carries one of them onto eighteen hubs.</para>
+    ///
+    /// <para><b>AND THE CORPUS ANSWERED THE "DECIDE DELIBERATELY" QUESTION
+    /// ITSELF.</b> WI-564's entry asks for a deliberate decision on
+    /// <c>straight away</c>, which <see cref="BritishForms"/> had REJECTED on
+    /// the grounds that banning it "would fail a shipped page". That is the
+    /// wrong test: §12.8 asks whether a <i>correct</i> sentence contains the
+    /// phrase, not whether an unfixed one does — a live occurrence is the
+    /// reason to act, not the reason to stop. Measured, the corpus had 38
+    /// "right away" against 9 "straight away", 15 "after hours" against 9 "out
+    /// of hours", and 27 "throwing up" against 15 "being sick". <b>The site
+    /// already spoke US on every one of these; the British forms were residue
+    /// on a minority of pages.</b> The sharpest case is a question bullet in one
+    /// template slot: <b>seventeen pages ask it in eight wordings</b>, so the
+    /// slot never had one wording — but the three that said "out of hours"
+    /// (astrocytoma, glioma, high-grade-glioma) and two that said "after hours"
+    /// (glioblastoma, oligodendroglioma) differed in nothing else, and fourteen
+    /// of the seventeen already used the US form.</para>
+    ///
+    /// <para>See <see cref="RejectedBritishIdioms"/> for the candidates that
+    /// were measured and left out, which is the longer and more useful half.</para>
+    /// </summary>
+    /// <param name="Pattern">Case-insensitive regex, matched against FLATTENED text.</param>
+    /// <param name="Instead">The US form, printed in the failure message — an idiom
+    /// failure is a content fix and the author needs the replacement, not a pattern.</param>
+    /// <param name="Why">The measurement, which IS the entry (§12.8).</param>
+    /// <param name="Sample">A sentence carrying the idiom, which the pattern must match.</param>
+    /// <param name="Fixed"><b>The same sentence</b> with the US form in it, which the
+    /// pattern must NOT match. The pair is the two-direction canary
+    /// <c>HeadlineSweepTests</c> uses, and the fact that it is the SAME sentence twice is
+    /// what stops a canary drifting onto a string that happens to match while proving
+    /// nothing about the idiom. The second direction is the load-bearing one: §12.8's
+    /// rule is that a guard which fails a correct page is worse than no guard, and the
+    /// way this list could be wrong is by refusing the replacement it demands.
+    /// Unused by <see cref="RejectedBritishIdioms"/>, whose control is the corpus.</param>
+    public sealed record BritishIdiom(
+        string Pattern, string Instead, string Why, string Sample = "", string Fixed = "");
+
+    /// <summary>
+    /// The shared idiom list WI-564 exists to promote. Swept over the COMPOSED
+    /// page and the headline by <c>BritishIdiomSweepTests</c>, so a phrase in a
+    /// shared block is a phrase on every hub that includes it — which is the
+    /// half that was structurally invisible (WI-537: every per-page idiom array
+    /// reads the RAW page, so <c>[MECHANISM]</c>'s own "feeling sick" could
+    /// never turn one of them red).
+    /// </summary>
+    public static readonly BritishIdiom[] BritishIdioms =
+    [
+        // THE SEVEN WI-564 NAMES. WI-563 found the class: "Being sick over and
+        // over" shipped in a same-day escalation TRIGGER, where a US reader
+        // parses it as "being unwell" rather than "vomiting" and a misread
+        // changes what they do.
+        // THE ONE ENTRY KEPT IN SPITE OF THE §12.8 TEST, AND IT SAYS SO. "There is no
+        // shame in being sick" is natural US English for being ill, so a correct sentence
+        // DOES contain this phrase — which is the same argument that put `feel sick` on
+        // the rejected list. The two lists would otherwise give opposite answers to one
+        // question and the next author would take whichever they read first (/review).
+        // It is kept because the costs are not symmetric: the false pass is a US reader
+        // misreading "being sick over and over" on an escalation TRIGGER and not calling
+        // (WI-563, live, on the fontanelle rule at /review round 9 of WI-548), and the
+        // false fail is a sentence an author reworders in ten seconds.
+        new(@"\bbeing sick\b", "throwing up",
+            "British for vomiting; in US English it reads as being unwell. 15 live, "
+            + "including an escalation trigger (WI-563) and an adrenal-crisis line. "
+            + "KEPT despite a correct US use existing ('no shame in being sick'): the "
+            + "false pass is a missed emergency call and the false fail is a reword.",
+            "You are being sick and cannot keep the pills down.",
+            "You are throwing up and cannot keep the pills down."),
+
+        // THE EXEMPTION IS INLINE AND IT IS LOAD-BEARING. "feeling sick to your
+        // stomach" is the natural US form and was already live and correct on
+        // /tumors/brain-metastases and /tumors/cns-germ-cell-tumor. A bare
+        // substring ban — which is what every per-page copy of this list is —
+        // fails both of those pages, and §12.8 says a rule that fails a correct
+        // page is worse than no rule. `BrainMetastasesPageTests` had found this
+        // page-locally and written the lookahead; nothing shared it.
+        new(@"\bfeeling sick\b(?!\s+to your stomach)", "feeling sick to your stomach",
+            "British for nauseated; US English reads it as feeling unwell. 24 live in "
+            + "source and 42 composed, because blocks/mechanism.md puts one of them onto "
+            + "eighteen hubs; 2 of the 24 were already the correct US form. "
+            + "Ranked BELOW WI-563's blocker "
+            + "(WI-537): in blocks/mechanism.md it sat in a coordination that also "
+            + "carried the unambiguous term, 'feeling sick and throwing up', so a US "
+            + "reader disambiguated from context. Fixed, but it was never the trigger "
+            + "line that changed what somebody did.",
+            "Tiredness, headache, feeling sick, and aching muscles.",
+            "Tiredness, headache, feeling sick to your stomach, and aching muscles."),
+
+        new(@"\bstraight away\b", "right away",
+            "9 live against 58 'right away'. BritishForms rejected it for being live; "
+            + "that is the reason to fix it, not the reason to allow it.",
+            "A fever during chemotherapy is a phone call straight away.",
+            "A fever during chemotherapy is a phone call right away."),
+        new(@"\bstraight after\b", "right after", "1 live, on /tumors/chordoma.",
+            "Scans do not happen straight after radiation.",
+            "Scans do not happen right after radiation."),
+        new(@"\bout[- ]of[- ]hours\b", "after hours",
+            "9 live against 12 'after hours' — and 2 of the 9 were HYPHENATED, which "
+            + "every one of the sixteen per-page arrays missed because they all ban the "
+            + "bare string. ShuntsPageTests alone had the pattern form.",
+            "Who do I call out of hours, and what is the out-of-hours number?",
+            "Who do I call after hours, and what is the after-hours number?"),
+        // INFLECTED, AND THE FIRST VERSION WAS NOT — which is the one real miss in this
+        // item. Written `\bcome round\b`, it left `/seizures/what-to-do` shipping
+        // "Coming round takes a while" in the section a caregiver reads WHILE THE PERSON
+        // IS UNCONSCIOUS, on the page this corpus calls the one to know by heart. Caught
+        // by /review, not by the sweep. The `catches people out` entry four rows down was
+        // deliberately widened to its inflections and §12.40 credits that widening with
+        // finding six more hits; the identical reasoning was not applied here.
+        //
+        // AND THE MEASUREMENT HAD THE SAME CAUSE AS THE GAP: this entry's count was taken
+        // with the narrow pattern, so it said 5 when the corpus held 6.
+        new(@"\b(?:come|comes|came|coming) round\b", "wake up, or come around",
+            "British for regaining consciousness. 6 live: 4 on seizure escalation lines, "
+            + "1 on /tumors/low-grade-glioma ('scan weeks come round again'), and 1 that "
+            + "only the inflected pattern finds.",
+            "Another seizure starts before they have come round from the first.",
+            "Another seizure starts before they have woken up from the first."),
+        // `advice line` IS NOT HERE. It is one of the seven WI-564 named and it went to
+        // RejectedBritishIdioms instead — see there. In short: a "24-hour nurse advice
+        // line" is standard US health-plan language, so the phrase fails §12.8's only
+        // test, and the entry's provenance (it is CRUK's wording) is not that test.
+        // It is 0 live, so the list loses nothing and could only have failed a page.
+
+        // FOUND BY THIS SWEEP, not by the item's entry — which is the argument
+        // for running the whole list over the whole corpus rather than grepping
+        // for the forms somebody already thought of (WI-549's break mutation,
+        // one level up).
+        // THE LOOKAHEAD TAKES `[\s-]`, NOT `\s`, AND THE LIST IS LONGER THAN THE CORPUS
+        // NEEDS. /review ran the first version over invented-but-ordinary US sentences
+        // and it failed four: "Differences in hospital STAYS are normal", "doctors track
+        // in hospital MORTALITY", "in hospital TEAMS, a nurse calls first", and — the one
+        // the comment got wrong — "in hospital-based clinics", where the `\s+` could not
+        // reach past the hyphen. The old comment claimed any miss was "a one-word
+        // addition"; for the hyphen it was not, which is why the claim is gone.
+        //
+        // This IS an exclusion list, and §12.8 is sceptical of those for a reason. It is
+        // accepted here because the ambiguity is GRAMMATICAL rather than semantic — the
+        // British use is a bare adverbial, the US attributive use always has a head noun
+        // — so every miss is a false FAIL, which is loud, rather than a false pass, which
+        // is silent. That is the opposite of the exclusion lists §12.8 warns about, which
+        // were added to make live failures pass.
+        new(@"\bin hospital\b(?![\s-]+(?:gown|cloth|bed|room|ward|care|food|staff|polic"
+            + @"|system|setting|record|note|paperwork|transport|parking|chaplain|pharmac"
+            + @"|stay|cost|bill|death|mortalit|visit|team|unit|admission|school|based"
+            + @"|wide|level|grade|acquired|discharge|pass))",
+            "in the hospital",
+            "9 live and nobody had swept it: the US form adds the determiner.",
+            "How long you stay in hospital afterwards depends on the operation.",
+            "How long you stay in the hospital afterwards depends on the operation."),
+        new(@"\bon the ward\b", "in the hospital",
+            "1 live, on /tests/getting-ready-for-surgery. Bare 'the ward' was "
+            + "considered and left out: US hospitals do say 'the pediatric ward'.",
+            "Worth reading before the day rather than on the ward.",
+            "Worth reading before the day rather than in the hospital."),
+        new(@"\bpassing water\b", "peeing",
+            "1 live, on /tumors/craniopharyngioma — and already banned page-locally on "
+            + "/tumors/brain-metastases, which is the asymmetry this promotion ends.",
+            "The trouble with thirst and passing water described above.",
+            "The trouble with thirst and peeing a lot described above."),
+        new(@"\bdischarge letter\b", "discharge paperwork",
+            "1 live, on /treatments/craniotomy. A US reader is handed paperwork.",
+            "Plan for longer than the discharge letter suggests.",
+            "Plan for longer than the discharge paperwork suggests."),
+        // THE OBJECT IS A CLOSED CLASS, and the first version of this entry was not.
+        // Written `catch(?:es|ing)? \w+ out`, it fires on "catch the bus out of town"
+        // — the same open-class lookahead mistake §12.8 keeps recording, reached while
+        // writing the list that records it. The British idiom always takes a PERSON as
+        // its object, and pronouns are a closed class, so only false NEGATIVES are
+        // possible. THAT WIDENING IS ALSO WHAT FOUND SIX MORE: the per-page arrays and
+        // this item's own first pass both banned `catches people out` and missed the
+        // plural verb, `catch people out`, live on /tests/ct-scan,
+        // /tests/follow-up-scans, /tumors/all-brain-tumors, /tumors/glioma,
+        // /tumors/high-grade-glioma and /tumors/low-grade-glioma.
+        // THE BARE `\bcaught out\b` BRANCH IS GONE, and the claim above was false of it:
+        // "he was caught out in the rain" and "she was caught out in a lie" are both
+        // ordinary English, and that branch had no object restriction at all (/review).
+        // It is 0 live now — the one live passive, "this is how people are caught out
+        // later" on /tumors/high-grade-glioma, is fixed — so dropping it costs only false
+        // NEGATIVES: THE PASSIVE VOICE IS A KNOWN GAP HERE. It is left as a gap rather
+        // than closed with an exclusion list, because the thing that distinguishes
+        // "caught out later" from "caught out in the rain" is a locative, and listing
+        // locatives is an open class.
+        new(@"\b(?:catch|catches|catching) (?:people|you|them|us|me|him|her|somebody"
+            + @"|anybody|everybody|readers?|a reader|patients|families|parents|carers?) out\b",
+            "trips people up",
+            "14 live across 13 pages, and already banned page-locally on three others. "
+            + "Mainly-UK per Cambridge; a US reader hears baseball.",
+            "Two things about grade catch people out, and one catches parents out.",
+            "Two things about grade trip people up, and one trips parents up."),
+
+        // THE UK HEALTH SYSTEM'S OWN VOCABULARY. All corpus-clean, all already
+        // banned in eleven to sixteen per-page arrays — so the promotion's job
+        // here is to stop the next page reintroducing what twelve pages each
+        // independently decided to exclude.
+        new(@"(?<![\w&])A&E(?![\w&])", "the emergency room",
+            "0 live. Word-bounded on `[\\w&]` because `&` is not a word character.",
+            "If it comes on suddenly, go to A&E.",
+            "If it comes on suddenly, go to the emergency room."),
+        new(@"\baccident and emergency\b", "the emergency room", "0 live.",
+            "Go to accident and emergency.", "Go to the emergency room."),
+        new(@"\bGP\b", "your own doctor", "0 live. Bounded: a bare ban would hit words.",
+            "Ask your GP about it.", "Ask your own doctor about it."),
+        new(@"\b999\b", "911", "0 live. BOUNDED, unlike the eleven per-page copies, "
+            + "which ban the bare string and would fire on a year or a figure.",
+            "In the UK the number is 999.", "In the US the number is 911."),
+        // CLAUSE-FINAL, because the attributive use is correct US English here too and
+        // this entry had no lookahead at all while the `in hospital` entry above it
+        // carried a long one. /review: "you will go to hospital APPOINTMENTS every week"
+        // and "children often go to hospital SCHOOL between treatments" both failed, and
+        // the second is a real thing on a corpus with pediatric pages. Bare adverbial
+        // "go to hospital" ends its clause; the attributive use never does.
+        new(@"\bgo to hospital\b(?=[^A-Za-z]*(?:$|[^\sA-Za-z]))", "go to the hospital",
+            "0 live.",
+            "You may need to go to hospital.", "You may need to go to the hospital."),
+        new(@"\btime round\b", "time around",
+            "0 live. AtrtPageTests found it at /review round 9 beside 'come round', "
+            + "which this list already had and whose sibling it had missed.",
+            "It is easier the second time round.", "It is easier the second time around."),
+    ];
+
+    /// <summary>
+    /// Idiom candidates run over the whole corpus and <b>deliberately LEFT
+    /// OUT</b>, with the measurement — the <see cref="RejectedCharacterisations"/>
+    /// pattern, and the longer half of WI-564's work.
+    ///
+    /// <para><b>THE FINDING THAT MATTERS MOST IS THAT A PAGE-LOCAL GUARD CAN BE
+    /// SAFE PAGE-LOCALLY AND WRONG CORPUS-WIDE.</b> <c>AtrtPageTests</c> bans
+    /// the phone-call "ring" as <c>\brings?\b</c>, correctly: that page has no
+    /// other "ring" and the item's own /review round 9 reasoned carefully about
+    /// "bring" and "coverings". Promoted unchanged it <b>fails four pages</b> —
+    /// the CT scanner <i>is</i> a ring, and the bright ring on a scan is
+    /// glioblastoma's central fact. <c>\bfits\b</c> is the same shape
+    /// (39 live, every one correct: "a trial that fits me") and so is
+    /// <c>\bflat\b</c> (11 live: "lie flat", "feeling flat").
+    /// <b>A promotion is not a copy; the scope change is a new rule and has to
+    /// be measured like one.</b></para>
+    ///
+    /// <para>So these stay page-local, where they are right, and this list
+    /// records why they cannot move — so the next item does not promote them and
+    /// re-find it the hard way.</para>
+    /// </summary>
+    public static readonly BritishIdiom[] RejectedBritishIdioms =
+    [
+        new(@"\brings?\b", "call",
+            "11 live and every one correct: /tests/ct-scan ('the machine is a ring, "
+            + "not a tunnel') and the contrast ring on /tumors/all-brain-tumors and "
+            + "/tumors/glioblastoma. Safe on /tumors/atrt, fails four pages here."),
+        new(@"\bfits\b", "seizures",
+            "39 live and every one correct ('a trial that fits me'). The British "
+            + "sense stays banned page-locally on /tumors/pediatric-brain-tumor."),
+        new(@"\bflat\b", "apartment",
+            "11 live and every one correct: 'lie flat', 'a flat sheet of mesh', "
+            + "'flat and joyless'. Determiner-binding does not rescue it — 'A flat "
+            + "sheet of plastic mesh' contains 'a flat'."),
+        new(@"\bpoorly\b", "unwell",
+            "6 live and every one correct US medical usage: 'poorly differentiated', "
+            + "'poorly tolerated', 'poorly defined boundaries', 'feeding poorly'. "
+            + "The British predicative sense ('she is poorly') is unreachable by "
+            + "substring from the adverb."),
+        new(@"\bdifferent to\b", "different from",
+            "1 live and it is CORRECT: /tests/planning-scans says 'without the day "
+            + "looking any different to you', where 'to you' is the experiencer, not "
+            + "the British comparative. The one hit a grep finds is the one that "
+            + "proves the rule wrong."),
+        new(@"\bto hospital\b", "to the hospital",
+            "2 live and both correct: 'it differs from hospital to hospital'. The "
+            + "British shape is caught by `go to hospital` above instead."),
+        new(@"\bfeel sick\b", "feel sick to your stomach",
+            "2 live, both disambiguated by their own clause ('feel sick and cannot "
+            + "keep anything down'), and 'tell your team if you feel sick' is natural "
+            + "US English for feeling unwell. The gerund is the form that arrives in a "
+            + "symptom LIST, which is where the British reading does the damage."),
+        // ONE OF THE SEVEN THE ITEM NAMED, AND REJECTED ANYWAY (/review). WI-564's entry
+        // lists `advice line` among the idioms to promote, and §12.10 is right that it is
+        // where CRUK's wording would arrive from. But "24-hour nurse advice line" is
+        // standard US health-plan language — Kaiser, TRICARE and most commercial plans
+        // use it — so a correct US sentence contains the phrase, which is §12.8's only
+        // test. Provenance is not that test: a phrase a UK charity happens to use is not
+        // thereby British. 0 live, so the list loses nothing by leaving it out and could
+        // only ever have failed a page by keeping it. It stays banned page-locally on the
+        // four pages that chose to, where the local author knew the page.
+        new(@"\badvice line\b", "the number your team gave you",
+            "0 live, and rejected on the §12.8 test rather than on provenance: a 24-hour "
+            + "nurse advice line is standard US health-plan vocabulary."),
+        new(@"\bconsultant\b", "specialist",
+            "0 live, and left out anyway: 'a consultant' is correct US medical usage "
+            + "for a specialist brought in. Stays page-local on /treatments/shunts and "
+            + "/treatments/awake-craniotomy."),
+        new(@"\bNHS\b|\bMacmillan\b|\bDVLA\b", "a US equivalent",
+            "INSTITUTIONS, NOT IDIOM, which is the line this list draws. "
+            + "/tumors/hemangioblastoma attributes a claim to Macmillan by name and is "
+            + "right to: crediting a source means naming it, which is the same reason "
+            + "BritishFormExemptions carries the two charity names. A UK body named as "
+            + "a SOURCE is correct; a UK body offered as the reader's own route is a "
+            + "page defect, and no substring can tell those apart."),
+    ];
+
+    /// <summary>
+    /// Every <see cref="BritishIdioms"/> entry that matches <paramref name="text"/>,
+    /// as "pattern → use this instead".
+    ///
+    /// <para>FLATTENED FIRST, and that is load-bearing rather than tidy: the corpus is
+    /// hard-wrapped, so a two-word phrase routinely has a newline in the middle of it.
+    /// §12.8 records the first British-spelling gate walking straight past
+    /// <c>"a\nlift"</c> in <c>blocks/caregiver.md</c>, a block that composes onto
+    /// eighteen tumor hubs.</para>
+    /// </summary>
+    public static List<string> BritishIdiomsIn(string text)
+    {
+        var flat = Flatten(text);
+        return
+        [
+            .. BritishIdioms
+                .Where(i => Regex.IsMatch(flat, i.Pattern, RegexOptions.IgnoreCase))
+                .Select(i => $"{i.Pattern} → {i.Instead}")
+        ];
+    }
 
     /// <summary>
     /// Every in-site link inside the page's &lt;article&gt; resolves, and the
@@ -1142,9 +1496,9 @@ internal static class CuratedPage
         var feverRule = Flatten(ReaderTextOfBody(
             Section(Read("treatments", "chemotherapy.md"), "Your blood counts, and the fever rule")));
         Assert.True(
-            Regex.IsMatch(feverRule, @"straight away, at any hour", RegexOptions.IgnoreCase),
+            Regex.IsMatch(feverRule, @"right away, at any hour", RegexOptions.IgnoreCase),
             "/treatments/chemotherapy's fever-rule section no longer says a fever means calling "
-            + "straight away at any hour, so the escalation block's fever line has drifted from "
+            + "right away at any hour, so the escalation block's fever line has drifted from "
             + "the page that owns the rule");
         Assert.Matches(new Regex(@"fever is its own rule", RegexOptions.IgnoreCase), section);
         Assert.Contains("/treatments/chemotherapy#fever-rule", section, StringComparison.Ordinal);
@@ -1629,6 +1983,31 @@ internal static class CuratedPage
     public static void AssertDoesNotRestateTheCorpus(
         string page, string slug, params string[] deliberatelyShared)
     {
+        // EVERY ALLOWLIST ENTRY MUST BE ABLE TO EXEMPT SOMETHING (WI-564 /review).
+        //
+        // The comparison below is `allowed.Contains(shingle)` over LOWERCASE,
+        // PUNCTUATION-STRIPPED eight-word windows — so an entry written with its
+        // original commas and capitals can never contain one, and exempts NOTHING. This
+        // repo has shipped that twice: WI-521's first implementation asked the
+        // containment the other way round and did nothing at all, and
+        // StereotacticRadiosurgeryPageTests records its own first entry failing for
+        // exactly this reason. Nothing reported either, because this helper only prints
+        // what it FINDS — a dead entry is silent until the collision it was added for
+        // comes back.
+        //
+        // This cannot check that an entry exempts a window the page actually has (the
+        // bidirectional guard means a legitimate entry may be aimed at a SIBLING's
+        // report), but it does check the entry is in a form that can exempt at all,
+        // which is the failure mode that has actually happened.
+        foreach (var allowed in deliberatelyShared)
+        {
+            Assert.True(ShinglesOfReaderText(allowed).Count > 0,
+                $"{slug}: the deliberately-shared entry \"{Excerpt(allowed)}\" produces no "
+                + "eight-word window, so it exempts nothing and is dead. Entries are "
+                + "matched against lowercase, punctuation-stripped text and must be at "
+                + "least eight words with three content words among them.");
+        }
+
         var mine = Shingles(page);
         var offenders = new List<string>();
 

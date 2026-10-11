@@ -1251,8 +1251,8 @@ a page you need a diagnosis to find.
 
 What matters here is what comes next. The American Cancer Society says a blocked
 flow raises the pressure in the skull, that it can cause headaches, feeling sick
-and drowsiness, and that it can become life-threatening. That is the reason
-nobody leaves it alone.
+to your stomach and drowsiness, and that it can become life-threatening. That is
+the reason nobody leaves it alone.
 
 **And the blockage can be dealt with on its own, without taking the tumor out.**
 There is more than one way to drain the fluid off and bring the pressure down, and

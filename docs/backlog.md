@@ -2957,8 +2957,30 @@ Start only after Dan has signed off WI-513's template.
   DOWN (1308) rather than by any failure — a green suite that is 14 tests
   smaller is the WI-512 stale-assembly lesson in a new coat. **Always read the
   count, not just the colour.**
-- [ ] **WI-564 Corpus-wide British idiom sweep** *(not a Wave 2 blocker — do it
-  before the corpus doubles)*
+- [x] **WI-564 Corpus-wide British idiom sweep.** *(done 2026-10-10)*
+  **Done. Ruling `docs/content-pipeline.md` §12.40.** `CuratedPage.BritishIdioms`
+  is the promoted list — a **regex table**, not a second substring array, because
+  half the entries are correct English elsewhere (`feeling sick(?! to your
+  stomach)` is live and correct on two shipped pages). `BritishIdiomSweepTests`
+  sweeps it over `EverythingAReaderMeets` — the headline plus the **COMPOSED**
+  body — for all 55 pages plus the glossary, which is **WI-537's switch** and the
+  reason `blocks/mechanism.md`'s "feeling sick" could never turn a per-page array
+  red. **83 live occurrences fixed across 31 files** (29 pages + 2 blocks, counted as
+  source occurrences in body text); `feeling sick` ranked below
+  WI-563's blocker as WI-537 asked, and recorded that way. **136 of 136 break
+  mutations caught** (17 patterns × 4 carriers × both line endings, carriers
+  chosen to include two pages with no idiom array and a glossary entry no page
+  composes). The item's open question answered itself: the corpus already said
+  `right away` 38 times against 9 `straight away`, so `BritishForms`' rejection
+  of it ("banning it would fail a shipped page") was the wrong test and is
+  reversed, with the note kept. **Three shared safety claims were found that
+  dialect drift had hidden**, including the chemotherapy fever rule in two
+  wordings on two pages. Six more live hits came from widening `catches people
+  out` to the plural verb. The thirty per-page arrays are left in place
+  (§12.21). 2,929/2,929; ContentCheck 345/0; `/treatments/chemotherapy` 5.4 → 5.5
+  and every page still under 6.0. **Raised and not taken:** six hubs restate the
+  mechanism block's raised-pressure pattern (content ownership, for `/pm`);
+  `anti-sickness medicine` is British, 4 live on one page.
   **WI-549 added `fortnight` to `CuratedPage.BritishForms` (2026-09-23), and how
   it was found matters for this item:** not by review, but by a BREAK MUTATION.
   A planted "Ask again in a fortnight" survived every gate on both line endings,

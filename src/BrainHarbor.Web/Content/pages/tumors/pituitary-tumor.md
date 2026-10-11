@@ -526,7 +526,7 @@ morning.
 blood supply. Doctors call it **apoplexy**. The headache comes on suddenly, often
 behind the eyes, and it is the most common sign of it. It can come on its own. It
 can also come with sight that drops, double vision, a drooping eyelid, feeling
-sick, passing out, or feeling confused.
+sick to your stomach, passing out, or feeling confused.
 **This one cannot wait for morning.** Call 911, or your local emergency number,
 or go straight to the emergency department. This needs a scan and treatment that
 a phone call cannot give you. Tell your team as well, at whatever hour it is. It
@@ -543,9 +543,10 @@ passing out.** If those are happening now, that is an emergency: call 911, or
 your local emergency number. If you have been given an emergency injection, that
 is what it is for, and the Endocrine Society says you still go straight to a
 hospital afterwards. Ask your team now for your own plan: what to do when you
-are ill, what to do if you are being sick and cannot keep pills down, and
-whether you should carry an injection and wear a medical alert bracelet. **Being sick and
-unable to keep pills down needs help the same hour, not the next day.**
+are ill, what to do if you are throwing up and cannot keep pills down, and
+whether you should carry an injection and wear a medical alert bracelet.
+**Throwing up and not being able to keep pills down needs help the same hour,
+not the next day.**
 [Steroids](/treatments/steroids) covers the medicine itself, and carries the same
 rule for anyone on replacement.
 
@@ -631,8 +632,8 @@ hormone, and which.**
 **Pills, for some.** A tumor making prolactin is usually treated with medicine
 rather than surgery. The Endocrine Society says these tumors are mostly treated
 successfully that way. The pills lower the hormone and often shrink the growth,
-and the common side effects are feeling sick and feeling dizzy. Surgery comes up
-if the medicine does not work.
+and the common side effects are feeling sick to your stomach and feeling dizzy.
+Surgery comes up if the medicine does not work.
 
 **Watching, for some.** If the tumor is small, not growing and not causing
 symptoms, your team may follow it with scans and blood tests instead of treating
