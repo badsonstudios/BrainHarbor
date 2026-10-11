@@ -1,4 +1,5 @@
 using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
 
 namespace BrainHarbor.Tests;
 
@@ -18,8 +19,8 @@ public class ContentCheckTests
     public void SimpleTextScoresLow()
     {
         // Short words, short sentences — early-grade text.
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
-            "The cat sat on the mat. The dog ran to the park. We like to play.");
+        var grade = ReadingGrade.Of(
+            "The cat sat on the mat. The dog ran to the park. We like to play.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade < 4, $"expected < 4, got {grade}");
     }
@@ -27,10 +28,10 @@ public class ContentCheckTests
     [Fact]
     public void PlainLanguageMedicalTextPassesTheGate()
     {
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
+        var grade = ReadingGrade.Of(
             "A glioma is a tumor that starts in the brain. Doctors grade it " +
             "from 1 to 4. The grade tells you how fast it tends to grow. " +
-            "Your care team will explain what your grade means.");
+            "Your care team will explain what your grade means.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade <= 8.5, $"expected <= 8.5, got {grade}");
     }
@@ -38,11 +39,11 @@ public class ContentCheckTests
     [Fact]
     public void AcademicTextScoresHigh()
     {
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(
+        var grade = ReadingGrade.Of(
             "Notwithstanding contemporary advancements in neuro-oncological " +
             "therapeutics, the prognostic implications of isocitrate dehydrogenase " +
             "mutations necessitate comprehensive multidisciplinary evaluation " +
-            "incorporating histopathological and molecular characterization.");
+            "incorporating histopathological and molecular characterization.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(grade > 12, $"expected > 12, got {grade}");
     }
@@ -50,11 +51,11 @@ public class ContentCheckTests
     [Fact]
     public void HarderTextScoresHigherThanSimplerText()
     {
-        var simple = ReadabilityAnalyzer.FleschKincaidGrade(
-            "We read the news each day. Then we write it in plain words.");
-        var harder = ReadabilityAnalyzer.FleschKincaidGrade(
+        var simple = ReadingGrade.Of(
+            "We read the news each day. Then we write it in plain words.", ReadingGradeOptions.CuratedPages);
+        var harder = ReadingGrade.Of(
             "Subsequently, the organization disseminates carefully synthesized " +
-            "summaries incorporating contemporaneous oncological developments.");
+            "summaries incorporating contemporaneous oncological developments.", ReadingGradeOptions.CuratedPages);
 
         Assert.True(harder > simple);
     }
@@ -68,7 +69,7 @@ public class ContentCheckTests
     [InlineData("radiation", 4)]
     public void SyllableHeuristicHandlesCommonShapes(string word, int expected)
     {
-        Assert.Equal(expected, ReadabilityAnalyzer.CountSyllables(word));
+        Assert.Equal(expected, ReadingGrade.Syllables(word, ReadingGradeOptions.CuratedPages));
     }
 
     // ---------- page checks ----------
@@ -153,7 +154,7 @@ public class ContentCheckTests
         var text = "The nurse called the family about the visit. " +
                    "She answered their questions about the plan. " +
                    "They felt better after they talked.";
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
+        var grade = ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages);
         Assert.True(grade >= ContentChecker.WarnGrade && grade <= ContentChecker.FailGrade,
             $"sample must sit in the warn band, got {grade}");
 
@@ -172,9 +173,9 @@ public class ContentCheckTests
         var flat = "Treatment options. Surgery is one option. Radiation is " +
                    "another option. Your care team will explain each one.";
 
-        var structuredGrade = ReadabilityAnalyzer.FleschKincaidGrade(
-            ContentChecker.ExtractSentences(structured));
-        var flatGrade = ReadabilityAnalyzer.FleschKincaidGrade(flat);
+        var structuredGrade = ReadingGrade.Of(
+            ContentChecker.ExtractSentences(structured), ReadingGradeOptions.CuratedPages);
+        var flatGrade = ReadingGrade.Of(flat, ReadingGradeOptions.CuratedPages);
 
         Assert.True(Math.Abs(structuredGrade - flatGrade) < 0.5,
             $"structured {structuredGrade} vs flat {flatGrade} — structure must not change the grade");
@@ -193,9 +194,31 @@ public class ContentCheckTests
     {
         var findings = ContentChecker.CheckAll(
             Path.Combine(Path.GetTempPath(), "bh-does-not-exist-" + Guid.NewGuid().ToString("N")),
-            null, Today);
+            null, Today, CorpusFloor.None).Findings;
 
         Assert.Contains(findings, f => f.Level == FindingLevel.Warn && f.Message.Contains("MISSING"));
+    }
+
+    /// <summary>
+    /// WI-435: and "loudly" was never loud enough. <b>The same call, the same missing
+    /// root, under the floor the shipped corpus is checked against — and now it is a
+    /// FAIL.</b>
+    ///
+    /// <para>The pair is the point. The Warn above is still emitted and still names the
+    /// path, because that is the line a person reads; what changed is that it is no
+    /// longer the ONLY thing emitted. The test above shipped on 2026-08-19 and was green
+    /// the whole time this gate could grade zero medical pages and exit 0 — because a
+    /// test asserting a WARN exists cannot notice that a WARN is all there is.</para>
+    /// </summary>
+    [Fact]
+    public void MissingPagesRootUnderTheShippedFloorIsAFailureAndNotAWarning()
+    {
+        var findings = ContentChecker.CheckAll(
+            Path.Combine(Path.GetTempPath(), "bh-does-not-exist-" + Guid.NewGuid().ToString("N")),
+            null, Today, CorpusFloor.Shipped).Findings;
+
+        var floor = Assert.Single(findings.Where(f => f.File == CorpusFloor.FileFor("pages")));
+        Assert.Equal(FindingLevel.Fail, floor.Level);
     }
 
     [Fact]
@@ -212,8 +235,16 @@ public class ContentCheckTests
     public void ShippedGlossaryTermsPassTheirOwnGate()
     {
         var glossaryRoot = Path.Combine(FindRepoRoot(), "src", "BrainHarbor.Web", "Content", "glossary");
+
+        // WI-435: the pages root here is deliberately absent — this test is about the
+        // glossary's own gate — so the floor says exactly that. One root held to the
+        // shipped size, the rest not claimed. A `CorpusFloor.Shipped` would red on the
+        // missing pages root and a `None` would let a renamed glossary through, and the
+        // reason the floor is per root is that both of those are wrong answers.
         var findings = ContentChecker.CheckAll(
-            Path.Combine(FindRepoRoot(), "no-pages"), glossaryRoot, Today);
+            Path.Combine(FindRepoRoot(), "no-pages"), glossaryRoot, Today,
+            CorpusFloor.None with { GlossaryTerms = ContentChecker.GlossaryWhenMeasured })
+            .Findings;
 
         Assert.NotEmpty(findings);
         Assert.DoesNotContain(findings, f => f.Level == FindingLevel.Fail);
@@ -1060,7 +1091,7 @@ public class ContentCheckTests
         var findings = ContentChecker.CheckAll(
             pagesRoot,
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
-            Today);
+            Today, CorpusFloor.Shipped).Findings;
 
         var onDisk = Directory
             .EnumerateFiles(pagesRoot, "*.md", SearchOption.AllDirectories).Count();
@@ -1134,7 +1165,7 @@ public class ContentCheckTests
         var findings = ContentChecker.CheckAll(
             pagesRoot,
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
-            Today);
+            Today, CorpusFloor.Shipped).Findings;
 
         var graded = findings
             .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal)
@@ -1228,7 +1259,7 @@ public class ContentCheckTests
         var findings = ContentChecker.CheckAll(
             pagesRoot,
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
-            Today);
+            Today, CorpusFloor.Shipped).Findings;
 
         var descriptions = findings
             .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker,
@@ -1303,7 +1334,7 @@ public class ContentCheckTests
         var findings = ContentChecker.CheckAll(
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "pages"),
             Path.Combine(root, "src", "BrainHarbor.Web", "Content", "glossary"),
-            Today);
+            Today, CorpusFloor.Shipped).Findings;
 
         var graded = findings
             .Where(f => f.File.EndsWith(ContentChecker.DescriptionMarker, StringComparison.Ordinal)
@@ -1531,7 +1562,7 @@ public class ContentCheckTests
             File.WriteAllText(Path.Combine(root, "Admin", "Queue.cshtml"), Hard);
             File.WriteAllText(Path.Combine(root, "Dev", "StyleGuide.cshtml"), Hard);
 
-            var findings = ContentChecker.CheckAll(root, null, Today, root);
+            var findings = ContentChecker.CheckAll(root, null, Today, CorpusFloor.None, root).Findings;
 
             Assert.DoesNotContain(findings, f => f.File.Contains("Admin", StringComparison.Ordinal));
             Assert.DoesNotContain(findings, f => f.File.Contains("Dev", StringComparison.Ordinal));

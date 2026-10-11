@@ -1763,7 +1763,7 @@ stale position in this file.
 | 5 | Which tumors usually get which drug | 3 | `dia-marker-meaning` |
 | 6 | Your blood counts, and the fever rule | 2 | `doc-blood-count-sheet` |
 | 7 | What does a cycle feel like? | 1 | `ph-infusion-chair` |
-| 8 | Feeling sick, and the medicine for it | 1 | `ph-pill-box` |
+| 8 | Feeling sick to your stomach, and the medicine for it | 1 | `ph-pill-box` |
 | 9 | `[CAREGIVER]` | 1 | `ph-two-people-talking` |
 
 ### `/treatments/clinical-trials`

@@ -95,7 +95,7 @@ Yes. A high-grade glioma is cancer. The word your team will use is
 **The three named above grow into the brain around them** rather than pushing it
 aside, so there is no edge to cut around. For those, with today's treatments,
 they are not curable. That is a hard sentence and it is here on purpose, because
-being told the grade without being told this is how people are caught out later.
+being told the grade without being told this is how people get tripped up later.
 
 **A smaller number of high-grade gliomas are not like that.** Some sit in a more
 defined lump with a clearer border. Your team may call those circumscribed. It
@@ -114,7 +114,7 @@ the gene tests say. Grade 3 and grade 4 both count as high grade. They are not
 the same thing as each other, and being told "high grade" without being told
 which one leaves you with a blurry picture.
 
-Two things about grade catch people out.
+Two things about grade trip people up.
 
 **Grade does not mean the same thing across different tumors.** Since 2021,
 grading is done inside each tumor type. So the same number on two different
@@ -198,10 +198,10 @@ things to tell your team about, because most of them can be treated.
 
 ## What symptoms does it cause?
 
-The most common are headaches, seizures, feeling sick or being sick, weakness or
-numbness on one side, trouble with speech, and changes in thinking, behavior or
-personality. Which ones you get depends mostly on where the tumor sits, which
-the section above walks through.
+The most common are headaches, seizures, feeling sick to your stomach or
+throwing up, weakness or numbness on one side, trouble with speech, and changes
+in thinking, behavior or personality. Which ones you get depends mostly on where
+the tumor sits, which the section above walks through.
 
 [ESCALATION]
 
@@ -494,7 +494,7 @@ the ordinary things, and say yes when they offer something specific.
 - If my scan looks worse in the first few months, how will you tell treatment
   effect from the tumor growing?
 - What would make you want to see me before my next appointment?
-- Who do I call out of hours, and what number is it?
+- Who do I call after hours, and what number is it?
 - What should I do about driving and work?
 - Is there a clinical trial I should know about?
 - Is any of what I am feeling caused by swelling or by my medicines rather than

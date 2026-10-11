@@ -11,6 +11,7 @@
     <!-- Reuses ContentStore/GlossaryStore parsing so the gate validates
          exactly what the site will render. -->
     <ProjectReference Include="..\..\src\BrainHarbor.Web\BrainHarbor.Web.csproj" />
+    <ProjectReference Include="..\..\src\BrainHarbor.Safety\BrainHarbor.Safety.csproj" />
   </ItemGroup>
 
 </Project>

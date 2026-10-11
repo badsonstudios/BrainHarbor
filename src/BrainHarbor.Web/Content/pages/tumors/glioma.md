@@ -142,7 +142,7 @@ A grade describes how normal or abnormal the tumor cells look under a
 microscope. In a lower grade tumor such as grade 1, the cells look close to
 normal. In a higher grade tumor such as grade 4, they look more abnormal.
 
-Two things about grade catch people out.
+Two things about grade trip people up.
 
 **Grade is not the same across different tumors.** Since 2021, grading is done
 within each tumor type. A grade 4 of one tumor type does not mean the same thing
@@ -188,10 +188,11 @@ finished. Which kind you have is on your pathology report, and it is one of the
 most useful things to ask about.
 
 **Seizures are one of the most common ways a glioma first shows up**, along with
-headaches, feeling sick, and problems with movement, speech or sensation. And
-for tumors at the front of the brain, changes in behavior and personality can be
-present for months or even years before anybody thinks of a scan. That is why
-some people look back and recognize something they could not name at the time.
+headaches, feeling sick to your stomach, and problems with movement, speech or
+sensation. And for tumors at the front of the brain, changes in behavior and
+personality can be present for months or even years before anybody thinks of a
+scan. That is why some people look back and recognize something they could not
+name at the time.
 
 **Some people have no symptoms at all.** A small share of lower-grade gliomas
 are found by accident, on a scan done for something else entirely. If that was
@@ -201,9 +202,10 @@ right to be shaken by it.
 
 ## What symptoms does it cause?
 
-The most common ones are headaches, seizures, feeling sick or being sick, and
-problems with movement, speech, sensation or thinking. Which of them you get
-depends mostly on where the tumor is, which the section above walks through.
+The most common ones are headaches, seizures, feeling sick to your stomach or
+throwing up, and problems with movement, speech, sensation or thinking. Which of
+them you get depends mostly on where the tumor is, which the section above walks
+through.
 
 [ESCALATION]
 
@@ -440,7 +442,7 @@ step-by-step, worth reading before you need it, and
 - Which parts of my treatment are decided by the gene results?
 - Is any of what I am feeling caused by swelling rather than the tumor itself?
 - What would make you want to see me before my next appointment?
-- Who do I call out of hours, and what number is it?
+- Who do I call after hours, and what number is it?
 - Is there a clinical trial I should know about?
 
 ## Where to get support

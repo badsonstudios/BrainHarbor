@@ -331,13 +331,13 @@ look after it:
 
 **Swelling in the brain.** Radiation can make the brain swell. Symptoms you had
 before can come back or get worse, and new ones can turn up. Watch for a
-headache that acetaminophen does not touch, seizures, feeling sick or throwing
-up, changes in vision, being unsteady on your feet, confusion, or trouble
-finding words. **Call your team right away if anything is new or worse.** A
-first-ever seizure, or one that lasts more than five minutes, or one that runs
-straight into another, is an ambulance rather than a phone call. There is
-treatment for brain swelling, usually a steroid, and telling your team early is
-what keeps it simple.
+headache that acetaminophen does not touch, seizures, feeling sick to your
+stomach or throwing up, changes in vision, being unsteady on your feet,
+confusion, or trouble finding words. **Call your team right away if anything is
+new or worse.** A first-ever seizure, or one that lasts more than five minutes,
+or one that runs straight into another, is an ambulance rather than a phone
+call. There is treatment for brain swelling, usually a steroid, and telling your
+team early is what keeps it simple.
 
 **The emotional side, which can take people by surprise.** One person treated for
 a meningioma said the worst effect of all was on their feelings. A few weeks in
@@ -567,9 +567,9 @@ before treatment starts. Generally, call if:
 
 - A headache does not go away with acetaminophen.
 - There is a seizure. **But if it is their first ever, or it lasts more than
-  five minutes, or one runs straight into another, or they do not come round,
+  five minutes, or one runs straight into another, or they do not wake up,
   that is an ambulance and not a phone call.**
-- They are being sick, or feel sick and cannot keep anything down.
+- They are throwing up, or feel sick and cannot keep anything down.
 - Their vision changes.
 - They are unsteady on their feet, more than before.
 - They are confused, or their thinking has changed.

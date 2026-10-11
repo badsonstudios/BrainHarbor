@@ -1069,7 +1069,7 @@ public sealed class StereotacticRadiosurgeryPageContentTests
         // The rule also MOVED. §12.10 says a page's own escalation line goes
         // BENEATH the shared block, not in a different section two screens up.
         var raw = CuratedPage.Flatten(
-            CuratedPage.ReaderText(RawSection(LaterHeading)));
+            CuratedPage.ReaderTextOfBody(RawSection(LaterHeading)));
 
         Assert.Matches(@"(?i)\bhot to the touch\b", raw);
         Assert.Matches(@"(?i)\bcloudy or bad smelling\b", raw);
@@ -1366,7 +1366,27 @@ public sealed class StereotacticRadiosurgeryPageContentTests
         // shape as the dead entry deleted above.
         CuratedPage.AssertDoesNotRestateTheCorpus(Page, Slug,
             "it suits a small target with an edge that can be drawn and it takes nothing out "
-            + "so there is no tissue for the laboratory");
+            + "so there is no tissue for the laboratory",
+
+            // WI-564. A SYMPTOM PAIR IS A FACT, NOT RESTATED PROSE (§12.27: a rule and
+            // its instances are different facts, and only the rule has one owner).
+            // Four pages name nausea and vomiting side by side — this page's side-effect
+            // bullet, /treatments/chemotherapy's, /treatments/radiation-therapy's, and
+            // two tumor hubs' raised-pressure lists — and none of them is re-explaining
+            // another's argument.
+            //
+            // IT ONLY BECAME VISIBLE BECAUSE THE US FORM IS LONGER. "feeling sick or
+            // throwing up" is five words and fell under the eight-word window; "feeling
+            // sick to your stomach or throwing up" is exactly eight and fills it. So
+            // this is a guard reporting something that was always true, as new, because
+            // a replacement crossed its threshold — worth knowing before chasing the
+            // same report after the next vocabulary standardisation.
+            //
+            // Two pages were rewritten rather than exempted (/tumors/craniopharyngioma
+            // and /tumors/hemangioblastoma, both of whose classes record NO ALLOWLIST as
+            // an earned position). Here the bullet is three words long and there is no
+            // honest rewrite that is not a worse sentence.
+            "feeling sick to your stomach or throwing up");
     }
 
     [Fact]

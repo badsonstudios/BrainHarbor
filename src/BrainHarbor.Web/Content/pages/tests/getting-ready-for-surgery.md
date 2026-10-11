@@ -368,7 +368,7 @@ Find out now who you would call.
 What you are **not** doing yet is the aftercare. That is a different and much
 bigger job, and it starts on the other side.
 [A craniotomy, step by step](/treatments/craniotomy) has the section for it, and
-it is worth reading before the day rather than on the ward.
+it is worth reading before the day rather than in the hospital.
 
 ## Who reads all of this, and what if something is not right? {#results}
 

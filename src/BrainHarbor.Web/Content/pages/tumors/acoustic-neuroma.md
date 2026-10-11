@@ -492,7 +492,7 @@ that matters.** Hearing that is worse in one ear than the other is worth
 mentioning, even when it seems small.
 
 If it grows, it can add numbness or tingling on that side of the face.
-Headache, being sick, and trouble with walking come later and only with larger
+Headache, throwing up, and trouble with walking come later and only with larger
 growths.
 
 **One sign here has a rule of its own.** It comes after the lists below.

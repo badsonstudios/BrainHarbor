@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using BrainHarbor.Safety;
 using BrainHarbor.Web.Content;
 using Markdig;
 using Markdig.Syntax;
@@ -22,6 +23,19 @@ public enum FindingLevel { Fail, Warn, Info }
 /// </param>
 public sealed record Finding(
     FindingLevel Level, string File, string Message, double? Grade = null);
+
+/// <summary>
+/// What a <see cref="ContentChecker.CheckAll"/> run produced: the findings, and <b>how
+/// much of the corpus it read to produce them</b> (WI-435).
+///
+/// <para><b>Coverage is a RESULT, not something the caller works out afterwards.</b>
+/// <c>Program.cs</c> used to print a check count and nothing else, and 232 against a
+/// clean 345 is only a tell "if you know 345 is the right number" — the backlog entry's
+/// own words, written by someone who had just quoted the wrong number as verification.
+/// Returning the walk's own counts is what lets the summary line say <i>55 pages, 105
+/// glossary, 20 Razor</i>, where a collapse is visible without knowing anything.</para>
+/// </summary>
+public sealed record CheckOutcome(List<Finding> Findings, CorpusCoverage Coverage);
 
 /// <summary>
 /// WI-106: walks curated pages + glossary terms and reports (content-pipeline
@@ -65,15 +79,35 @@ public static partial class ContentChecker
     /// styleguide are staff tools — holding a review queue to a patient reading
     /// level would only teach people to ignore the gate. Partials are included:
     /// a feed card's words are as public as a page's.
+    ///
+    /// <para><b>Public since WI-435, because the razor root was the only one of the four
+    /// with no independent oracle</b> (/review). The other three are counted against
+    /// <c>Directory.EnumerateFiles</c>; this one was counted against the walk grading
+    /// itself, so a change here that swapped one page in for one page out — start
+    /// grading <c>Admin/Queue.cshtml</c>, stop grading a reader page — held the count at
+    /// 20 with every test green, on the corpus WI-414 exists to protect. It is a stated
+    /// editorial rule, not an implementation detail, and
+    /// <c>TheReaderFacingRazorPagesAreTheSetOnDiskAndNotACount</c> now pins the SET.</para>
     /// </summary>
-    private static bool IsReaderFacing(string relativePath) =>
+    public static bool IsReaderFacing(string relativePath) =>
         !relativePath.StartsWith("Admin/", StringComparison.OrdinalIgnoreCase)
         && !relativePath.StartsWith("Dev/", StringComparison.OrdinalIgnoreCase)
         && !Path.GetFileName(relativePath).StartsWith("_View", StringComparison.OrdinalIgnoreCase);
 
-    public static List<Finding> CheckAll(
-        string pagesRoot, string? glossaryRoot, DateOnly today, string? razorRoot = null,
-        string? blocksRoot = null)
+    /// <summary>
+    /// Walks every root in scope and returns both the findings and <b>how much of each
+    /// root was actually walked</b> (WI-435).
+    ///
+    /// <para><paramref name="floor"/> is REQUIRED and has no default. The question "is
+    /// this the shipped corpus or a three-page temp directory?" has no safe answer a
+    /// signature can guess, and guessing it is the defect this item exists to close —
+    /// see <see cref="CorpusFloor.None"/>. Pass <see cref="CorpusFloor.Shipped"/> when
+    /// pointed at <c>src/BrainHarbor.Web/Content</c> and <see cref="CorpusFloor.None"/>
+    /// for a fixture.</para>
+    /// </summary>
+    public static CheckOutcome CheckAll(
+        string pagesRoot, string? glossaryRoot, DateOnly today, CorpusFloor floor,
+        string? razorRoot = null, string? blocksRoot = null)
     {
         var findings = new List<Finding>();
 
@@ -177,6 +211,12 @@ public static partial class ContentChecker
         // WI-414: the pages people actually land on. Their copy lives in
         // .cshtml, so until now the most-read text on the site was the only
         // text no tool checked.
+        // WI-435: COUNTED, NOT INFERRED, for the third corpus — and for the reason the
+        // two above say. A razor root that stops matching takes the reading gate off the
+        // most-read text on the site, and until this item the only trace was a WARN in a
+        // log nothing reads.
+        var razorPagesWalked = razorRoot is null ? (int?)null : 0;
+
         if (razorRoot is not null && Directory.Exists(razorRoot))
         {
             var razorFiles = Directory.EnumerateFiles(razorRoot, "*.cshtml", SearchOption.AllDirectories)
@@ -190,6 +230,8 @@ public static partial class ContentChecker
                 findings.Add(new(FindingLevel.Warn, razorRoot,
                     "razor root exists but has no reader-facing .cshtml files — nothing checked"));
             }
+
+            razorPagesWalked = razorFiles.Count;
 
             foreach (var (full, relative) in razorFiles)
             {
@@ -225,7 +267,31 @@ public static partial class ContentChecker
         // property ContentCheckTests pins rather than assumes.
         findings.AddRange(GlossaryCorpusReport(findings, glossaryTermsWalked).ToList());
 
-        return findings;
+        // WI-435, LAST AND UNCONDITIONAL: the floor.
+        //
+        // It runs after both corpus reports and is deliberately not an early return in
+        // front of them. Both of those take a "not our business" exit on an empty corpus
+        // — `curatedPagesWalked == 0` → `yield break` — and that exit is the one the
+        // broken run walked out through. Nothing above can suppress a finding emitted
+        // here, which is the same argument §12.23 made for moving the per-page gate out
+        // from behind two corpus-size early returns.
+        //
+        // AND IT IS A FAIL, not a louder WARN. See CorpusFloor's docstring: the only
+        // consumer of this tool is a CI step reading the exit code, so a warning is a
+        // message addressed to nobody.
+        // BLOCKS REACHED, NOT BLOCKS PARSED — `Errors` counts too. The floor is a claim
+        // about what the walk got to, and a block that failed to parse was got to: it
+        // already has a Fail of its own naming the file, and counting it as a shrunken
+        // corpus would say "re-measure the floor" about a YAML typo.
+        var coverage = new CorpusCoverage(
+            curatedPagesWalked,
+            glossaryRoot is null ? null : glossaryTermsWalked,
+            razorPagesWalked,
+            blocks.Blocks.Count + blocks.Errors.Count);
+
+        findings.AddRange(floor.Shortfalls(coverage));
+
+        return new(findings, coverage);
     }
 
     /// <summary>
@@ -244,7 +310,7 @@ public static partial class ContentChecker
             return [new(FindingLevel.Info, relativePath, $"{words} word(s) of prose — too little to grade")];
         }
 
-        return [GradeFinding(ReadabilityAnalyzer.FleschKincaidGrade(text), relativePath)];
+        return [GradeFinding(ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages), relativePath)];
     }
 
     /// <summary>
@@ -379,7 +445,7 @@ public static partial class ContentChecker
         // an item about descriptions that read ABOVE sixth grade. Only the GRADE is
         // gated everywhere; the two ways a description leaves the GRADED SET stay gated
         // per directory, which is why `finishedSlice` above is still load-bearing.
-        var grade = ReadabilityAnalyzer.FleschKincaidGrade(text);
+        var grade = ReadingGrade.Of(text, ReadingGradeOptions.CuratedPages);
 
         // FAIL above the limit ANYWHERE, WARN in the approach band, Info below it.
         // Info renders as "  ok" (Program.cs), so reporting a grade-19.7 description as
@@ -756,6 +822,28 @@ public static partial class ContentChecker
     /// just by following the instructions printed in the tool's own messages.</para>
     /// </summary>
     public const int GlossaryWhenMeasured = 105;
+
+    /// <summary>
+    /// The number of content blocks the corpus ships (WI-435).
+    ///
+    /// <para>Blocks have no reading level of their own — a page is graded COMPOSED — so a
+    /// blocks root that stops matching does not remove a finding anybody would miss. It
+    /// removes the <i>words</i> from 55 pages' grades, quietly, and every one of those
+    /// pages then grades clean on prose it does not actually show a reader. §12.37 found
+    /// this exact root was the one a single combined floor left uncovered.</para>
+    /// </summary>
+    public const int BlocksWhenMeasured = 8;
+
+    /// <summary>
+    /// The number of reader-facing <c>.cshtml</c> files the corpus ships (WI-435) — see
+    /// <see cref="IsReaderFacing"/> for what the adjective excludes.
+    ///
+    /// <para>WI-414's point was that the most-read text on the site lives in Razor and
+    /// was the only text no tool checked. A floor is what keeps that true: the broken run
+    /// printed <c>razor root MISSING — no pages were checked</c> and exited 0, so the gate
+    /// WI-414 added could be removed again by a working directory.</para>
+    /// </summary>
+    public const int ReaderFacingRazorPagesWhenMeasured = 20;
 
     /// <summary>
     /// The corpus-level description report, run once over the whole corpus rather than
@@ -1268,7 +1356,7 @@ public static partial class ContentChecker
         }
 
         var plainText = ExtractSentences(page.Markdown);
-        findings.Add(GradeFinding(ReadabilityAnalyzer.FleschKincaidGrade(plainText), relativePath));
+        findings.Add(GradeFinding(ReadingGrade.Of(plainText, ReadingGradeOptions.CuratedPages), relativePath));
 
         findings.AddRange(GradeDescription(page, relativePath));
 
@@ -1445,7 +1533,7 @@ public static partial class ContentChecker
                 return findings;
             }
 
-            var grade = ReadabilityAnalyzer.FleschKincaidGrade(term.Definition);
+            var grade = ReadingGrade.Of(term.Definition, ReadingGradeOptions.CuratedPages);
 
             // FAIL above the limit, WARN in the approach band, Info below — the shape
             // GradeFinding has had for page bodies since WI-414 and GradeDescription

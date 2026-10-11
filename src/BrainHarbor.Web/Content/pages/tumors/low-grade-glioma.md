@@ -138,7 +138,7 @@ Because since 2021, the grade does not come only from what the cells look like.
 For some tumors, a gene result now sets the grade on its own. It does that even
 when the cells look low grade under the microscope.
 
-Here are the two that catch people out. A tumor that looked grade 2 down the
+Here are the two that trip people up. A tumor that looked grade 2 down the
 microscope is called **glioblastoma, grade 4** if it is IDH-wildtype and carries
 certain gene changes. And an IDH-mutant astrocytoma is **grade 4** if it has a
 CDKN2A/B deletion with **both copies** gone, even when it looks nothing like a
@@ -441,7 +441,7 @@ seizure](/seizures/what-to-do) is the one to know by heart, and it says which
 seizures need an ambulance and which do not. Knowing that difference is what
 stops every event becoming an emergency.
 
-**Scan weeks are hard, and they come round again.** The days before a follow-up
+**Scan weeks are hard, and they come around again.** The days before a follow-up
 scan and its result are, for a lot of people, worse than anything else in the
 year. It helps to know that in advance and to plan the week rather than pretend
 it is ordinary.

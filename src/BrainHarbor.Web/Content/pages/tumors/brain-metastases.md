@@ -439,7 +439,7 @@ weeks, the hair and when it comes back.
 If you have surgery, expect a deep tiredness that comes in waves, a sore scar,
 patchy concentration, and odd sleep for a while.
 
-**One more, and it catches people out.** You are probably still having
+**One more, and it trips people up.** You are probably still having
 treatment for your first cancer at the same time. Two sets of side effects
 overlap, and it is genuinely hard to tell which is causing what. Say so at the
 appointment rather than working it out alone. It is useful information, and it

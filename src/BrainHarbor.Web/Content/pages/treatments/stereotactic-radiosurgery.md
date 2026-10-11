@@ -428,7 +428,7 @@ What turns up in the first few days tends to be mild. Here is the list your cent
 will go through with you.
 
 - **Headache**, and feeling tired.
-- **Feeling sick, or being sick.**
+- **Feeling sick to your stomach, or throwing up.**
 - **Sore pin sites**, if you had a frame. There may be a little bleeding when
   the pins come out, a dressing goes on, and there can be bruising, a change in
   skin color, and numbness or tingling in the scalp there.

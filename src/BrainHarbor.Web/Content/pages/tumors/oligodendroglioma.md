@@ -182,7 +182,8 @@ Other things people notice:
 - Loss of part of the field of vision.
 - Changes in thinking, concentration or personality, especially with a frontal
   lobe tumor.
-- Feeling sick and throwing up, if pressure inside the head has risen.
+- Feeling sick to your stomach and throwing up, if pressure inside the head has
+  risen.
 
 [ESCALATION]
 

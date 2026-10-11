@@ -1,7 +1,8 @@
+using BrainHarbor.ContentCheck;
+using BrainHarbor.Safety;
+using BrainHarbor.Web.Content;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using BrainHarbor.ContentCheck;
-using BrainHarbor.Web.Content;
 
 namespace BrainHarbor.Tests;
 
@@ -223,16 +224,16 @@ public sealed class ImagesNeededInventoryTests
             var slug = Path.GetRelativePath(PagesRoot, file).Replace('\\', '/')[..^3];
             var raw = File.ReadAllText(file).TrimStart('﻿');
 
-            // The same split as ContentStore.Parse, and it REQUIRES the opening
-            // fence for the reason CuratedPage.ReaderTextOfBody's doc comment
-            // records: `IndexOf("\n---") + 4` on a string with no front matter
-            // returns -1 + 4, and silently hands back the body three characters
-            // short. A word count off by three characters is a word count nothing
-            // would ever question.
+            // The slice is CuratedPage.Body's since WI-566, not a fourth copy of
+            // it. This loop re-rolled the split and got both conditions right by
+            // hand — and a word count off by three characters is a word count
+            // nothing would ever question, which is why the helper now refuses
+            // rather than relying on the next copy being as careful. The two
+            // assertions stay because they name the SLUG; the throw cannot.
             Assert.StartsWith("---", raw, StringComparison.Ordinal);
-            var end = raw.IndexOf("\n---", 3, StringComparison.Ordinal);
-            Assert.True(end > 0, $"{slug}: unterminated front matter.");
-            var body = raw[(end + 4)..].TrimStart('\r', '\n');
+            Assert.True(raw.IndexOf("\n---", 3, StringComparison.Ordinal) > 0,
+                $"{slug}: unterminated front matter.");
+            var body = CuratedPage.Body(raw).TrimStart('\r', '\n');
 
             var (composed, _) = ContentBlocks.Compose(body, blocks, slug);
             pages[slug] = new LivePage(slug, body, composed);
@@ -781,8 +782,8 @@ public sealed class ImagesNeededInventoryTests
             {
                 // Graded the way the page will grade it: through the same extractor,
                 // which terminates the sentence before Flesch-Kincaid sees it.
-                var grade = ReadabilityAnalyzer.FleschKincaidGrade(
-                    ContentChecker.ExtractSentences(prose));
+                var grade = ReadingGrade.Of(
+                    ContentChecker.ExtractSentences(prose), ReadingGradeOptions.CuratedPages);
                 if (grade > ContentChecker.FailGrade)
                 {
                     over.Add($"{figure.Id} {what}: grade {grade:F1} — \"{prose}\"");
@@ -804,15 +805,15 @@ public sealed class ImagesNeededInventoryTests
     {
         // Two assertions that cannot pass for the wrong reason (§12.33, finding 1):
         // the grader has to reject real prose, and the extractor has to be reached.
-        var hard = ReadabilityAnalyzer.FleschKincaidGrade(ContentChecker.ExtractSentences(
+        var hard = ReadingGrade.Of(ContentChecker.ExtractSentences(
             "Postoperative neuroradiological surveillance demonstrates considerable "
-            + "interobserver variability in the characterisation of pseudoprogression."));
+            + "interobserver variability in the characterisation of pseudoprogression."), ReadingGradeOptions.CuratedPages);
         Assert.True(hard > ContentChecker.FailGrade,
             $"the grader scored a deliberately unreadable sentence at {hard:F1}, "
             + "so the gate above would pass anything.");
 
-        var easy = ReadabilityAnalyzer.FleschKincaidGrade(
-            ContentChecker.ExtractSentences("A wide white ring with a bed in front of it."));
+        var easy = ReadingGrade.Of(
+            ContentChecker.ExtractSentences("A wide white ring with a bed in front of it."), ReadingGradeOptions.CuratedPages);
         Assert.True(easy <= ContentChecker.FailGrade, $"a plain sentence scored {easy:F1}.");
     }
 

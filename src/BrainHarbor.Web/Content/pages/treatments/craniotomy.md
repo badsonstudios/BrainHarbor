@@ -128,7 +128,7 @@ it is safe in an MRI scanner.
 
 The name for this operation is a craniotomy.
 
-Sometimes the bone is not put back straight away. That is called a craniectomy,
+Sometimes the bone is not put back right away. That is called a craniectomy,
 and it is done to leave room if the brain is likely to swell. The bone is
 usually put back later, in a smaller operation.
 
@@ -250,7 +250,7 @@ The operation itself takes hours, and how many depends on where the tumor is
 and how much is being done. Your family will be waiting a long time. That is
 normal and it is not a sign of trouble.
 
-- **In hospital:** usually about four to six days. Bigger or more awkward
+- **In the hospital:** usually about four to six days. Bigger or more awkward
   tumors, and other health problems, make it longer.
 - **A scan to see what came out:** usually one to three days after the
   operation.
@@ -274,15 +274,15 @@ medicine on a fixed schedule rather than waiting for you to ask. That is worth
 having, because pain creeps up before you notice it. **If yours does not do it
 that way, ask whether you can have it on a schedule.** You are allowed to ask.
 
-Feeling sick is common. Say so, because it can be treated, and there is no
-prize for putting up with it.
+Feeling sick to your stomach is common. Say so, because it can be treated, and
+there is no prize for putting up with it.
 
 Around the wound you may get numbness, odd shooting pains, and itching as it
 heals. You may also get swelling and bruising around your eyes. That can look
 alarming, and it is a normal part of healing.
 
 If you wake up and something is not working the way it was, that is frightening
-in a way that is hard to describe. Say what you notice, straight away, to the
+in a way that is hard to describe. Say what you notice, right away, to the
 person in front of you. A lot of what shows up right after surgery does get
 better.
 
@@ -572,8 +572,8 @@ list.
 **How long are you doing this for?** The intense part is the first few weeks.
 Most people take a month or two to feel like themselves. The invisible part, the
 tiredness and the attention and the words, often runs on past that. Plan for
-longer than the discharge letter suggests. At the follow-up appointment, ask out
-loud: what should we expect this to look like in a month?
+longer than the discharge paperwork suggests. At the follow-up appointment, ask
+out loud: what should we expect this to look like in a month?
 
 **And you cannot do all of it.** The person you are looking after has a whole
 team. You are allowed to call them. You are allowed to say you are not managing.
@@ -628,8 +628,8 @@ person, say so, and ask them to call you when it lands.
 - Will you use mapping or monitoring during the operation?
 - How much of my hair will be cut, and where will the scar be?
 - Will I be scanned afterwards to see how much came out, and when?
-- How long in intensive care, how long in hospital, and am I going home or to a
-  rehab unit?
+- How long in intensive care, how long in the hospital, and am I going home or
+  to a rehab unit?
 - If something is not working when I wake up, how will we know whether it is
   temporary?
 - Which of my medicines am I going home on, and which one is being reduced?

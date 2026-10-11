@@ -136,7 +136,7 @@ gene tests say. For an IDH-mutant astrocytoma there are three:
 - **Grade 4.** Dead tissue inside the tumor, or new abnormal blood vessels, **or**
   both copies of CDKN2A/B missing.
 
-**That last one catches people out.** A tumor can be graded 4 on the gene result
+**That last one trips people up.** A tumor can be graded 4 on the gene result
 alone, even when the cells did not look that way. It is not a mistake and nobody
 was hiding anything. The gene results took longer to come back than the first
 impression did, and they carry more weight.
@@ -483,7 +483,7 @@ Look after your own health, and keep your own appointments.
 - Some of what changed before the diagnosis, was that the tumor?
 - What should I do about driving and work?
 - What would make you want to see me before my next appointment?
-- Who do I call out of hours, and what number is it?
+- Who do I call after hours, and what number is it?
 - Is there a clinical trial I should know about?
 
 ## Where to get support

@@ -415,9 +415,9 @@ thing, and it is common here. It happens when the back of the gland can no longe
 hold water in the body. An older name for it borrowed the word diabetes. What
 most people mean by that word is a completely different illness.
 
-**From the fluid backing up**, the signs are headaches, feeling sick and
-throwing up, being much sleepier than usual, and being confused. Headaches from
-this are often worse in the morning.
+**From the fluid backing up**, the signs are headaches, throwing up or feeling
+sick to your stomach, being much sleepier than usual, and being confused.
+Headaches from this are often worse in the morning.
 
 **Two sets of signs here carry rules of their own.** Both sit just below these
 lists.
@@ -516,7 +516,7 @@ for writing grades changed in 2021, from Roman numerals to ordinary ones, and
 plenty of paperwork still carries the earlier style.
 
 **Diabetes insipidus, and arginine vasopressin deficiency.** These are two names
-for the same thing: the trouble with thirst and passing water described above.
+for the same thing: the trouble with thirst and peeing a lot described above.
 The name was changed on purpose, because sharing the word "diabetes" with a
 completely different illness was getting people hurt.
 [Pituitary tumor](/tumors/pituitary-tumor) tells that story in full, and a

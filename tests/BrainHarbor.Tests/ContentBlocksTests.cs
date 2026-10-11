@@ -414,7 +414,8 @@ public sealed class ContentBlocksTests : IDisposable
         WriteBlock("crosswalk", "Old names still on paperwork.");
         WritePage("glioma", "[crosswalk]");
 
-        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, null, _blocks);
+        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, CorpusFloor.None, null, _blocks)
+            .Findings;
 
         Assert.Contains(findings, f =>
             f.Level == FindingLevel.Fail && f.Message.Contains("[CROSSWALK]"));
@@ -425,7 +426,8 @@ public sealed class ContentBlocksTests : IDisposable
     {
         WriteBlock("broken", "---\nsources: [ unclosed\n---\nBody.");
 
-        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, null, _blocks);
+        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, CorpusFloor.None, null, _blocks)
+            .Findings;
 
         Assert.Contains(findings, f =>
             f.Level == FindingLevel.Fail && f.File == "blocks/broken.md");
@@ -515,7 +517,8 @@ public sealed class ContentBlocksTests : IDisposable
         WriteBlock("used", "This one is included.");
         WritePage("glioma", "[USED]");
 
-        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, null, _blocks);
+        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, CorpusFloor.None, null, _blocks)
+            .Findings;
 
         Assert.Contains(findings, f =>
             f.Level == FindingLevel.Warn && f.File == "blocks/orphan.md");
@@ -533,7 +536,8 @@ public sealed class ContentBlocksTests : IDisposable
         WriteBlock("seizure", "Stay with them.");
         WritePage("glioma", "[CAREGIVER]");
 
-        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, null, _blocks);
+        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, CorpusFloor.None, null, _blocks)
+            .Findings;
 
         Assert.DoesNotContain(findings, f => f.File == "blocks/seizure.md");
     }
@@ -548,7 +552,7 @@ public sealed class ContentBlocksTests : IDisposable
         // (Asserting on the missing-block message specifically, not on "no
         // failures at all": a two-word block grades badly and that is a
         // property of the fixture, not of the lookup under test.)
-        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue);
+        var findings = ContentChecker.CheckAll(_pages, null, DateOnly.MaxValue, CorpusFloor.None).Findings;
 
         Assert.DoesNotContain(findings, f => f.Message.Contains("there is no block"));
     }

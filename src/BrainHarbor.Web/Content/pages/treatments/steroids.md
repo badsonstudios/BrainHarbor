@@ -145,7 +145,7 @@ sources:
     # VERSION GOT THAT WRONG. It opened "one item on the list below is different
     # for you", naming only the vomiting bullet -- and that sentence was FALSE
     # about its own list. The same-day list also carries "You are confused", "You
-    # are being sick again and again" and "You feel faint, dizzy standing up ...
+    # are throwing up again and again" and "You feel faint, dizzy standing up ...
     # That is the shortage this page describes, and it is treatable". Those are
     # the three signs this source names for adrenal crisis, and the three that
     # /tumors/pituitary-tumor files as a 911 call. So a reader whose body has
@@ -213,8 +213,8 @@ It is a medicine that brings down swelling inside your head.
 
 The brain around a tumor gets waterlogged. Doctors call that swelling edema. It
 takes up room in a skull that cannot stretch, and a lot of what you feel comes
-from that rather than from the tumor itself: headaches, feeling sick, and
-whatever that part of the brain does being done worse.
+from that rather than from the tumor itself: headaches, feeling sick to your
+stomach, and whatever that part of the brain does being done worse.
 
 A steroid dries that swelling out. The commonest one used for this is
 dexamethasone. Some teams use a different one. They work the same way.
@@ -470,7 +470,7 @@ an adrenal crisis, which the Endocrine Society says can kill if it is not
 treated. So do not wait for the same day on any of it. Phone at whatever hour it
 is, and say you take a steroid your body cannot make on its own.
 
-**Being sick again and again, confusion, and feeling faint are what an adrenal
+**Throwing up again and again, confusion, and feeling faint are what an adrenal
 crisis looks like.** If those are happening, call 911, or your local emergency
 number, and get to a hospital.
 [Pituitary tumor](/tumors/pituitary-tumor) has the full rule.
@@ -487,7 +487,7 @@ number, and get to a hospital.
   chemotherapy, a fever is a call right away, at any hour, and not a wait for
   the morning.** [The fever rule](/treatments/chemotherapy#fever-rule) explains
   why.
-- You are being sick again and again.
+- You are throwing up again and again.
 - You are confused, or somebody says you are not making sense.
 - There is new weakness in an arm or a leg, including a chair or the stairs
   becoming hard when they were not.

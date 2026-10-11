@@ -93,7 +93,7 @@ public sealed class ChordomaPageContentTests
     /// wraps without caring where they fall.
     /// </summary>
     private static string Flat(string heading) =>
-        CuratedPage.Flatten(CuratedPage.ReaderText(RawSection(heading)));
+        CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(RawSection(heading)));
 
     // NO SentenceWith HELPER HERE, AND THAT IS DELIBERATE RATHER THAN AN OMISSION.
     // Sibling hubs carry one that strips ** before splitting, because SentencesOf
@@ -370,7 +370,7 @@ public sealed class ChordomaPageContentTests
         // clival reader this is not a failure is the whole point of carrying it.
         Assert.Matches(new Regex(
             @"is often not possible, and that is not a\s+failure", RegexOptions.IgnoreCase),
-            CuratedPage.Flatten(CuratedPage.ReaderText(treatment)));
+            CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(treatment)));
     }
 
     // ------------------------------------------------------------------- the grade
@@ -707,7 +707,12 @@ public sealed class ChordomaPageContentTests
         // has to teach the vocabulary, or it explains nothing (§12.9, WI-513).
         var gate = Regex.Match(Page, @":::outlook(.*?):::", RegexOptions.Singleline);
         Assert.True(gate.Success, "the outlook section has lost its reader-choice gate");
-        var inside = CuratedPage.Flatten(CuratedPage.ReaderText("---\n---\n" + gate.Groups[1].Value));
+        // WI-566: this read `ReaderText("---\n---\n" + …)` — an EMPTY front matter
+        // pasted in front of a fragment so a helper that only accepted whole pages
+        // would hand it back. That workaround is the clearest evidence the helper's
+        // shape was the defect, not the caller's: `Body` now refuses a fragment
+        // outright, and `ReaderTextOfBody` is the half that belongs here.
+        var inside = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(gate.Groups[1].Value));
 
         Assert.Matches(new Regex(
             @"half of that group came out above it and half\s+below", RegexOptions.IgnoreCase), inside);

@@ -487,9 +487,9 @@ a hole in the bowel.
 Those two lines are the same answer [brain surgery](/treatments/craniotomy) and
 [chemotherapy](/treatments/chemotherapy) give for the same symptoms.
 
-**Vorasidenib.** Tiredness, headache, feeling sick, aching muscles, diarrhea,
-and seizures. The one that needs watching is the liver, which is why the blood
-tests are regular.
+**Vorasidenib.** Tiredness, headache, feeling sick to your stomach, aching
+muscles, diarrhea, and seizures. The one that needs watching is the liver, which
+is why the blood tests are regular.
 
 **Call your team if your eyes or skin turn yellow, your urine goes dark, you
 lose your appetite, or you get pain in the upper right of your belly.** Those
@@ -497,7 +497,7 @@ can be signs of a liver problem.
 
 **The BRAF and MEK pills.** Skin changes, rash, itching, burning easily in the
 sun, headache, fever, chills, aching joints, tiredness, cough, hair loss,
-feeling sick, diarrhea and high blood pressure.
+feeling sick to your stomach, diarrhea and high blood pressure.
 
 **Fever is common enough with these that it is worth expecting, and it needs a
 plan rather than a guess.** Ask your team, before you start, what temperature
@@ -512,15 +512,16 @@ these drugs get skin cancers. Your skin should be checked regularly while you
 are on them, so ask how often, and tell your team right away about any new spot
 or any patch that looks different.
 
-**Dordaviprone.** Tiredness, headache, feeling sick and being sick, and aching
-muscles, joints and bones. It can lower your blood counts and affect the liver.
+**Dordaviprone.** Tiredness, headache, feeling sick to your stomach, throwing
+up, and aching muscles, joints and bones. It can lower your blood counts and
+affect the liver.
 
-**Everolimus.** Mouth sores, more infections, feeling sick, less appetite,
-diarrhea, rash, tiredness, swelling in the legs, and rises in blood sugar and
-cholesterol.
+**Everolimus.** Mouth sores, more infections, feeling sick to your stomach, less
+appetite, diarrhea, rash, tiredness, swelling in the legs, and rises in blood
+sugar and cholesterol.
 
-**The NTRK pills.** Dizziness, tiredness, feeling sick and being sick,
-constipation, weight gain and diarrhea.
+**The NTRK pills.** Dizziness, tiredness, feeling sick to your stomach and
+throwing up, constipation, weight gain and diarrhea.
 
 Whichever of these you are on, keep that written list somewhere you will find it
 again.

@@ -16,6 +16,15 @@ what absorbed it and why.
 Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
 `/pm decompose <phase>` when we get there.
 
+> **⚠ ORDER OVERRIDE, agreed 2026-10-10 — read `../PROGRESS.md` §"The agreed
+> plan" BEFORE picking an item.** The next twelve items are chosen and ordered
+> there, and it is **not** this file's top-to-bottom order: it starts with
+> **WI-435**, pulls two M4 defects (WI-435, WI-416) and two P5 guards
+> (WI-564, WI-565) ahead of the seven remaining library pages, and puts
+> WI-557 last. The reason is that a guard written *after* eight new medical
+> pages has to sweep a bigger corpus and fix pages that were written wrong.
+> Work that list top to bottom; fall back to this file's order once it is empty.
+
 ---
 
 ## Phase M0 — Skeleton ($0 hosting)
@@ -917,7 +926,42 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: Summarize/Guardrails.cs, content-pipeline.md §5/§9, WI-414.
   Depends on: nothing (but do it before WI-408 soft launch).
 
-- [ ] **WI-416 One reading-level grader, not two**
+- [x] **WI-416 One reading-level grader, not two**
+  *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.39, spec §5a)* —
+  one implementation, `BrainHarbor.Safety.ReadingGrade`, and the medical-vocabulary
+  allowance is a named option (`CuratedPages` / `AiSummaries`) rather than a fork.
+  **All four disagreements go to the page side**: the apostrophe is part of a word (both
+  apostrophes — a model emits the curly one freely), the vowel-hiatus rule applies with
+  its `-tion`/`-sion` exceptions, the silent-e rule exempts consonant + `le`, and the
+  grade is rounded to one decimal and clamped at 0 — the last of which is what makes a
+  threshold mean anything. **The page numbers moved by nothing**, provable rather than
+  sampled: with the page term set empty the only new code path is a no-op, and the test
+  file keeps BOTH pre-WI-416 implementations verbatim to hold the sampled half.
+  **THE PART THAT NEARLY SHIPPED WRONG.** The corrected grader reads medical prose
+  harder; on the thirteen hand-written ideal summaries the median goes 5.08 → 5.70 and
+  one went 6.61 → 7.30, through the 7.0 backstop, so `GoldenSetTests` went red. The first
+  answer was to raise the backstop to 7.6. **`/review` refused it and was right**: the
+  correction is a function of Latin density — ~+0.5 on medical prose, **~0.00 on plain
+  Germanic prose**, which is what the prompt is built to produce — so a flat +0.6 on the
+  THRESHOLD is a real loosening for the plainest writing, and `/review` produced a plain
+  English sentence that was flagged at 7.0 and would pass at 7.6. **What was wrong was
+  the ALLOWANCE**: the broken yardstick summary says "schwannomas" and "meningiomas" and
+  the list held only the singulars, so it paid full price for the letter s. The allowance
+  covers regular plurals and the possessive now; **the backstop stays at 7.0**; the gate
+  is unchanged for plain prose and stricter in real terms for Latin-dense prose.
+  **And the fix for one yardstick summary broke another in the same run** — the first
+  inflection code stripped and returned without trying the word itself, so `metastases`,
+  which is ON the list, missed it. `/review` also found a mutable "read-only" allowance
+  (a downcast `Add()` gave every page an allowance process-wide), a public constructor
+  that let anything invent a third population, a legacy baseline that read the live term
+  list, unpinned threshold numbers, and a possessive count wrong by an order of magnitude
+  — all taken. **Recorded and deliberately NOT fixed: `ideal:42388439` now reads exactly
+  7.0**, passing with no margin; rewriting an exemplar is `/pm`'s editorial call, so it
+  is pinned by name and value as a tripwire. **PROOF: 18 of 18 harness cases as wanted,
+  no survivors — including this item's own rejected first answer (7.0 → 7.6 must go RED);
+  2,924 tests; ContentCheck 345/0.** No reader-facing change today, but **expect the live
+  flag rate to tick up from 4.8%** — that is the correction working, and the next
+  `Category=Live` run is the confirmation.
   Goal: "6th grade" should mean one thing.
   Problem (found 2026-08-13 in the WI-415 review): `ReadabilityAnalyzer`
   (pages) and `Guardrails.GradeLevel` (summaries) implement Flesch-Kincaid
@@ -933,7 +977,43 @@ Phases P2a–P3 (static hub, stories) are deliberately not itemized yet — run
   Refs: tools/BrainHarbor.ContentCheck/ReadabilityAnalyzer.cs,
   Summarize/Guardrails.cs. Depends on: nothing.
 
-- [ ] **WI-435 ContentCheck passes when it checked nothing**
+- [x] **WI-435 ContentCheck passes when it checked nothing**
+  *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.38)* —
+  **worse than this entry said: `-- --nologo` graded ZERO of the 55 curated pages and
+  printed `ContentCheck passed (232 checks, 0 failures)`, a clean run being 345; run
+  from the wrong directory it was 3 checks, 0 failures, exit 0.**
+  **The cause and the defect are different things.** The cause is that `args[0]` was
+  the pages root whatever the string was; the defect is that coverage was an `int` per
+  root and **0 meant both "not in scope" and "in scope and read nothing"**, so
+  `DescriptionCorpusReport` took its "not our business" early return on a run that had
+  been asked for 55 pages and opened none. `CorpusCoverage`/`CorpusFloor` carry `int?`
+  now — `null` is not in scope, `0` is empty — which is §12.37's fix in another coat.
+  **A FLOOR, NOT A LOUDER WARNING:** the missing-root WARN had existed since WI-106,
+  was on screen for the whole broken run, and changed nothing, because the only
+  consumer is a CI step reading an exit code. **PER ROOT** (55 pages / 105 glossary /
+  20 reader-facing Razor / 8 blocks), because §12.37 shipped the one-combined-total
+  version and a renamed `Content/blocks` satisfied it from the pages alone.
+  **The floor argument is REQUIRED, not defaulted** — all fifteen `CheckAll` call
+  sites had to say whether they were the corpus or a fixture, and the seven that are
+  the corpus now enforce the floor from inside the suite. **The floor equals the
+  corpus**, pinned in both directions, so **adding a page means moving
+  `CorpusWhenMeasured`** — a deliberate price, because a floor below the corpus is
+  slack. Unknown arguments, a fifth argument, an empty argument and a path that is not
+  there are exit 2 (usage) rather than exit 1 (content). `Resolve(args)` and
+  `Run(args, TextWriter)` were split out so the argument handling could be tested at
+  all — it had zero tests and **the first one ever written against it found the
+  defect**. **`/review` found seven parallel lists of the same four roots** (a fifth
+  root would silently get no floor) — one table now, checked by reflection — plus the
+  Razor root having no oracle independent of the walk, and `0` meaning two things on
+  the FLOOR side too. **Its best finding was a positive control:** the blocks oracle
+  walked `AllDirectories` while `ContentBlockStore.Load` reads the top directory and
+  skips non-slug filenames, so a `README.md` in `Content/blocks` — which that method's
+  own docstring calls normal — would have made the blocks floor permanently
+  unreachable. **PROOF: 39 of 39 harness cases as wanted, no survivors** — 16 Part-A
+  cases on the real executable (2 positive controls, 9 RED-at-HEAD/exit-0-before pairs,
+  one honest COVERED where the blocks root turned out to be caught already, 5 usage
+  refusals) and 23 Part-B code mutations all red; **2,897 tests; ContentCheck still
+  345/0 on the shipped corpus.** No reader-facing change.
   Goal: the gate that enforces reading level on medical copy must fail loudly
   when it is not actually checking anything.
   Problem (found 2026-08-19 while editing `start.md`): the tool takes the pages
@@ -2877,8 +2957,30 @@ Start only after Dan has signed off WI-513's template.
   DOWN (1308) rather than by any failure — a green suite that is 14 tests
   smaller is the WI-512 stale-assembly lesson in a new coat. **Always read the
   count, not just the colour.**
-- [ ] **WI-564 Corpus-wide British idiom sweep** *(not a Wave 2 blocker — do it
-  before the corpus doubles)*
+- [x] **WI-564 Corpus-wide British idiom sweep.** *(done 2026-10-10)*
+  **Done. Ruling `docs/content-pipeline.md` §12.40.** `CuratedPage.BritishIdioms`
+  is the promoted list — a **regex table**, not a second substring array, because
+  half the entries are correct English elsewhere (`feeling sick(?! to your
+  stomach)` is live and correct on two shipped pages). `BritishIdiomSweepTests`
+  sweeps it over `EverythingAReaderMeets` — the headline plus the **COMPOSED**
+  body — for all 55 pages plus the glossary, which is **WI-537's switch** and the
+  reason `blocks/mechanism.md`'s "feeling sick" could never turn a per-page array
+  red. **83 live occurrences fixed across 31 files** (29 pages + 2 blocks, counted as
+  source occurrences in body text); `feeling sick` ranked below
+  WI-563's blocker as WI-537 asked, and recorded that way. **136 of 136 break
+  mutations caught** (17 patterns × 4 carriers × both line endings, carriers
+  chosen to include two pages with no idiom array and a glossary entry no page
+  composes). The item's open question answered itself: the corpus already said
+  `right away` 38 times against 9 `straight away`, so `BritishForms`' rejection
+  of it ("banning it would fail a shipped page") was the wrong test and is
+  reversed, with the note kept. **Three shared safety claims were found that
+  dialect drift had hidden**, including the chemotherapy fever rule in two
+  wordings on two pages. Six more live hits came from widening `catches people
+  out` to the plural verb. The thirty per-page arrays are left in place
+  (§12.21). 2,929/2,929; ContentCheck 345/0; `/treatments/chemotherapy` 5.4 → 5.5
+  and every page still under 6.0. **Raised and not taken:** six hubs restate the
+  mechanism block's raised-pressure pattern (content ownership, for `/pm`);
+  `anti-sickness medicine` is British, 4 live on one page.
   **WI-549 added `fortnight` to `CuratedPage.BritishForms` (2026-09-23), and how
   it was found matters for this item:** not by review, but by a BREAK MUTATION.
   A planted "Ask again in a fortnight" survived every gate on both line endings,
@@ -2937,8 +3039,25 @@ Start only after Dan has signed off WI-513's template.
   `blocks/escalation.md` must match — WI-563 pinned the two together with a test
   that reads the sibling's `{#fever-rule}` section, so they cannot drift again.
   **Depends on:** WI-563.
-- [ ] **WI-566 `CuratedPage.ReaderText` silently eats three characters, on six live
-  guards** *(raised by WI-538)* — `ReaderText` strips front matter by seeking
+- [x] **WI-566 `CuratedPage.ReaderText` silently eats three characters, on six live
+  guards** *(done 2026-10-10 — ruling `docs/content-pipeline.md` §12.37)* —
+  **filed as six sites, surfaced FORTY-FIVE, which is what the throw is for:** a grep
+  finds the shapes somebody already thought of. `Body` now refuses anything that is not
+  a whole page (two conditions — it must OPEN with `---` as well as close, or a fragment
+  containing a horizontal rule gets sliced at the rule), and `ReaderTextOfBody` refuses
+  the CONVERSE, a whole page, because fixing one half made it the escape hatch every
+  corrected site reaches for and it would have scanned YAML as prose.
+  **Truncation can only make a NEGATIVE assertion pass**, so four of the six named sites
+  were live holes and two were blind-but-harmless; the harness plants a forbidden phrase
+  in the exact three characters and proves RED at HEAD / **GREEN before the fix** for all
+  four. **One shipped guard was reading front matter as the page's own words**
+  (`FigureWordsTests` passed the whole composed page to `ReaderTextOfBody`, so a region
+  label could be "supported" by a `description`, a `tags` entry or a cited source's
+  TITLE) — found only by the converse refusal, measured as certifying nothing wrongly.
+  Two sites had pasted a FAKE empty front matter in front of a fragment to get past the
+  old helper. 21 of 21 mutations as wanted, no survivors; 2,860/2,860; ContentCheck
+  345/0.
+  **The original entry, kept:** `ReaderText` strips front matter by seeking
   `\n---`. Handed a string that has none — a SECTION, or a body that has already been
   stripped — `IndexOf` returns -1 and it returns `body[3..]`. It does not throw, and it
   does not fail an `Assert.Contains` anchored further in, so **every affected guard is

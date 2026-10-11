@@ -494,7 +494,18 @@ public sealed class GliomaPageContentTests
         // trap). The pairing is now block-to-block and neither half can go
         // stale silently.
         var symptoms = CuratedPage.Flatten(CuratedPage.ComposedSection(Page, SymptomHeading));
-        var mechanism = CuratedPage.Flatten(Composed);
+
+        // WI-564: THE BLOCK FILE, not the composed page. This read `Flatten(Composed)`,
+        // which is the whole page INCLUDING this page's own prose — so the "taught" side
+        // was satisfied by /tumors/glioma's own symptom list, and deleting a sign from
+        // blocks/mechanism.md left the assertion green under a message blaming the block.
+        // That is exactly the §12.10 / WI-514 trap this test's own comment warns about,
+        // one level in: the comment said "block-to-block" and only one half was.
+        // (/review found a first fix that re-anchored the WORD and left the SOURCE alone,
+        // then claimed the pairing was block-to-block "in fact". It was not.)
+        var mechanism = CuratedPage.Flatten(CuratedPage.ReaderTextOfBody(
+            CuratedPage.Body(File.ReadAllText(
+                Path.Combine(CuratedPage.BlocksRoot, "mechanism.md")))));
 
         foreach (var (taught, acted) in new[]
                  {
@@ -503,7 +514,17 @@ public sealed class GliomaPageContentTests
                      // again" now. "Being sick" is British for vomiting and
                      // reads as "being unwell" to this page's audience, which
                      // is the wrong half of a same-day escalation trigger.
-                     ("being sick", "Throwing up again and again"),
+                     //
+                     // WI-564: AND THE TAUGHT HALF WAS NEVER THE BLOCK'S WORD.
+                     // This pair asked the block for "being sick" and the block
+                     // has never said it — the raised-pressure line said
+                     // "feeling sick and throwing up". It passed because
+                     // `mechanism` was the COMPOSED page, so /tumors/glioma's
+                     // own prose ("feeling sick or being sick") satisfied it,
+                     // under a message blaming the block. BOTH halves moved:
+                     // the word is one the block carries, and the text read is
+                     // the block file itself (see above).
+                     ("throwing up", "Throwing up again and again"),
                      ("worse in the\n  morning", "wakes you from sleep"),
                  })
         {
