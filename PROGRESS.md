@@ -153,7 +153,13 @@ adding it" is the same argument one level up.
    `feeling sick` in `blocks/mechanism.md` below WI-563's blocker because the
    coordination there carries the unambiguous US term beside it. Deferred four
    times already — four deferrals is a decision.
-4. **WI-565 — the unsourced "at any hour" clause.** Not a guard; a live content
+4. ~~**WI-565 — the unsourced "at any hour" clause.**~~ **DONE 2026-10-14, ruling §12.41 —
+   see the table above. SOURCED, not retired: CDC says it almost word for word. THE NEXT
+   ITEM IS WI-556 (X16 Fertility and treatment), the first of Batch 2.** The entry's
+   premise was wrong twice — 3 times on that page, 12 reader-facing places across 9
+   files — and **the real defect was that the fever rule was the only "at any hour" in
+   the corpus with no emergency-department fallback**, in any of its six places. Not a
+   guard; a live content
    defect. `/treatments/chemotherapy` publishes it **twice** on its most
    safety-critical sentence and **no cited source says it**. Do not simply delete
    it (WI-511: deleting a bad citation does not delete the claim) — find a
@@ -250,6 +256,126 @@ buried inside a finished item's table cell.
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-565 scouting note (2026-10-12) — SPENT. The item SHIPPED 2026-10-14; ruling §12.41
+
+**Kept for the record, and two of its numbers were wrong.** The plan below said *13
+reader-facing places across 9 files*; it is **12** — `start.md:116` carries "day or
+night" and not "at any hour", and the 988 line is not on that page (`/review`). Every
+other line reference in the table checked out exactly. Its step 2 said *"the fallback in
+all three places on the owner"*; **two** shipped, and the third (the caregiver right-away
+LIST) was judged noise because the bold lead-in two paragraphs above it already carries
+one — see §12.41's carried-forward.
+
+**It was written because the tooling was gone.** Every `Bash` call that session was
+declined by switchboard with nobody available to review it, so `dotnet test`, ContentCheck
+and git were all unavailable and no content was edited — this is safety copy on the most
+time-critical sentence on the site and not something to change blind. (That outage has a
+root cause now: `badsonstudios/switchboard.ai#1277`. The window had been shoved off-screen,
+and switchboard's permission-liveness gate tests whether a window EXISTS rather than
+whether it is reachable, so holds waited 300 s for a human who could not see them and were
+then denied.) The research below is what the next session started from.
+
+**THE ENTRY'S PREMISE IS WRONG TWICE, AND THE SECOND ERROR IS THE ITEM.** It says
+*"the page publishes it twice."* `/treatments/chemotherapy` publishes it **three** times
+(the fever rule, the caregiver fever line, and the caregiver right-away list), and
+`at any hour` is live in **13 reader-facing places across 9 files** — including
+**`blocks/escalation.md` twice**, which composes onto every hub, and
+`blocks/spinal-cord.md`. So it was never one page's clause. §12.8 again: run the rule
+over the whole corpus before touching it.
+
+#### THE ANSWER IS "SOURCE IT", NOT "RETIRE IT" — and the source is CDC
+
+WI-563 was right that nothing in the page's own front matter supports it. Re-checked
+both cited sources verbatim this session:
+
+- **ACS neutropenia:** *"Call your cancer care team or get medical help if you have: A
+  temperature over 100.4 F …"* — **no timing qualifier at all.** Note the disjunction
+  *or get medical help*; that is the fallback the page does not carry.
+- **NCI infection:** *"Call your health care team if you have signs of an infection"*
+  plus *"Infections during cancer treatment can be life threatening and require urgent
+  medical attention."* — again no timing.
+
+**CDC, "Information for Patients Who Are Getting Chemotherapy", says it almost word for
+word** (`https://www.cdc.gov/cancer-preventing-infections/patients/index.html`,
+fetched 2026-10-12). Verbatim:
+
+> *"Call your doctor right away if you have a temperature of 100.4ºF (38ºC) or higher."*
+> *"Call your doctor right away, even if this happens in the middle of the night."*
+> *"This is considered an emergency. Don't wait until morning."*
+
+That is a **US federal patient-level source**, it carries **the same threshold the page
+already publishes**, and it supports the exact clause WI-563 could not trace. Its
+companion page, **"Watch Out for Fever"**
+(`https://www.cdc.gov/cancer-preventing-infections/patients/fever.html`), adds two more
+sentences that source things the page says or ought to:
+
+> *"If you get a fever during your chemotherapy treatment, it's a medical emergency."*
+> *"Always keep your doctor's phone number nearby. Make sure you know which number to
+> call when their office is open and closed."*
+> *"If you go to the emergency room, tell the person checking you in that you are a
+> cancer patient undergoing chemotherapy. If you have a fever, you might have an
+> infection. This is a life-threatening condition, and you should be seen quickly."*
+
+The second sources the page's existing *"the number to call after hours, not the clinic's
+daytime number"*, **which traced to nothing either** and nobody had noticed.
+
+#### THE REAL DEFECT, which the entry does not name: the fever rule is the ONE "at any hour" with no fallback
+
+Checked all 13 live instances against their own pages' sources. **Every one carries an
+emergency-department fallback — except the chemotherapy fever rule, which carries it in
+none of its six places:**
+
+| where | claim | fallback | sourced |
+|---|---|---|---|
+| `blocks/escalation.md:86` | chemo fever | **no** | **no** |
+| `chemotherapy.md:288 / :432 / :465` | chemo fever (owner) | **no** | **no** |
+| `steroids.md:487`, `cns-lymphoma.md:876` | chemo fever (route to owner) | **no** | via owner |
+| `blocks/escalation.md:98`, `shunts.md:332` | shunt | yes | NINDS, Hydroassoc |
+| `blocks/spinal-cord.md:50` | cord compression | yes | CRUK |
+| `craniotomy.md:568` | post-op fever | yes | UMass |
+| `craniopharyngioma.md:436` | blocked drain | yes (+ a 911 tier) | own |
+| `start.md:116`, `anti-seizure-medicines.md:400` | 988 crisis line | n/a | 988 *is* 24/7 |
+
+**`blocks/escalation.md` is internally inconsistent about it**: its shunt tier, twelve
+lines below the fever tier, says *"call your team, or go to the emergency department"*,
+and its fever tier — the more time-critical of the two — says only *"calling your team
+right away, at any hour"*.
+
+**The unsourced-ness and the missing fallback are one hole seen from two sides.**
+*"Call your team at any hour"* is an assumption about the reader's health system, and
+because nobody could source it, nobody wrote the branch for the reader at 2am whose team
+does not answer. That is §12.12's dangerous direction exactly: *someone will be there* is
+the over-reassuring reading.
+
+#### What to do, in order
+
+1. **Cite both CDC pages** in `/treatments/chemotherapy` front matter and in
+   `blocks/escalation.md` front matter (its fever conditional is the block's own claim,
+   §12.31), with the verbatim quotes above in comments per §12.14.
+2. **Add the fallback to the fever rule in all three places on the owner, and to the
+   block's fever tier**, in the shape the shunt tier two paragraphs down already uses.
+   It is purely additive — it removes nothing and weakens nothing (§12.12).
+3. **Carry CDC's emergency-room sentence**, which is a concrete thing a reader can do
+   that the corpus says nowhere: tell the person checking you in that you are on
+   chemotherapy, because it changes how fast you are seen. Same class as WI-552's
+   atraumatic-needle note.
+4. **KEEP `at any hour`.** Do not retire it and do not reword it weaker. It is now
+   sourced on the fever rule and was already sourced everywhere else.
+5. `steroids.md` and `cns-lymphoma.md` **route** to the owner and should keep routing
+   (§12.11) — but their target section will now carry the fallback, which is the point.
+6. **Tests:** WI-563's cross-page guard already reads the sibling's `{#fever-rule}`
+   section, so that is where to pin the fallback and the citation. A break mutation that
+   deletes the fallback from the block but not the page (and vice versa) is the one that
+   matters, because drift between those two is what WI-563 pinned them together to stop.
+
+#### One thing NOT resolved
+
+Whether the **threshold** sentence should also attribute CDC in-text. The page currently
+publishes 100.4 °F unattributed and says teams differ; CDC gives the same number, so
+in-text attribution is now possible and §12.10 may prefer it. Not decided — it is a
+wording call, and it is the kind of thing `/review` should see rather than a scouting
+note settle.
 
 ### WI-535 scouting note (2026-09-15, partial, corpus only; no sources fetched yet) — READ BEFORE DRAFTING
 

@@ -1503,6 +1503,88 @@ internal static class CuratedPage
         Assert.Matches(new Regex(@"fever is its own rule", RegexOptions.IgnoreCase), section);
         Assert.Contains("/treatments/chemotherapy#fever-rule", section, StringComparison.Ordinal);
 
+        // WI-565: BOTH SIDES OFFER A SECOND ROUTE, and this is the half the
+        // "at any hour" clause was missing on every page that published it.
+        //
+        // "Call your team at any hour" is an assumption about the reader's
+        // health system. Every other at-any-hour instruction in the corpus
+        // named a fallback — the shunt tier 14 lines below this one in the
+        // same block, blocks/spinal-cord.md, /treatments/craniotomy and
+        // /treatments/shunts all say "go to the emergency department". The
+        // chemotherapy fever rule, the most time-critical of them, named none,
+        // and because nobody could source the clause nobody wrote the branch
+        // for the reader at two in the morning whose team does not answer
+        // (§12.12: the over-reassuring direction is the more dangerous one).
+        //
+        // PINNED ON BOTH SIDES, in the helper WI-563 built to stop exactly this
+        // pair drifting. Deleting the fallback from the block but not the
+        // sibling — or the reverse — is the mutation that matters.
+        //
+        // SCOPED TO THE FEVER PARAGRAPH, NOT THE SECTION, and the break harness
+        // is why. The first version asserted `emergency department` over the
+        // whole section and SURVIVED deleting the fever fallback outright: the
+        // SHUNT tier twelve lines below says "or go to the emergency
+        // department" too, so a section-wide Contains cannot tell the two
+        // tiers apart. That is §12.10's own closing lesson — a landing check
+        // must be scoped to the paragraph, not the section — and here it was
+        // caused by the one-wording decision in the same item: matching the new
+        // fallback's term to its neighbour is right for the reader and makes
+        // the two indistinguishable to a lexical guard.
+        // NO `|\z` IN THE LOOKAHEAD, which /review caught re-opening the hole
+        // this regex was rewritten to close: with `\z` in the alternation, a
+        // reworded next paragraph ("Just after brain surgery, a fever …") makes
+        // the lookahead miss, `\z` wins, group 1 swallows the rest of the
+        // section INCLUDING the shunt tier, and the fever fallback can then be
+        // deleted with the suite green. `Success` has to be the thing that
+        // fails. It is terminated on the SAME substring the craniotomy
+        // assertion below uses, so the two cannot drift apart.
+        const string NextTier = "after brain surgery, a fever is its own rule too";
+        var feverTier = Regex.Match(section,
+            @"If you are having chemotherapy, a fever is its own rule\.(.*?)"
+            + $"(?={Regex.Escape(NextTier)})", RegexOptions.Singleline);
+        Assert.True(feverTier.Success,
+            "the escalation block's chemotherapy-fever paragraph cannot be sliced out — "
+            + $"either its lead-in changed or the tier after it no longer says \"{NextTier}\". "
+            + "The fallback assertion below would otherwise run over the wrong text, which "
+            + "is how a deleted fallback once survived (WI-565).");
+
+        foreach (var (text, where) in new[]
+                 {
+                     (feverTier.Groups[1].Value, "the escalation block's fever tier"),
+                     (feverRule, "/treatments/chemotherapy's {#fever-rule} section"),
+                 })
+        {
+            // THE PRECONDITION AND THE DIRECTION TOGETHER, which took two goes.
+            //
+            // `emergency department` alone passed on "There is no need to go to the
+            // emergency department" (/review). Requiring the VERB — `(go to|head for)
+            // the emergency department` — passed on it too, because that reversal
+            // CONTAINS the verb phrase: the harness mutation survived the fix made for
+            // it. A negation cannot be excluded by adding more of the thing being
+            // negated.
+            //
+            // So the whole instruction is pinned, the way ShuntsPageTests.Instruction
+            // pins the shunt line: the branch condition ("If you cannot reach anybody")
+            // and where it sends the reader, in one match. There is no way to write a
+            // reversal that satisfies it.
+            Assert.True(
+                Regex.IsMatch(text,
+                    @"If you cannot reach anybody,\s*\**\s*go to the emergency department",
+                    RegexOptions.IgnoreCase),
+                $"{where} tells the reader to call at any hour and names no second route for "
+                + "a reader nobody answers. Either the fallback is gone, or its condition and "
+                + "its destination have come apart (WI-565, §12.41).");
+        }
+
+        // AND THE BLOCK STILL DOES NOT PUBLISH THE THRESHOLD. The fallback is
+        // new text on the corpus's most safety-critical tier, and the rule that
+        // a number in a block is that number on every hub (§12.10) is the one
+        // most easily broken by editing near it.
+        // THE DEGREE SIGN IS REQUIRED. /review: `38\s*°?\s*C` has no boundary after the
+        // digits and no required symbol, so "38 children", "38 cases" and "1 in 138
+        // cells" all match — and this assertion runs over 25 composed hub sections.
+        Assert.DoesNotMatch(new Regex(@"100\.4|\b38\s*°\s*C\b", RegexOptions.IgnoreCase), section);
+
         // The surgery half of the same rule. Every hub that routes into
         // /treatments/craniotomy owes it, and a post-op fever is not
         // chemo-conditional.

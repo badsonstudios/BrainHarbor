@@ -3021,8 +3021,44 @@ Start only after Dan has signed off WI-513's template.
   news" lesson is that a rule which fails a correct page is worse than no rule.
   Note `straight away` is not wrong in US English, only less natural; decide
   deliberately and record the decision either way. **Depends on:** WI-563.
-- [ ] **WI-565 Source the "at any hour" clause on `/treatments/chemotherapy`,
-  or retire it** — WI-563 fetched every source in that page's front matter and
+- [x] **WI-565 Source the "at any hour" clause on `/treatments/chemotherapy`,
+  or retire it.** *(done 2026-10-14)*
+  **Done — SOURCED, not retired. Ruling `docs/content-pipeline.md` §12.41.** CDC's
+  "Information for Patients Who Are Getting Chemotherapy" says it almost word for
+  word — *"Call your doctor right away, even if this happens in the middle of the
+  night."* / *"This is considered an emergency. Don't wait until morning."* — and it
+  carries **the same threshold the page already published**. Cited on the page AND on
+  `blocks/escalation.md`, whose fever conditional is the block's own claim (§12.31).
+  **The brief undercounted it:** three times on that page, 12 reader-facing places
+  across 9 files, the block twice.
+  **And the real defect was not the citation.** Checking all twelve against their own
+  sources found that **every "at any hour" in the corpus offered a second route except
+  the chemotherapy fever rule, which offered none anywhere** — the escalation block
+  names the emergency department in its shunt tier 14 lines below a fever tier that
+  named nothing. The unsourced clause and the missing branch are one hole: *"call your
+  team at any hour"* assumes the reader's team answers, and because nobody could source
+  it nobody wrote the branch for the reader at 2am whose team does not (§12.12). A
+  fallback is now on all three surfaces, gated on *"if you cannot reach anybody"* rather
+  than offered as an alternative, plus CDC's concrete ask — tell the person checking you
+  in — which the corpus said nowhere.
+  **Two more untraced claims found in the same section:** the *"number to call after
+  hours"* (same CDC page sources it) and the alert card's *"it changes how quickly you
+  are seen"*, a causal promise traceable to nothing, retired. **"over 100.4" became
+  "100.4 or higher"** on all three mentions — CDC and ACS both say "or higher", and the
+  old wording told a reader at exactly 100.4 that the rule did not apply.
+  **The item committed its own defect class twice and `/review` caught both:** draft one
+  quoted CDC verbatim and an existing ban list refused it; draft two cleared the ban with
+  *"the morning is too late"*, a prognostic claim no source makes, **attributed in-text
+  to CDC**. Shipped wording is CDC's instruction, not a prediction. Both rejected drafts
+  are pinned as forbidden. A fallback guard was also satisfied by the wrong paragraph
+  (the shunt tier's identical words) and then by the reversal of the thing it checked;
+  it pins the whole instruction now.
+  **24/24 break mutations red, no survivors** (both line endings; three of them survived
+  earlier versions of the guards). **2,930/2,930; ContentCheck 345/0;** chemotherapy
+  holds at grade 5.5. **Raised and not taken:** *"it is treatable when it is caught
+  early"* is still untraced on both surfaces, and the corpus-wide
+  "emergency room" (36) vs "emergency department" (7) split — both for `/pm`.
+  **The original entry, kept:** WI-563 fetched every source in that page's front matter and
   in the escalation block and found **nothing supporting the phrase "at any
   hour"**. CRUK says "contact your advice line straight away", ACS neutropenia
   gives the threshold and "call your cancer care team or get medical help", NCI
