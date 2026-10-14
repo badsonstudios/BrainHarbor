@@ -10,7 +10,8 @@
 | | |
 |---|---|
 | **Phase** | M3 — Claude classification + plain-language summaries (M0–M2 complete & merged) |
-| **WI-564 — MERGED TO `develop` 2026-10-10 as `9f3476d` (PR [#211](https://github.com/badsonstudios/BrainHarbor/pull/211)), CI green on Linux/LF (run `38103891892`, build-test 5m14s). RELEASE PR OPENED — and it carries WI-435 and WI-416 to `main` with it, which is what WI-416's "it rides to main with the next item that changes a page" meant.** | **A reader DOES see this one**, unlike WI-435 and WI-416: **83 British idioms fixed on 29 published pages and 2 shared blocks**, including the chemotherapy fever rule and four seizure escalation lines. Ruling `docs/content-pipeline.md` **§12.40**; backlog checked off. `CuratedPage.BritishIdioms` is the promoted list — **a regex table, not a second substring array**, because half the entries are correct English elsewhere (`feeling sick(?! to your stomach)` was live and correct on two shipped pages, and a plain substring ban — which all six per-page copies are — fails both). `BritishIdiomSweepTests` sweeps it over `EverythingAReaderMeets`, the headline plus the **COMPOSED** body, for all 55 pages plus the glossary: that is **WI-537's switch**, and it is why `blocks/mechanism.md`'s "feeling sick" could never turn one of the thirty per-page arrays red. **The item's open question answered itself** — the corpus already said `right away` 38 times against 9 `straight away`, so `BritishForms`' rejection of it ("banning it would fail a shipped page") was the wrong test: §12.8 asks whether a *correct* sentence contains the phrase, not whether an unfixed one does. **Three shared safety claims were found that dialect drift had hidden**, including the chemo fever rule in two wordings on two pages. **`/review` found a live miss on the page that matters most**: `\bcome round\b` is not inflected, so `/seizures/what-to-do` still said *"Coming round takes a while"* in the section a caregiver reads while the person is unconscious — and the entry's count had been taken with the same narrow pattern, so the measurement and the gap had one cause. Four entries would have failed correct US English and were narrowed or rejected (`advice line` is standard US health-plan vocabulary and went to the rejected list). **PROOF: 136 of 136 break mutations caught** (17 patterns × 4 carriers × both line endings, carriers chosen to include two pages with no idiom array and a glossary entry no page composes); **2,929/2,929; ContentCheck 345/0**; `/treatments/chemotherapy` 5.4 → 5.5 and every curated page still under 6.0 (worst unchanged at 5.8). |
+| **WI-565 — MERGED TO `develop` 2026-10-14 as `5bd99c1` (PR [#213](https://github.com/badsonstudios/BrainHarbor/pull/213)), CI green on Linux/LF (run `38638023014`, build-test 4m05s). RELEASE PR WANTED — a reader sees it.** | **SOURCED, not retired.** Ruling §12.41. CDC's *"Information for Patients Who Are Getting Chemotherapy"* says the clause almost word for word — *"Call your doctor right away, even if this happens in the middle of the night."* / *"This is considered an emergency. Don't wait until morning."* — and carries **the same threshold the page already published**. Cited on the page AND on `blocks/escalation.md` (§12.31). **THE BRIEF UNDERCOUNTED IT:** three times on that page, 12 reader-facing places across 9 files, the block twice. **AND THE REAL DEFECT WAS NOT THE CITATION:** every "at any hour" in the corpus offered a second route **except the chemotherapy fever rule, which offered none anywhere** — the block names the emergency department in its shunt tier 14 lines below a fever tier that named nothing. The unsourced clause and the missing branch are one hole: *"call your team at any hour"* assumes the team answers, and because nobody could source it nobody wrote the branch for the reader at 2am whose team does not (§12.12). Fallback now on all three surfaces, gated on *"if you cannot reach anybody"*, plus CDC's concrete ask (tell the person checking you in) which the corpus said nowhere. **TWO MORE UNTRACED CLAIMS in the same section:** the *"number to call after hours"* (same CDC page sources it) and the alert card's *"it changes how quickly you are seen"*, a causal promise traceable to nothing — retired. **`over 100.4` → `100.4 or higher`** on all three mentions: CDC and ACS both say "or higher", and the old wording told a reader at exactly 100.4 that the rule did not apply. **THE ITEM COMMITTED ITS OWN DEFECT CLASS TWICE and `/review` caught both** — draft one quoted CDC verbatim and an existing ban list refused it; draft two cleared the ban with *"the morning is too late"*, a prognostic claim no source makes, **attributed in-text to CDC**. Both rejected drafts pinned as forbidden. A fallback guard was satisfied by the wrong paragraph (the shunt tier's identical words) and its first fix was satisfied by the reversal of the thing it checked — **a negation cannot be excluded by adding more of the thing being negated**; it pins the whole instruction now. **PROOF: 24 of 24 break mutations red, no survivors and no no-ops**, both line endings, three of them having survived earlier guard versions. **2,930/2,930; ContentCheck 345/0;** chemotherapy holds at grade 5.5. Source checksums moved exactly as the arithmetic predicts (block 711 → 761 = +2 × 25; own 691 → 693; union 1,402 → 1,454). |
+| **WI-564 — MERGED TO `develop` 2026-10-10 as `9f3476d` (PR [#211](https://github.com/badsonstudios/BrainHarbor/pull/211)), CI green on Linux/LF (run `38103891892`, build-test 5m14s). **DEPLOYED 2026-10-10** via release PR [#212](https://github.com/badsonstudios/BrainHarbor/pull/212) (merge `3468cf0`), CI run `38104560138` build-test + deploy both green. **It carried WI-435 and WI-416 to `main` with it**, which is what WI-416's "it rides to main with the next item that changes a page" meant. **Smoke-checked LIVE on brainharbor.org:** `/seizures/what-to-do`, `/treatments/chemotherapy`, `/tumors/glioma` and `/treatments/steroids` all 200 with ZERO British idioms in the served HTML and the US forms present (12 on the chemotherapy page alone).** | **A reader DOES see this one**, unlike WI-435 and WI-416: **83 British idioms fixed on 29 published pages and 2 shared blocks**, including the chemotherapy fever rule and four seizure escalation lines. Ruling `docs/content-pipeline.md` **§12.40**; backlog checked off. `CuratedPage.BritishIdioms` is the promoted list — **a regex table, not a second substring array**, because half the entries are correct English elsewhere (`feeling sick(?! to your stomach)` was live and correct on two shipped pages, and a plain substring ban — which all six per-page copies are — fails both). `BritishIdiomSweepTests` sweeps it over `EverythingAReaderMeets`, the headline plus the **COMPOSED** body, for all 55 pages plus the glossary: that is **WI-537's switch**, and it is why `blocks/mechanism.md`'s "feeling sick" could never turn one of the thirty per-page arrays red. **The item's open question answered itself** — the corpus already said `right away` 38 times against 9 `straight away`, so `BritishForms`' rejection of it ("banning it would fail a shipped page") was the wrong test: §12.8 asks whether a *correct* sentence contains the phrase, not whether an unfixed one does. **Three shared safety claims were found that dialect drift had hidden**, including the chemo fever rule in two wordings on two pages. **`/review` found a live miss on the page that matters most**: `\bcome round\b` is not inflected, so `/seizures/what-to-do` still said *"Coming round takes a while"* in the section a caregiver reads while the person is unconscious — and the entry's count had been taken with the same narrow pattern, so the measurement and the gap had one cause. Four entries would have failed correct US English and were narrowed or rejected (`advice line` is standard US health-plan vocabulary and went to the rejected list). **PROOF: 136 of 136 break mutations caught** (17 patterns × 4 carriers × both line endings, carriers chosen to include two pages with no idiom array and a glossary entry no page composes); **2,929/2,929; ContentCheck 345/0**; `/treatments/chemotherapy` 5.4 → 5.5 and every curated page still under 6.0 (worst unchanged at 5.8). |
 | **WI-566 — MERGED TO `develop` (2026-10-10), NOT DEPLOYED** | **PR [#208](https://github.com/badsonstudios/BrainHarbor/pull/208) -> `develop`, squashed as `ffd72ee`. NO RELEASE PR, ON PURPOSE — the WI-562 precedent: this item touches ZERO production files (`git diff --stat develop..HEAD -- src/ tools/` is empty), so a reader sees nothing change and there is nothing to deploy or smoke.** CI green on **Linux/LF** (run `38066319427`, build-test 3m32s), which is the cross-check that matters for a change keyed on `StartsWith("---")` and `IndexOf("
 ---")` in a repo whose working trees are CRLF and whose CI is LF. | **FILED AS SIX CALL SITES, SURFACED FORTY-FIVE — and that is the argument for the throw, not a surprise.** `CuratedPage.Body` was one expression, `page[(page.IndexOf("\n---", 3) + 4)..]`; handed a SECTION or an already-stripped body it found no delimiter, turned -1 into 3, and returned **the text with its first three characters missing**, silently. Branch `feature/wi-566-readertext-refuses-a-fragment`, ruling `docs/content-pipeline.md` §12.37. **The fix is on the HELPER and the sites are consequences** — the rule was already written down in `TestsLibraryPagesTests` and §12.8 and was re-committed past six times, which points at a helper that takes a `string` and cannot tell a page from a section, not at anyone's care. **TWO CONDITIONS, and the second is not symmetry:** `Body` demands the string OPEN with `---` as well as close, because a closing-only check still slices a fragment at a markdown horizontal rule — the same silent wrong answer with different characters. **FIXING ONE HALF OPENED THE OTHER:** `ReaderTextOfBody` is now the escape hatch every corrected site reaches for, and handed a whole page it returned the YAML as prose, so it refuses the converse — a pair where one half throws and the other silently scans metadata has moved the defect, not fixed it. **THE KEY DISCRIMINATOR: truncation can only make a NEGATIVE assertion pass.** Removing characters removes matches, so an `Assert.Matches` on truncated text was never falsely green; a `DoesNotMatch` whose forbidden phrase sat in the three missing characters was INVISIBLE. **Four of the six named sites are negative assertions and all four were live holes** — the harness plants `Grade IV.` / `NOS means …` as the first characters of `/tumors/astrocytoma` and `/tumors/high-grade-glioma` and runs each twice: RED at HEAD, **GREEN with the call site and the helper reverted.** A red alone proves a guard works; the pair proves the hole was real. The other two are positive assertions, blind only at the start, and are proved still to bite. **A SHIPPED GUARD WAS READING FRONT MATTER AS THE PAGE'S OWN WORDS and only the converse refusal could see it:** `FigureWordsTests` passed the whole composed page to `ReaderTextOfBody`, so a region label counted as "said in the page's own words" when its only home was a `description`, a `tags` entry or **a cited source's TITLE** — and `/tumors/chordoma`'s front matter carries "floor" inside a quoted source about *pelvic floor therapy*. **Measured, not assumed: no label actually depended on it, so the guard was over-permissive rather than wrong.** **TWO SITES HAD PASTED A FAKE EMPTY FRONT MATTER** (`ReaderText("---\n---\n" + fragment)`) in front of a fragment, with a comment explaining the trick — when a caller builds a fake page to get past a helper, the helper is the thing to change. **AND THIS ITEM'S OWN NEW TEST WAS FOOLED BY THE DEFECT IT WAS WRITTEN FOR:** the corpus invariant first asked only that the removed prefix "ends with `---`", and `page[3..]` removes exactly `---`; mutation A4 put the defect back on whole pages and it stayed green. It demands a newline too now. **A suffix check cannot see this defect either — `page[3..]` IS a suffix.** `/review` then found the floor was one total of 55 over a 168-file sweep, met by the pages alone, so a renamed `Content/blocks` would have left it green having read no block: **a floor PER ROOT now** (55 pages / 8 blocks / 100 glossary), which is §12.36's expected-set rule in another coat. **`/review` found five should-fixes and all five are taken**, including a doc comment that overclaimed the two conditions: a fragment that opens AND closes with a horizontal rule is indistinguishable from a page by any string-taking helper, so that residue is **pinned by a test** rather than argued away, and a third condition (sniffing for a YAML key) was dropped because prose beginning "Note: …" satisfies it too. **PROOF: 21 of 21 mutations as wanted, no survivors; 2,860 of 2,860 tests including the Playwright E2E; ContentCheck 345/0.** Test-only change — `CuratedPage` is internal to the test assembly, so the new `FormatException` cannot reach `ContentCheck`, `GetPage` or `SearchPages`, which is §12.36's hazard class and why this item is a different kind. |
 | **WI-583 — SHIPPED, DEPLOYED AND LIVE (2026-10-10)** | **WI-583 IS CLOSED** — PR [#206](https://github.com/badsonstudios/BrainHarbor/pull/206) -> `develop` squashed as `d933de9`, release PR [#207](https://github.com/badsonstudios/BrainHarbor/pull/207) -> `main`, deploy run `38054175467`, build-test success -> **deploy success, FIRST ATTEMPT**. **THE SMOKE IS THE CONVERSE OF EVERY ONE BEFORE IT, AND IT CAME BACK CLEAN: 78 URLs compared, 0 changed.** This item ships no reader-facing words, so there is no new sentence to look for and a needle that was already present cannot discriminate — **the whole corpus is the control.** All 55 curated pages, 8 shell/app pages and the 15 location figures were captured BY BYTE COUNT from production before the merge and compared after it; a single changed number would have been a finding, because an invariant meant to be invisible to a reader and is not has edited a medical page by accident. **The pre-deploy run was NOT required to fail, which is the one place this departs from §12.28** — there is nothing it could fail on, because the capture IS the expectation. What stands in for that check is LIVENESS: the capture aborts on a corpus smaller than 55 pages or any URL not serving 200, so a comparison between two broken captures cannot come out clean. CI also went green on **Linux/LF** (run `38053673489`), which is the cross-check that matters for the line-ending half — the defect it fixes is INVISIBLE there. **FILED AS THREE KEYS, SHIPPED NINE — and the scope was the wrong NOUN, which `/review` caught.** A YAML key with nothing under it (`sources:` then the closing `---`) makes YamlDotNet assign **null over a `List<>` initializer**, and that is not a worse error message: it is a different FAILURE MODE in every place that catches a narrower exception than the one it now gets. On a page that is three places and three exception types (ContentCheck catches only `FormatException` → **the CI gate crashes instead of failing the page by name**; `GetPage` catches only `IOException` → **a 500 on a medical page**; `SearchPages` catches only `FormatException` → **site search down for all 55 pages over one key on one of them**). **THE SITE HAS NINE YAML LIST PROPERTIES ACROSS FIVE TYPES AND THE ITEM NAMED THREE.** Two of the six it missed are worse than anything it was filed about: **`GlossaryFrontMatter.Also` is an `ArgumentNullException` inside the tooltip matcher during the parse of EVERY page** — one half-typed key in a file no reader opens directly, 55 pages of 500s — and **`TumorType.Also` / `TaxonomyFile.TumorTypes` are walked in `TaxonomyStore`'s CONSTRUCTOR, so a half-typed key in `taxonomy.yml` stopped the site BOOTING.** A guard scoped to the type that crashed repeats WI-561's mistake exactly one layer up, so the durable guard reads the **assembly** (`EveryYamlListPropertyOnEverySchemaRefusesNull`, an exact expected set of nine so a renamed `[YamlMember]` cannot empty the walk). **COALESCED ON WRITE, NOT ON READ** — WI-561's `??=` getter was copied eight times before `/review` found two things wrong with the shape: a getter that assigns mutates an object the page cache shares across requests, and a nullable backing field breaks the value-equality of a `record` schema. **TWO OF THE NINE HAVE NO FAILURE MODE AND ARE FIXED ANYWAY** (their single call site coalesces downstream — a property of the call site, not the schema), and **`tags` has no consumer anywhere**: measured, not assumed — reverting it reddens **3** tests, `sources` **15**, `disclaimers` **13** — so its guard is a tripwire, a floor and not a fence (widened once, because the mutation that plants a consumer wrote the LOCAL `frontMatter.Tags` and walked through a scan matching `FrontMatter.Tags`). **`/review` ALSO GOT ONE WRONG and that is recorded too**: it reported a dangling glossary `sources:` as a 500 on the whole `/glossary` index; `GlossaryTerm` declares `Sources ?? []` and the symptom is not reproducible. **THE OTHER HALF: A RED ON `develop` THAT NOBODY PUT THERE.** WI-572's own anti-drift guard was failing — `BrainRegionFamily.Derive` re-expands LF to CRLF over banner text from raw string literals that `core.autocrlf=true` checks out as CRLF, giving nine `\r\r\n` per file that `Lf()` cannot normalise. **Green when WI-572 shipped and red at the first checkout after it, with nobody touching it** (the regenerator had just written the files as LF; git stores LF and checks out CRLF), **and it cannot fail on CI**, where the master is LF and the branch never runs. The rule: *a guard whose green depends on the line endings a working tree happens to have has not been proven, it has been sampled.* The new guard found a second instance immediately — the LF branch returned the text untouched. **PROOF: 15 of 15 break mutations RED, NO survivors; 2,850/2,850 tests including the Playwright E2E; ContentCheck 345/0; the whole suite green on a fully LF corpus AND a fully CRLF corpus.** **THREE INSTRUMENT CORRECTIONS, all the same error — an instrument satisfied by something other than the defect it names:** (1) the harness's first version crippled the getter (`get => _tags!;`), which is null when the key is ABSENT too, so it broke all 55 pages and never exercised the dangling case — nine reds that meant nothing, now restorations that print WHICH tests went red; (2) the lone-CR guard first corrupted the master's FIRST indented line, which is inside the banner comment `Derive` replaces wholesale, so the mutation stayed green; (3) `/review`'s argument for that branch reasoned from `\r\r\n`, which the CRLF path already collapses in two sequential passes — the uncovered input is a LONE CR. Ruling: `docs/content-pipeline.md` **§12.36**. |
@@ -153,7 +154,13 @@ adding it" is the same argument one level up.
    `feeling sick` in `blocks/mechanism.md` below WI-563's blocker because the
    coordination there carries the unambiguous US term beside it. Deferred four
    times already — four deferrals is a decision.
-4. **WI-565 — the unsourced "at any hour" clause.** Not a guard; a live content
+4. ~~**WI-565 — the unsourced "at any hour" clause.**~~ **DONE 2026-10-14, ruling §12.41 —
+   see the table above. SOURCED, not retired: CDC says it almost word for word. THE NEXT
+   ITEM IS WI-556 (X16 Fertility and treatment), the first of Batch 2.** The entry's
+   premise was wrong twice — 3 times on that page, 12 reader-facing places across 9
+   files — and **the real defect was that the fever rule was the only "at any hour" in
+   the corpus with no emergency-department fallback**, in any of its six places. Not a
+   guard; a live content
    defect. `/treatments/chemotherapy` publishes it **twice** on its most
    safety-critical sentence and **no cited source says it**. Do not simply delete
    it (WI-511: deleting a bad citation does not delete the claim) — find a
@@ -250,6 +257,126 @@ buried inside a finished item's table cell.
 **Feed card imagery (done 2026-08-01, on `main`).** Feed cards show a content-matched **photo backdrop** (faded ~20%) with the item's **readiness score as a dial** floating on top; feed is **2-up**. Images are a small human-vetted Unsplash pool in `wwwroot/img/cards/` (grouped brain/genetics/lab/data/abstract); `CardImages` picks by matching the post's words + stage to a theme — **no AI image generation**. Raw originals git-ignored; see `images/image-tags.yml` + `wwwroot/img/cards/IMAGE-CREDITS.md`. Also fixed a real **Windows pipeline bug** (claude .cmd shim needs cmd.exe) and **guardrail false-positives** (cure negation now sentence-scoped; prompt v3 forbids computed numbers) — found running the pipeline live locally.
 
 **Local run:** the whole system runs on the PC (no Azure needed) — see `docs/run-local.md`. Dev DB holds demo items from live pipeline runs. The two `FeedTests` that used to fail locally against that data (UndatedItemsSortLastNotFirst, EarlyStageAppearsOnlyWhenTheReaderAsksForIt) were fixed in WI-402: they now page until they find their own rows instead of assuming an empty table, so the suite is green on a dirty DB and on a fresh one. `A11ySmokeTests` intermittently failed to start its Kestrel host ("The server has not been started"). WI-403 serialized `KestrelWebApplicationFactory.EnsureServer` (CreateClient is not thread-safe) and wrapped the real cause in a message that names it, so a recurrence is diagnosable instead of mute. Not proven fixed — it was never reproducible on demand.
+
+### WI-565 scouting note (2026-10-12) — SPENT. The item SHIPPED 2026-10-14; ruling §12.41
+
+**Kept for the record, and two of its numbers were wrong.** The plan below said *13
+reader-facing places across 9 files*; it is **12** — `start.md:116` carries "day or
+night" and not "at any hour", and the 988 line is not on that page (`/review`). Every
+other line reference in the table checked out exactly. Its step 2 said *"the fallback in
+all three places on the owner"*; **two** shipped, and the third (the caregiver right-away
+LIST) was judged noise because the bold lead-in two paragraphs above it already carries
+one — see §12.41's carried-forward.
+
+**It was written because the tooling was gone.** Every `Bash` call that session was
+declined by switchboard with nobody available to review it, so `dotnet test`, ContentCheck
+and git were all unavailable and no content was edited — this is safety copy on the most
+time-critical sentence on the site and not something to change blind. (That outage has a
+root cause now: `badsonstudios/switchboard.ai#1277`. The window had been shoved off-screen,
+and switchboard's permission-liveness gate tests whether a window EXISTS rather than
+whether it is reachable, so holds waited 300 s for a human who could not see them and were
+then denied.) The research below is what the next session started from.
+
+**THE ENTRY'S PREMISE IS WRONG TWICE, AND THE SECOND ERROR IS THE ITEM.** It says
+*"the page publishes it twice."* `/treatments/chemotherapy` publishes it **three** times
+(the fever rule, the caregiver fever line, and the caregiver right-away list), and
+`at any hour` is live in **13 reader-facing places across 9 files** — including
+**`blocks/escalation.md` twice**, which composes onto every hub, and
+`blocks/spinal-cord.md`. So it was never one page's clause. §12.8 again: run the rule
+over the whole corpus before touching it.
+
+#### THE ANSWER IS "SOURCE IT", NOT "RETIRE IT" — and the source is CDC
+
+WI-563 was right that nothing in the page's own front matter supports it. Re-checked
+both cited sources verbatim this session:
+
+- **ACS neutropenia:** *"Call your cancer care team or get medical help if you have: A
+  temperature over 100.4 F …"* — **no timing qualifier at all.** Note the disjunction
+  *or get medical help*; that is the fallback the page does not carry.
+- **NCI infection:** *"Call your health care team if you have signs of an infection"*
+  plus *"Infections during cancer treatment can be life threatening and require urgent
+  medical attention."* — again no timing.
+
+**CDC, "Information for Patients Who Are Getting Chemotherapy", says it almost word for
+word** (`https://www.cdc.gov/cancer-preventing-infections/patients/index.html`,
+fetched 2026-10-12). Verbatim:
+
+> *"Call your doctor right away if you have a temperature of 100.4ºF (38ºC) or higher."*
+> *"Call your doctor right away, even if this happens in the middle of the night."*
+> *"This is considered an emergency. Don't wait until morning."*
+
+That is a **US federal patient-level source**, it carries **the same threshold the page
+already publishes**, and it supports the exact clause WI-563 could not trace. Its
+companion page, **"Watch Out for Fever"**
+(`https://www.cdc.gov/cancer-preventing-infections/patients/fever.html`), adds two more
+sentences that source things the page says or ought to:
+
+> *"If you get a fever during your chemotherapy treatment, it's a medical emergency."*
+> *"Always keep your doctor's phone number nearby. Make sure you know which number to
+> call when their office is open and closed."*
+> *"If you go to the emergency room, tell the person checking you in that you are a
+> cancer patient undergoing chemotherapy. If you have a fever, you might have an
+> infection. This is a life-threatening condition, and you should be seen quickly."*
+
+The second sources the page's existing *"the number to call after hours, not the clinic's
+daytime number"*, **which traced to nothing either** and nobody had noticed.
+
+#### THE REAL DEFECT, which the entry does not name: the fever rule is the ONE "at any hour" with no fallback
+
+Checked all 13 live instances against their own pages' sources. **Every one carries an
+emergency-department fallback — except the chemotherapy fever rule, which carries it in
+none of its six places:**
+
+| where | claim | fallback | sourced |
+|---|---|---|---|
+| `blocks/escalation.md:86` | chemo fever | **no** | **no** |
+| `chemotherapy.md:288 / :432 / :465` | chemo fever (owner) | **no** | **no** |
+| `steroids.md:487`, `cns-lymphoma.md:876` | chemo fever (route to owner) | **no** | via owner |
+| `blocks/escalation.md:98`, `shunts.md:332` | shunt | yes | NINDS, Hydroassoc |
+| `blocks/spinal-cord.md:50` | cord compression | yes | CRUK |
+| `craniotomy.md:568` | post-op fever | yes | UMass |
+| `craniopharyngioma.md:436` | blocked drain | yes (+ a 911 tier) | own |
+| `start.md:116`, `anti-seizure-medicines.md:400` | 988 crisis line | n/a | 988 *is* 24/7 |
+
+**`blocks/escalation.md` is internally inconsistent about it**: its shunt tier, twelve
+lines below the fever tier, says *"call your team, or go to the emergency department"*,
+and its fever tier — the more time-critical of the two — says only *"calling your team
+right away, at any hour"*.
+
+**The unsourced-ness and the missing fallback are one hole seen from two sides.**
+*"Call your team at any hour"* is an assumption about the reader's health system, and
+because nobody could source it, nobody wrote the branch for the reader at 2am whose team
+does not answer. That is §12.12's dangerous direction exactly: *someone will be there* is
+the over-reassuring reading.
+
+#### What to do, in order
+
+1. **Cite both CDC pages** in `/treatments/chemotherapy` front matter and in
+   `blocks/escalation.md` front matter (its fever conditional is the block's own claim,
+   §12.31), with the verbatim quotes above in comments per §12.14.
+2. **Add the fallback to the fever rule in all three places on the owner, and to the
+   block's fever tier**, in the shape the shunt tier two paragraphs down already uses.
+   It is purely additive — it removes nothing and weakens nothing (§12.12).
+3. **Carry CDC's emergency-room sentence**, which is a concrete thing a reader can do
+   that the corpus says nowhere: tell the person checking you in that you are on
+   chemotherapy, because it changes how fast you are seen. Same class as WI-552's
+   atraumatic-needle note.
+4. **KEEP `at any hour`.** Do not retire it and do not reword it weaker. It is now
+   sourced on the fever rule and was already sourced everywhere else.
+5. `steroids.md` and `cns-lymphoma.md` **route** to the owner and should keep routing
+   (§12.11) — but their target section will now carry the fallback, which is the point.
+6. **Tests:** WI-563's cross-page guard already reads the sibling's `{#fever-rule}`
+   section, so that is where to pin the fallback and the citation. A break mutation that
+   deletes the fallback from the block but not the page (and vice versa) is the one that
+   matters, because drift between those two is what WI-563 pinned them together to stop.
+
+#### One thing NOT resolved
+
+Whether the **threshold** sentence should also attribute CDC in-text. The page currently
+publishes 100.4 °F unattributed and says teams differ; CDC gives the same number, so
+in-text attribution is now possible and §12.10 may prefer it. Not decided — it is a
+wording call, and it is the kind of thing `/review` should see rather than a scouting
+note settle.
 
 ### WI-535 scouting note (2026-09-15, partial, corpus only; no sources fetched yet) — READ BEFORE DRAFTING
 
@@ -568,6 +695,24 @@ with WI-306. Scale is documented in `docs/content-pipeline.md` §9.
 
 ## Log (newest first)
 
+- **2026-10-14** — **WI-565 done: the clause is SOURCED, not retired, and the real defect
+  was the branch nobody wrote.** Ruling §12.41. CDC's patient chemotherapy page says
+  *"Call your doctor right away, even if this happens in the middle of the night. This is
+  considered an emergency. Don't wait until morning."* — a US federal source carrying the
+  same threshold the page already published. **The brief said "twice on one page"; it was
+  three times, and 12 reader-facing places across 9 files.** The finding the brief missed:
+  **every "at any hour" in the corpus named a second route except the chemotherapy fever
+  rule**, which named none in any of its six places — and the unsourced clause and the
+  missing branch are one hole, because *"call your team at any hour"* assumes the team
+  answers and nobody wrote the 2am branch for when they do not. Two further untraced
+  claims found in the same section and dealt with; `over 100.4` became `100.4 or higher`
+  because a reader at exactly 100.4 was being told the rule did not apply. **The item
+  committed its own defect class twice** — quoting CDC verbatim tripped an existing ban
+  list, and the reword that cleared it was a prognostic claim attributed in-text to CDC.
+  `/review` caught both, plus a guard satisfied by the wrong paragraph and then by the
+  reversal of itself. 24/24 break mutations; 2,930/2,930; ContentCheck 345/0.
+
+- **2026-10-10** — **WI-564 DEPLOYED.** Release PR #212 (merge `3468cf0`) took it to `main` with WI-435 and WI-416; CI run `38104560138` green on build-test and deploy. **Smoke-checked live:** four pages 200 with zero British idioms in the served HTML and the US forms present. **`main` is now level with `develop`.**
 - **2026-10-10** — **WI-564 done: the British-idiom sweep, and a reader sees it.** Ruling
   §12.40. **Spelling is a substring and idiom is not**, which is why the promoted list is
   a regex table with per-entry precision rather than a second string array: a plain

@@ -35,6 +35,72 @@ sources:
   - url: https://www.cancer.gov/about-cancer/treatment/side-effects/infection
     title: "Infection and Neutropenia and Cancer Treatment - Side Effects - NCI"
     accessed: 2026-09-08
+  # WI-565: THE TIMING HALF OF THE FEVER CONDITIONAL, which the two sources
+  # above do not carry. Neither says anything about when in the day to call -
+  # ACS is "Call your cancer care team or get medical help", NCI is "Call your
+  # health care team if you have signs of an infection". So "at any hour, not
+  # waiting for the morning" was this block's own claim with nothing behind it,
+  # on every hub it composes onto. Cited HERE and not only on the sibling
+  # because a block's citations are the block's (§12.31).
+  - url: https://www.cdc.gov/cancer-preventing-infections/patients/index.html
+    title: "Information for Patients Who Are Getting Chemotherapy | Preventing Infections in Cancer Patients | CDC"
+    accessed: 2026-10-14
+    # Verbatim: "Call your doctor right away, even if this happens in the middle
+    # of the night." / "This is considered an emergency. Don't wait until
+    # morning." The THRESHOLD is deliberately still not published here -
+    # /treatments/chemotherapy owns the number and says teams differ.
+  - url: https://www.cdc.gov/cancer-preventing-infections/patients/fever.html
+    title: "Watch Out for Fever | Preventing Infections in Cancer Patients | CDC"
+    accessed: 2026-10-14
+    # For the fallback this tier was missing, and for the check-in instruction on
+    # the sibling. Under the heading "What should I do if I think I have an
+    # infection?" (recorded because the three quotes WI-565 uses are not in page
+    # order, and a later re-fetcher should not read that as a misattribution).
+    # Verbatim: "If you go to the emergency room, tell the person checking you in
+    # that you are a cancer patient undergoing chemotherapy. If you have a fever,
+    # you might have an infection. This is a life-threatening condition, and you
+    # should be seen quickly."
+    #
+    # THE FALLBACK IS THE REAL WI-565 DEFECT, not the citation. Every other
+    # "at any hour" in the corpus offered a second route - the shunt tier 14
+    # lines below says "call your team, or go to the emergency department", and so
+    # do blocks/spinal-cord.md, /treatments/craniotomy and /treatments/shunts. The
+    # chemotherapy fever rule, the most time-critical of them, offered none, on
+    # this block and in both places on the sibling. "Call your team at any
+    # hour" is an assumption about the reader's health system, and because
+    # nobody could source it, nobody wrote the branch for the reader at two in
+    # the morning whose team does not answer (§12.12: the over-reassuring
+    # direction is the more dangerous one).
+    #
+    # THE FALLBACK SAYS "emergency department", matching the shunt tier below it,
+    # and that is NOT the term the rest of the corpus reaches for. Measured at
+    # WI-565: "emergency room" 36 times in reader-facing body text against
+    # "emergency department" 7 - and those 7 ARE these fallback instructions, so
+    # the minority term is exactly the safety-instruction term. (Counting YAML
+    # comments too it is 68 against 14, which is the figure /review corrected:
+    # half the 14 are commentary ABOUT the instructions.) CDC uses "emergency
+    # room" in the sentence quoted above, and /start.md - the front door - uses
+    # it in the site's own 911 line.
+    #
+    # The term was changed to "emergency room" here and then CHANGED BACK, on
+    # purpose. The shunt instruction is a sourced safety line pinned byte-for-byte
+    # across THREE surfaces (this block, /treatments/shunts,
+    # /treatments/craniotomy) by ShuntsPageTests.Instruction, so aligning the
+    # term means editing a different safety rule inside an item about the
+    # chemotherapy fever clause - §12.21's blast-radius argument. One instruction
+    # in two wordings inside ONE block would be a §12.10 defect, so the new
+    # fallback matches its neighbour instead. The corpus-wide split is handed to
+    # /pm and recorded in §12.41.
+    #
+    # NOT CITED FOR THE SHUNT TIER'S VENUE. /review checked the claim that the
+    # Hydrocephalus Association says "emergency room" there and it is wrong in a
+    # way worth recording: HA attaches "go to the emergency room" to suspected
+    # INFECTION and gives suspected MALFUNCTION "seek immediate medical
+    # assistance" with no venue named (/tumors/atrt's front matter keeps the two
+    # apart deliberately). This block's shunt tier is the malfunction rule, and
+    # the source line 40 lines below quotes HA as "see your doctor or go to the
+    # emergency department". So the term argument above rests on CDC and on the
+    # corpus, not on HA.
   - url: https://www.cancerresearchuk.org/about-cancer/treatment/drugs/pcv
     title: "Procarbazine, lomustine and vincristine (PCV) | Cancer Information | Cancer Research UK"
     accessed: 2026-09-08
@@ -83,10 +149,12 @@ line.
 - A sudden change in your vision.
 
 **If you are having chemotherapy, a fever is its own rule.** It means calling
-your team right away, at any hour, not waiting for the morning. An infection
-during chemotherapy can get dangerous fast, and it is treatable when it is
-caught early. [The fever rule](/treatments/chemotherapy#fever-rule) explains
-why, and what number your team will give you.
+your team right away, at any hour, not waiting for the morning. If you cannot
+reach anybody, go to the emergency department and say you are having
+chemotherapy. An infection during chemotherapy can get dangerous fast, and it is
+treatable when it is caught early.
+[The fever rule](/treatments/chemotherapy#fever-rule) explains why, and what
+number your team will give you.
 
 **In the weeks after brain surgery, a fever is its own rule too**, especially
 with a stiff neck or a bad headache.

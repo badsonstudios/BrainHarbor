@@ -57,6 +57,38 @@ sources:
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12803824/
     title: "Pneumocystis jirovecii pneumonia prophylaxis in patients with glioma receiving concurrent chemoradiation: a systematic review and meta-analysis (2026)"
     accessed: 2026-09-04
+  # WI-565. THE TWO SOURCES FOR THE CLAUSE THIS PAGE PUBLISHED THREE TIMES WITH
+  # NOTHING BEHIND IT. WI-563 fetched every source above and found none of them
+  # saying anything about WHEN in the day to call: ACS neutropenia gives the
+  # threshold and "Call your cancer care team or get medical help", and NCI says
+  # "Call your health care team if you have signs of an infection" plus
+  # "Infections during cancer treatment can be life threatening and require
+  # urgent medical attention". Re-checked verbatim at WI-565 before rewriting
+  # anything, per §12.14; both still carry no timing qualifier at all.
+  #
+  # CDC does, almost word for word, and it is a US federal patient-level source
+  # carrying THE SAME THRESHOLD this page already publishes.
+  - url: https://www.cdc.gov/cancer-preventing-infections/patients/index.html
+    title: "Information for Patients Who Are Getting Chemotherapy | Preventing Infections in Cancer Patients | CDC"
+    accessed: 2026-10-14
+    # Verbatim, and the second and third sentences are the ones nothing in the
+    # corpus could trace: "Call your doctor right away if you have a temperature
+    # of 100.4ºF (38ºC) or higher." / "Call your doctor right away, even if this
+    # happens in the middle of the night." / "This is considered an emergency.
+    # Don't wait until morning." (CDC page dated Aug. 25, 2025.)
+  - url: https://www.cdc.gov/cancer-preventing-infections/patients/fever.html
+    title: "Watch Out for Fever | Preventing Infections in Cancer Patients | CDC"
+    accessed: 2026-10-14
+    # Verbatim: "If you get a fever during your chemotherapy treatment, it's a
+    # medical emergency." / "Always keep your doctor's phone number nearby. Make
+    # sure you know which number to call when their office is open and closed."
+    # - which is the source for this page's "the number to call after hours, not
+    # the clinic's daytime number", A SECOND CLAIM THAT TRACED TO NOTHING and
+    # that nobody had filed. And for the emergency-room fallback added by WI-565:
+    # "If you go to the emergency room, tell the person checking you in that you
+    # are a cancer patient undergoing chemotherapy. If you have a fever, you
+    # might have an infection. This is a life-threatening condition, and you
+    # should be seen quickly." (Page last reviewed November 14, 2024.)
 reviewed: 2026-09-04
 review_due: 2027-03-04
 disclaimers: [medical]
@@ -284,10 +316,18 @@ back up. The lowest point is called the nadir, and it is usually about seven to
 ten days after treatment. That is when the risk of a serious infection is
 highest, and it is why the timing of a temperature matters.
 
-**Here is the rule.** During chemotherapy, **a temperature over 100.4 °F
-(38 °C) means calling your team right away, at any hour.** Not in the
-morning. Not after seeing how you feel. An infection with low white cells can
-go from mild to dangerous quickly, and it is treatable when it is caught early.
+**Here is the rule.** During chemotherapy, **a temperature of 100.4 °F
+(38 °C) or higher means calling your team right away, at any hour.** Not in the
+morning. Not after seeing how you feel. The CDC puts it plainly: call right
+away even if it happens in the middle of the night, because this is an
+emergency, and it should not wait for morning. An infection with low white
+cells can go from mild to dangerous quickly, and it is treatable when it is
+caught early.
+
+**If you cannot reach anybody, go to the emergency department.** Say that you
+are having chemotherapy and that you have a temperature. The CDC asks you to
+tell the person checking you in, because a fever during chemotherapy needs to
+be seen quickly.
 
 Call right away for any of these too:
 
@@ -306,8 +346,8 @@ Call right away for any of these too:
 3. **A thermometer**, and the habit of using it rather than guessing.
 
 Some teams give you a card to carry that tells any doctor you are on
-chemotherapy. If yours does, keep it with you. It changes how quickly you are
-seen.
+chemotherapy. If yours does, keep it with you: it is the quickest way to say
+the thing above.
 
 **If you are not sure whether to call, call.** Nobody on that team minds a
 phone call about a temperature that turns out to be nothing.
@@ -428,11 +468,13 @@ Chemotherapy is mostly taken at home, which means most of what goes wrong goes
 wrong at home, in front of you. That is different from surgery and different
 from radiation.
 
-**Learn the fever rule as well as they do.** A temperature over 100.4 °F during
-chemotherapy is a call right away, at any hour. You may be the one who
+**Learn the fever rule as well as they do.** A temperature of 100.4 °F or higher
+during chemotherapy is a call right away, at any hour. You may be the one who
 notices they are hot, or shivering, or not making sense. Do not wait for
 morning, and do not wait to be sure. Have the after-hours number somewhere you
-can find it in the dark.
+can find it in the dark. **If nobody answers, take them to the emergency
+department** and say they are having chemotherapy. Call an ambulance if you
+cannot get them there safely.
 
 **Get a thermometer, and use it.** A hand on a forehead is a guess. This is
 the one bit of kit that changes what happens.
@@ -464,7 +506,7 @@ plan working the way it is designed to.
 
 **When to call the team right away, at any hour.** Not the next morning:
 
-- A temperature over 100.4 °F, or chills, shaking or drenching sweats.
+- A temperature of 100.4 °F or higher, or chills, shaking or drenching sweats.
 - An unusually low temperature.
 - Confusion, or thinking that has changed.
 - Dizziness, feeling faint, or falling.

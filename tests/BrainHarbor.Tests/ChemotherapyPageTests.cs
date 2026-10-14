@@ -138,6 +138,110 @@ public sealed class ChemotherapyPageContentTests
         Assert.True(unsure > list, "the 'if you are not sure, call' line is missing or misplaced");
     }
 
+    /// <summary>
+    /// WI-565: THE THREE CLAIMS IN THIS SECTION THAT TRACED TO NOTHING, and the
+    /// route out for a reader nobody answers.
+    ///
+    /// <para><b>The page published "at any hour" three times with no source behind
+    /// it.</b> WI-563 fetched every source in this page's front matter and found none
+    /// of them saying anything about WHEN in the day to call; re-checked verbatim at
+    /// WI-565 before anything was rewritten (§12.14) and both are still silent on
+    /// timing — ACS is <i>"Call your cancer care team or get medical help"</i>, NCI is
+    /// <i>"Call your health care team if you have signs of an infection"</i>.</para>
+    ///
+    /// <para><b>The page's "number to call after hours" was a SECOND unsourced claim
+    /// nobody had filed</b>, and the same CDC page carries it: <i>"Make sure you know
+    /// which number to call when their office is open and closed."</i></para>
+    ///
+    /// <para><b>And a THIRD, found by <c>/review</c> in this same section.</b> The alert-card
+    /// sentence ended <i>"It changes how quickly you are seen"</i> — a causal promise about
+    /// what the emergency department will do, and no cited source makes it (checked against
+    /// CDC's two pages, ACS neutropenia, CRUK PCV and the temozolomide source; none of them
+    /// mentions a card at all). The clause is retired: the card now points at the
+    /// instruction above it, which IS sourced, instead of promising an outcome. The first
+    /// draft of this item had made it worse by repeating the same eight-word clause in the
+    /// new fallback eighteen lines up.</para>
+    ///
+    /// <para><b>The one claim in this paragraph still untraced is "it is treatable when it
+    /// is caught early"</b>, which predates WI-565 on both this page and the block. No cited
+    /// source says early treatment changes the outcome. Recorded in §12.41 for <c>/pm</c>
+    /// rather than reworded here, because retiring it needs a source hunt and it is the
+    /// sentence that makes the urgency bearable.</para>
+    ///
+    /// <para>So this asserts the citation is present as well as the prose. A sourced
+    /// claim whose source has been deleted from the front matter is the §12.2 item 2
+    /// defect, and it is invisible to every prose guard in this file.</para>
+    /// </summary>
+    [Fact]
+    public void TheAtAnyHourClauseIsSourcedAndNamesARouteForAReaderNobodyAnswers()
+    {
+        var front = CuratedPage.FrontMatter(Page);
+        var section = CuratedPage.Flatten(Section(FeverHeading));
+
+        // THE CITATION, by URL. The title could be reworded; the URL is the claim's
+        // address. Both pages, because they source different sentences.
+        Assert.Contains("cdc.gov/cancer-preventing-infections/patients/index.html",
+            front, StringComparison.Ordinal);
+        Assert.Contains("cdc.gov/cancer-preventing-infections/patients/fever.html",
+            front, StringComparison.Ordinal);
+
+        // THE ATTRIBUTION IS IN THE PROSE, not only in the YAML. §12.10: a claim a
+        // reader is being asked to act on at two in the morning carries more weight
+        // with a name on it, and this is the one clause on the page that a reader
+        // might otherwise read as the site's own opinion.
+        Assert.Matches(new Regex(
+            @"CDC puts it plainly.{0,160}middle of the night", RegexOptions.IgnoreCase), section);
+
+        // "it should not wait for morning", NOT CDC's own "Don't wait until morning" — and the
+        // reason is worth keeping, because TheFeverRuleNeverTellsAnyoneToWaitAndSee
+        // caught the first draft writing it the other way.
+        //
+        // That guard bans `wait until (the )?morning` as a bare substring, and its own
+        // comment records this exact trap: "a ban list blind to its own negation, which
+        // is the §12.8 lesson that has now cost WI-509, WI-510, WI-511 and this item one
+        // candidate each." WI-565 made it a fifth time, quoting CDC verbatim.
+        //
+        // The guard was left STRICT and the prose was changed, which is the opposite of
+        // §12.8's usual answer, deliberately: this is the under-triage guard on the most
+        // time-critical section in the corpus, and widening it to recognise a negation
+        // buys a correct sentence at the cost of a false pass on a hedge.
+        //
+        // AND THE SECOND DRAFT WAS WORSE THAN BOTH. It read "the morning is too late",
+        // which clears the ban list and reads well — and is a PROGNOSTIC CLAIM about what
+        // will have happened by morning that no cited source makes, attributed in-text to
+        // CDC. /review called it the item's own defect class committed inside the item:
+        // worse than an unattributed inference, because the reader is told CDC said it.
+        // "it should not wait for morning" is CDC's instruction, not a prediction, and it
+        // passes the ban list because that list bans `wait until morning` and not `wait
+        // for morning`. An honest positive rendering was available all along, which is
+        // the strongest argument FOR keeping the guard strict rather than against it.
+        Assert.Matches(new Regex(@"it should not wait for morning", RegexOptions.IgnoreCase), section);
+
+        // AND NO PROGNOSTIC RESTATEMENT CREEPS BACK. The rejected drafts, pinned so the
+        // next editor does not re-reach for them.
+        Assert.DoesNotMatch(new Regex(
+            @"the morning is too late|by morning it|too late by", RegexOptions.IgnoreCase), section);
+
+        // THE FALLBACK, AND ITS ORDER. It has to come AFTER the instruction to call,
+        // never instead of it — a reader who reads "go to the emergency department" first
+        // may drive themselves somewhere when a phone call would have sorted it.
+        var call = section.IndexOf("calling your team right away",
+            StringComparison.OrdinalIgnoreCase);
+        var fallback = section.IndexOf("If you cannot reach anybody",
+            StringComparison.OrdinalIgnoreCase);
+        Assert.True(call > 0, "the fever rule's call instruction has been reworded away");
+        Assert.True(fallback > call,
+            "the emergency-room fallback is missing, or it sits ahead of the instruction to "
+            + "call — which sends a reader out of the house when a phone call would do");
+
+        // AND THE CONCRETE THING CDC ASKS FOR, which no other page in the corpus says:
+        // telling the check-in desk you are on chemotherapy changes how fast you are
+        // seen. Same class as WI-552's atraumatic-needle note — a thing a reader can
+        // actually do, not a reassurance.
+        Assert.Matches(new Regex(
+            @"person checking you in", RegexOptions.IgnoreCase), section);
+    }
+
     [Fact]
     public void TheBloodCountSectionExplainsAllThreeCellLinesAndWhatEachMeans()
     {

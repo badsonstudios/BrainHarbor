@@ -12098,3 +12098,180 @@ definition, `rescue-medicine`, and this item changed no glossary file.)
   place with the entry promoted into `BritishIdioms` above it. The two lists are read
   together and the note records why the first answer was wrong, which is worth more than
   a clean list.
+
+### 12.41 A clause nobody could source, and the branch nobody wrote because of it (WI-565)
+
+`/treatments/chemotherapy` told the reader that a fever means calling the team **"right
+away, at any hour"**. WI-563 fetched every source in that page's front matter and in
+`blocks/escalation.md` and found **nothing** supporting it. The brief was *source it or
+retire it, and the block must match.*
+
+**It is sourced. CDC says it almost word for word.** "Information for Patients Who Are
+Getting Chemotherapy", under *What should I do if I think I have an infection?*:
+
+> *"Call your doctor right away if you have a temperature of 100.4ºF (38ºC) or higher."*
+> *"Call your doctor right away, even if this happens in the middle of the night."*
+> *"This is considered an emergency. Don't wait until morning."*
+
+A US federal patient-level source, carrying **the same threshold the page already
+published**. Re-checked verbatim before citing (§12.14) and re-checked again by `/review`
+against archived copies, because cdc.gov 403s every fetcher.
+
+**And the two sources the page already cited are silent on timing, which is the finding
+holding up.** ACS neutropenia is *"Call your cancer care team or get medical help if you
+have: A temperature over 100.4 F"* — no timing qualifier. NCI is *"Call your health care
+team if you have signs of an infection."* Both confirmed again this item.
+
+#### The brief undercounted it, and the real defect is not the citation
+
+The entry says *"the page publishes it twice."* It published it **three** times, and
+`at any hour` was live in **12 reader-facing places across 9 files** — including
+`blocks/escalation.md` twice, which composes onto 25 pages. §12.8 again: run the rule over
+the whole corpus before touching it.
+
+Checking all twelve against their own pages' sources produced the thing the brief does not
+name. **Every "at any hour" instruction in the corpus offered a second route — except the
+chemotherapy fever rule, which offered none, anywhere.**
+
+| where | fallback | sourced |
+|---|---|---|
+| `blocks/escalation.md` fever tier, `chemotherapy.md` ×3, `steroids.md`, `cns-lymphoma.md` | **none** | **none** |
+| `escalation.md` shunt tier, `shunts.md` | *"or go to the emergency department"* | NINDS, Hydrocephalus Association |
+| `blocks/spinal-cord.md` | same | CRUK |
+| `craniotomy.md` | same | UMass |
+| `craniopharyngioma.md` | same, plus a 911 tier | own |
+| `start.md`, `anti-seizure-medicines.md` | n/a — the 988 line, which **is** 24/7 | — |
+
+The escalation block was **internally inconsistent about it**: its shunt tier names the
+emergency department fourteen lines below a fever tier, the more time-critical of the two,
+that named nothing.
+
+**THE UNSOURCED CLAUSE AND THE MISSING BRANCH ARE ONE HOLE SEEN FROM TWO SIDES.** *"Call
+your team at any hour"* is an assumption about the reader's health system. Because nobody
+could source it, **nobody wrote the branch for the reader at two in the morning whose team
+does not answer** — §12.12's dangerous direction exactly, since *someone will be there* is
+the reassuring reading. The fallback is additive: it removes nothing, and it is gated on a
+precondition (*"If you cannot reach anybody"*) rather than offered as an alternative, so a
+reader scanning bold lead-ins meets the instruction to phone first.
+
+CDC supplies the fallback too, and with it **a concrete thing a reader can do that the
+corpus said nowhere**: tell the person checking you in that you are having chemotherapy.
+Same class as WI-552's atraumatic-needle note — an action, not a reassurance.
+
+#### A second unsourced claim in the same section, and a third found by `/review`
+
+- **"The number to call after hours, not the clinic's daytime number."** Nobody had filed
+  it. The same CDC page carries it: *"Make sure you know which number to call when their
+  office is open and closed."*
+- **The alert card ended *"It changes how quickly you are seen."*** A causal promise about
+  what the emergency department will do, traceable to nothing — checked against CDC ×2,
+  ACS neutropenia, CRUK PCV and the temozolomide source, none of which mentions a card at
+  all. The clause is retired; the card now points at the sourced instruction above it.
+  **The first draft of this item made it worse**, repeating the same eight-word causal
+  clause in the new fallback eighteen lines up.
+
+#### The item committed its own defect class, twice, and `/review` caught both
+
+**Draft one quoted CDC verbatim and an existing guard refused it.**
+`TheFeverRuleNeverTellsAnyoneToWaitAndSee` bans `wait until (the )?morning` as a bare
+substring, so CDC's own *"Don't wait until morning"* could not be published. That guard's
+comment already records the trap — *"a ban list blind to its own negation, which is the
+§12.8 lesson that has now cost WI-509, WI-510, WI-511 and this item one candidate each"* —
+and WI-565 made it a fifth.
+
+**Draft two cleared the ban and was worse.** It read *"this is an emergency and the morning
+is too late"* — which is a **prognostic claim** about what will have happened by morning
+that no source makes, **attributed in-text to CDC**. Worse than an unattributed inference,
+because the reader is told who said it. The same sentence also turned CDC's *"you should be
+seen quickly"* into *"it changes how quickly you are seen"*, a causal promise about the
+emergency department.
+
+**The shipped wording is CDC's instruction and not a prediction:** *"because this is an
+emergency, and it should not wait for morning"*, which passes the ban list because that
+list bans `wait until morning` and not `wait for morning`. **An honest positive rendering
+existed all along, and that is the argument FOR keeping the under-triage guard strict
+rather than against it** — §12.8's usual answer is to widen a rule that fails a correct
+page, and the answer here is the opposite, because widening this one buys a correct
+sentence at the cost of a false pass on a hedge, on the most time-critical section in the
+corpus. Both rejected drafts are now pinned as forbidden.
+
+#### A guard that was satisfied by the wrong paragraph
+
+The first fallback assertion ran `Contains("emergency department")` over the whole composed
+escalation section, and **a break mutation deleting the fever fallback outright survived
+it**: the shunt tier fourteen lines below says the same words, so a section-wide check
+cannot tell the two tiers apart. That is §12.10's own closing lesson — *a landing check
+must be scoped to the paragraph, not the section* — **and here it was caused by a decision
+in the same item.** Matching the new fallback's term to its neighbour is right for the
+reader and makes the two indistinguishable to a lexical guard.
+
+`/review` then found two more holes in the replacement. The paragraph regex ended
+`(?=In the weeks after brain surgery|\z)`, and **the `\z` re-opened the hole**: reword the
+next tier's lead-in and the lookahead misses, `\z` wins, the capture swallows the shunt
+tier, and the fallback can be deleted green again. And the check read a **venue, not a
+direction** — `emergency department` alone passes on *"There is no need to go to the
+emergency department"*. It now requires a verb, and terminates on the same substring the
+craniotomy assertion uses so the two cannot drift.
+
+#### One change made because CDC is now cited
+
+The page said *"a temperature **over** 100.4 °F"* in three places. CDC and ACS both say
+**"100.4ºF (38ºC) or higher"**, so a reader whose thermometer read exactly 100.4 was told,
+literally, that the rule did not apply — the under-triage direction, on the one number
+this site publishes. All three now say *"or higher"*. The old wording traced to ACS's
+*"over 100.4 F"*, so this is not a correction of an error; it is the safer of two sourced
+wordings, and it only became available when CDC entered the front matter.
+
+#### The term the fallback uses, and the split it exposed
+
+The fallback says **emergency department**, matching its neighbour. That is not the term
+the corpus reaches for: measured, **"emergency room" 36 times in reader-facing body text
+against "emergency department" 7** — and those 7 *are* these fallback instructions, so the
+minority term is precisely the safety-instruction term. CDC uses "emergency room" in the
+sentence cited here, and `/start.md` uses it in the site's own 911 line.
+
+**The term was changed to "emergency room" and then changed back.** The shunt instruction
+is a sourced safety line pinned byte-for-byte across three surfaces by
+`ShuntsPageTests.Instruction`, so aligning it means editing a different safety rule inside
+an item about the fever clause (§12.21). One instruction in two wordings inside one block
+would be a §12.10 defect, so the new fallback matches its neighbour and the corpus-wide
+split is handed on rather than swept. (The argument for "emergency room" also lost one of
+its three supports to `/review`: the Hydrocephalus Association attaches it to suspected
+**infection**, while the shunt tier is the **malfunction** rule, for which HA names no
+venue.)
+
+#### Proof
+
+**24 of 24 break mutations red, no survivors and no no-ops**, on both line endings — the fallback deleted
+from each side alone (the drift WI-563 pinned the pair for), each CDC citation removed, the
+attribution removed, the sourced prose reworded, the fallback moved ahead of the
+instruction, the threshold leaked into the block, **CDC's own banned negative form
+restored**, and `/review`'s two: the fallback reversed, and the next tier reworded to
+defeat the paragraph scoping. THREE of those twenty-four survived an earlier version of
+the guards, including one that survived the fix made for it, which is what the harness is
+for.
+
+**2,930 of 2,930 tests; ContentCheck 345/0.** `/treatments/chemotherapy` holds at grade
+**5.5** — the new sentences moved it by nothing. Source checksums moved exactly as the
+arithmetic predicts: the block is included by **25** pages, so block citations went 711 →
+**761** (+2 × 25) and own 691 → **693** (+2, declared once on the owner), union 1,402 →
+**1,454**, with no dedup because **the page that owns the rule does not include the block
+that routes to it**. `/review` recomputed all of it independently.
+
+**A reader sees this change**: a sourced attribution and a second route on the most
+time-critical sentence on the site, on `/treatments/chemotherapy` and on 25 hubs through
+the block.
+
+#### Carried forward
+
+- **"It is treatable when it is caught early"** is still untraced, on both the page and the
+  block, and predates this item. No cited source says early treatment changes the outcome.
+  Retiring it needs a source hunt and it is the sentence that makes the urgency bearable,
+  so it goes to `/pm` rather than being reworded here.
+- **The "emergency room" / "emergency department" split** — 36 against 7 in reader-facing
+  prose, with the 7 being every fallback instruction. One term for one instruction is a
+  corpus-wide call, not a side effect of this item.
+- **`/treatments/chemotherapy`'s caregiver right-away LIST** names no second route. Its
+  bold lead-in two paragraphs above does, so a bold-scanner meets one; a third copy in one
+  section was judged noise in the list read at two in the morning (§12.10). Recorded
+  because `/review` would have added it.
