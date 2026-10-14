@@ -208,29 +208,50 @@ public sealed class BlockSourceAttributionTests
     /// first and measured second; if a future item finds itself editing these to
     /// make a test green without a citation in the diff to account for the
     /// difference, the number is right and the code is wrong.</para>
+    ///
+    /// <para><b>WI-565 MOVED BOTH SIDES, and the arithmetic is the proof.</b> It cites
+    /// the same two CDC pages in two places: on <c>blocks/escalation.md</c> (the fever
+    /// conditional is the block's own claim, §12.31) and declared on
+    /// <c>/treatments/chemotherapy</c> (which owns the rule). The block is included by
+    /// <b>25</b> pages, so block went 711 → <b>761</b> (+2 × 25) and own went 691 →
+    /// <b>693</b> (+2, declared once). Union 1,402 → <b>1,454</b> = +50 +2, with no
+    /// dedup between the two halves because <b>/treatments/chemotherapy does not
+    /// include <c>[ESCALATION]</c></b> — it is the page the block routes TO. Had it
+    /// included the block, the URL-keyed merge would have collapsed the two and the
+    /// split, not just the totals, would have moved; that is exactly the asymmetry this
+    /// checksum exists to show.</para>
     /// </summary>
     [Fact]
     public void TheCorpusWideTotalsAreWhatWi574Measured()
     {
         var corpus = Corpus();
 
-        Assert.Equal(711, corpus.Sum(p => p.Rendered.BlockSources.Count));
-        Assert.Equal(691, corpus.Sum(p => p.Rendered.OwnSources.Count));
-        Assert.Equal(1402, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
+        Assert.Equal(761, corpus.Sum(p => p.Rendered.BlockSources.Count));
+        Assert.Equal(693, corpus.Sum(p => p.Rendered.OwnSources.Count));
+        Assert.Equal(1454, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
 
         // THE WORST PAGES, AND THERE ARE TWO OF THEM — pinned by name rather than
         // by MaxBy, which picks one of a tie arbitrarily and would have made this
-        // assertion depend on enumeration order. 32 of pediatric-brain-tumor's 76
-        // citations came from a block and read as its own.
+        // assertion depend on enumeration order. 34 of pediatric-brain-tumor's 78
+        // citations come from a block and read as its own.
+        //
+        // WI-565: THE THRESHOLD IS DERIVED NOW, NOT WRITTEN TWICE. It was a literal
+        // 32 in a `==` and again in a `>`, so this item's +2 on blocks/escalation.md
+        // moved the whole corpus past it and the `==` set silently became a DIFFERENT
+        // page (/tumors/diffuse-midline-glioma, which had been on 30). Both halves of
+        // the claim — "the max is 34" and "these two pages hold it" — now read the same
+        // computed max, so a shift reds on the value rather than quietly re-pointing
+        // the name list at whoever happens to land on the old number.
+        var worst = corpus.Max(p => p.Rendered.BlockSources.Count);
+        Assert.Equal(34, worst);
         Assert.Equal<IEnumerable<string>>(
             ["tumors/medulloblastoma", "tumors/pediatric-brain-tumor"],
-            [.. corpus.Where(p => p.Rendered.BlockSources.Count == 32)
+            [.. corpus.Where(p => p.Rendered.BlockSources.Count == worst)
                 .Select(p => p.Slug).OrderBy(s => s, StringComparer.Ordinal)]);
-        Assert.Empty(corpus.Where(p => p.Rendered.BlockSources.Count > 32));
 
         var pediatric = Assert.Single(corpus.Where(p => p.Slug == "tumors/pediatric-brain-tumor"));
         Assert.Equal(44, pediatric.Rendered.OwnSources.Count);
-        Assert.Equal(76, pediatric.Rendered.FrontMatter.Sources.Count);
+        Assert.Equal(78, pediatric.Rendered.FrontMatter.Sources.Count);
     }
 
     /// <summary>
@@ -464,7 +485,11 @@ public sealed class BlockSourceAttributionRenderTests : IClassFixture<WebApplica
             "Vestibular Schwannoma (Acoustic Neuroma) and Neurofibromatosis", StringComparison.Ordinal);
         Assert.True(nidcd > sharedLabel, "the NIDCD citation still renders as one of this page's own");
 
-        // And the counts, so a truncated list cannot pass: 17 own + 29 shared.
+        // And the counts, so a truncated list cannot pass: 17 own + 31 shared.
+        // (29 → 31 at WI-565, which cited two CDC pages on blocks/escalation.md for the
+        // fever conditional's timing clause. This page includes that block, so a reader
+        // here now meets both citations under the shared label — which is the point of
+        // citing the block rather than only the sibling, §12.31.)
         var provenance = html[html.IndexOf("class=\"provenance\"", StringComparison.Ordinal)..];
         var between = provenance[..provenance.IndexOf("</div>", StringComparison.Ordinal)];
         var own = between[..between.IndexOf(
@@ -473,7 +498,7 @@ public sealed class BlockSourceAttributionRenderTests : IClassFixture<WebApplica
             "Some parts of this page are shared", StringComparison.Ordinal)..];
 
         Assert.Equal(17, own.Split("<li>").Length - 1);
-        Assert.Equal(29, shared.Split("<li>").Length - 1);
+        Assert.Equal(31, shared.Split("<li>").Length - 1);
     }
 
     /// <summary>
