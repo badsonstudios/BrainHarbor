@@ -309,6 +309,10 @@ public sealed class GlossaryOnlyEntriesTests
     /// meets the word cold is the one the entry exists for. Every count in this file
     /// moved by exactly that one entry and that one page: 55 → 56 pages, 79 → 80 firing,
     /// 26 → 25 nowhere, 5,775 → 5,880 pairs (105 × 56).</para>
+    ///
+    /// <para>WI-555 added <c>/treatments/palliative-care</c>, which moved only the page
+    /// count: 56 → 57 pages, 5,880 → 5,985 pairs (105 × 57). Firing and nowhere did
+    /// not move — the page names no glossary-only term.</para>
     /// </summary>
     private static readonly string[] OwnedByItsPage =
     [
@@ -352,7 +356,7 @@ public sealed class GlossaryOnlyEntriesTests
             Directory.GetFiles(Path.Combine(CuratedPage.RepoRoot(), "src", "BrainHarbor.Web",
                 "Content", "pages"), "*.md", SearchOption.AllDirectories).Length,
             corpus.Pages.Length);
-        Assert.Equal(56, corpus.Pages.Length);
+        Assert.Equal(57, corpus.Pages.Length);
 
         // The entry count is a LITERAL and not a comparison with the directory: nothing
         // sits between `Directory.EnumerateFiles` and `Entries()` to mutate the count, so
@@ -504,7 +508,7 @@ public sealed class GlossaryOnlyEntriesTests
         // `claimedSpans` is the prose scan having run (measured: 698). Floors rather
         // than literals, because both move with any new tooltip anywhere and neither is
         // this gate's subject.
-        Assert.Equal(5880, pairsExamined);
+        Assert.Equal(5985, pairsExamined);
         Assert.True(firingPairs > 200,
             $"only {firingPairs} (page, entry) tooltips fired across the whole corpus, so "
             + "this scan is looking at pages where the glossary reaches nobody");

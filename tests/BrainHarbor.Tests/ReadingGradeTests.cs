@@ -486,15 +486,17 @@ public partial class ReadingGradeTests(ITestOutputHelper output)
 
         // The max AND the median, because the docstring on these constants quotes both
         // and /review found only the max was pinned. The median being 0.00 is the
-        // substantive fact: most prose contains no listed term at all, so the allowance
-        // is not a general loosening — it is a carve-out for a named vocabulary.
+        // substantive fact: in at least half the shipped prose the allowance does not
+        // move the rounded grade, so it is not a general loosening — it is a carve-out
+        // for a named vocabulary. (Until WI-555 this said "contains no listed term",
+        // which is not what Worth == 0 measures; see the last paragraph.)
         //
         // WI-556 TURNED "THE MEDIAN IS 0.00" INTO A STATEMENT ABOUT PARITY, so the property
         // is now asserted directly. /treatments/fertility took the sample count from 183 to
         // 184, and an EVEN count's median is the mean of the two middle samples: one of
         // them is 0.00 and the other 0.10, so the median read 0.05 while not one existing
-        // sample moved. What the median was standing in for is "at least half of the
-        // shipped prose contains no listed term at all", and that is pinned as itself,
+        // sample moved. What the median was standing in for is "in at least half of the
+        // shipped prose the allowance does not move the grade", and that is pinned as itself,
         // with the measured count printed beside it. For an odd count the two forms are
         // the same assertion, so nothing was loosened (/review round 1 checked).
         //
@@ -505,6 +507,16 @@ public partial class ReadingGradeTests(ITestOutputHelper output)
         // reds, the answer is a ruling on §5a's wording, not a lower number here. The
         // median ceiling adds almost nothing beyond the count (it bounds the 93rd
         // sample) and is kept only as a readable second statement of the same fact.
+        //
+        // WI-555 FOUND THAT PREDICTION WRONG, and why is worth knowing before the next
+        // page: /treatments/palliative-care says "glioblastoma" once in about 1,600 words
+        // and is allowance-FREE (93 of 185 now), because Worth is a difference of ROUNDED
+        // grades: ReadingGrade.Of rounds to one decimal (Math.Round(..., 1)), and one
+        // listed term in a long body moves the unrounded grade too little to change that
+        // decimal. "Contains no listed term" was never what this counts; "the allowance
+        // does not move the rounded grade" is. So the next page reds it only if it uses
+        // the vocabulary densely, which is the loosening the threshold exists to see.
+        // (185 is odd again, so the median is a single sample and reads 0.00.)
         Assert.InRange(pairs.Max(p => p.Worth), 0, MaxAllowanceWorth);
         var allowanceFree = pairs.Count(p => p.Worth == 0);
         output.WriteLine($"allowance-free samples: {allowanceFree} of {pairs.Count}");

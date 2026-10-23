@@ -325,6 +325,8 @@ mainly from the medicine, not from the tumor.
 
 **Palliative care is worth meeting early.** The word can sound like giving up.
 It is not. The team is meant to be there from the start.
+[Palliative care, and what it is not](/treatments/palliative-care) explains
+what the team does.
 
 ## Everyday life: school, work, seizures and tiredness
 

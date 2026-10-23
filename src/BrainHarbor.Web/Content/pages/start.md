@@ -101,6 +101,10 @@ If you might want children one day, ask about it now, as early as you can.
 [Fertility and treatment](/treatments/fertility) explains why, and what can be
 saved first.
 
+There is also a team whose whole job is helping you feel better: with symptoms,
+worry, and the strain on your family. You can have it alongside any treatment.
+[Palliative care, and what it is not](/treatments/palliative-care) explains it.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?
