@@ -295,18 +295,27 @@ public sealed class GlossaryOnlyEntriesTests
     }
 
     /// <summary>
-    /// Cause (a). <b>25 of the 26</b>, and the clustering is the ruling's own argument:
+    /// Cause (a). <b>24 of the 25</b>, and the clustering is the ruling's own argument:
     /// <c>/treatments/craniotomy</c> owns eight of them, <c>/treatments/chemotherapy</c>
-    /// four, <c>/treatments/radiation-therapy</c> four. A library page that teaches a
+    /// three, <c>/treatments/radiation-therapy</c> four. A library page that teaches a
     /// vocabulary suppresses that vocabulary, because a tooltip repeating the paragraph
     /// under it is noise (WI-505).
+    ///
+    /// <para><b>WI-556 took <c>procarbazine</c> OUT, and that is the measurement working,
+    /// not drift.</b> It was 25 of 26 here: owned by <c>/treatments/chemotherapy</c>,
+    /// which defines it inline and suppresses the tooltip. <c>/treatments/fertility</c>
+    /// names it on the American Cancer Society's list of drugs most likely to harm eggs
+    /// and sperm and does NOT define it, so the tooltip fires there — the reader who
+    /// meets the word cold is the one the entry exists for. Every count in this file
+    /// moved by exactly that one entry and that one page: 55 → 56 pages, 79 → 80 firing,
+    /// 26 → 25 nowhere, 5,775 → 5,880 pairs (105 × 56).</para>
     /// </summary>
     private static readonly string[] OwnedByItsPage =
     [
         "5-ala", "astrocyte", "bone-flap", "carmustine-wafer", "chemoradiation",
         "craniectomy", "debulking", "embryonal-tumor", "focal-seizure", "fractionation",
         "gross-total-resection", "h3-g34", "laser-ablation", "nadir", "neutropenia",
-        "oligodendrocyte", "pediatric-type", "procarbazine", "radiation-mask", "rano",
+        "oligodendrocyte", "pediatric-type", "radiation-mask", "rano",
         "simulation", "sma-syndrome", "somnolence-syndrome", "subtotal-resection",
         "transformation",
     ];
@@ -343,7 +352,7 @@ public sealed class GlossaryOnlyEntriesTests
             Directory.GetFiles(Path.Combine(CuratedPage.RepoRoot(), "src", "BrainHarbor.Web",
                 "Content", "pages"), "*.md", SearchOption.AllDirectories).Length,
             corpus.Pages.Length);
-        Assert.Equal(55, corpus.Pages.Length);
+        Assert.Equal(56, corpus.Pages.Length);
 
         // The entry count is a LITERAL and not a comparison with the directory: nothing
         // sits between `Directory.EnumerateFiles` and `Entries()` to mutate the count, so
@@ -353,8 +362,8 @@ public sealed class GlossaryOnlyEntriesTests
         // THE TWO MEASURED NUMBERS, AS LITERALS. Not "nowhere + firing == 105", which is
         // true by construction for any pair of complements, including (0, 105) — §12.28's
         // shape of an assertion that reads as proof and cannot fail.
-        Assert.Equal(79, corpus.Firing);
-        Assert.Equal(26, corpus.Nowhere.Length);
+        Assert.Equal(80, corpus.Firing);
+        Assert.Equal(25, corpus.Nowhere.Length);
 
         var byCause = corpus.Nowhere.ToDictionary(e => e.Slug, e => CauseOf(e, corpus),
             StringComparer.Ordinal);
@@ -394,7 +403,7 @@ public sealed class GlossaryOnlyEntriesTests
         var listed = OwnedByItsPage.Concat(SaidOnNoPage).Concat(OnlyWhereNoTooltipFires)
             .ToArray();
         Assert.Equal(listed.Length, listed.Distinct(StringComparer.Ordinal).Count());
-        Assert.Equal(26, listed.Length + fourth.Length);
+        Assert.Equal(25, listed.Length + fourth.Length);
 
         // Each list in its own order, so a later edit cannot hide a slug in the middle of
         // a long literal (the shape WI-580's order assertion caught on its first run).
@@ -495,7 +504,7 @@ public sealed class GlossaryOnlyEntriesTests
         // `claimedSpans` is the prose scan having run (measured: 698). Floors rather
         // than literals, because both move with any new tooltip anywhere and neither is
         // this gate's subject.
-        Assert.Equal(5775, pairsExamined);
+        Assert.Equal(5880, pairsExamined);
         Assert.True(firingPairs > 200,
             $"only {firingPairs} (page, entry) tooltips fired across the whole corpus, so "
             + "this scan is looking at pages where the glossary reaches nobody");
@@ -562,7 +571,6 @@ public sealed class GlossaryOnlyEntriesTests
         new("oligodendrocyte", "tumors/oligodendroglioma", "That cell is called an **oligodendrocyte**."),
         new("pediatric-type", "tumors/glioma", "You may see the words \"adult-type\" or \"pediatric-type\" on a report."),
         new("pediatric-type", "tumors/pediatric-brain-tumor", "**A report may say \"pediatric-type\" or \"adult-type\".**"),
-        new("procarbazine", "treatments/chemotherapy", "Procarbazine and lomustine are capsules you swallow."),
         new("radiation-mask", "treatments/radiation-therapy", "You may see it called a radiation mask."),
         new("rano", "tests/follow-up-scans", "The rules are called RANO, short for Response Assessment in Neuro-Oncology."),
         new("simulation", "treatments/radiation-therapy", "This visit is called a simulation."),
@@ -617,14 +625,15 @@ public sealed class GlossaryOnlyEntriesTests
                 .ThenBy(p => p.Page, StringComparer.Ordinal).ToArray(),
             Owners.Select(o => (o.Entry, o.Page)).ToArray());
 
-        // 30 PAIRS OVER 25 ENTRIES, AND THESE TWO LINES ARE ABOUT THE TABLE, not about the
+        // 29 PAIRS OVER 24 ENTRIES (30 over 25 until WI-556 retired procarbazine's row),
+        // AND THESE TWO LINES ARE ABOUT THE TABLE, not about the
         // corpus — the comparison above already forces `measured.Count` to be whatever
         // `Owners.Length` is, so asserting 30 of `measured` would be a fact about a literal
         // two hundred lines up dressed as a measurement (§12.28). Aimed at the array
         // instead they do a real job: they stop this file's prose and §12.29 drifting away
         // from the array as records are added.
-        Assert.Equal(30, Owners.Length);
-        Assert.Equal(25, Owners.Select(o => o.Entry).Distinct(StringComparer.Ordinal).Count());
+        Assert.Equal(29, Owners.Length);
+        Assert.Equal(24, Owners.Select(o => o.Entry).Distinct(StringComparer.Ordinal).Count());
 
         // A SECOND ROUTE to cause (a)'s membership, and it is worth saying exactly how
         // independent it is: the aggregation differs (the partition counts owners per
@@ -687,7 +696,7 @@ public sealed class GlossaryOnlyEntriesTests
     {
         var corpus = Measure();
 
-        Assert.Equal(26, corpus.Nowhere.Length);
+        Assert.Equal(25, corpus.Nowhere.Length);
 
         foreach (var entry in corpus.Nowhere)
         {
@@ -700,9 +709,10 @@ public sealed class GlossaryOnlyEntriesTests
             // steps, and the shortest entries are the easiest ones to write that way.
             //
             // THE FLOOR IS CALIBRATED TO THE DEFECT, NOT TO THE CORPUS, and the measured
-            // numbers are here so that is checkable: the smallest margin among the 26 is
+            // numbers are here so that is checkable: the smallest margin among the 26 was
             // 80 characters (`procarbazine`, a 92-character definition on a 12-character
-            // term) and the floor is 20. A floor set near 80 would red on correct writing
+            // term) and the floor is 20. `procarbazine` left the set at WI-556, and taking
+            // an entry out can only raise a minimum, so among the 25 it is at least 80. A floor set near 80 would red on correct writing
             // the first time an entry was tightened; 20 is what it takes to rule out "The
             // drug procarbazine." — the row this premise exists to forbid.
             Assert.True(entry.Definition.Trim().Length > entry.Term.Length + 20,
@@ -980,7 +990,7 @@ public sealed class GlossaryOnlyEntriesRenderTests : IClassFixture<WebApplicatio
 
         var firing = CuratedPage.GlossarySlugsFiringAnywhere();
         var nowhere = CuratedPage.GlossaryTerms.Where(t => !firing.Contains(t.Slug)).ToList();
-        Assert.Equal(26, nowhere.Count);
+        Assert.Equal(25, nowhere.Count);
 
         foreach (var term in nowhere)
         {

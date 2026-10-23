@@ -6,7 +6,7 @@
 > Sourcing the pictures is the next job; nothing here is committed to `wwwroot`.
 
 **SHIPPED SO FAR: 15 of the 148 (WI-572, 2026-10-09)** — `dia-brain-regions` and the
-fourteen other files of the location family, on 33 of the 464 slots. They are one
+fourteen other files of the location family, on 33 of the 469 slots. They are one
 drawing: the variants are derived from the master, so the entries below describe
 fifteen files and one piece of artwork. See `wwwroot/img/figures/README.md` before
 editing any of them, and content-pipeline **§12.35** for what the first real picture
@@ -35,8 +35,8 @@ plus `src/BrainHarbor.Web/wwwroot/img/figures/README.md` for the rules that fail
 ## 1. The number, and why it is not the one the ticket was written against
 
 The density rule is **one figure per ~500 words of body text, minimum one per page**.
-Applied to the corpus as it stands that is **461 slots across 50 reader-facing pages**.
-This inventory lists **464**, because the rule is a floor and a few pages earn one more.
+Applied to the corpus as it stands that is **466 slots across 51 reader-facing pages**.
+This inventory lists **469**, because the rule is a floor and a few pages earn one more.
 
 WI-562's own notes expected about thirty pictures, and §12.33 says "~30 real
 pictures" in as many words. Both numbers are right. The ticket anticipated the
@@ -45,20 +45,21 @@ WI-513, and the rule moves it from one slot to four without anyone editing this
 ticket"* — and then it grew harder than that: a hub is not four slots now, it is
 eleven to fifteen. **Nothing is wrong with the rule. The corpus is 17x the size the
 table in the ticket was measured on** — 217,148 words of reader-facing body text against the
-13,133 that table adds up to.
+13,133 that table adds up to. (Measured at WI-562; WI-556 added
+`/treatments/fertility`, about 2,200 more, and its five slots.)
 
 ### A slot is not a file, and that is what makes this finite
 
-464 slots resolve to **148 distinct figures**, because the corpus is heavily templated:
+469 slots resolve to **148 distinct figures**, because the corpus is heavily templated:
 the 23 tumor hubs share §12.3's seventeen sections, the test and treatment pages
 repeat "what happens, step by step" and "what to ask your team", and eight shared
 blocks are composed into pages dozens of times over. One picture of two people talking
-at a kitchen table discharges **37 slots**, on its own.
+at a kitchen table discharges **38 slots**, on its own.
 
-### The count only comes out at 461 if you count the words a reader reads
+### The count only comes out at 466 if you count the words a reader reads
 
 The eight shared blocks (§3a) are composed into the page at render time. The raw
-`.md` files total 351 slots; with the blocks composed in it is 461. The
+`.md` files total 356 slots; with the blocks composed in it is 466. The
 `caregiver` block alone puts 413 words on 37 pages, and `mechanism` puts 854 on 18.
 **Counting the files rather than the pages would have left the longest unbroken
 stretches of text on the site uncovered** — which is the exact defect this item exists
@@ -129,16 +130,16 @@ cards. Nothing can check that one for you.
 The waves are a reading of value per hour, not a priority on the pages. Wave 1 is what
 makes the site visibly different; wave 3 is the long tail of per-tumor scans.
 
-### Wave 1 — 49 figures, 316 slots
+### Wave 1 — 49 figures, 320 slots
 
 The figures that carry the most slots or the most meaning. The shared-block figures are all here: one drawing lands on up to 37 pages at once.
 
 | Figure | Kind | Slots it fills |
 |---|---|---|
-| `ph-two-people-talking` | 1 | 37 |
+| `ph-two-people-talking` | 1 | 38 |
 | `dia-escalation-card` | 3 | 30 |
 | `dia-followup-timeline` | 3 | 24 |
-| `dia-treatment-path` | 3 | 24 |
+| `dia-treatment-path` | 3 | 25 |
 | `doc-pathology-parts` | 2 | 23 |
 | `dia-grade-ladder` | 3 | 22 |
 | `dia-symptom-map` | 3 | 22 |
@@ -157,8 +158,8 @@ The figures that carry the most slots or the most meaning. The shared-block figu
 | `dia-region-sellar` | 3 | 3 |
 | `dia-tumor-or-medicine` | 3 | 3 |
 | `dia-wait-timeline` | 3 | 3 |
-| `ph-diary` | 1 | 3 |
-| `ph-kitchen-table-papers` | 1 | 3 |
+| `ph-diary` | 1 | 4 |
+| `ph-kitchen-table-papers` | 1 | 4 |
 | `ph-mask` | 1 | 3 |
 | `dia-region-frontal` | 3 | 2 |
 | `dia-tissue-to-slide` | 3 | 2 |
@@ -185,7 +186,7 @@ The figures that carry the most slots or the most meaning. The shared-block figu
 | `ph-phone-note` | 1 | 1 |
 | `ph-specimen-pot` | 1 | 1 |
 
-### Wave 2 — 58 figures, 105 slots
+### Wave 2 — 58 figures, 106 slots
 
 Everything that makes a specific page work, once the shared set exists.
 
@@ -202,7 +203,7 @@ Everything that makes a specific page work, once the shared set exists.
 | `dia-crosswalk-names` | 3 | 2 |
 | `dia-looks-worse-two-causes` | 3 | 2 |
 | `dia-region-skull-base` | 3 | 2 |
-| `dia-your-team` | 3 | 2 |
+| `dia-your-team` | 3 | 3 |
 | `doc-implant-card` | 2 | 2 |
 | `pd-hydrocephalus-ct` | 4 | 2 |
 | `ph-blister-pack` | 1 | 2 |
@@ -416,7 +417,7 @@ Free stock or public domain. Dan can search for these directly, and they are the
 - **Draft alt text:** An open notebook with a pen resting on the page.
 - **Draft caption:** Writing it down the same day beats trying to remember it weeks later.
 - **Getting it:** Free stock.
-- **Lands at:** `wwwroot/img/figures/ph-diary.svg` (or `.png` / `.jpg`) — **used by:** `/tests/follow-up-scans`, `/treatments/stereotactic-radiosurgery`, `/treatments/watch-and-wait`
+- **Lands at:** `wwwroot/img/figures/ph-diary.svg` (or `.png` / `.jpg`) — **used by:** `/tests/follow-up-scans`, `/treatments/fertility`, `/treatments/stereotactic-radiosurgery`, `/treatments/watch-and-wait`
 
 #### `ph-hat-scarf` — kind 1, wave 3
 
@@ -464,7 +465,7 @@ Free stock or public domain. Dan can search for these directly, and they are the
 - **Draft alt text:** Hands holding a few printed letters at a kitchen table.
 - **Draft caption:** Keep your own copy of everything. You will be asked for it more than once.
 - **Getting it:** Free stock. No readable text in the letters.
-- **Lands at:** `wwwroot/img/figures/ph-kitchen-table-papers.svg` (or `.png` / `.jpg`) — **used by:** `/start`, `/tests/pathology-report`, `/treatments/clinical-trials`
+- **Lands at:** `wwwroot/img/figures/ph-kitchen-table-papers.svg` (or `.png` / `.jpg`) — **used by:** `/start`, `/tests/pathology-report`, `/treatments/clinical-trials`, `/treatments/fertility`
 
 #### `ph-linac` — kind 1, wave 1
 
@@ -608,7 +609,7 @@ Free stock or public domain. Dan can search for these directly, and they are the
 - **Draft alt text:** Two people at a table. One is talking and one is listening.
 - **Draft caption:** The person with you hears things you will not. Let them write it down.
 - **Getting it:** Free stock. Everyday clothes, home or cafe, not a clinic. THIS ONE SHOWS ON MORE PAGES THAN ANY OTHER FIGURE HERE — see the used-by line — so pick a warm, plain, un-staged shot and expect to look at a lot of them before one is good enough to repeat that often.
-- **Lands at:** `wwwroot/img/figures/ph-two-people-talking.svg` (or `.png` / `.jpg`) — **used by:** **37 pages**
+- **Lands at:** `wwwroot/img/figures/ph-two-people-talking.svg` (or `.png` / `.jpg`) — **used by:** **38 pages**
 
 #### `ph-waiting-room` — kind 1, wave 1
 
@@ -1192,7 +1193,7 @@ and not the other eight: a label is a claim the text has to make too (§12.35).
 - **Draft alt text:** Three boxes joined by arrows, with side paths that skip a box.
 - **Draft caption:** Most plans use some of these, in some order. Very few use all three.
 - **Getting it:** DRAW. Show the skip paths. A straight line reads as a schedule everybody is on.
-- **Lands at:** `wwwroot/img/figures/dia-treatment-path.svg` (or `.png` / `.jpg`) — **used by:** **24 pages**
+- **Lands at:** `wwwroot/img/figures/dia-treatment-path.svg` (or `.png` / `.jpg`) — **used by:** **25 pages**
 
 #### `dia-trial-phases` — kind 3, wave 2
 
@@ -1288,7 +1289,7 @@ and not the other eight: a label is a claim the text has to make too (§12.35).
 - **Draft alt text:** Labeled circles, one for each person on your team.
 - **Draft caption:** Many people, each with one job. The one to ask first is your nurse.
 - **Getting it:** DRAW.
-- **Lands at:** `wwwroot/img/figures/dia-your-team.svg` (or `.png` / `.jpg`) — **used by:** `/tests/getting-ready-for-surgery`, `/treatments/clinical-trials`
+- **Lands at:** `wwwroot/img/figures/dia-your-team.svg` (or `.png` / `.jpg`) — **used by:** `/tests/getting-ready-for-surgery`, `/treatments/clinical-trials`, `/treatments/fertility`
 
 ### Kind 4 — Public-domain medical imagery (32)
 
@@ -1797,6 +1798,18 @@ stale position in this file.
 | 9 | Is there a way to do this without opening the skull? | 3 | `dia-endoscopic-route` |
 | 10 | `[CAREGIVER]` | 1 | `ph-two-people-talking` |
 | 11 | `[TUMOR-BOARD]` | 3 | `dia-tumor-board` |
+
+### `/treatments/fertility`
+
+2208 words, 5 required, 5 listed.
+
+| # | Goes after | Kind | Figure |
+|---|---|---|---|
+| 1 | Why ask now, before treatment starts? | 1 | `ph-two-people-talking` |
+| 2 | Which treatments can affect it? | 3 | `dia-treatment-path` |
+| 3 | What happens, step by step | 1 | `ph-diary` |
+| 4 | What is hard about it, and what can be done | 1 | `ph-kitchen-table-papers` |
+| 5 | Who does it, and how do I find out how it went? | 3 | `dia-your-team` |
 
 ### `/treatments/proton-therapy`
 

@@ -492,6 +492,7 @@ Before treatment starts, expect:
 - A pregnancy test where that applies. If you might want children in the
   future, ask about that **before** treatment starts. It is on the list of
   questions patient groups tell you to bring to this appointment.
+  [Fertility and treatment](/treatments/fertility) goes through the choices.
 - Some centers test how your memory and concentration are doing beforehand, so
   there is something to compare against later. [The thinking and memory
   tests](/tests/neuro-exam-and-memory-testing) goes through what that day is

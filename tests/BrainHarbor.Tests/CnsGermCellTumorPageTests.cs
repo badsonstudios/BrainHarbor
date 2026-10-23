@@ -593,6 +593,12 @@ public sealed class CnsGermCellTumorPageContentTests
         var fertility = Flat(Subsection(TreatmentHeading, "Before treatment starts: saving eggs or sperm"));
         Assert.Matches(new Regex(@"may take 1 to 2 weeks", RegexOptions.IgnoreCase), fertility);
 
+        // WI-556 /review: /treatments/fertility prints ACS's "about 2 to 3 weeks", and this
+        // section links there for "how long each one takes". Both figures, each in its
+        // source's name, so the link does not land on a contradiction.
+        Assert.Matches(new Regex(@"The National Brain Tumor Society puts the whole\s+process for eggs at about 2 to 3 weeks",
+            RegexOptions.IgnoreCase), fertility);
+
         // THE PART OF THE SOURCE'S LIST THAT MATTERS MOST HERE (/review round 1): the
         // pituitary is where these tumors sit, and dropping it understated the risk.
         Assert.Matches(new Regex(@"especially near the hormone gland", RegexOptions.IgnoreCase), fertility);
@@ -603,6 +609,12 @@ public sealed class CnsGermCellTumorPageContentTests
         Assert.Matches(new Regex(
             @"when the ovaries or testicles themselves are\s+not damaged, hormone treatment helps fix this",
             RegexOptions.IgnoreCase), fertility);
+
+        // AND IT IS NOT ALWAYS ENOUGH (WI-556 /review): this line read "can often be
+        // fixed", stronger than /treatments/fertility in the reassuring direction.
+        Assert.Matches(new Regex(@"can sometimes be fixed later", RegexOptions.IgnoreCase), fertility);
+        Assert.Matches(new Regex(@"there can still be problems even with hormone\s+treatment", RegexOptions.IgnoreCase), fertility);
+        Assert.DoesNotMatch(new Regex(@"can often be fixed", RegexOptions.IgnoreCase), fertility);
     }
 
     [Fact]

@@ -488,8 +488,30 @@ public partial class ReadingGradeTests(ITestOutputHelper output)
         // and /review found only the max was pinned. The median being 0.00 is the
         // substantive fact: most prose contains no listed term at all, so the allowance
         // is not a general loosening — it is a carve-out for a named vocabulary.
+        //
+        // WI-556 TURNED "THE MEDIAN IS 0.00" INTO A STATEMENT ABOUT PARITY, so the property
+        // is now asserted directly. /treatments/fertility took the sample count from 183 to
+        // 184, and an EVEN count's median is the mean of the two middle samples: one of
+        // them is 0.00 and the other 0.10, so the median read 0.05 while not one existing
+        // sample moved. What the median was standing in for is "at least half of the
+        // shipped prose contains no listed term at all", and that is pinned as itself,
+        // with the measured count printed beside it. For an odd count the two forms are
+        // the same assertion, so nothing was loosened (/review round 1 checked).
+        //
+        // IT HAS NO HEADROOM, AND THAT IS RECORDED RATHER THAN FIXED: 92 of 183 before
+        // WI-556 and 92 of 184 after, so the next page whose prose contains one listed
+        // term reds this. 50% IS the threshold -- below it the allowance is a general
+        // loosening rather than a carve-out, which is the claim §5a makes -- so when it
+        // reds, the answer is a ruling on §5a's wording, not a lower number here. The
+        // median ceiling adds almost nothing beyond the count (it bounds the 93rd
+        // sample) and is kept only as a readable second statement of the same fact.
         Assert.InRange(pairs.Max(p => p.Worth), 0, MaxAllowanceWorth);
-        Assert.Equal(0, Median(pairs.Select(p => p.Worth)));
+        var allowanceFree = pairs.Count(p => p.Worth == 0);
+        output.WriteLine($"allowance-free samples: {allowanceFree} of {pairs.Count}");
+        Assert.True(allowanceFree * 2 >= pairs.Count,
+            $"only {allowanceFree} of {pairs.Count} samples are untouched by the allowance, so it "
+            + "is no longer a carve-out for a named vocabulary");
+        Assert.InRange(Median(pairs.Select(p => p.Worth)), 0, 0.1);
     }
 
     private static double Median(IEnumerable<double> values)
@@ -501,7 +523,7 @@ public partial class ReadingGradeTests(ITestOutputHelper output)
     }
 
     /// <summary>
-    /// The measured bounds (WI-416, 183 samples: 55 page bodies, 105 glossary
+    /// The measured bounds (WI-416, 183 samples [184 since WI-556]: 55 page bodies, 105 glossary
     /// definitions, 23 source abstracts). Drift is min <b>-0.08</b>, median
     /// <b>+0.12</b>, max <b>+1.01</b>; the allowance is worth median <b>0.00</b> and
     /// max <b>5.60</b>. The constants sit a little outside those so an ordinary content

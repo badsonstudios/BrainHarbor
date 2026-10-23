@@ -400,6 +400,22 @@ sources:
     # Verbatim: "decisions about fertility preservation often need to be made
     # quickly before treatment begins" / "Sperm freezing can often happen quickly,
     # while egg freezing may take 1" to 2 weeks (an orienting duration, §12.4 R1).
+  - url: https://braintumor.org/news/navigating-fertility-preservation-a-guide-for-patients-with-brain-tumors/
+    title: "Navigating Fertility Preservation: A Guide for Patients with Brain Tumors | National Brain Tumor Society"
+    accessed: 2026-10-23
+    # WI-556 /review: /treatments/fertility prints "about 2 to 3 weeks" for eggs and
+    # this page printed only the Alliance's "1 to 2 weeks" directly above a link to it.
+    # Verbatim (Dr. Sokalska): "It takes about 2-3 weeks to go through the entire
+    # fertility preservation process [freezing eggs or embryos]." Both figures now
+    # print, each in its source's name. NOT the American Cancer Society's "2-3 weeks",
+    # which /review round 2 found covers the stimulation only, not the retrieval.
+  - url: https://www.fredhutch.org/en/news/blog/2026/05/fertility-and-other-considerations-when-treating-cancer-in-adolescents-and-young-adults.html
+    title: "Fertility and other considerations when treating cancer in adolescents and young adults | Fred Hutch"
+    accessed: 2026-10-23
+    # WI-556 /review: the hormone-fix line was stronger here ("can often be fixed")
+    # than on /treatments/fertility, in the reassuring direction. Verbatim: "Even
+    # with hormone replacement therapy after treatment, for young women especially,
+    # there can still be fertility issues."
   - url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12474648/
     title: "A systematic review and meta-analysis of x-ray therapy versus proton beam therapy for pediatric central nervous system germ cell tumors: TRP-Germinoma 2025"
     accessed: 2026-09-21
@@ -788,7 +804,8 @@ platinum ones such as carboplatin, and surgery or radiation to the brain,
 especially near the hormone gland, among the treatments that can affect it. The Alliance for
 Fertility Preservation says these choices often need to be made quickly, before
 treatment begins. It says freezing sperm can often happen quickly, while freezing
-eggs may take 1 to 2 weeks.
+eggs may take 1 to 2 weeks. The National Brain Tumor Society puts the whole
+process for eggs at about 2 to 3 weeks, so ask early.
 
 **If the person with the tumor is a teenager, they belong in this
 conversation.** The American Cancer Society says children and teens should take
@@ -797,10 +814,14 @@ enough sperm to save by about age 12. There is not yet a proven way to save
 fertility in boys who have not gone through puberty. For a girl, the choices
 depend on whether she has.
 
-**One kind of fertility problem can often be fixed later.** Radiation to the
+**One kind of fertility problem can sometimes be fixed later.** Radiation to the
 brain can damage the signals the brain sends to the ovaries or testicles. The
 American Cancer Society says that when the ovaries or testicles themselves are
-not damaged, hormone treatment helps fix this.
+not damaged, hormone treatment helps fix this. Fred Hutch, a cancer center,
+says there can still be problems even with hormone treatment.
+
+[Fertility and treatment](/treatments/fertility) goes through every choice, how
+long each one takes, and what it can cost.
 
 ### A germinoma
 

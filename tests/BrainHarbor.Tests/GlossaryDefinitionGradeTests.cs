@@ -498,8 +498,9 @@ public sealed class GlossaryDefinitionGradeTests
 
         // WI-581's set, re-measured here rather than quoted — §12.26's closing lesson is
         // that a measurement is only true of the tree it was taken on, and this item
-        // edited 10 of those 26 definitions.
-        Assert.Equal(26, glossaryOnly.Count);
+        // edited 10 of those 26 definitions. 25 since WI-556: `procarbazine` (not one of
+        // the 10) started firing on /treatments/fertility, which names it undefined.
+        Assert.Equal(25, glossaryOnly.Count);
 
         var overlap = Rewritten
             .Select(r => r.Slug)
@@ -513,7 +514,8 @@ public sealed class GlossaryDefinitionGradeTests
         // literals alone and no input could red either one (§12.28). What is not
         // implied is what the two sets DO:
         //
-        //   * the 16 glossary-only entries this item did not touch must still clear
+        //   * the glossary-only entries this item did not touch (16 when measured, 15
+        //     since WI-556 took `procarbazine` out of the set) must still clear
         //     WI-581's character floor — this item did not break the other instrument
         //     on the entries it has no floor for;
         //   * the 25 rewritten entries outside WI-581's set must actually FIRE a

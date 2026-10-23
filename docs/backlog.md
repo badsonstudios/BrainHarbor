@@ -4297,10 +4297,16 @@ research items. Same shared contract throughout.
   content: it is not hospice, and the conflation costs people months of
   available help. Six of 25 caregiver families regretted not accepting help
   sooner. Depends on: WI-502.
-- [ ] **WI-556 X16 Fertility and treatment** — **time-critical**: options close
+- [x] **WI-556 X16 Fertility and treatment** — **time-critical**: options close
   once treatment starts, and ASCO says discuss it with every patient of
   reproductive age. Cuts across surgery, radiation and chemo, and is
   systematically missed. Depends on: WI-502.
+  **DONE 2026-10-23** (content-pipeline §12.42): `/treatments/fertility`, grade 5.4,
+  20 sources read that day; doors from `/start`, chemotherapy, radiation and the germ
+  cell hub. The dossier was wrong in six places (Cancer.Net is gone; NBTS overstates
+  ASCO; temozolomide is not on ACS's high-risk list; spine radiation and the testes;
+  no safe meningioma hormone protocol; no source says surgery spares fertility).
+  78/78 break mutations red; two `/review` rounds.
 - [ ] **WI-557 The tumor picker and the /tumors index rebuild**
   Goal: two ways in — one for the reader who knows their words, one for the
   reader who does not.
