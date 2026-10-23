@@ -310,9 +310,12 @@ measurement, not a desk calculation.
 - **What the allowance is worth: median 0.00, max 5.60** over the 183 samples. (WI-556's
   page made it 184, an even count, and the median now reads 0.05 because the two middle
   samples are 0.00 and 0.10; **92 of the 184 are untouched**, and that half is what the
-  test now pins, with no headroom: one more page with a listed term reds it.) Half of
-  the prose contains no listed term at all, so the allowance is a carve-out for a named vocabulary
-  and not a general loosening. The 5.60 extreme (`glossary/pcv`, 16.1 → 10.5) is **a
+  test now pins, with no headroom: one more page with a listed term reds it. **WI-555
+  showed that is too strong**: `/treatments/palliative-care` says "glioblastoma" once and
+  is untouched, 93 of 185, because the count is of samples whose ROUNDED grade the
+  allowance does not move — §12.43. At 185, an odd count, the median is 0.00 again.)
+  In at least half of the prose the allowance does not move the rounded grade, so it is a
+  carve-out for a named vocabulary and not a general loosening. The 5.60 extreme (`glossary/pcv`, 16.1 → 10.5) is **a
   figure no gate actually produces**: that definition is 19 words, under
   `MinimumDefinitionWordsToGrade`, and it is page text where the allowance does not apply
   at all. It bounds what the mechanism can do, not what it does.
@@ -12361,3 +12364,125 @@ after `/review` reworded their targets, which is why a no-op counts as a failure
 - **Tumor hubs whose treatment rows list "Fertility"** in the treatment-library mapping
   (grade 2 astrocytoma, oligodendroglioma, pediatric low-grade glioma, medulloblastoma)
   do not link here yet; `/start`, chemotherapy, radiation and the germ cell hub do.
+
+### 12.43 Palliative care, and a gate around the word the page cannot avoid (WI-555)
+
+`/treatments/palliative-care` is the library's second page about a **conversation**
+rather than a procedure, and its title is its content: palliative care is not hospice.
+It goes alongside treatment aimed at the tumor, at any stage, and asking for it is not
+giving up. It is the corpus's 57th page, declares 16 sources, every one read on
+2026-10-23, and grades **4.7**.
+
+#### The dossier and the backlog were wrong in six places
+
+- **"Six of 25 families regretted not accepting help sooner" is wrong twice.**
+  Schubart 2008 says *"They regretted not accepting hospice care sooner"* — about
+  **hospice**, and about "the six family caregivers whose family members had died",
+  which is every bereaved family in the study, not a quarter of all of them. SYNTHESIS
+  §3.9 had the noun right; the backlog line changed it. Printed inside the gate, as
+  hospice, with no count.
+- **"The conflation costs people months of available help" has no source.** Nothing
+  read puts a time on it. NCI's HINTS Brief 41 states the mechanism — the mix-up "may
+  prevent patients and their caregivers from requesting palliative care services or
+  accepting palliative care when offered" — and the page prints that, in NCI's name.
+- **ASCO dropped "within 8 weeks" in 2024.** Sanders 2024 changed it "to early in the
+  treatment process", meaning not waiting until treatment aimed at the cancer stops.
+  The American Cancer Society's page still says 8 weeks. ASCO's "advanced cancer" scope
+  is kept, with "ask your team whether that includes you" beside it.
+- **The CaringInfo line ("all hospice is palliative...") is not on CaringInfo's page.**
+  NIA says it and is cited.
+- **Oncologists are not on the palliative team.** NCI: it "works together with the
+  oncology care team". The page says *with, not instead of*.
+- **CAPC's directory is not "by state" and NHPCO is renamed.** The directory is searched
+  by address and lists only "programs that have listed themselves"; the page says so.
+
+Also not used: ABTA's hospice facts ("the last year of life"; "you usually pay a
+portion") contradict Medicare's, and ABTA has no palliative care page.
+
+#### The rule: the page's own subject is the gate's vocabulary, so the gate goes around the detail and not the word
+
+A page whose message is *this is not hospice* has to say "hospice" in the open — the
+pediatric hub's single ungated "hospice" (concurrent care) is the precedent. What it
+cannot do in the open is explain hospice, because hospice is defined by the last stage
+of an illness. So the open text defines hospice by what it is **for** ("when treatment
+aimed at the tumor has stopped, and the goal is comfort"), and everything about
+eligibility, Medicare's rule, family care at home and the bereaved families' regret sits
+in one `:::outlook` gate under its own heading. A test pins the hub pages' gate
+vocabulary — plus *death*, *last stage*, *lost someone* — out of everything outside it.
+The component's warning says "the next part is about outlook"; for this section that is
+accurate.
+
+**Inside the gate there is still no life-expectancy figure.** Medicare certifies "a life
+expectancy of 6 months or less". §12.5's gate is consent to read, not a licence to
+publish, so the page says what a doctor certifies — that the illness is in its last
+stage — and links Medicare's page, which carries the number. Digits are banned in the
+gate, and so are the units a figure would need (weeks, months, days, a year).
+
+#### Two more rules the sources forced
+
+- **"Cure" is Medicare's word, not the page's.** For most malignant brain tumors no
+  treatment is curative (Hertler 2022), so "palliative care goes alongside treatment to
+  cure the tumor" tells many readers the help is not for them. The page says *treatment
+  aimed at the tumor*; "cure" appears only inside the gate, in sentences reporting
+  Medicare's rule.
+- **The survival question is answered once, with what is not known.** Readers meet
+  "patients who received palliative care lived longer" on CAPC's own site. The evidence
+  is Temel 2010 — 151 people with metastatic lung cancer, survival not its main outcome
+  — and the one large glioblastoma study (Wu 2022) found the reverse ordering, which its
+  editorial attributes to sicker people being referred early. Printing either would be
+  a figure the reader cannot weigh, so "Does it help people live longer?" opens *"That
+  is not known for brain tumors"*, and no survival language appears anywhere on the page,
+  that section included — the harness planted "It may even prolong survival" inside it
+  and the first guard, which exempted the section, stayed green.
+
+#### A prediction that was wrong, and what it was really measuring
+
+§12.42 recorded §5a's allowance-free share as 92/184 with no headroom: "the next page
+with a listed term reds it". This page says "glioblastoma" once and is allowance-free —
+93 of 185. **The count was never of samples containing no listed term; it is of samples
+whose rounded grade the allowance does not move**, and one listed word in ~1,600 moves
+the unrounded grade too little to change the printed decimal. So the threshold reds when
+a page uses the vocabulary densely, which is the loosening it exists to see. No ruling
+on §5a's wording was needed; the test's comment and §5a now say this.
+
+#### The corpus moved
+
+- 56 → 57 pages; own sources 715 → 731 (union 1,476 → 1,492); the page includes no
+  block, and cites the caregiver block's Schubart 2008 on its own, so nothing
+  deduplicates.
+- Four image slots on existing catalogue figures (`docs/images-needed.md`, 473 slots).
+- Doors from `/start`, `/tumors/dipg`, `/tumors/diffuse-midline-glioma` and
+  `/tumors/pediatric-brain-tumor` — the pages that already raised palliative care.
+
+#### What `/review` caught
+
+Round 1: no blocker, nine content should-fixes, and **three of them leaned the
+over-reassuring way** (§12.12). The gate narrowed Medicare's election to "treatment to
+cure", which on a page arguing that brain tumor treatment is rarely curative tells a
+reader their temozolomide carries on under hospice — Medicare's words are "instead of
+other Medicare-covered treatments for your terminal illness". "You pay nothing" dropped
+the respite charge. The concurrent-care line said CHIP when stand-alone CHIP programs
+only have the option, and dropped the hospice-eligibility condition. Also taken: NCI's
+"meant to improve" for "can make that better" (ASCO 2024 finds recent outpatient trials
+mixed), Schubart scoped to adult relatives, two unsourced steps, and "late" for a study
+that measured "never". On the tests: a paragraph helper that dropped the gate's first
+paragraph (it follows the fence with no blank line), and six rewordings each guard
+missed — "living longer", "final weeks", "within six weeks", "most adults", "started
+hospice earlier", "Medicare and Medicaid cover it". Round 2: clean.
+
+#### Proof
+
+**66 break mutations × LF and CRLF, 132 of 132 red, no survivors and no no-ops**
+(`.claude/work_files/wi555/break.sh`). The first run had one survivor (the survival claim
+planted inside its own section, above) and one no-op (a target that now wraps across a
+line, so the pattern needed `\s+`). 2,990 of 2,990 tests; ContentCheck 349/0.
+
+#### Carried forward
+
+- **The other tumor hubs do not link here.** The treatment-library mapping says
+  palliative care links from every tumor page; only the three hubs that already raised
+  it (and `/start`) do. Adding a door to twenty more hubs is a pass of its own.
+- **The glossary entry `palliative-care`** is sourced to two DIPG pages. It is accurate,
+  but it could cite NCI, which this page now does.
+- **Private insurers' hospice rules** for children and adults: no source read covers
+  them, so the page says "ask how its rules work".

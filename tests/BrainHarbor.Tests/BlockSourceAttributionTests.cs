@@ -148,7 +148,7 @@ public sealed class BlockSourceAttributionTests
     public void TheTwoListsPartitionTheFrontMatterExactly()
     {
         var corpus = Corpus();
-        Assert.Equal(56, corpus.Count);
+        Assert.Equal(57, corpus.Count);
 
         foreach (var (slug, rendered) in corpus)
         {
@@ -228,6 +228,12 @@ public sealed class BlockSourceAttributionTests
     /// added <b>2</b> sources to <c>/tumors/cns-germ-cell-tumor</c> (NBTS's egg timeline
     /// and Fred Hutch's limit on the hormone fix), so own <b>715</b>, union <b>1,476</b>;
     /// that page includes no block either, so nothing deduplicates.</para>
+    ///
+    /// <para><b>WI-555 moved the same side, by another whole page.</b>
+    /// <c>/treatments/palliative-care</c> declares <b>16</b> sources of its own and
+    /// includes no block, so own 715 → <b>731</b>, block unchanged at 761, union 1,476 →
+    /// <b>1,492</b>, pages 56 → 57. It cites the caregiver block's Schubart 2008 on its
+    /// own and does not include the block, which is why nothing deduplicates.</para>
     /// </summary>
     [Fact]
     public void TheCorpusWideTotalsAreWhatWi574Measured()
@@ -235,8 +241,8 @@ public sealed class BlockSourceAttributionTests
         var corpus = Corpus();
 
         Assert.Equal(761, corpus.Sum(p => p.Rendered.BlockSources.Count));
-        Assert.Equal(715, corpus.Sum(p => p.Rendered.OwnSources.Count));
-        Assert.Equal(1476, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
+        Assert.Equal(731, corpus.Sum(p => p.Rendered.OwnSources.Count));
+        Assert.Equal(1492, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
 
         // THE WORST PAGES, AND THERE ARE TWO OF THEM — pinned by name rather than
         // by MaxBy, which picks one of a tie arbitrarily and would have made this

@@ -1040,6 +1040,8 @@ It sits alongside the treatment your child is already having.
 children with these tumors describes something it calls concurrent care, where
 children can receive hospice support while still having treatment aimed at curing
 the tumor. Ask your team whether that is how it works where you are.
+[Palliative care, and what it is not](/treatments/palliative-care) has more on
+how that works in the US, and on what the team does.
 
 ## Did I cause this?
 
