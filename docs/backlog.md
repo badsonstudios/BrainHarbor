@@ -4293,10 +4293,17 @@ research items. Same shared contract throughout.
   why it is its own page. Depends on: WI-510.
 - [ ] **WI-554 X14 Rehabilitation** — PT, OT, speech; what inpatient rehab is.
   Depends on: WI-502.
-- [ ] **WI-555 X15 Palliative care — and what it is not** — the title is the
+- [x] **WI-555 X15 Palliative care — and what it is not** — the title is the
   content: it is not hospice, and the conflation costs people months of
   available help. Six of 25 caregiver families regretted not accepting help
   sooner. Depends on: WI-502.
+  **DONE 2026-10-23** (content-pipeline §12.43): `/treatments/palliative-care`, grade
+  4.6, 16 sources read that day; doors from `/start`, DIPG, diffuse midline glioma and
+  the childhood hub. Hospice detail sits in an `:::outlook` gate with no life-expectancy
+  figure. **This entry was wrong twice:** Schubart 2008's families regretted not
+  accepting HOSPICE sooner (all six bereaved families, not 6 of 25), and "costs people
+  months" has no source. Also: ASCO dropped "within 8 weeks" in 2024; CaringInfo no
+  longer carries the line the dossier cited; no survival claim for brain tumors.
 - [x] **WI-556 X16 Fertility and treatment** — **time-critical**: options close
   once treatment starts, and ASCO says discuss it with every patient of
   reproductive age. Cuts across surgery, radiation and chemo, and is
