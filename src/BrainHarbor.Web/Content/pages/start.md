@@ -97,6 +97,10 @@ If chemotherapy has been mentioned, [chemotherapy: the drugs, your blood
 counts, and the fever rule](/treatments/chemotherapy) takes the drugs one at a
 time and sets out the one rule worth knowing before you start.
 
+If you might want children one day, ask about it now, as early as you can.
+[Fertility and treatment](/treatments/fertility) explains why, and what can be
+saved first.
+
 ## Questions to ask your team
 
 - What type and grade is my tumor?

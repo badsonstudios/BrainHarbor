@@ -148,7 +148,7 @@ public sealed class BlockSourceAttributionTests
     public void TheTwoListsPartitionTheFrontMatterExactly()
     {
         var corpus = Corpus();
-        Assert.Equal(55, corpus.Count);
+        Assert.Equal(56, corpus.Count);
 
         foreach (var (slug, rendered) in corpus)
         {
@@ -220,6 +220,14 @@ public sealed class BlockSourceAttributionTests
     /// included the block, the URL-keyed merge would have collapsed the two and the
     /// split, not just the totals, would have moved; that is exactly the asymmetry this
     /// checksum exists to show.</para>
+    ///
+    /// <para><b>WI-556 MOVED ONE SIDE, by a whole page.</b> <c>/treatments/fertility</c>
+    /// declares <b>20</b> sources of its own and includes no block, so own went 693 →
+    /// <b>713</b> (+20), block stayed at <b>761</b>, and the union went 1,454 →
+    /// <b>1,474</b> (+20). The page count went 55 → 56 with it. Its <c>/review</c> then
+    /// added <b>2</b> sources to <c>/tumors/cns-germ-cell-tumor</c> (NBTS's egg timeline
+    /// and Fred Hutch's limit on the hormone fix), so own <b>715</b>, union <b>1,476</b>;
+    /// that page includes no block either, so nothing deduplicates.</para>
     /// </summary>
     [Fact]
     public void TheCorpusWideTotalsAreWhatWi574Measured()
@@ -227,8 +235,8 @@ public sealed class BlockSourceAttributionTests
         var corpus = Corpus();
 
         Assert.Equal(761, corpus.Sum(p => p.Rendered.BlockSources.Count));
-        Assert.Equal(693, corpus.Sum(p => p.Rendered.OwnSources.Count));
-        Assert.Equal(1454, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
+        Assert.Equal(715, corpus.Sum(p => p.Rendered.OwnSources.Count));
+        Assert.Equal(1476, corpus.Sum(p => p.Rendered.FrontMatter.Sources.Count));
 
         // THE WORST PAGES, AND THERE ARE TWO OF THEM — pinned by name rather than
         // by MaxBy, which picks one of a tie arbitrarily and would have made this

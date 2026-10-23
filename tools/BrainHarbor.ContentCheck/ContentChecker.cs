@@ -669,7 +669,7 @@ public static partial class ContentChecker
     /// standalone finding and not an early return in front of
     /// <see cref="GradeDescription"/>.</para>
     /// </summary>
-    public const int CorpusWhenMeasured = 55;
+    public const int CorpusWhenMeasured = 56;
 
     /// <summary>
     /// The directories whose descriptions ALL pass <see cref="FailGrade"/> — WI-578's

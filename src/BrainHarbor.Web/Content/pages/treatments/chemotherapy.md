@@ -400,6 +400,7 @@ finishes.
 **Fertility.** If you might want children in the future, ask about it
 **before** treatment starts rather than partway through. Your team can tell you
 whether the drug you are having affects that, and who to talk to about it.
+[Fertility and treatment](/treatments/fertility) goes through the choices.
 
 ## Feeling sick to your stomach, and the medicine for it
 

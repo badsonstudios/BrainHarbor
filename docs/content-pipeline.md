@@ -307,8 +307,11 @@ measurement, not a desk calculation.
 
 #### Numbers to read carefully
 
-- **What the allowance is worth: median 0.00, max 5.60** over the 183 samples. Most prose
-  contains no listed term at all, so the allowance is a carve-out for a named vocabulary
+- **What the allowance is worth: median 0.00, max 5.60** over the 183 samples. (WI-556's
+  page made it 184, an even count, and the median now reads 0.05 because the two middle
+  samples are 0.00 and 0.10; **92 of the 184 are untouched**, and that half is what the
+  test now pins, with no headroom: one more page with a listed term reds it.) Half of
+  the prose contains no listed term at all, so the allowance is a carve-out for a named vocabulary
   and not a general loosening. The 5.60 extreme (`glossary/pcv`, 16.1 → 10.5) is **a
   figure no gate actually produces**: that definition is 19 words, under
   `MinimumDefinitionWordsToGrade`, and it is page text where the allowance does not apply
@@ -12275,3 +12278,86 @@ the block.
   bold lead-in two paragraphs above does, so a bold-scanner meets one; a third copy in one
   section was judged noise in the list read at two in the morning (§12.10). Recorded
   because `/review` would have added it.
+
+### 12.42 Fertility, and a label that speaks to one sex (WI-556)
+
+`/treatments/fertility` is the library's first page about a **conversation** rather
+than a procedure. Its one instruction is the title's: ask before treatment starts, and
+not being sure is reason enough (ASCO 2025 rec 1.2 refers "those who are uncertain").
+It is the corpus's 56th page and declares 20 sources, every one read on 2026-10-23.
+
+#### The dossier was wrong in six places, and the first is a whole website
+
+- **Cancer.Net no longer exists.** Every URL 301s to cancer.org. Cite the American
+  Cancer Society pages it forwards to, and the ASCO **guideline** for what ASCO says.
+- **NBTS overstates ASCO.** "Every patient ... should be seen by a reproductive
+  specialist" is not ASCO's recommendation; *discuss with everyone, refer the
+  interested and the unsure* is.
+- **Temozolomide is not on the American Cancer Society's high-risk list**, and its
+  label speaks only to male fertility.
+- **Spine radiation reaches the ovaries, not the testes** (Kaneko 2026: "the testes
+  are located outside the CSI field").
+- **No source gives a hormone protocol that is safe with a meningioma.** ASCO's
+  letrozole advice is scoped to breast and gynecologic cancers; the page matches
+  `/tumors/meningioma`'s "not enough information to say either way" at that strength.
+- **No source says brain surgery spares fertility.** The page says when it does not,
+  and prints no reassurance in its place.
+
+#### The rule: a source that is silent about one sex has said nothing about it
+
+The first draft printed the temozolomide label's one fertility sentence — it "may
+impair male fertility" — and nothing else about the drug. Every word was sourced. A
+woman reading the page met exactly one drug-specific fact about the drug she was most
+likely to get, and it was about men. `/review` called it a blocker, correctly: **the
+silence of a label reads as reassurance to the reader it does not mention**, which is
+the over-reassuring direction §12.12 calls the dangerous one. The page now prints the
+label's silence as a fact ("it says nothing either way about eggs"), the drug-family
+harm in NBTS's name, and the action ("ask about temozolomide too").
+
+The guard the first draft shipped made it worse: it banned temozolomide and eggs in one
+sentence, which **forbade the fix** and let a pronoun in the next sentence walk past.
+The replacement bans any harm-to-eggs claim in the page's own voice, exempts only
+attribution to a named cited source, and its vocabulary includes NBTS's own word,
+"dangerous" — the likeliest way the claim comes back is copied from its source.
+
+#### A fix has to re-check what its number measures
+
+Round 1 found `/tumors/cns-germ-cell-tumor` printing the Alliance's "1 to 2 weeks" for
+eggs directly above a new link to a page printing "about 2 to 3 weeks". The fix
+attributed the larger figure to the American Cancer Society — and round 2 found **ACS's
+2-3 weeks is the stimulation alone**, not the process. The two figures are not
+measuring the same interval. Whole process: NBTS and ASCO Table 2. Shots: "a week or
+two" (NBTS's 9-12 days). A duration is a claim about an interval; check which one.
+
+#### The corpus moved, and what moved with it
+
+- **`procarbazine` started firing a tooltip.** It was a glossary-only entry owned by
+  `/treatments/chemotherapy`, which defines it inline. This page names it undefined, so
+  it fires — the reader who meets the word cold is the one the entry is for. WI-581's
+  "fires nowhere" set went 26 → 25, and every count in `GlossaryOnlyEntriesTests` moved
+  by that one entry and one page.
+- **§5a's "median 0.00" became a statement about parity.** 184 samples is even; the
+  middle two are 0.00 and 0.10. **92 of 184 are allowance-free, exactly half, with no
+  headroom.** The next page with a listed term reds it, and the answer then is a ruling
+  on §5a's "carve-out" wording, not a lower number.
+- Five image slots on existing catalogue figures (`docs/images-needed.md`, 469 slots).
+
+#### Proof
+
+**78 of 78 break mutations red, on both line endings**, no survivors after fixes —
+including the pronoun, "dangerous", "your doctor says" and the reassurance moved ahead
+of the girls' assessment. Two of the earlier ones were no-ops caught by the harness
+after `/review` reworded their targets, which is why a no-op counts as a failure.
+2,960 of 2,960 tests; ContentCheck 347/0; the page grades **5.4**.
+
+#### Carried forward
+
+- **The other drugs' birth-control periods** (lomustine, bevacizumab, vorasidenib) are
+  printed nowhere; the NOW review's table quotes manufacturers and nobody has read the
+  labels. The page says "the time differs from drug to drug" and routes to the team.
+- **Seizure medicines and hormonal birth control.** No source read states the
+  interaction; `/treatments/anti-seizure-medicines` says nothing about pregnancy at all,
+  which is a gap on that page rather than this one.
+- **Tumor hubs whose treatment rows list "Fertility"** in the treatment-library mapping
+  (grade 2 astrocytoma, oligodendroglioma, pediatric low-grade glioma, medulloblastoma)
+  do not link here yet; `/start`, chemotherapy, radiation and the germ cell hub do.
